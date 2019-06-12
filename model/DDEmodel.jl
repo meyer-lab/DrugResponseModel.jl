@@ -1,5 +1,5 @@
 import CSV
-data = CSV.read("Gem.csv")
+data = CSV.read("C:\\Users\\farna\\Desktop\\Gem.csv")
 G2 = data[:,3]
 
 using Optim, LeastSquaresOptim, DelayDiffEq
@@ -8,10 +8,19 @@ using DifferentialEquations, OrdinaryDiffEq
 tau1 = 10.0
 tau2 = 20.0
 # p = [alpha, beta, gamma1, gamma2]
+
+#function G1_G2(du, u, h, p, t)
+# This model assumes delay for dying
+#    du[1] = -p[1]*(h(p, t-tau1)[1]) + 2*p[2]*(h(p, t-tau2)[2]) - p[3]*(h(p, t-tau1)[1])
+#    du[2] = p[1]*(h(p, t-tau1)[1]) - p[2]*(h(p, t-tau2)[2]) - p[4]*(h(p, t-tau2)[2])
+#end
+
+# This model doesn't assume delay for dying
 function G1_G2(du, u, h, p, t)
-    du[1] = -p[1]*(h(p, t-tau1)[1]) + 2*p[2]*(h(p, t-tau2)[2]) - p[3]*(h(p, t-tau1)[1])
-    du[2] = p[1]*(h(p, t-tau1)[1]) - p[2]*(h(p, t-tau2)[2]) - p[4]*(h(p, t-tau2)[2])
+    du[1] = -p[1]*(h(p, t-tau1)[1]) + 2*p[2]*(h(p, t-tau2)[2]) - p[3]*u[1]
+    du[2] = p[1]*(h(p, t-tau1)[1]) - p[2]*(h(p, t-tau2)[2]) - p[4]*u[2]
 end
+
 
 lags = [tau1, tau2]
 h(p, t) = ones(2)
@@ -26,4 +35,6 @@ alg = MethodOfSteps(Tsit5())
 # using Plots; plot(sol)
 cost = build_loss_objective(prob,t,G2,MethodOfSteps(Tsit5()),maxiters=10000)
 results = optimize(cost, u0, Dogleg()) # this is the problematic sentence
+
+
 
