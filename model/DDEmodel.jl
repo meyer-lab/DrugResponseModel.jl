@@ -1,5 +1,5 @@
 import CSV
-data = CSV.read("C:\\Users\\farna\\Desktop\\Gem.csv")
+data = CSV.read("Gem.csv")
 G2 = data[:,3]
 
 using Optim, LeastSquaresOptim, DelayDiffEq
