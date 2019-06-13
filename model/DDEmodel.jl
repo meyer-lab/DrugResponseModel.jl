@@ -21,7 +21,7 @@ function G1_G2(du, u, h, p, t)
     du[2] = p[1]*(h(p, t-p[5])[1]) - p[2]*(h(p, t-p[6])[2]) - p[4]*u[2] 
 end
 
-p = [1.0045,-0.418798,7.47465,0.3212957,19.17196,16.88276,4.2931205,1.96889172]
+p = [1.0045, 0.42, 0.01, 0.01, 19.17196, 16.88276, 4.2931205, 1.96889172]
 
 function resid(pp)
     lags = [pp[5], pp[6]]
@@ -30,7 +30,7 @@ function resid(pp)
     
     tspan = (0.0, 95.5)
     u0 = [pp[7], pp[8]]
-    prob = DDEProblem(G1_G2, [pp[7], pp[8]], h, tspan, pp; constant_lags = lags)
+    prob = DDEProblem(G1_G2, [pp[7], pp[8]], h, tspan, pp; constant_lags=lags)
 
     sol = solve(prob, MethodOfSteps(Tsit5()))
     
@@ -40,12 +40,15 @@ function resid(pp)
     return res
 end
 
-results = optimize(resid, p, Dogleg())
+loww = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+results = optimize(resid, p, Dogleg(), lower=loww)
 
 
 ## ---------------------- solve given the estimated parameters ----------------------------##
 
 params = results.minimizer
+print(results)
 
 # updating the parameters to solve DDE
 lags = [params[5], params[6]]
