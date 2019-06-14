@@ -34,6 +34,7 @@ function solution(pp)
 end
 
 function resid(pp)
+    t = LinRange(0.0, 95.5, 192)
     res = zeros(2, length(t))
     sol = solution(pp)
     res[1,:] = sol(t, idxs=1).u - G1_new
@@ -47,6 +48,7 @@ results = optimize(resid, p, Dogleg(), lower = lowwer)
 ## ------------------ Solve with new params ----------------------- ##
 
 function ReSolve(results)
+    t = LinRange(0.0, 95.5, 192)
     params = results.minimizer
     lags = [params[5], params[6]]
     u0 = [params[7], params[8]]
@@ -63,6 +65,7 @@ function ReSolve(results)
 end
 
 sol = ReSolve(results)
+t = LinRange(0.0, 95.5, 192)
 
 using Plots; 
 plot(t, sol(t, idxs=2).u, label = "est G2", title = "Trial 7")
