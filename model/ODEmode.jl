@@ -1,8 +1,10 @@
-# In this file we use ODE model to estimate parameters of the number of cells in G1 or G2 #
+""" In this file we want to estimate parameters of an ODE model describing the number of cells in G1 or G2 phase of the cell cycle """
 import CSV
 using LeastSquaresOptim, DifferentialEquations, DelayDiffEq, DiffEqBase, Optim, Plots
-data = CSV.read(".//data//Gem.csv")
-total = CSV.read(".//data//Gem_pop.csv")
+
+# Import the data 
+data = CSV.read("..//data//Gem.csv")
+total = CSV.read("..//data//Gem_pop.csv")
 
 total_old = total[:,4];
 G2_old = data[:,4];
