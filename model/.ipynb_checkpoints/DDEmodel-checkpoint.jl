@@ -64,9 +64,14 @@ plot!(t, (sol(t, idxs=2).u + sol(t, idxs=1).u), label = "total est")
 plot!(t, total_new, label = "total")
 savefig("DOX_4_DDE.png")
 
+function g2Tog1(sol)
+    t = LinRange(0.0, 95.5, 192)
+    return (sol(t, idxs=2).u ./ sol(t, idxs=1).u) .*100
+end
 
 
 
+# Obsolete!
 ## ====================== Use Simulated Annealing =========================##
 
 import CSV
