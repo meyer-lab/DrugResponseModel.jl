@@ -31,7 +31,7 @@ function plot_param_conc(lap, gem, dox, tax, i, param)
     p2 = plot(gem[8, :], gem[i, :], label = "Gemcitabine")
     p3 = plot(dox[8, :], dox[i, :], label = "Doxorubicin")
     p4 = plot(tax[8, :], tax[i, :], label = "Paclitaxel")
-    plot(p1, p2, p3, p4)
+    plot(p1, p2, p3, p4, dpi = 150)
 end
 
 plot_param_conc(lap, gem, dox, tax, 7, "gamma2")
