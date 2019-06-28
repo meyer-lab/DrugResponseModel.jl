@@ -27,13 +27,13 @@ function plot_param_conc(lap, gem, dox, tax, i, param)
     Returns a 2x2 plot for four drugs. 
     
     """
-    p1 = plot(lap[8, :], lap[i, :], label = "Lapatinib", title = param)
-    p2 = plot(gem[8, :], gem[i, :], label = "Gemcitabine")
-    p3 = plot(dox[8, :], dox[i, :], label = "Doxorubicin")
-    p4 = plot(tax[8, :], tax[i, :], label = "Paclitaxel")
-    plot(p1, p2, p3, p4, dpi = 150)
+    p1 = plot(gem[8, :], gem[i, :], label = "Gemcitabine", title = param, xlabel = "drug conc. [nM]", ylabel = "param")
+    p2 = plot(lap[8, :], lap[i, :], label = "Lapatinib", xlabel = "drug conc. [nM]", ylabel = "param")
+    p3 = plot(dox[8, :], dox[i, :], label = "Doxorubicin", xlabel = "drug conc. [nM]", ylabel = "param")
+    p4 = plot(tax[8, :], tax[i, :], label = "Paclitaxel", xlabel = "drug conc. [nM]", ylabel = "param")
+    plot(p1, p2, p3, p4, dpi = 100)
 end
 
-plot_param_conc(lap, gem, dox, tax, 7, "gamma2")
+plot_param_conc(lap, gem, dox, tax, 1, "alpha")
 # We can save the figure by using the following line with an appropriate name in the paramthesis.
 # savefig("")
