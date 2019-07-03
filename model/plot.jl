@@ -6,12 +6,14 @@ param_lap_dde = CSV.read(".//figures//Lapatinib//dde//params_lap_DDE.csv")
 param_gem_dde = CSV.read(".//figures//Gem//dde//params_gem_DDE.csv")
 param_dox_dde = CSV.read(".//figures//Dox//dde//params_dox_DDE.csv")
 param_taxol1_dde = CSV.read(".//figures//taxol//dde//params_taxol1_DDE.csv")
+param_tax2_dde = CSV.read(".//figures//taxol2//dde//params_tax2_DDE.csv")
 
 # Convert the DataFrame to Matrix for plotting
 lap = convert(Matrix, param_lap_dde[:,3:end])
 gem = convert(Matrix, param_gem_dde[:,3:end])
 dox = convert(Matrix, param_dox_dde[:,3:end])
 tax = convert(Matrix, param_taxol1_dde[:,3:end])
+tax2 = convert(Matrix, param_tax2_dde[:, 3:end])
 
 
 function plot_param_conc(lap, gem, dox, tax, i, param)
