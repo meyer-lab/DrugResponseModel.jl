@@ -72,5 +72,15 @@ function optimIt(p, low, upp)
     return results_dde.minimizer
 end
 
-
+# ----------- an example for how to use the functions ----------- #
+"""
+gem_pop, gem2, gem1, gem2_0, gem1_0 = get_data("..//data//gem.csv", "..//data//gem_pop.csv");
+i = 3
+p  = [0.0571958, 0.0326492, 0.7504399, 4.501804, 19.3794, 0.00560244, 0.00236748]
+# setting lowest delay for tau1 to be half an hour and for tau2 to be 3 hours.
+low = [0.0001, 0.0001, 0.5, 3.0, 1.0, 0.0001, 0.0001]
+upp = [0.5, 0.5, 30.0, 30.0, 200.0, 0.5, 0.5]
+params = optimIt(p, low, upp)
+plotIt(params, "Gemcitabine Trial 3")
+"""
 # --------------------------- Hill-function fitting ----------------------- #
