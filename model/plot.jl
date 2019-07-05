@@ -1,7 +1,30 @@
 """ This file contains a function to plot the parameters against the  drug concentrations, in a 2x2 subplot."""
 using Plots, CSV;
 
-# Reading the file containing params
+#-------------------- Plots the long-term predicted behavior given parameters -----------------------#
+
+function plotIt(params, drug_name)
+    lags = [params[3], params[4]]
+    t = LinRange(0.0, 95.5, 192)
+    t_new = LinRange(0.0, 195.5, 292)
+    h(p, t_new) = params[5]*ones(2)
+    tspan_new = (0.0, 195.5)
+    u0_new = [g1_0[i], g2_0[i]]
+    prob_new = DDEProblem(DDEmodel, u0_new, h, tspan_new, params; constant_lags = lags)
+    solution = solve(prob_new, MethodOfSteps(Tsit5()))
+
+    plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, xlabel = "time [hours]", ylabel = "# of cells")
+    plot!(t, G1_new, label = "G1", dpi = 150)
+    plot!(t_new, solution(t_new, idxs=2).u, label = "G2 est", title = drug_name, legend=:topleft, dpi = 150)
+    plot!(t, G2_new, label = "G2", dpi = 150)
+    plot!(t_new, (solution(t_new, idxs=2).u + solution(t_new, idxs=1).u), label = "total est", dpi = 150)
+    plot!(t, total_new, label = "total", dpi = 150)
+    # savefig("gem_3_dde_long.png")
+end
+
+#--------------------- Plot parameteres versus drug concentration ------------------------#
+
+# Reading the file containing parameters
 param_lap_dde = CSV.read(".//figures//Lapatinib//dde//params_lap_DDE.csv")
 param_gem_dde = CSV.read(".//figures//Gem//dde//params_gem_DDE.csv")
 param_dox_dde = CSV.read(".//figures//Dox//dde//params_dox_DDE.csv")
