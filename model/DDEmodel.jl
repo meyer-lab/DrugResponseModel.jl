@@ -1,10 +1,14 @@
-"""This file contains functions to:
-1. Import data and do some pre-processing 
-2. Fit the data to a Delay Differential Equation model, and find the parameters 
-3. Fit the parameteres to a Hill-function and find Hill-curve parameters
-"""
-import CSV
-using LeastSquaresOptim, DifferentialEquations, DelayDiffEq, DiffEqBase, Optim, Plots, Statistics, DataFrames
+using LeastSquaresOptim, DifferentialEquations, DelayDiffEq, DiffEqBase, Optim, Plots, Statistics, DataFrames, CSV, Distributed
+
+@everywhere begin
+    """This file contains functions to:
+    1. Import data, extracting G1 and G2 data in # of cells.  
+    2. Fit the data to a Delay Differential Equation model, and find the parameters.
+    """
+    function foo()
+        nothing
+    end
+end
 
 
 function get_data(path_g2, path_total)
@@ -41,7 +45,6 @@ end
 
 # Specifying which trial of the data is being used; could be an integer belonging to {1, 3, ..., 8}
 # 1 refers to Control conditions and 8 refers to maximum drug concentration used for treatment.
-i = 8;
 
 function DDEmodel(du, u, h, p, t)
     du[1] = -p[1]*(h(p, t-p[3])[1]) + 2*p[2]*(h(p, t-p[4])[2]) - p[6]*u[1]
@@ -61,7 +64,7 @@ end
 function resid(pp)
     t = LinRange(0.0, 95.5, 192)
     res = zeros(2, 192)
-    sol = DDEsolve(pp, i)
+    sol = DDEsolve(pp)
     res[1, :] = sol(t, idxs=1).u - gem1[:, i]
     res[2, :] = sol(t, idxs=2).u - gem2[:, i]
     return res

@@ -59,6 +59,6 @@ function plot_param_conc(lap, gem, dox, tax, i, param)
     plot(p1, p2, p3, p4, dpi = 100)
 end
 
-plot_param_conc(lap, gem, dox, tax, 1, "alpha")
+# plot_param_conc(lap, gem, dox, tax, 1, "alpha")
 # We can save the figure by using the following line with an appropriate name in the paramthesis.
 # savefig("")
