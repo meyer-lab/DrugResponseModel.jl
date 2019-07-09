@@ -1,24 +1,35 @@
-""" This file contains a function to plot the parameters against the  drug concentrations, in a 2x2 subplot."""
-using Plots, CSV;
+using Plots, CSV, Distributed;
+
+""" 
+        This file contains a function to plot the parameters against the  drug concentrations, in a 2x2 subplot.
+"""
 
 #-------------------- Plots the long-term predicted behavior given parameters -----------------------#
 
-function plotIt(params, drug_name)
+function plotIt(params::Array, g1::Array, g2::Array, pop::Array, i::Number)
+    """
+        Given estimated parameters for each trial, 
+    solve the DDE model plot the predicted curve 
+    for # of cells in G1, G2, or total, 
+    along with their corresponding real data,
+    for a longer time which is 2 times of the 
+    original time (~195 hours)
+    """
     lags = [params[3], params[4]]
     t = LinRange(0.0, 95.5, 192)
     t_new = LinRange(0.0, 195.5, 292)
-    h(p, t_new) = params[5]*ones(2)
+    h(params, t_new) = params[5]*ones(2)
     tspan_new = (0.0, 195.5)
     u0_new = [g1_0[i], g2_0[i]]
     prob_new = DDEProblem(DDEmodel, u0_new, h, tspan_new, params; constant_lags = lags)
     solution = solve(prob_new, MethodOfSteps(Tsit5()))
 
     plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, xlabel = "time [hours]", ylabel = "# of cells")
-    plot!(t, G1_new, label = "G1", dpi = 150)
-    plot!(t_new, solution(t_new, idxs=2).u, label = "G2 est", title = drug_name, legend=:topleft, dpi = 150)
-    plot!(t, G2_new, label = "G2", dpi = 150)
+    plot!(t, g1, label = "G1", dpi = 150)
+    plot!(t_new, solution(t_new, idxs=2).u, label = "G2 est", legend=:topleft, dpi = 150)
+    plot!(t, g2, label = "G2", dpi = 150)
     plot!(t_new, (solution(t_new, idxs=2).u + solution(t_new, idxs=1).u), label = "total est", dpi = 150)
-    plot!(t, total_new, label = "total", dpi = 150)
+    plot!(t, pop, label = "total", dpi = 150)
     # savefig("gem_3_dde_long.png")
 end
 
@@ -39,7 +50,7 @@ tax = convert(Matrix, param_taxol1_dde[:,3:end])
 tax2 = convert(Matrix, param_tax2_dde[:, 3:end])
 
 
-function plot_param_conc(lap, gem, dox, tax, i, param)
+function plot_param_conc(lap::Matrix, gem::Matrix, dox::Matrix, tax::Matrix, i::Number, param::Array)
     """ This function to plot parameter vs. concentraition.
     Arguments:
     ----------
