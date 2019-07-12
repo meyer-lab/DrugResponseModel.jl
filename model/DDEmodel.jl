@@ -49,7 +49,7 @@ function DDEmodel(du, u, h, p, t)
     du[2] = p[1]*(h(p, t-p[3])[1]) - p[2]*(h(p, t-p[4])[2]) - p[7]*u[2]
 end
 
-function DDEsolve(pp::Array, i::Int, g1_0::Array, g2_0::Array)
+function DDEsolve(pp, i, initial_val)
     lags = [pp[3], pp[4]]
     t = LinRange(0.0, 95.5, 192)
     h(pp, t) = pp[5]*ones(2)
