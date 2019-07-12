@@ -49,18 +49,17 @@ function DDEmodel(du, u, h, p, t)
     du[2] = p[1]*(h(p, t-p[3])[1]) - p[2]*(h(p, t-p[4])[2]) - p[7]*u[2]
 end
 
-function DDEsolve(pp, i)
+function DDEsolve(pp::Array, i::Int, g1_0::Array, g2_0::Array)
     lags = [pp[3], pp[4]]
-    h(pp, t) = pp[5]*ones(2)
     t = LinRange(0.0, 95.5, 192)
+    h(pp, t) = pp[5]*ones(2)
     tspan = (0.0, 95.5)
     u0 = initial_val[i]
     prob = DDEProblem(DDEmodel, u0, h, tspan, pp; constant_lags = lags)
-    sol = solve(prob, MethodOfSteps(Tsit5()))
-    return sol
+    solve(prob, MethodOfSteps(Tsit5()))
 end
 
-function resid(pp)
+function resid(pp, i, g1, g2)
     t = LinRange(0.0, 95.5, 192)
     res = zeros(2, 192)
     sol = DDEsolve(pp, i)
@@ -69,7 +68,7 @@ function resid(pp)
     return res
 end
 
-function optimIt(initial_guess, lower_bound, upper_bound)
+function optimIt(initial_guess, lower_bound, upper_bound, i)
     results_dde = optimize(resid, initial_guess, LevenbergMarquardt(), lower = lower_bound, upper = upper_bound)
     return results_dde.minimizer
 end
