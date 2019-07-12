@@ -24,7 +24,6 @@ function get_data(path_g2::String, path_total::String)
     g2 = zeros(size(drug, 1), 8)
     g1_0 = zeros(8)
     g2_0 = zeros(8)
-    initial_val = fill([], 8)
 
     init_cells = 20.0
 
@@ -35,10 +34,8 @@ function get_data(path_g2::String, path_total::String)
         g1[:, i] = pop[:, i] .- g2[:, i]
         g2_0[i] = init_cells*(drug[1, i]/100.0)
         g1_0[i] = init_cells*(1 - drug[1, i]/100.0)
-        initial_val[i] = [g1_0[i], g2_0[i]]
     end
-
-    return pop, g2, g1, initial_val
+    return pop, g2, g1, g2_0, g1_0
 end
 
 # Specifying which trial of the data is being used; could be an integer belonging to {1, 3, ..., 8}
@@ -49,12 +46,12 @@ function DDEmodel(du, u, h, p, t)
     du[2] = p[1]*(h(p, t-p[3])[1]) - p[2]*(h(p, t-p[4])[2]) - p[7]*u[2]
 end
 
-function DDEsolve(pp, i, initial_val)
+function DDEsolve(pp::Array, i::Int, g1_0::Array, g2_0::Array)
     lags = [pp[3], pp[4]]
     t = LinRange(0.0, 95.5, 192)
     h(pp, t) = pp[5]*ones(2)
     tspan = (0.0, 95.5)
-    u0 = initial_val[i]
+    u0 = [g1_0[i], g2_0[i]]
     prob = DDEProblem(DDEmodel, u0, h, tspan, pp; constant_lags = lags)
     solve(prob, MethodOfSteps(Tsit5()))
 end
@@ -62,14 +59,15 @@ end
 function resid(pp, i, g1, g2)
     t = LinRange(0.0, 95.5, 192)
     res = zeros(2, 192)
-    sol = DDEsolve(pp, i)
+    sol = DDEsolve(pp, i, g1_0, g2_0)
     res[1, :] = sol(t, idxs=1).u - g1[:, i]
     res[2, :] = sol(t, idxs=2).u - g2[:, i]
     return res
 end
 
-function optimIt(initial_guess, lower_bound, upper_bound, i)
-    results_dde = optimize(resid, initial_guess, LevenbergMarquardt(), lower = lower_bound, upper = upper_bound)
+function optimIt(initial_guess, lower_bound, upper_bound, i, g1, g2)
+    residuals(pp) = resid(pp, i, g1, g2)
+    results_dde = optimize(residuals, initial_guess, LevenbergMarquardt(), lower = lower_bound, upper = upper_bound)
     return results_dde.minimizer
 end
 

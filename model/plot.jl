@@ -6,9 +6,8 @@ using Plots, CSV, Distributed;
 
 #-------------------- Plots the long-term predicted behavior given parameters -----------------------#
 
-function plotIt(params::Array, g1::Array, g2::Array, pop::Array, i::Number)
-    """
-        Given estimated parameters for each trial, 
+function plotIt(params, g1, g2, g1_0, g2_0, pop, i)
+    """ Given estimated parameters for each trial, 
     solve the DDE model plot the predicted curve 
     for # of cells in G1, G2, or total, 
     along with their corresponding real data,
@@ -25,11 +24,11 @@ function plotIt(params::Array, g1::Array, g2::Array, pop::Array, i::Number)
     solution = solve(prob_new, MethodOfSteps(Tsit5()))
 
     plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, xlabel = "time [hours]", ylabel = "# of cells")
-    plot!(t, g1, label = "G1", dpi = 150)
+    plot!(t, g1[:, i], label = "G1", dpi = 150)
     plot!(t_new, solution(t_new, idxs=2).u, label = "G2 est", legend=:topleft, dpi = 150)
-    plot!(t, g2, label = "G2", dpi = 150)
+    plot!(t, g2[:, i], label = "G2", dpi = 150)
     plot!(t_new, (solution(t_new, idxs=2).u + solution(t_new, idxs=1).u), label = "total est", dpi = 150)
-    plot!(t, pop, label = "total", dpi = 150)
+    plot!(t, pop[i], label = "total", dpi = 150)
     # savefig("gem_3_dde_long.png")
 end
 
