@@ -1,40 +1,35 @@
-import CSV
-data = CSV.read("Gem.csv")
-G2 = data[:,3]
+using LeastSquaresOptim, DifferentialEquations, DelayDiffEq, DiffEqBase, Optim, Plots, Statistics, DataFrames, CSV, Distributed
 
-using Optim, LeastSquaresOptim, DelayDiffEq
-using DifferentialEquations, OrdinaryDiffEq
+"""
+        This file contains functions to fit the data to a Delay Differential Equation model, and find the parameters.
+"""
 
-tau1 = 5.0
-tau2 = 5.0
-# p = [alpha, beta, gamma1, gamma2]
-
-#function G1_G2(du, u, h, p, t)
-# This model assumes delay for dying
-#    du[1] = -p[1]*(h(p, t-tau1)[1]) + 2*p[2]*(h(p, t-tau2)[2]) - p[3]*(h(p, t-tau1)[1])
-#    du[2] = p[1]*(h(p, t-tau1)[1]) - p[2]*(h(p, t-tau2)[2]) - p[4]*(h(p, t-tau2)[2])
-#end
-
-# This model doesn't assume delay for dying
-function G1_G2(du, u, h, p, t)
-    du[1] = -p[1]*(h(p, t-tau1)[1]) + 2*p[2]*(h(p, t-tau2)[2]) - p[3]*u[1]
-    du[2] = p[1]*(h(p, t-tau1)[1]) - p[2]*(h(p, t-tau2)[2]) - p[4]*u[2]
+function DDEmodel(du, u, h, p, t)
+    du[1] = -p[1]*(h(p, t-p[3])[1]) + 2*p[2]*(h(p, t-p[4])[2]) - p[6]*u[1]
+    du[2] = p[1]*(h(p, t-p[3])[1]) - p[2]*(h(p, t-p[4])[2]) - p[7]*u[2]
 end
 
+function DDEsolve(pp::Array, i::Int, g1_0::Array, g2_0::Array)
+    lags = [pp[3], pp[4]]
+    t = LinRange(0.0, 95.5, 192)
+    h(pp, t) = pp[5]*ones(2)
+    tspan = (0.0, 95.5)
+    u0 = [g1_0[i], g2_0[i]]
+    prob = DDEProblem(DDEmodel, u0, h, tspan, pp; constant_lags = lags)
+    solve(prob, MethodOfSteps(Tsit5()))
+end
 
-lags = [tau1, tau2]
-h(p, t) = 2*ones(2)
-t = LinRange(0.0, 95.5, 192)
-p = [3.1, 0.01, 2.71, 0.01]
-tspan = (0.0, 95.5)
-u0 = [10.0, 10.0]
+function resid(pp::Array, i::Int, g1::Matrix, g2::Matrix)
+    t = LinRange(0.0, 95.5, 192)
+    res = zeros(2, 192)
+    sol = DDEsolve(pp, i, g1_0, g2_0)
+    res[1, :] = sol(t, idxs=1).u - g1[:, i]
+    res[2, :] = sol(t, idxs=2).u - g2[:, i]
+    return res
+end
 
-prob = DDEProblem(G1_G2, u0, h, tspan, p; constant_lags = lags)
-alg = MethodOfSteps(Tsit5())
-# sol = solve(prob, alg)
-# using Plots; plot(sol)
-cost = build_loss_objective(prob,t,G2,MethodOfSteps(Tsit5()),maxiters=10000)
-results = optimize(cost, u0, Dogleg()) # this is the problematic sentence
-
-
-
+function optimIt(initial_guess::Array, lower_bound::Array, upper_bound::Array, i::Int, g1::Matrix, g2::Matrix)
+    residuals(pp) = resid(pp, i, g1, g2)
+    results_dde = optimize(residuals, initial_guess, LevenbergMarquardt(), lower = lower_bound, upper = upper_bound)
+    return results_dde.minimizer
+end
