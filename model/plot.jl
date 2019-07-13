@@ -25,7 +25,7 @@ function plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array,
 
     plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, title = title, xlabel = "time [hours]", ylabel = "# of cells")
     plot!(t, g1[:, i], label = "G1", dpi = 150)
-    plot!(t_new, solution(t_new, idxs=2).u, label = "G2 est", legend=:topleft, dpi = 150)
+    plot!(t_new, solution(t_new, idxs=2).u, label = "G2 est", legend=:topright, dpi = 150)
     plot!(t, g2[:, i], label = "G2", dpi = 150)
     plot!(t_new, (solution(t_new, idxs=2).u + solution(t_new, idxs=1).u), label = "total est", dpi = 150)
     plot!(t, pop[i], label = "total", dpi = 150)
