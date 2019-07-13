@@ -6,7 +6,7 @@ using Plots, CSV, Distributed;
 
 #-------------------- Plots the long-term predicted behavior given parameters -----------------------#
 
-function plotIt(params, g1, g2, g1_0, g2_0, pop, i)
+function plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop::DataFrame, i::Int, title::String)
     """ Given estimated parameters for each trial, 
     solve the DDE model plot the predicted curve 
     for # of cells in G1, G2, or total, 
@@ -23,7 +23,7 @@ function plotIt(params, g1, g2, g1_0, g2_0, pop, i)
     prob_new = DDEProblem(DDEmodel, u0_new, h, tspan_new, params; constant_lags = lags)
     solution = solve(prob_new, MethodOfSteps(Tsit5()))
 
-    plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, xlabel = "time [hours]", ylabel = "# of cells")
+    plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, title = title, xlabel = "time [hours]", ylabel = "# of cells")
     plot!(t, g1[:, i], label = "G1", dpi = 150)
     plot!(t_new, solution(t_new, idxs=2).u, label = "G2 est", legend=:topleft, dpi = 150)
     plot!(t, g2[:, i], label = "G2", dpi = 150)
@@ -35,11 +35,11 @@ end
 #--------------------- Plot parameteres versus drug concentration ------------------------#
 
 # Reading the file containing parameters
-param_lap_dde = CSV.read(".//figures//Lapatinib//dde//params_lap_DDE.csv")
-param_gem_dde = CSV.read(".//figures//Gem//dde//params_gem_DDE.csv")
-param_dox_dde = CSV.read(".//figures//Dox//dde//params_dox_DDE.csv")
-param_taxol1_dde = CSV.read(".//figures//taxol//dde//params_taxol1_DDE.csv")
-param_tax2_dde = CSV.read(".//figures//taxol2//dde//params_tax2_DDE.csv")
+param_lap_dde = CSV.read(".//figures//Lapatinib//params_lap_DDE.csv")
+param_gem_dde = CSV.read(".//figures//Gem//params_gem_DDE.csv")
+param_dox_dde = CSV.read(".//figures//Dox//params_dox_DDE.csv")
+param_taxol1_dde = CSV.read(".//figures//taxol//params_taxol1_DDE.csv")
+param_tax2_dde = CSV.read(".//figures//taxol2//params_tax2_DDE.csv")
 
 # Convert the DataFrame to Matrix for plotting
 lap = convert(Matrix, param_lap_dde[:,3:end])
@@ -49,7 +49,7 @@ tax = convert(Matrix, param_taxol1_dde[:,3:end])
 tax2 = convert(Matrix, param_tax2_dde[:, 3:end])
 
 
-function plot_param_conc(lap::Matrix, gem::Matrix, dox::Matrix, tax::Matrix, i::Number, param::Array)
+function plot_param_conc(lap::Matrix, gem::Matrix, dox::Matrix, tax::Matrix, i::Int, param::Array)
     """ This function to plot parameter vs. concentraition.
     Arguments:
     ----------
