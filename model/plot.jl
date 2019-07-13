@@ -49,7 +49,7 @@ tax = convert(Matrix, param_taxol1_dde[:,3:end])
 tax2 = convert(Matrix, param_tax2_dde[:, 3:end])
 
 
-function plot_param_conc(lap::Matrix, gem::Matrix, dox::Matrix, tax::Matrix, i::Int, param::Array)
+function plot_param_conc(lap, gem, dox, tax, i, param)
     """ This function to plot parameter vs. concentraition.
     Arguments:
     ----------
