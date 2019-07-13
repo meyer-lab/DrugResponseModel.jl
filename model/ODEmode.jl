@@ -2,19 +2,37 @@
 import CSV
 using LeastSquaresOptim, DifferentialEquations, DelayDiffEq, DiffEqBase, Optim, Plots
 
-# Import the data 
-data = CSV.read("..//data//Gem.csv")
-total = CSV.read("..//data//Gem_pop.csv")
+function get_data(path_g2::String, path_total::String)
+    # Import data all the trials for each drug
+    data = CSV.read(path_g2)
+    total = CSV.read(path_total)
 
-total_old = total[:,4];
-G2_old = data[:,4];
+    # delete the extra index column
+    deletecols!(data, 1:2)
+    deletecols!(total, 1:2)
 
-estim_init = [3.0, 2.0]
-# rescaling the experimental data
-total_new = (estim_init[1] + estim_init[2]) * total_old
-G2_new = 0.01*total_new.*G2_old;
-G1_new = total_new - G2_new;
+    # getting all the 8 trials
+    drug = data[1:192, 1:8]
+    pop = total[1:192, 1:8]
 
+    # rescaling the experimental data assuming we have 20 initial cells for each trial
+    g1 = zeros(size(drug, 1), 8)
+    g2 = zeros(size(drug, 1), 8)
+    g1_0 = zeros(8)
+    g2_0 = zeros(8)
+
+    init_cells = 20.0
+
+    # Unifying the dataset to be all in the unit of [# of cells] at each time point forall the trials for a drug
+    for i in 1:8
+        pop[:, i] = init_cells*pop[:, i]
+        g2[:, i] = 0.01*pop[:, i] .* drug[:, i]
+        g1[:, i] = pop[:, i] .- g2[:, i]
+        g2_0[i] = init_cells*(drug[1, i]/100.0)
+        g1_0[i] = init_cells*(1 - drug[1, i]/100.0)
+    end
+    return pop, g2, g1, g2_0, g1_0
+end
 
 ##---------------------------- Building the function and residuals -------------------------##
 function ODEmodel(du, u, p, t)
