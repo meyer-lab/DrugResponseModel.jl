@@ -22,8 +22,8 @@ function residHill(hillParams, concentrations, g1, g2)
         beta = hill(append!([hillParams[1]], hillParams[5:7]), concentrations[ii])
         tau1 = hill(append!([hillParams[1]], hillParams[8:10]), concentrations[ii])
         tau2 = hill(append!([hillParams[1]], hillParams[11:13]), concentrations[ii])
-        gamma1 = hill(append!([hillParams[1]], hillParams[14:16]), concentrations[ii])
-        gamma2 = hill(append!([hillParams[1]], hillParams[17:19]), concentrations[ii])
+        gamma1 = hill(append!([hillParams[1], 0], hillParams[14:15]), concentrations[ii])
+        gamma2 = hill(append!([hillParams[1], 0], hillParams[16:17]), concentrations[ii])
 
         pp = [alpha, beta, tau1, tau2, gamma1, gamma2]
         residuals = resid(pp, ii, g1, g2)
