@@ -5,14 +5,14 @@ using LeastSquaresOptim, DifferentialEquations, DelayDiffEq, DiffEqBase, Optim, 
 """
 
 function DDEmodel(du, u, h, p, t)
-    du[1] = -p[1]*(h(p, t-p[3])[1]) + 2*p[2]*(h(p, t-p[4])[2]) - p[6]*u[1]
-    du[2] = p[1]*(h(p, t-p[3])[1]) - p[2]*(h(p, t-p[4])[2]) - p[7]*u[2]
+    du[1] = -p[1]*(h(p, t-p[3])[1]) + 2*p[2]*(h(p, t-p[4])[2]) - p[5]*u[1]
+    du[2] = p[1]*(h(p, t-p[3])[1]) - p[2]*(h(p, t-p[4])[2]) - p[6]*u[2]
 end
 
 function DDEsolve(pp::Array, i::Int, g1_0::Array, g2_0::Array)
     lags = [pp[3], pp[4]]
     t = LinRange(0.0, 95.5, 192)
-    h(pp, t) = pp[5]*ones(2)
+    h(pp, t) = 10*ones(2)
     tspan = (0.0, 95.5)
     u0 = [g1_0[i], g2_0[i]]
     prob = DDEProblem(DDEmodel, u0, h, tspan, pp; constant_lags = lags)
