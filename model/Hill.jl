@@ -27,6 +27,10 @@ function residHill(hillParams, concentrations, g1, g2)
 
         pp = [alpha, beta, tau1, tau2, gamma1, gamma2]
         residuals = resid(pp, ii, g1, g2)
+
+        # To append all of the residuals of each trial to the end of the last one, finally
+        # having a matrix of 2 by 192*8 : the first row contains the residuals for G1 for 
+        # all concentrations and the second row contains the residuals for all concentrations for G2. 
         total_res[1, ((ii-1)*data_size +1):(ii*data_size)] = residuals[1, :]
         total_res[2, ((ii-1)*data_size +1):(ii*data_size)] = residuals[2, :]
     end 
