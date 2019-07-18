@@ -1,5 +1,8 @@
-""" This file contains Hill function, residuals of Hill based off of DDE, and optimization of it."""
 include("DDEmodel.jl")
+""" 
+        This file contains Hill function, residuals of Hill based off of DDE, and optimization of it.
+"""
+
 
 # hillParams should be something like [EC50, alpha_min, alpha_max, alpha_b, EC50, beta_min, beta_max, beta_b...]
 hill(p, concentration) =  p[2] + ((p[3] - p[2]) / (1 + 10^((concentration - p[1])*p[4])))
