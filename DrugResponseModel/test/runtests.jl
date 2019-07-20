@@ -1,1 +1,1 @@
-#### Run "Pkg.test("Package Name") to run the tests "
+#### Run "Pkg.test("DrugResponseModel") to run the tests "
