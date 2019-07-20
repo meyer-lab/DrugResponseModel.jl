@@ -4,7 +4,7 @@ This is to show oscillations in the number of cells in G1 and in G2 phase of cel
 
 ### Here is a way to use the DDEmodel
 
-``` 
+```ruby
 include("importData.jl")
 include("DDEmodel.jl")
 include("plot.jl")
@@ -37,9 +37,6 @@ params = optimIt(p, low, upp, i, g1, g2)
 
 # Plotting the long-term prediction along with the data for trial i
 plotIt(params, g1, g2, g1_0, g2_0, pop, i, "Lapatinib")
-
-
-
 
 ```
 
