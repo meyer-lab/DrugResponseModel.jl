@@ -1,4 +1,4 @@
-using Plots, CSV, Distributed;
+using Plots, CSV, Distributed, DataFrames;
 
 """ 
         This file contains a function to plot the parameters against the  drug concentrations, in a 2x2 subplot.
@@ -34,21 +34,6 @@ end
 
 #--------------------- Plot parameteres versus drug concentration ------------------------#
 
-# Reading the file containing parameters
-param_lap_dde = CSV.read(".//figures//Lapatinib//params_lap_DDE.csv")
-param_gem_dde = CSV.read(".//figures//Gem//params_gem_DDE.csv")
-param_dox_dde = CSV.read(".//figures//Dox//params_dox_DDE.csv")
-param_taxol1_dde = CSV.read(".//figures//taxol//params_taxol1_DDE.csv")
-param_tax2_dde = CSV.read(".//figures//taxol2//params_tax2_DDE.csv")
-
-# Convert the DataFrame to Matrix for plotting
-lap = convert(Matrix, param_lap_dde[:,3:end])
-gem = convert(Matrix, param_gem_dde[:,3:end])
-dox = convert(Matrix, param_dox_dde[:,3:end])
-tax = convert(Matrix, param_taxol1_dde[:,3:end])
-tax2 = convert(Matrix, param_tax2_dde[:, 3:end])
-
-
 function plot_param_conc(lap, gem, dox, tax, i, param)
     """ This function to plot parameter vs. concentraition.
     Arguments:
@@ -62,10 +47,10 @@ function plot_param_conc(lap, gem, dox, tax, i, param)
     Returns a 2x2 plot for four drugs. 
     
     """
-    p1 = plot(gem[8, :], gem[i, :], label = "Gemcitabine", title = param, xlabel = "drug conc. [nM]", ylabel = "param", yticks = 0.0:0.02:0.5)
-    p2 = plot(lap[8, :], lap[i, :], label = "Lapatinib", xlabel = "drug conc. [nM]", ylabel = "param", yticks = 0.0:0.05:0.5)
-    p3 = plot(dox[8, :], dox[i, :], label = "Doxorubicin", xlabel = "drug conc. [nM]", ylabel = "param", yticks = 0.0:0.05:0.5)
-    p4 = plot(tax[8, :], tax[i, :], label = "Paclitaxel", xlabel = "drug conc. [nM]", ylabel = "param", yticks = 0.0:0.1:1.0)
+    p1 = plot(gem[8, :], gem[i, :], label = "Gemcitabine", title = param, xlabel = "drug conc. [nM]", ylabel = "param", yticks = 0.0:round(maximum(gem[i, :])/5 ,digits = 3):maximum(gem[i, :]))
+    p2 = plot(lap[8, :], lap[i, :], label = "Lapatinib", xlabel = "drug conc. [nM]", ylabel = "param", yticks = 0.0:round(maximum(lap[i, :])/5, digits = 3):maximum(lap[i, :]))
+    p3 = plot(dox[8, :], dox[i, :], label = "Doxorubicin", xlabel = "drug conc. [nM]", ylabel = "param", yticks = 0.0:round(maximum(dox[i, :])/5, digits = 3):maximum(dox[i, :]))
+    p4 = plot(tax[8, :], tax[i, :], label = "Paclitaxel", xlabel = "drug conc. [nM]", ylabel = "param", yticks = 0.0:round(maximum(tax[i, :])/5, digits = 3):maximum(tax[i, :]))
     plot(p1, p2, p3, p4, dpi = 100)
 end
 
