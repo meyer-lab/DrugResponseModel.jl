@@ -56,6 +56,16 @@ function plot_param_conc(lap, gem, dox, tax, i, param)
     plot(p1, p2, p3, p4, dpi = 100)
 end
 
-# plot_param_conc(lap, gem, dox, tax, 1, "alpha")
-# We can save the figure by using the following line with an appropriate name in the paramthesis.
-# savefig("")
+# using CSV
+
+# # Reading the file containing params
+# param_lap_dde = CSV.read(".//figures//Lapatinib//params_lap_DDE.csv")
+# param_gem_dde = CSV.read(".//figures//Gem//params_gem_DDE.csv")
+# param_dox_dde = CSV.read(".//figures//Dox//params_dox_DDE.csv")
+# param_taxol1_dde = CSV.read(".//figures//taxol//params_taxol1_DDE.csv")
+
+# # Convert the DataFrame to Matrix for plotting
+# lap = convert(Matrix, param_lap_dde[:,2:end])
+# gem = convert(Matrix, param_gem_dde[:,2:end])
+# dox = convert(Matrix, param_dox_dde[:,2:end])
+# tax = convert(Matrix, param_taxol1_dde[:,2:end])
