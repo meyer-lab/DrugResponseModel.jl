@@ -12,7 +12,7 @@ end
 function DDEsolve(pp::Array, i::Int, g1_0::Array, g2_0::Array)
     lags = [pp[3], pp[4]]
     t = LinRange(0.0, 95.5, 192)
-    h(pp, t) = [exp.(t), exp.(t)]
+    h(pp, t) = 0.05*[exp.(t), exp.(t)]
     tspan = (0.0, 95.5)
     u0 = [g1_0[i], g2_0[i]]
     prob = DDEProblem(DDEmodel, u0, h, tspan, pp; constant_lags = lags)

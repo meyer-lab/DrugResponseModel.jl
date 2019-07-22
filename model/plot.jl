@@ -17,7 +17,7 @@ function plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array,
     lags = [params[3], params[4]]
     t = LinRange(0.0, 95.5, 192)
     t_new = LinRange(0.0, 195.5, 292)
-    h(params, t_new) = [exp.(t_new), exp.(t_new)]
+    h(params, t_new) = 0.05*[exp.(t_new), exp.(t_new)]
     tspan_new = (0.0, 195.5)
     u0_new = [g1_0[i], g2_0[i]]
     prob_new = DDEProblem(DDEmodel, u0_new, h, tspan_new, params; constant_lags = lags)
