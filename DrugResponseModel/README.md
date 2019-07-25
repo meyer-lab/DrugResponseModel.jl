@@ -23,10 +23,10 @@ lap = convert(Matrix, param_lap_dde[1:7,2:end]);
 
 
 # i is the number of the column we are using from the data (# of trial)
-i = 3
+i = 6
 
 # initial guess
-p  = lap[:, i]
+p  = [0.02798, 0.025502, 21.3481, 10.2881, 0.0001, 0.0001]
 
 # setting lowest delay for tau1 to be half an hour and for tau2 to be 3 hours.
 low = [0.015, 0.003, 0.5, 3.0, 7.0, 0.0001, 0.0001]
@@ -39,6 +39,7 @@ params = optimIt(p, low, upp, i, g1, g2)
 plotIt(params, g1, g2, g1_0, g2_0, pop, i, "Lapatinib")
 
 ```
+<!-- ![Trial 6 for Lapatinib](.png) -->
 
 
 
