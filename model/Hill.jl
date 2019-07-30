@@ -26,6 +26,7 @@ function residHill(hillParams, concentrations, g1, g2)
         gamma2 = hill(append!([hillParams[1], hillParams[16]], [0, hillParams[17]]), concentrations[ii])
 
         pp = [alpha, beta, tau1, tau2, gamma1, gamma2]
+        
         residuals = resid(pp, ii, g1, g2)
 
         # To append all of the residuals of each trial to the end of the last one, finally
@@ -36,7 +37,6 @@ function residHill(hillParams, concentrations, g1, g2)
     end 
     return total_res
 end
-
 
 function optimize_hill(concentrations, guess, low, high)
     residue(hillParams) =residHill(hillParams, concentrations, g1, g2)
