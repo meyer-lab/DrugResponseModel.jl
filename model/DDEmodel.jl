@@ -48,6 +48,7 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j)
     obj = build_loss_objective(prob, alg, L2Loss(times, data);
                                prob_generator = prob_generator,
                                verbose_opt = false)
+    print(obj(1))
     # optimizing
     results_dde = bboptimize(obj; SearchRange=[(-6.0, 0.0), (-6.0, 0.0), (2.0, 6.0), (2.0, 6.0), (-10.0, 0.0), (-10.0, 0.0)],
                                     NumDimensions = 6, TraceMode=:silent)
