@@ -1,18 +1,39 @@
-using LeastSquaresOptim, DifferentialEquations, DelayDiffEq, DiffEqBase, Optim, Plots, Statistics, DataFrames, CSV, Distributed
+using LeastSquaresOptim, DifferentialEquations, DelayDiffEq, DiffEqBase, Optim, Plots, Statistics, DataFrames, CSV, Distributed, LsqFit
 
 """
         This file contains functions to fit the data to a Delay Differential Equation model, and find the parameters.
 """
 
 function DDEmodel(du, u, h, p, t)
-    du[1] = -p[1]*(h(p, t-p[3])[1]) + 2*p[2]*(h(p, t-p[4])[2]) - p[6]*u[1]
-    du[2] = p[1]*(h(p, t-p[3])[1]) - p[2]*(h(p, t-p[4])[2]) - p[7]*u[2]
+    du[1] = -p[1]*(h(p, t-p[3])[1]) + 2*p[2]*(h(p, t-p[4])[2]) - p[5]*u[1]
+    du[2] = p[1]*(h(p, t-p[3])[1]) - p[2]*(h(p, t-p[4])[2]) - p[6]*u[2]
 end
 
+@. exp_model(t, p) = p[1]*exp(t*p[2]) # exponential model
+
+function find_history(g1::Matrix, g2::Matrix)
+
+    time = LinRange(0.0, 95.5, 192) # x
+    control_g1 = g1[:, 1] # y1
+    control_g2= g2[:, 1] # y2
+    p0 = [1.0, 0.5]
+
+    fit_g1 = curve_fit(exp_model, time, control_g1, p0) 
+    fit_g2 = curve_fit(exp_model, time, control_g2, p0) 
+
+    g1_hist = fit_g1.param # history function for G1
+    g2_hist = fit_g2.param # history function for G2
+
+    return g1_hist, g2_hist
+end
+    
 function DDEsolve(pp::Array, i::Int, g1_0::Array, g2_0::Array)
     lags = [pp[3], pp[4]]
     t = LinRange(0.0, 95.5, 192)
-    h(pp, t) = pp[5]*ones(2)
+
+    h_g1_params, h_g2_params = find_history(g1, g2)
+    
+    h(pp, t) = [h_g1_params[1]*exp.(t*h_g1_params[2]), h_g2_params[1]*exp.(t*h_g2_params[2])]
     tspan = (0.0, 95.5)
     u0 = [g1_0[i], g2_0[i]]
     prob = DDEProblem(DDEmodel, u0, h, tspan, pp; constant_lags = lags)
