@@ -40,11 +40,13 @@ function get_data(path_g2::String, path_total::String)
 end
 
 function remove_peaks(data)
-    for i in 1:length(data) -3
+    data = copy(data)
+
+    for i in 1:length(data) - 3
         if (abs(data[i+2] - data[i+1]) > 20*abs(data[i+3] - data[i+2])) && (abs(data[i+1] - data[i]) > 20*abs(data[i+3] - data[i+2]))
             data[i+1] = (data[i] + data[i+2])/2
         end
     end
-    new_data = data
-    return new_data
+
+    return data
 end
