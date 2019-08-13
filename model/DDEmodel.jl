@@ -34,26 +34,27 @@ end
 
 function optimization(g1, g2, g1_0, g2_0, initial_guess, j)
     times = range(0.0; stop = 95.5, length = 192)
+    data = vcat(g1[:, j]', g2[:, j]')
     
     # history function
     fit1, fit2 = find_history(g1, g2)
     h(p, t) = [exp_model(t, fit1); exp_model(t, fit2)]
 
+    # problem
     prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), initial_guess;
                       constant_lags = [initial_guess[3], initial_guess[4]])
+    # algorithm to solve
     alg = MethodOfSteps(AutoTsit5(Rosenbrock23()))
-    data = vcat(g1[:, j]', g2[:, j]')
 
     # objective function
     obj = build_loss_objective(prob, alg, L2Loss(times, data);
                                prob_generator = prob_generator,
                                verbose_opt = false)
-    print(obj(1))
     # optimizing
     results_dde = bboptimize(obj; SearchRange=[(-6.0, 0.0), (-6.0, 0.0), (2.0, 6.0), (2.0, 6.0), (-10.0, 0.0), (-10.0, 0.0)],
                                     NumDimensions = 6, TraceMode=:silent)
     # returning estimated parameteres and the objective function
-    return exp.(best_candidate(results_dde)), obj
+    return exp.(best_candidate(results_dde)), obj(initial_guess)
 end
 
 function PlotIt(g1_0, g2_0, j, min_p, data)
