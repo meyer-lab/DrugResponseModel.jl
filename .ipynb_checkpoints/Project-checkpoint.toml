@@ -1,0 +1,4 @@
+name = "DrugResponseModel"
+uuid = "f46a7e40-ab32-11e9-0ff4-0323d592fbfd"
+authors = ["farnazmdi <farnazmd95@gmail.com>"]
+version = "0.1.0"
