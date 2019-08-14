@@ -12,12 +12,10 @@ function residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
     """ This functions takes in hill parameters for all the concentrations and calculates
     DDE parameters, passes them to residual function and based off of these, optimizes the model
     and estimates hill parameters. """
+    residues = 0.0
 
-    num_concentration = length(concentrations)
-    residues = zeros(num_concentration)
-
-#     EC50  for all of the trials is hillParams[1]
-    for ii in 1:num_concentration
+    # EC50  for all of the trials is hillParams[1]
+    for ii in 1:length(concentrations)
         alpha = hill(append!([hillParams[1]], hillParams[2:4]), concentrations[ii])
         beta = hill(append!([hillParams[1]], hillParams[5:7]), concentrations[ii])
         tau1 = hill(append!([hillParams[1]], hillParams[8:10]), concentrations[ii])
@@ -26,15 +24,15 @@ function residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
         gamma2 = hill(append!([hillParams[1], hillParams[16]], [0, hillParams[17]]), concentrations[ii])
 
         pp = [alpha, beta, tau1, tau2, gamma1, gamma2]
-        _, residues[ii] = optimization(g1, g2, g1_0, g2_0, pp, ii)
+        residues += ddesolve(g1, g2, g1_0, g2_0, pp, ii)
     end 
-    total = sum(residues)
-    return total
+
+    return residues
 end
 
 
 function optimize_hill(concentrations, guess, low, high, g1, g2, g1_0, g2_0)
-    residue(hillParams) =residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
+    residue(hillParams) = residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
     results_hill = optimize(residue, guess, LevenbergMarquardt(), lower = low, upper = high)
     return results_hill
 end
