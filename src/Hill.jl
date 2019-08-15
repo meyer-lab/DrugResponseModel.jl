@@ -30,9 +30,9 @@ function residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
     return residues
 end
 
+residue(hillParams) = residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
 
-function optimize_hill(concentrations, guess, low, high, g1, g2, g1_0, g2_0)
-    residue(hillParams) = residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
-    results_hill = optimize(residue, guess, LevenbergMarquardt(), lower = low, upper = high)
-    return results_hill
+function optimize_hill(low, high)
+    res = bboptimize(residue; SearchRange=collect(zip(low, high)), TraceMode=:verbose, Method = :adaptive_de_rand_1_bin_radiuslimited)
+    return res
 end
