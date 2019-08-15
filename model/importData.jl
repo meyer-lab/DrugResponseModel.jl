@@ -1,6 +1,8 @@
+
 using CSV
+
 """
-        Imports data works for both ODE and DDE model
+        Imports data, works for both ODE and DDE model
 """
 
 function get_data(path_g2::String, path_total::String)
@@ -9,8 +11,11 @@ function get_data(path_g2::String, path_total::String)
     total = CSV.read(path_total)
 
     # delete the extra index column
-    select!(data, Not(1:2))
-    select!(total, Not(1:2))
+
+    select(data, 1)
+    select(data, 2)
+    select(total, 1)
+    select(total, 2)
 
 
     # getting all the 8 trials
@@ -34,4 +39,16 @@ function get_data(path_g2::String, path_total::String)
         g1_0[i] = init_cells*(1 - drug[1, i]/100.0)
     end
     return pop, g2, g1, g2_0, g1_0
+end
+
+function remove_peaks(data)
+    data = copy(data)
+
+    for i in 1:length(data) - 3
+        if (abs(data[i+2] - data[i+1]) > 20*abs(data[i+3] - data[i+2])) && (abs(data[i+1] - data[i]) > 20*abs(data[i+3] - data[i+2]))
+            data[i+1] = (data[i] + data[i+2])/2
+        end
+    end
+
+    return data
 end
