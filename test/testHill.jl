@@ -33,6 +33,3 @@ end
     @test all(params .>= 0.0)
     @test length(params == 17)
 end
-
-
-
