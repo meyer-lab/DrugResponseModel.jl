@@ -1,4 +1,3 @@
-using LeastSquaresOptim, DifferentialEquations, DelayDiffEq, DiffEqBase
 include("DDEmodel.jl")
 """ 
         This file contains Hill function, residuals of Hill based off of DDE, and optimization of it.
