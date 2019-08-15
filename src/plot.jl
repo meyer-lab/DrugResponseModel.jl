@@ -7,32 +7,18 @@ include("DDEmodel.jl")
 
 #-------------------- Plots the long-term predicted behavior given parameters -----------------------#
 
-function plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop::DataFrame, i::Int, title::String)
-    """ Given estimated parameters for each trial, 
-    solve the DDE model plot the predicted curve 
-    for # of cells in G1, G2, or total, 
-    along with their corresponding real data,
-    for a longer time which is 2 times of the 
-    original time (~195 hours)
-    """
-    lags = [params[3], params[4]]
-    t = LinRange(0.0, 95.5, 192)
-    t_new = LinRange(0.0, 195.0, 292)
-    tspan_new = (0.0, 195.5)
-    h_g1_params, h_g2_params = find_history(g1, g2)
-    h(pp, t_new) = [h_g1_params[1]*exp.(t_new*h_g1_params[2]), h_g2_params[1]*exp.(t_new*h_g2_params[2])]
-    u0_new = [g1_0[i], g2_0[i]]
-    prob_new = DDEProblem(DDEmodel, u0_new, h, tspan_new, params; constant_lags = lags)
-    solution = solve(prob_new, MethodOfSteps(Tsit5()))
-
-
-    plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, title = title, xlabel = "time [hours]", ylabel = "# of cells")
-    plot!(t, g1[:, i], label = "G1", dpi = 150)
-    plot!(t_new, solution(t_new, idxs=2).u, label = "G2 est", legend=:topright, dpi = 150)
-    plot!(t, g2[:, i], label = "G2", dpi = 150)
-    plot!(t_new, (solution(t_new, idxs=2).u + solution(t_new, idxs=1).u), label = "total est", dpi = 150)
-    plot!(t, pop[i], label = "total", dpi = 150)
-    # savefig("gem_3_dde_long.png")
+function PlotIt(g1_0, g2_0, j, min_p, data)
+    times = range(0.0; stop = 95.5, length = 192)
+    new_times = range(0.0; stop=200.0, length=400)
+    tspan_new = (0.0, 200.0)
+    fit1, fit2 = find_history(g1, g2)
+    h(p, t) = [exp_model(t, fit1); exp_model(t, fit2)]
+    alg = MethodOfSteps(AutoTsit5(Rosenbrock23()))
+    prob_new = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, tspan_new, min_p; constant_lags = [min_p[3], min_p[4]])
+    solution = solve(prob_new, alg)
+    plot(times, data', show = true, label = ["G1", "G2"], xlabel="time[hours]", ylabel="# of cells", lw=2, legend=:best)
+    plot!(new_times, solution(new_times, idxs=1).u, label = "G1 estimated",lw=2)
+    plot!(new_times, solution(new_times, idxs=2).u, label = "G2 estimated", lw=2)
 end
 
 #--------------------- Plot parameteres versus drug concentration ------------------------#
