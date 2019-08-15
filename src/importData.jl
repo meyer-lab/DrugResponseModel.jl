@@ -50,4 +50,3 @@ function remove_peaks(data)
 
     return data
 end
-
