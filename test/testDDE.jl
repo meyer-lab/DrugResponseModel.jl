@@ -1,9 +1,6 @@
 # FactCheck and Base.Test are two functions to use for testing
 using Test
-
-include("importData.jl")
-include("DDEmodel.jl")
-
+using DrugResponseModel
 
 ##------------------ Simple tests for get_input function -----------------------##
 pop, g2, g1, g1_0, g2_0 = get_data("..//data//lap.csv", "..//data//lap_pop.csv")

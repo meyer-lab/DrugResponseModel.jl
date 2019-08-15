@@ -1,8 +1,5 @@
 using Test, Profile
 
-include("Hill.jl")
-include("importData.jl")
-
 
 # import drug concentrations
 param_lap_dde = CSV.read(".//figures//Dox//params_dox_DDE.csv")

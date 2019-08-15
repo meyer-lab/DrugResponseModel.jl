@@ -1,4 +1,4 @@
-using DelayDiffEq, DiffEqParamEstim, Optim, DataFrames, LsqFit, BlackBoxOptim
+using DelayDiffEq, DiffEqParamEstim, DataFrames, BlackBoxOptim
 using Plots
 gr()
 """
