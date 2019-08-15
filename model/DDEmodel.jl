@@ -1,97 +1,56 @@
-using DelayDiffEq, DiffEqParamEstim, Optim, DataFrames, LsqFit, BlackBoxOptim
-using Plots
-gr()
+using LeastSquaresOptim, DifferentialEquations, DelayDiffEq, DiffEqBase, Optim, Plots, Statistics, DataFrames, CSV, Distributed, LsqFit
+
 """
         This file contains functions to fit the data to a Delay Differential Equation model, and find the parameters.
 """
 
-# model
 function DDEmodel(du, u, h, p, t)
     du[1] = -p[1]*(h(p, t-p[3])[1]) + 2*p[2]*(h(p, t-p[4])[2]) - p[5]*u[1]
     du[2] = p[1]*(h(p, t-p[3])[1]) - p[2]*(h(p, t-p[4])[2]) - p[6]*u[2]
 end
 
-# estimate history function
-exp_model(t, p) = @. p[1]*exp(t*p[2]) # exponential model
+@. exp_model(t, p) = p[1]*exp(t*p[2]) # exponential model
 
-function find_history(g1, g2)
+function find_history(g1::Matrix, g2::Matrix)
 
+    time = LinRange(0.0, 95.5, 192) # x
     control_g1 = g1[:, 1] # y1
     control_g2= g2[:, 1] # y2
     p0 = [1.0, 0.5]
-    times = range(0.0; stop = 95.5, length = 192) # x
-    fit_g1 = curve_fit(exp_model, times, control_g1, p0) 
-    fit_g2 = curve_fit(exp_model, times, control_g2, p0) 
 
-    return coef(fit_g1), coef(fit_g2)
+    fit_g1 = curve_fit(exp_model, time, control_g1, p0) 
+    fit_g2 = curve_fit(exp_model, time, control_g2, p0) 
+
+    g1_hist = fit_g1.param # history function for G1
+    g2_hist = fit_g2.param # history function for G2
+
+    return g1_hist, g2_hist
 end
-
-# define problem generator (optimization in log space)
-function prob_generator(prob, p)
-    exp_p = exp.(p)
-    remake(prob; p = exp_p, constant_lags = [exp_p[3], exp_p[4]])
-end
-
-
-function ddesolve(g1, g2, g1_0, g2_0, params, j)
-    times = range(0.0; stop = 95.5, length = 192)
-    data = vcat(g1[:, j]', g2[:, j]')
     
-    # history function
-    fit1, fit2 = find_history(g1, g2)
-    h(p, t) = [exp_model(t, fit1); exp_model(t, fit2)]
+function DDEsolve(pp::Array, i::Int, g1_0::Array, g2_0::Array)
+    lags = [pp[3], pp[4]]
+    t = LinRange(0.0, 95.5, 192)
 
-    # problem
-    prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), params;
-                      constant_lags = [params[3], params[4]])
-    # algorithm to solve
-    alg = MethodOfSteps(AutoTsit5(Rosenbrock23()); constrained=true)
-
-    # objective function
-    obj = build_loss_objective(prob, alg, L2Loss(times, data);
-                               prob_generator = prob_generator,
-                               verbose_opt = false)
-
-    # returning estimated parameteres and the objective function
-    return obj(params)
-end
-
-
-function optimization(g1, g2, g1_0, g2_0, initial_guess, j)
-    times = range(0.0; stop = 95.5, length = 192)
-    data = vcat(g1[:, j]', g2[:, j]')
+    h_g1_params, h_g2_params = find_history(g1, g2)
     
-    # history function
-    fit1, fit2 = find_history(g1, g2)
-    h(p, t) = [exp_model(t, fit1); exp_model(t, fit2)]
-
-    # problem
-    prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), initial_guess;
-                      constant_lags = [initial_guess[3], initial_guess[4]])
-    # algorithm to solve
-    alg = MethodOfSteps(AutoTsit5(Rosenbrock23()))
-
-    # objective function
-    obj = build_loss_objective(prob, alg, L2Loss(times, data);
-                               prob_generator = prob_generator,
-                               verbose_opt = false)
-    # optimizing
-    results_dde = bboptimize(obj; SearchRange=[(-6.0, 0.0), (-6.0, 0.0), (2.0, 6.0), (2.0, 6.0), (-10.0, 0.0), (-10.0, 0.0)],
-                                    NumDimensions = 6, TraceMode=:silent)
-    # returning estimated parameteres and the objective function
-    return exp.(best_candidate(results_dde)), obj(initial_guess)
+    h(pp, t) = [h_g1_params[1]*exp.(t*h_g1_params[2]), h_g2_params[1]*exp.(t*h_g2_params[2])]
+    tspan = (0.0, 95.5)
+    u0 = [g1_0[i], g2_0[i]]
+    prob = DDEProblem(DDEmodel, u0, h, tspan, pp; constant_lags = lags)
+    solve(prob, MethodOfSteps(Tsit5()))
 end
 
-function PlotIt(g1_0, g2_0, j, min_p, data)
-    times = range(0.0; stop = 95.5, length = 192)
-    new_times = range(0.0; stop=200.0, length=400)
-    tspan_new = (0.0, 200.0)
-    fit1, fit2 = find_history(g1, g2)
-    h(p, t) = [exp_model(t, fit1); exp_model(t, fit2)]
-    alg = MethodOfSteps(AutoTsit5(Rosenbrock23()))
-    prob_new = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, tspan_new, min_p; constant_lags = [min_p[3], min_p[4]])
-    solution = solve(prob_new, alg)
-    plot(times, data', show = true, label = ["G1", "G2"], xlabel="time[hours]", ylabel="# of cells", lw=2, legend=:best)
-    plot!(new_times, solution(new_times, idxs=1).u, label = "G1 estimated",lw=2)
-    plot!(new_times, solution(new_times, idxs=2).u, label = "G2 estimated", lw=2)
+function resid(pp::Array, i::Int, g1::Matrix, g2::Matrix)
+    t = LinRange(0.0, 95.5, 192)
+    res = zeros(2, 192)
+    sol = DDEsolve(pp, i, g1_0, g2_0)
+    res[1, :] = sol(t, idxs=1).u - g1[:, i]
+    res[2, :] = sol(t, idxs=2).u - g2[:, i]
+    return res
+end
+
+function optimIt(initial_guess::Array, lower_bound::Array, upper_bound::Array, i::Int, g1::Matrix, g2::Matrix)
+    residuals(pp) = resid(pp, i, g1, g2)
+    results_dde = optimize(residuals, initial_guess, LevenbergMarquardt(), lower = lower_bound, upper = upper_bound)
+    return results_dde.minimizer
 end
