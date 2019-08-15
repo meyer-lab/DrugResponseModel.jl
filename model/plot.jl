@@ -25,7 +25,6 @@ function plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array,
     prob_new = DDEProblem(DDEmodel, u0_new, h, tspan_new, params; constant_lags = lags)
     solution = solve(prob_new, MethodOfSteps(Tsit5()))
 
-
     plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, title = title, xlabel = "time [hours]", ylabel = "# of cells")
     plot!(t, g1[:, i], label = "G1", dpi = 150)
     plot!(t_new, solution(t_new, idxs=2).u, label = "G2 est", legend=:topright, dpi = 150)
