@@ -33,6 +33,7 @@ end
     @test all(params .>= 0.0)
     @test length(params == 17)
 end
+<<<<<<< HEAD
 
 # profiling
 low = [50.0, 0.001, 0.2, 0.01, 0.01, 0.001, 0.01, 20.0, 0.1, 0.01, 19.0, 0.01, 0.01, 0.001, 0.01, 0.001, 0.01]
@@ -43,3 +44,5 @@ Profile.print()
 
 
 
+=======
+>>>>>>> cdea7e2b01b6c2e3998025f4a1ca2474f1d0da7b

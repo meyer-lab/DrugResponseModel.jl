@@ -38,4 +38,3 @@ params = optimization(g1, g2, g1_0, g2_0, initial_guess, j)
 for i in 1:6
     @test upper_bnd[i] >= log.params[i] >= lower_bnd[i]
 end
-
