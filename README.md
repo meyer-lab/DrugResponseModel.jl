@@ -1,8 +1,8 @@
 # Drug Response Model
-This is to show oscillations in the number of cells in G1 and in G2 phase of cell cycle in some cancer cell lines, in response to different concentrations of a number of chemotherapy drugs.
+This is to show oscillations in the number of cells in G1 and in G2 phase of cell cycle in some cancer cell lines, in response to different concentrations of a number of chemotherapy drugs, including gemcitabine, doxorubicin, paclitaxel, and lapatinib. 
 
 
-### Here is a way to use the DDEmodel
+<!-- ### Here is a way to use the DDEmodel
 
 ```ruby
 include("importData.jl")
@@ -39,7 +39,7 @@ params = optimIt(p, low, upp, i, g1, g2)
 plotIt(params, g1, g2, g1_0, g2_0, pop, i, "Lapatinib")
 
 ```
-<!-- ![Trial 6 for Lapatinib](.png) -->
+<!-- ![Trial 6 for Lapatinib](.png) --> -->
 
 
 
