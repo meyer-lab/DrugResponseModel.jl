@@ -56,13 +56,7 @@ function ddesolve(g1, g2, g1_0, g2_0, params, j)
     return obj(params)
 end
 
-<<<<<<< HEAD:src/DDEmodel.jl
-# optimization for DDE model
-function optimization(g1, g2, g1_0, g2_0, initial_guess, j)
-=======
-
 function optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound)
->>>>>>> master:model/DDEmodel.jl
     times = range(0.0; stop = 95.5, length = 192)
     data = vcat(g1[:, j]', g2[:, j]')
     
@@ -74,11 +68,7 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound)
     prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), initial_guess;
                       constant_lags = [initial_guess[3], initial_guess[4]])
     # algorithm to solve
-<<<<<<< HEAD:src/DDEmodel.jl
-    alg = MethodOfSteps(Vern6())
-=======
     alg = MethodOfSteps(Vern6(); constrained=ture)
->>>>>>> master:model/DDEmodel.jl
 
     # objective function
     obj = build_loss_objective(prob, alg, L2Loss(times, data);
@@ -90,7 +80,3 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound)
     # returning estimated parameteres and the objective function
     return exp.(best_candidate(results_dde))
 end
-<<<<<<< HEAD:src/DDEmodel.jl
-
-=======
->>>>>>> master:model/DDEmodel.jl
