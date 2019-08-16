@@ -1,10 +1,12 @@
 module DrugResponseModel
 
-export get_data, remove_peaks, ddesolve, optimization, plotIt, residHill, optimize_hill
+using DelayDiffEq, DiffEqParamEstim, DataFrames, BlackBoxOptim, Plots, CSV, Distributed, DataFrames
 
 include("DDEmodel.jl")
 include("ODEmodel.jl")
 include("plot.jl")
 include("Hill.jl")
+
+export get_data, remove_peaks, ddesolve, optimization, plotIt, residHill, optimize_hill
 
 end # module
