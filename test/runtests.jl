@@ -1,5 +1,5 @@
 #### Run "Pkg.test("DrugResponseModel") to run the tests "
-using Test, DrugResponseModel, Base.Test
+using Test, DrugResponseModel
 
 println("Starting tests")
 
