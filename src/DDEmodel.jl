@@ -49,8 +49,8 @@ function ddesolve(g1, g2, g1_0, g2_0, params, j)
 
     # objective function
     obj = build_loss_objective(prob, alg, L2Loss(times, data);
-                               prob_generator = prob_generator,
-                               verbose_opt = false)
+                               prob_generator=prob_generator,
+                               verbose_opt=false)
 
     # returning estimated parameteres and the objective function
     return obj(params)
@@ -72,11 +72,11 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound)
 
     # objective function
     obj = build_loss_objective(prob, alg, L2Loss(times, data);
-                               prob_generator = prob_generator,
+                               prob_generator=prob_generator,
                                verbose_opt = false)
     # optimizing
     results_dde = bboptimize(obj; SearchRange=bound,
-                                    NumDimensions = 6, TraceInterval=100, Method =:adaptive_de_rand_1_bin_radiuslimited)
+                                    NumDimensions=6, TraceInterval=100, Method=:adaptive_de_rand_1_bin_radiuslimited)
     # returning estimated parameteres and the objective function
     return exp.(best_candidate(results_dde))
 end
