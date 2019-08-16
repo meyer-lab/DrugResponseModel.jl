@@ -82,13 +82,13 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j)
     return exp.(best_candidate(results_dde))
 end
 
-function PlotIt(g1_0, g2_0, j, min_p, data)
+function PlotIt(g1_0, g2_0, g1, g2, j, min_p, data)
     times = range(0.0; stop = 95.5, length = 192)
     new_times = range(0.0; stop=200.0, length=400)
     tspan_new = (0.0, 200.0)
     fit1, fit2 = find_history(g1, g2)
     h(p, t) = [exp_model(t, fit1); exp_model(t, fit2)]
-    alg = MethodOfSteps(AutoTsit5(Rosenbrock23()))
+    alg = MethodOfSteps(Vern6())
     prob_new = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, tspan_new, min_p; constant_lags = [min_p[3], min_p[4]])
     solution = solve(prob_new, alg)
     plot(times, data', show = true, label = ["G1", "G2"], xlabel="time[hours]", ylabel="# of cells", lw=2, legend=:best)
