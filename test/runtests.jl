@@ -3,9 +3,9 @@ using Test, DrugResponseModel
 
 println("Starting tests")
 
-tic()
+
 println("Test 1")
-@time @test include("testDDE.jl")
+@elapsed @test include("testDDE.jl")
 println("Test 2")
-@time @test include("testHill.jl")
-toc()
+@elapsed @test include("testHill.jl")
+
