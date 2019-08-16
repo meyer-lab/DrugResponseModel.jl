@@ -1,4 +1,3 @@
-using LeastSquaresOptim, DifferentialEquations, DelayDiffEq, DiffEqBase
 include("DDEmodel.jl")
 """ 
         This file contains Hill function, residuals of Hill based off of DDE, and optimization of it.
@@ -23,16 +22,19 @@ function residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
         gamma1 = hill(append!([hillParams[1], hillParams[14]], [0, hillParams[15]]), concentrations[ii])
         gamma2 = hill(append!([hillParams[1], hillParams[16]], [0, hillParams[17]]), concentrations[ii])
 
+        # collecting all the DDE model parameters
         pp = [alpha, beta, tau1, tau2, gamma1, gamma2]
+        # calculating the residulas for this set of parameters
         residues += ddesolve(g1, g2, g1_0, g2_0, pp, ii)
     end 
 
     return residues
 end
-
+# changing the objective function to be compatible with bboptimize
 residue(hillParams) = residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
 
+# optimization function for the Hill model
 function optimize_hill(low, high)
-    res = bboptimize(residue; SearchRange=collect(zip(low, high)), TraceMode=:verbose, Method = :adaptive_de_rand_1_bin_radiuslimited)
+    res = bboptimize(residue; SearchRange=collect(zip(low, high)), TraceMode=:compact, Method = :adaptive_de_rand_1_bin_radiuslimited)
     return res
 end

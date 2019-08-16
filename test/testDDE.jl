@@ -1,9 +1,6 @@
 # FactCheck and Base.Test are two functions to use for testing
 using Test
-
-include("importData.jl")
-include("DDEmodel.jl")
-
+using DrugResponseModel
 
 ##------------------ Simple tests for get_input function -----------------------##
 pop, g2, g1, g1_0, g2_0 = get_data("..//data//lap.csv", "..//data//lap_pop.csv")
@@ -34,11 +31,14 @@ upper_bnd = [0.0, 0.0, 6.0, 6.0, 0.0, 0.0]
 params = optimization(g1, g2, g1_0, g2_0, initial_guess, j)
 
 # to test the estimated parameters are still in the range
-@test length(params) == 6
+@test size(params) == 6
 for i in 1:6
     @test upper_bnd[i] >= log.params[i] >= lower_bnd[i]
 end
+<<<<<<< HEAD
 
 # profiling to DDEmodel
 @profile optimization(g1, g2, g1_0, g2_0, initial_guess, j)
 Profile.print()
+=======
+>>>>>>> f723d87075804b2701bf3b4654ee99f9ee9a57c7

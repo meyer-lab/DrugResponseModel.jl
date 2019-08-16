@@ -1,11 +1,11 @@
-using DelayDiffEq, DiffEqParamEstim, Optim, DataFrames, LsqFit, BlackBoxOptim
+using DelayDiffEq, DiffEqParamEstim, DataFrames, BlackBoxOptim
 using Plots
 gr()
 """
         This file contains functions to fit the data to a Delay Differential Equation model, and find the parameters.
 """
 
-# model
+# DDE model 
 function DDEmodel(du, u, h, p, t)
     du[1] = -p[1]*(h(p, t-p[3])[1]) + 2*p[2]*(h(p, t-p[4])[2]) - p[5]*u[1]
     du[2] = p[1]*(h(p, t-p[3])[1]) - p[2]*(h(p, t-p[4])[2]) - p[6]*u[2]
@@ -45,7 +45,7 @@ function ddesolve(g1, g2, g1_0, g2_0, params, j)
     prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), params;
                       constant_lags = [params[3], params[4]])
     # algorithm to solve
-    alg = MethodOfSteps(AutoTsit5(Rosenbrock23()); constrained=true)
+    alg = MethodOfSteps(Vern6(); constrained=true)
 
     # objective function
     obj = build_loss_objective(prob, alg, L2Loss(times, data);
@@ -56,7 +56,7 @@ function ddesolve(g1, g2, g1_0, g2_0, params, j)
     return obj(params)
 end
 
-
+# optimization for DDE model
 function optimization(g1, g2, g1_0, g2_0, initial_guess, j)
     times = range(0.0; stop = 95.5, length = 192)
     data = vcat(g1[:, j]', g2[:, j]')
@@ -69,7 +69,7 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j)
     prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), initial_guess;
                       constant_lags = [initial_guess[3], initial_guess[4]])
     # algorithm to solve
-    alg = MethodOfSteps(AutoTsit5(Rosenbrock23()))
+    alg = MethodOfSteps(Vern6())
 
     # objective function
     obj = build_loss_objective(prob, alg, L2Loss(times, data);
@@ -79,6 +79,6 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j)
     results_dde = bboptimize(obj; SearchRange=[(-6.0, 0.0), (-6.0, 0.0), (2.0, 6.0), (2.0, 6.0), (-10.0, 0.0), (-10.0, 0.0)],
                                     NumDimensions = 6, TraceMode=:silent)
     # returning estimated parameteres and the objective function
-    return exp.(best_candidate(results_dde)), obj(initial_guess)
+    return exp.(best_candidate(results_dde))
 end
 

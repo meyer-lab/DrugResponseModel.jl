@@ -1,6 +1,6 @@
 module DrugResponseModel
 
-export get_data, remove_peaks, ddesolve, optimization, PlotIt, residHill, optimize_hill
+export get_data, remove_peaks, ddesolve, optimization, plotIt, residHill, optimize_hill
 
 include("DDEmodel.jl")
 include("ODEmodel.jl")

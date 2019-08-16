@@ -1,7 +1,6 @@
-using Test, Profile
-
-include("Hill.jl")
-include("importData.jl")
+using Test
+using Profile
+using DrugResponseModel
 
 
 # import drug concentrations
