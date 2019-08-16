@@ -3,7 +3,6 @@ using Test
 using Profile
 using DrugResponseModel
 
-
 ##------------------ Simple tests for get_input function -----------------------##
 pop, g2, g1, g1_0, g2_0 = get_data("..//data//lap.csv", "..//data//lap_pop.csv")
 
@@ -42,4 +41,3 @@ end
 # profiling to DDEmodel
 @profile optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound)
 Profile.print()
-
