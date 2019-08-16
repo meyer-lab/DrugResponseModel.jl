@@ -6,7 +6,6 @@ include("DDEmodel.jl")
 """
 
 #-------------------- Plots the long-term predicted behavior given parameters -----------------------#
-
 function plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop::DataFrame, i::Int, title::String)
     """ Given estimated parameters for each trial, 
     solve the DDE model plot the predicted curve 
