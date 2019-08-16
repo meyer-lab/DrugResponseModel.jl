@@ -3,5 +3,9 @@ using Test, DrugResponseModel, Base.Test
 
 println("Starting tests")
 
-include("testDDE.jl")
-include("testHill.jl")
+tic()
+println("Test 1")
+@time @test include("testDDE.jl")
+println("Test 2")
+@time @test include("testHill.jl")
+toc()
