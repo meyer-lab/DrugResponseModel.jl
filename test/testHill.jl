@@ -1,4 +1,6 @@
-using Test, Profile
+using Test
+using Profile
+using DrugResponseModel
 
 
 # import drug concentrations
