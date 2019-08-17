@@ -35,7 +35,7 @@ parameters = optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound)
 # to test the estimated parameters are still in the range
 @test length(parameters) == 6
 for i in 1:6
-    @test upper_bnd[i] >= log.(parameterss[i]) >= lower_bnd[i]
+    @test upper_bnd[i] >= log.(parameters[i]) >= lower_bnd[i]
 end
 
 # profiling to DDEmodel
