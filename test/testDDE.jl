@@ -30,12 +30,12 @@ upper_bnd = [0.0, 0.0, 6.0, 6.0, 0.0, 0.0]
 bound = collect(zip(lower_bnd, upper_bnd))
 
 # Estimating the parameters for trial j
-params = optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound)
+parameters = optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound)
 
 # to test the estimated parameters are still in the range
-@test length(params) == 6
+@test length(parameters) == 6
 for i in 1:6
-    @test upper_bnd[i] >= log.params[i] >= lower_bnd[i]
+    @test upper_bnd[i] >= log.(parameterss[i]) >= lower_bnd[i]
 end
 
 # profiling to DDEmodel
