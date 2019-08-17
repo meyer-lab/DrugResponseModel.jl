@@ -9,7 +9,7 @@ param_lap_dde = CSV.read(joinpath("..", "data", "params_lap_DDE.csv"))
 concentrations = permutedims(Vector(param_lap_dde[8,2:end]));
 
 # make sure there are 8 concentrations
-@test length(concentrations) == 8
+@assert length(concentrations) == 8
 
 # import G1, G2, and population data
 pop, g2, g1, g2_0, g1_0 = get_data(joinpath("..", "data", "lap.csv"),
@@ -35,8 +35,8 @@ num_steps=10
 # do the optimization
 parameterrs = optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, low, high, num_steps)
 # check all the parameters to be positive
-@test all(x->x>=0.00000001, parameterrs)
-@test length(parameterrs) == 17
+@assert all(x -> x>0, parameterrs)
+@assert length(parameterrs) == 17
 
 # profiling for Hill model
 @profile optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, low, high, num_steps)
