@@ -33,11 +33,11 @@ guess = [50.0,0.01,0.2,0.01,0.021,0.02,0.0101,20.0286,0.1100,0.0125,21.2519,0.02
 # max number of iterations 
 num_steps=10
 # do the optimization
-parameterrs = optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, low, high, num_steps)
-pt = best_candidate(parameterrs)
+_, pt = optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, low, high, num_steps)
+
 # check all the parameters to be positive
 @assert all(x -> x>0, pt)
-@assert length(parameterrs) == 17
+@assert length(pt) == 17
 
 # profiling for Hill model
 @profile optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, low, high, num_steps)

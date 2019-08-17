@@ -45,7 +45,7 @@ function ddesolve(g1, g2, g1_0, g2_0, params, j)
     prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), params;
                       constant_lags = [params[3], params[4]])
     # algorithm to solve
-    alg = MethodOfSteps(Vern6(); constrained=true)
+    alg = MethodOfSteps(AutoVern9(Rodas4()); constrained=true)
 
     # objective function
     obj = build_loss_objective(prob, alg, L2Loss(times, data);
@@ -68,7 +68,7 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound, num_steps)
     prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), initial_guess;
                       constant_lags = [initial_guess[3], initial_guess[4]])
     # algorithm to solve
-    alg = MethodOfSteps(Vern6(); constrained=true)
+    alg = MethodOfSteps(AutoVern9(Rodas4()); constrained=true)
 
     # objective function
     obj = build_loss_objective(prob, alg, L2Loss(times, data);
