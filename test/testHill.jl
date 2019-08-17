@@ -5,7 +5,7 @@ using DrugResponseModel
 
 
 # import drug concentrations
-param_lap_dde = CSV.read(joinpath(".", "data", "params_lap_DDE.csv"))
+param_lap_dde = CSV.read(joinpath("..", "data", "params_lap_DDE.csv"))
 concentrations = permutedims(Vector(param_lap_dde[8,2:end]));
 
 # make sure there are 8 concentrations
