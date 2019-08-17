@@ -30,11 +30,11 @@ function residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
 
     return residues
 end
-# changing the objective function to be compatible with bboptimize
-residue(hillParams) = residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
 
 # optimization function for the Hill model
-function optimize_hill(low, high)
+function optimize_hill(hillParams, concentrations, g1, g2, g1_0, g2_0, low, high)
+    # changing the objective function to be compatible with bboptimize
+    residue(hillParams) = residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
     res = bboptimize(residue; SearchRange=collect(zip(low, high)), TraceMode=:compact, Method = :adaptive_de_rand_1_bin_radiuslimited)
     return res
 
