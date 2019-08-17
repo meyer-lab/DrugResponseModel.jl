@@ -56,7 +56,7 @@ function ddesolve(g1, g2, g1_0, g2_0, params, j)
     return obj(params)
 end
 
-function optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound)
+function optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound, num_steps)
     times = range(0.0; stop = 95.5, length = 192)
     data = vcat(g1[:, j]', g2[:, j]')
     
@@ -76,7 +76,7 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound)
                                verbose_opt = false)
     # optimizing
     results_dde = bboptimize(obj; SearchRange=bound,
-                                    NumDimensions=6, TraceInterval=100, Method=:adaptive_de_rand_1_bin_radiuslimited)
+                                    NumDimensions=6, TraceInterval=100, MasSteps=num_steps, Method=:adaptive_de_rand_1_bin_radiuslimited)
     # returning estimated parameteres and the objective function
     return exp.(best_candidate(results_dde))
 end
