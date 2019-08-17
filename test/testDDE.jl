@@ -4,7 +4,8 @@ using Profile
 using DrugResponseModel
 
 ##------------------ Simple tests for get_input function -----------------------##
-pop, g2, g1, g1_0, g2_0 = get_data("..//data//lap.csv", "..//data//lap_pop.csv")
+pop, g2, g1, g1_0, g2_0 = get_data(joinpath("..", "data", "lap.csv"),
+                                   joinpath("..", "data", "lap_pop.csv"))
 
 @test size(pop[:, 1],1) == size(g2[:, 1],1)
 @test size(pop[:, 1],1) == size(g1[:, 1],1)
