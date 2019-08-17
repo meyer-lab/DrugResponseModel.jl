@@ -33,7 +33,7 @@ bound = collect(zip(lower_bnd, upper_bnd))
 params = optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound)
 
 # to test the estimated parameters are still in the range
-@test size(params) == 6
+@test length(params) == 6
 for i in 1:6
     @test upper_bnd[i] >= log.params[i] >= lower_bnd[i]
 end
