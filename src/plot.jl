@@ -54,17 +54,3 @@ function plot_param_conc(lap, gem, dox, tax, i, param)
     p4 = plot(tax[8, :], tax[i, :], label = "Paclitaxel", xlabel = "drug conc. [nM]", ylabel = "param", yticks = 0.0:round(maximum(tax[i, :])/5, digits = 3):maximum(tax[i, :]))
     plot(p1, p2, p3, p4, dpi = 100)
 end
-
-# using CSV
-
-# # Reading the file containing params
-# param_lap_dde = CSV.read(".//figures//Lapatinib//params_lap_DDE.csv")
-# param_gem_dde = CSV.read(".//figures//Gem//params_gem_DDE.csv")
-# param_dox_dde = CSV.read(".//figures//Dox//params_dox_DDE.csv")
-# param_taxol1_dde = CSV.read(".//figures//taxol//params_taxol1_DDE.csv")
-
-# # Convert the DataFrame to Matrix for plotting
-# lap = convert(Matrix, param_lap_dde[:,2:end])
-# gem = convert(Matrix, param_gem_dde[:,2:end])
-# dox = convert(Matrix, param_dox_dde[:,2:end])
-# tax = convert(Matrix, param_taxol1_dde[:,2:end])

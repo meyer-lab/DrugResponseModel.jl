@@ -1,4 +1,4 @@
-using LeastSquaresOptim, DifferentialEquations, DelayDiffEq, DiffEqBase, Optim, Plots, Statistics, DataFrames, CSV, Distributed
+using OrdinaryDiffEq, Plots, Statistics, DataFrames, CSV # DiffEqBase
 
 """
         In this file we want to estimate parameters of an ODE model describing the number of cells in G1 or G2 phase of the cell cycle 
@@ -29,13 +29,13 @@ function residual(par, i, g1_0, g2_0, g1, g2)
     return res
 end
 
-function optimIt(initial_guess::Array, lower_bound::Array, upper_bound::Array, i::Int, g1::Matrix, g2::Matrix)
+function ode_optimIt(initial_guess::Array, lower_bound::Array, upper_bound::Array, i::Int, g1::Matrix, g2::Matrix)
     residuals(pp) = residual(pp, i, g1_0, g2_0, g1, g2)
     results_dde = optimize(residuals, initial_guess, LevenbergMarquardt(), lower = lower_bound, upper = upper_bound)
     return results_dde.minimizer
 end
 
-function plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop::DataFrame, i::Int, title::String)
+function ode_plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop::DataFrame, i::Int, title::String)
     """ Given estimated parameters for each trial, 
     solve the DDE model plot the predicted curve 
     for # of cells in G1, G2, or total, 
