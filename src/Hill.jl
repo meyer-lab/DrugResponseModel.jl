@@ -35,7 +35,7 @@ end
 function optimize_hill(hillParams, concentrations, g1, g2, g1_0, g2_0, low, high, num_steps)
     # changing the objective function to be compatible with bboptimize
     residue(hillParams) = residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
-    res = bboptimize(residue; SearchRange=collect(zip(low, high)), TraceMode=:compact, num_steps=num_steps, Method = :adaptive_de_rand_1_bin_radiuslimited)
+    res = bboptimize(residue; SearchRange=collect(zip(low, high)), TraceMode=:compact, max_steps=num_steps, Method = :adaptive_de_rand_1_bin_radiuslimited)
     return res
 
 end
