@@ -36,5 +36,5 @@ parameterrs = optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, low, high
 @test length(parameterrs) == 17
 
 # profiling for Hill model
-@profile optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, low, high)
+@profile optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, low, high, iteration=10)
 Profile.print()
