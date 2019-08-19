@@ -54,3 +54,4 @@ function plot_param_conc(lap, gem, dox, tax, i, param)
     p4 = plot(tax[8, :], tax[i, :], label = "Paclitaxel", xlabel = "drug conc. [nM]", ylabel = "param", yticks = 0.0:round(maximum(tax[i, :])/5, digits = 3):maximum(tax[i, :]))
     plot(p1, p2, p3, p4, dpi = 100)
 end
+
