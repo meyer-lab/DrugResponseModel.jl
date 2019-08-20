@@ -6,8 +6,8 @@ gr()
 
 # DDE model 
 function DDEmodel(du, u, h, p, t)
-    du[1] = -p[1]*(h(p, t-p[3])[1]) + 2*p[2]*(h(p, t-p[4])[2]) - p[5]*u[1]
-    du[2] = p[1]*(h(p, t-p[3])[1]) - p[2]*(h(p, t-p[4])[2]) - p[6]*u[2]
+    du[1] = -p[1]*(h(p, t- 1/p[1])[1]) + 2*p[2]*(h(p, t- 1/p[2])[2]) - p[3]*u[1]
+    du[2] = p[1]*(h(p, t- 1/p[1])[1]) - p[2]*(h(p, t- 1/p[2])[2]) - p[4]*u[2]
 end
 
 # estimate history function
@@ -28,7 +28,7 @@ end
 # define problem generator (optimization in log space)
 function prob_generator(prob, p)
     exp_p = exp.(p)
-    remake(prob; p = exp_p, constant_lags = [exp_p[3], exp_p[4]])
+    remake(prob; p = exp_p, constant_lags = [1/exp_p[1], 1/exp_p[2]])
 end
 
 
@@ -42,7 +42,7 @@ function ddesolve(g1, g2, g1_0, g2_0, params, j)
 
     # problem
     prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), params;
-                      constant_lags = [params[3], params[4]])
+                      constant_lags = [1/params[1], 1/params[2]])
     # algorithm to solve
     alg = MethodOfSteps(AutoTsit5(Rosenbrock23()); constrained=true)
 
@@ -65,7 +65,7 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound, num_steps)
 
     # problem
     prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), initial_guess;
-                      constant_lags = [initial_guess[3], initial_guess[4]])
+                      constant_lags = [1/initial_guess[1], 1/initial_guess[2]])
     # algorithm to solve
     alg = MethodOfSteps(AutoTsit5(Rosenbrock23()); constrained=true)
 
