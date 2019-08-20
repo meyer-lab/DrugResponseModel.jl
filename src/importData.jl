@@ -36,6 +36,7 @@ function get_data(path_g2::String, path_total::String)
     return pop, g2, g1, g2_0, g1_0
 end
 
+# to remove the peaks from the raw data
 function remove_peaks(data)
     data = copy(data)
 
