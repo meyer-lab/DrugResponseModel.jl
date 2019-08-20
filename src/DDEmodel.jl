@@ -45,7 +45,7 @@ function ddesolve(g1, g2, g1_0, g2_0, params, j)
     prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), params;
                       constant_lags = [params[3], params[4]])
     # algorithm to solve
-    alg = MethodOfSteps(Rodas4(); constrained=true)
+    alg = MethodOfSteps(AutoTsit5(Rosenbrock23()); constrained=true)
 
     # objective function
     obj = build_loss_objective(prob, alg, L2Loss(times, data);

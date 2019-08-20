@@ -30,7 +30,6 @@ function plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array,
     plot!(t, g2[:, i], label = "G2", dpi = 150)
     plot!(t_new, (solution(t_new, idxs=2).u + solution(t_new, idxs=1).u), label = "total est", dpi = 150)
     plot!(t, pop[i], label = "total", dpi = 150)
-    # savefig("gem_3_dde_long.png")
 end
 
 #--------------------- Plot parameteres versus drug concentration ------------------------#
