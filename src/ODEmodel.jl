@@ -1,4 +1,4 @@
-using OrdinaryDiffEq, DifferentialEquations, LeastSquaresOptim, LsqFit, DiffEqParamEstim, Plots, Statistics, DataFrames, CSV, Optim, DiffEqBase
+using OrdinaryDiffEq, DiffEqParamEstim, Plots, CSV, Optim, DiffEqBase
 
 
 """

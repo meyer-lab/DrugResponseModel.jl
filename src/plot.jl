@@ -1,4 +1,4 @@
-using Plots, CSV, Distributed, DataFrames;
+using Plots, CSV, DataFrames
 include("DDEmodel.jl")
 
 """ 

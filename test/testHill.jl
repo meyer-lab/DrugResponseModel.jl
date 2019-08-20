@@ -37,4 +37,4 @@ _, pt = optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, num_steps)
 
 # profiling for Hill model
 @profile optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, num_steps)
-Profile.print()
+Profile.print(noisefloor=10.0)
