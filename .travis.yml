@@ -3,3 +3,4 @@ language: julia
 codecov: true
 julia:
   - 1.1
+install: travis_wait mvn install 
