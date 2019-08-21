@@ -38,9 +38,9 @@ function optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, num_steps)
     # changing the objective function to be compatible with bboptimize
     residue(hillParams) = residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
     # lower bound
-    low = [30.0, 0.01, 0.006, 0.001, 0.02, 0.04, 6.0, 30.0, 8.0, 6.0, 0.0004, 0.03]
+    low = [30.0, 0.0001, 0.006, 0.001, 0.02, 0.04, 6.0, 30.0, 8.0, 6.0, 0.0004, 0.03]
     # upper bound
-    high = [250.0, 10.0, 0.008, 0.03, 0.08, 0.05, 10.0, 40.0, 15.0, 10.0, 0.003, 0.05]
+    high = [250.0, 0.01, 0.008, 0.03, 0.08, 0.05, 10.0, 40.0, 15.0, 10.0, 0.003, 0.05]
     res = bboptimize(residue; SearchRange=collect(zip(low, high)), TraceMode=:compact, MaxSteps=num_steps, TraceInterval=50, Method = :adaptive_de_rand_1_bin_radiuslimited)
     return res, best_candidate(res)
 
@@ -57,4 +57,16 @@ function getDDEparams(p, concentrations)
         effects[6, i] = hill(append!([p[1], p[12]], [0, p[2]]), concentrations[i])
     end
     return effects
+end
+
+### to fit Hill curve to the estimated rates
+# this fits a single parameter for all four drugs, so for every single parameters, i.e., alpha, beta, tau1, tau2, gamma, we will need one call of this function to get all the plots for all our drugs.
+# k is an integer $\in$ {1, 2, 3, 4, 5, 6} representing {alpha, beta, tau1, tau2, gamma1, gamma2}, respctively.
+function fit_hill(parameters, k, conc_l, conc_d, conc_g, conc_t)
+    p0 = [100.0, 1.0, 0.007, 0.01]
+    fit_l = curve_fit(hill, conc_l, parameters[1, k, :], p0)
+    fit_d = curve_fit(hill, conc_d, parameters[2, k, :], p0)
+    fit_g = curve_fit(hill, conc_g, parameters[3, k, :], p0)
+    fit_t = curve_fit(hill, conc_t, parameters[4, k, :], p0)
+    return (coef(fit_l), coef(fit_d), coef(fit_g), coef(fit_t))
 end
