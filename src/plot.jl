@@ -22,7 +22,7 @@ function plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array,
     h(p, t) = [exp_model(t, fit1); exp_model(t, fit2)]
     u0_new = [g1_0[i], g2_0[i]]
     prob_new = DDEProblem(DDEmodel, u0_new, h, tspan_new, params; constant_lags = lags)
-    solution = solve(prob_new, MethodOfSteps(Tsit5()))
+    solution = solve(prob_new, MethodOfSteps(Rodas4P()))
 
     plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, title = title, xlabel = "time [hours]", ylabel = "# of cells")
     plot!(t, g1[:, i], label = "G1", dpi = 150)

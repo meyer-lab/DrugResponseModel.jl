@@ -20,13 +20,14 @@ function residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
     for ii in 1:length(concentrations)
         alpha = hill(append!([hillParams[1], hillParams[3], hillParams[4]], [hillParams[2]]), concentrations[ii])
         beta = hill(append!([hillParams[1], hillParams[5], hillParams[6]], [hillParams[2]]), concentrations[ii])
-        tau1 = hill(append!([hillParams[1], hillParams[7], hillParams[8]], [hillParams[2]]), concentrations[ii])
-        tau2 = hill(append!([hillParams[1], hillParams[9], hillParams[10]], [hillParams[2]]), concentrations[ii])
-        gamma1 = hill(append!([hillParams[1], hillParams[11], 0.0], [hillParams[2]]), concentrations[ii])
-        gamma2 = hill(append!([hillParams[1], hillParams[12], 0.0], [hillParams[2]]), concentrations[ii])
+#         tau1 = hill(append!([hillParams[1], hillParams[7], hillParams[8]], [hillParams[2]]), concentrations[ii])
+#         tau2 = hill(append!([hillParams[1], hillParams[9], hillParams[10]], [hillParams[2]]), concentrations[ii])
+        gamma1 = hill(append!([hillParams[1], hillParams[7], 0.0], [hillParams[2]]), concentrations[ii])
+        gamma2 = hill(append!([hillParams[1], hillParams[8], 0.0], [hillParams[2]]), concentrations[ii])
+        coef = hillParams[9]
 
         # collecting all the DDE model parameters
-        pp = [alpha, beta, tau1, tau2, gamma1, gamma2]
+        pp = [alpha, beta, gamma1, gamma2, coef]
         # calculating the residulas for this set of parameters
         residues += ddesolve(g1, g2, g1_0, g2_0, pp, ii)
     end 
@@ -38,23 +39,28 @@ function optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, num_steps)
     # changing the objective function to be compatible with bboptimize
     residue(hillParams) = residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
     # lower bound
-    low = [30.0, 0.01, 0.006, 0.001, 0.02, 0.04, 6.0, 30.0, 8.0, 6.0, 0.0004, 0.03]
+#     low = [30.0, 0.01, 0.006, 0.001, 0.02, 0.04, 6.0, 30.0, 8.0, 6.0, 0.0004, 0.03]
+#     # upper bound
+#     high = [250.0, 10.0, 0.008, 0.03, 0.08, 0.05, 10.0, 40.0, 15.0, 10.0, 0.003, 0.05]
+    # lower bound
+    low = [30.0, 0.01, 0.006, 0.001, 0.02, 0.04, 0.0004, 0.03, 0.0001]
     # upper bound
-    high = [250.0, 10.0, 0.008, 0.03, 0.08, 0.05, 10.0, 40.0, 15.0, 10.0, 0.003, 0.05]
+    high = [300.0, 10.0, 0.008, 0.03, 0.08, 0.05, 0.003, 0.05, 1.0]
     res = bboptimize(residue; SearchRange=collect(zip(low, high)), TraceMode=:compact, MaxSteps=num_steps, TraceInterval=50, Method = :adaptive_de_rand_1_bin_radiuslimited)
     return res, best_candidate(res)
 
 end
 
 function getDDEparams(p, concentrations)
-    effects = zeros(6, 8)
+    effects = zeros(5, 8)
     for i in 1:8
         effects[1, i] = hill(append!([p[1], p[3]], [p[4], p[2]]), concentrations[i])
         effects[2, i] = hill(append!([p[1], p[5]], [p[6], p[2]]), concentrations[i])
-        effects[3, i] = hill(append!([p[1], p[7]], [p[8], p[2]]), concentrations[i])
-        effects[4, i] = hill(append!([p[1], p[9]], [p[10], p[2]]), concentrations[i])
-        effects[5, i] = hill(append!([p[1], p[11]], [0, p[2]]), concentrations[i])
-        effects[6, i] = hill(append!([p[1], p[12]], [0, p[2]]), concentrations[i])
+#         effects[3, i] = hill(append!([p[1], p[7]], [p[8], p[2]]), concentrations[i])
+#         effects[4, i] = hill(append!([p[1], p[9]], [p[10], p[2]]), concentrations[i])
+        effects[3, i] = hill(append!([p[1], p[7]], [0, p[2]]), concentrations[i])
+        effects[4, i] = hill(append!([p[1], p[8]], [0, p[2]]), concentrations[i])
+        effects[5, i] = p[9]
     end
     return effects
 end

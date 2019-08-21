@@ -6,8 +6,13 @@ gr()
 
 # DDE model 
 function DDEmodel(du, u, h, p, t)
-    du[1] = -p[1]*(h(p, t- 1/p[1])[1]) + 2*p[2]*(h(p, t- 1/p[2])[2]) - p[3]*u[1]
-    du[2] = p[1]*(h(p, t- 1/p[1])[1]) - p[2]*(h(p, t- 1/p[2])[2]) - p[4]*u[2]
+    # p[1]: alpha: transition rate from G1 to G2
+    # p[2]: beta: transition rate from G2 to G1
+    # p[3]: gamma1: death rate in G1 phase
+    # p[4]: gamma2: death rate in G2 phase
+    # p[5]: coef.: the proportionality of alpha to tau1 and beta to tau2, respectively.
+    du[1] = -p[1]*(h(p, t - p[5]/p[1])[1]) + 2*p[2]*(h(p, t - p[5]/p[2])[2]) - p[3]*u[1]
+    du[2] = p[1]*(h(p, t - p[5]/p[1])[1]) - p[2]*(h(p, t - p[5]/p[2])[2]) - p[4]*u[2]
 end
 
 # estimate history function
@@ -28,7 +33,7 @@ end
 # define problem generator (optimization in log space)
 function prob_generator(prob, p)
     exp_p = exp.(p)
-    remake(prob; p = exp_p, constant_lags = [1/exp_p[1], 1/exp_p[2]])
+    remake(prob; p = exp_p, constant_lags = [exp_p[5]/exp_p[1], exp_p[5]/exp_p[2]])
 end
 
 
@@ -42,9 +47,10 @@ function ddesolve(g1, g2, g1_0, g2_0, params, j)
 
     # problem
     prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), params;
-                      constant_lags = [1/params[1], 1/params[2]])
+                      constant_lags = [params[5]/params[1], params[5]/params[2]])
     # algorithm to solve
-    alg = MethodOfSteps(AutoTsit5(Rosenbrock23()); constrained=true)
+#     alg = MethodOfSteps(AutoTsit5(Rosenbrock23()); constrained=true)
+    alg = MethodOfSteps(Rodas5(); constrained=true)
 
     # objective function
     obj = build_loss_objective(prob, alg, L2Loss(times, data);
@@ -65,9 +71,9 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound, num_steps)
 
     # problem
     prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), initial_guess;
-                      constant_lags = [1/initial_guess[1], 1/initial_guess[2]])
+                      constant_lags = [initial_guess[5]/initial_guess[1], initial_guess[5]/initial_guess[2]])
     # algorithm to solve
-    alg = MethodOfSteps(AutoTsit5(Rosenbrock23()); constrained=true)
+    alg = MethodOfSteps(Rodas4P(); constrained=true)
 
     # objective function
     obj = build_loss_objective(prob, alg, L2Loss(times, data);
@@ -75,7 +81,7 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound, num_steps)
                                verbose_opt = false)
     # optimizing
     results_dde = bboptimize(obj; SearchRange=bound,
-                                    NumDimensions=6, TraceInterval=100, MasSteps=num_steps, Method=:adaptive_de_rand_1_bin_radiuslimited)
+                                    NumDimensions=5, TraceInterval=100, MasSteps=num_steps, Method=:adaptive_de_rand_1_bin_radiuslimited)
     # returning estimated parameteres and the objective function
     return exp.(best_candidate(results_dde))
 end
