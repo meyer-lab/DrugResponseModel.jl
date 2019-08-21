@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 def GAnalytical(g):  # for G1 and G2
     """
     This function estimates two parameters of Gamma distribution 'a' and 'b' analytically, given data.

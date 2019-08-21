@@ -10,6 +10,7 @@ from scipy import optimize, stats as sp
 
 ##----------------------------------- Create Lineage ------------------------------------##
 
+
 def generateLineageWithTime(initCells, experimentTime, locBern, g1_a=None, g1_b=None, g2_a=None, g2_b=None):
     """
     generates a list of objects (cells) in a lineage.
@@ -58,17 +59,17 @@ def generateLineageWithTime(initCells, experimentTime, locBern, g1_a=None, g1_b=
 
     # have cell divide/die according to distribution
     for cell in lineage:
-        cell.g1 = sp.gamma.rvs(g1_a, scale = g1_b)
-        cell.g2 = sp.gamma.rvs(g2_a, scale = g2_b)
-        
+        cell.g1 = sp.gamma.rvs(g1_a, scale=g1_b)
+        cell.g2 = sp.gamma.rvs(g2_a, scale=g2_b)
+
         if cell.isUnfinished():
             cell.tau = cell.g1 + cell.g2
             cell.endT = cell.startT + cell.tau
-            
+
             if cell.endT < experimentTime:   # determine fate only if endT is within range
                 # assign cell fate
                 cell.fate = sp.bernoulli.rvs(locBern)  # assign fate
-                
+
                 # divide or die based on fate
                 if cell.fate:
                     temp1, temp2 = cell.divide(cell.endT)  # cell divides
@@ -82,15 +83,16 @@ def generateLineageWithTime(initCells, experimentTime, locBern, g1_a=None, g1_b=
 
 ##------------------------- How many cells are in G1 or G2? --------------------------------##
 
+
 def inG1_or_G2(X, time):
     """
     This function determines whether the cell is in G1 phase or in G2 phase.
-    
+
     Args:
     -----
         X (list): is the lineage, a list of objects representing cells.
-        time (list): a list -- could be np.linspace() -- including time points of 
-        duration of the time experiment is being conducted. 
+        time (list): a list -- could be np.linspace() -- including time points of
+        duration of the time experiment is being conducted.
 
     Returns:
     --------
@@ -98,35 +100,35 @@ def inG1_or_G2(X, time):
         num_G2 (list):  a list of # of cells in G2 at each time point
         num_cell (list):  a list of total # of cells at each time point
     """
-    
-    num_G1=[]
-    num_G2=[]
-    num_cell=[]
-    
+
+    num_G1 = []
+    num_G2 = []
+    num_cell = []
+
     for t in time:
         count_G1 = 0
         count_G2 = 0
         count_numCell = 0
-        
+
         for cell in X:
-            g2=cell.start_G2()
-            
+            g2 = cell.start_G2()
+
             # if the time point is between the cell's start time and the end of G1 phase, then count it as being in G1.
             if cell.startT <= t <= g2:
-                count_G1+=1
+                count_G1 += 1
 
             # if the time point is between the start of the cell's G1 phase and the end time, then count it as being in G2.
             if g2 <= t <= cell.endT:
-                count_G2+=1
-    
+                count_G2 += 1
+
             # if the time point is within the cell's lifetime, count it as being alive.
             if cell.startT <= t <= cell.endT:
-                count_numCell+=1
-                
+                count_numCell += 1
+
         num_G1.append(count_G1)
         num_G2.append(count_G2)
         num_cell.append(count_numCell)
-        
+
     return num_G1, num_G2, num_cell
 
 
@@ -145,7 +147,6 @@ def separate_pop(numLineages, X):
     --------
         population (list of lists): a list that holds lists of cells that belong tothe same parent.
     """
-    
 
     population = []
     for i in range(numLineages):
@@ -155,5 +156,5 @@ def separate_pop(numLineages, X):
             if cell.linID == i:
                 list_cell.append(cell)
         population.append(list_cell)
-            
+
     return population
