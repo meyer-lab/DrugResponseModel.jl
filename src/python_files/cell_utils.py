@@ -36,18 +36,18 @@ def generateLineageWithTime(initCells, experimentTime, locBern, g1_a=None, g1_b=
 
     Args:
     -----
-        initCells (int): the number of initial cells to initiate the tree with
-        experimentTime (int) [hours]: the time that the experiment will be running
-        to allow for the cells to grow
-        locBern (float): the Bernoulli distribution parameter
-        (p = success) for fate assignment (either the cell dies or divides)
-        range = [0, 1]
-        g1_a, g2_a: shape parameters of Gamma for G1 and G2 phase of the cell cycle.
-        g1_b, g2_b: scale parameters of Gamma for G1 and G2 phase of the cell cycle.
+    initCells (int): the number of initial cells to initiate the tree with
+    experimentTime (int) [hours]: the time that the experiment will be running
+    to allow for the cells to grow
+    locBern (float): the Bernoulli distribution parameter
+    (p = success) for fate assignment (either the cell dies or divides)
+    range = [0, 1]
+    g1_a, g2_a: shape parameters of Gamma for G1 and G2 phase of the cell cycle.
+    g1_b, g2_b: scale parameters of Gamma for G1 and G2 phase of the cell cycle.
 
     Returns:
     --------
-        lineage (list): A list of objects (cells) that creates the tree.
+    lineage (list): A list of objects (cells) that creates the tree.
     """
 
     # create an empty lineage
@@ -59,8 +59,13 @@ def generateLineageWithTime(initCells, experimentTime, locBern, g1_a=None, g1_b=
 
     # have cell divide/die according to distribution
     for cell in lineage:
+<<<<<<< HEAD
         cell.g1 = sp.gamma.rvs(g1_a, scale=g1_b)
         cell.g2 = sp.gamma.rvs(g2_a, scale=g2_b)
+=======
+        cell.g1 = sp.gamma.rvs(g1_a, scale = g1_b)
+        cell.g2 = sp.gamma.rvs(g2_a, scale = g2_b)
+>>>>>>> ecc2d2f190bd2c4614836e2258346e7e847da2db
 
         if cell.isUnfinished():
             cell.tau = cell.g1 + cell.g2
@@ -90,20 +95,32 @@ def inG1_or_G2(X, time):
 
     Args:
     -----
+<<<<<<< HEAD
         X (list): is the lineage, a list of objects representing cells.
         time (list): a list -- could be np.linspace() -- including time points of
         duration of the time experiment is being conducted.
+=======
+    X (list): is the lineage, a list of objects representing cells.
+    time (list): a list -- could be np.linspace() -- including time points of 
+    duration of the time experiment is being conducted. 
+>>>>>>> ecc2d2f190bd2c4614836e2258346e7e847da2db
 
     Returns:
     --------
-        num_G1 (list):  a list of # of cells in G1 at each time point
-        num_G2 (list):  a list of # of cells in G2 at each time point
-        num_cell (list):  a list of total # of cells at each time point
+    num_G1 (list):  a list of # of cells in G1 at each time point
+    num_G2 (list):  a list of # of cells in G2 at each time point
+    num_cell (list):  a list of total # of cells at each time point
     """
 
+<<<<<<< HEAD
     num_G1 = []
     num_G2 = []
     num_cell = []
+=======
+    num_G1=[]
+    num_G2=[]
+    num_cell=[]
+>>>>>>> ecc2d2f190bd2c4614836e2258346e7e847da2db
 
     for t in time:
         count_G1 = 0
@@ -111,7 +128,11 @@ def inG1_or_G2(X, time):
         count_numCell = 0
 
         for cell in X:
+<<<<<<< HEAD
             g2 = cell.start_G2()
+=======
+            g2=cell.start_G2()
+>>>>>>> ecc2d2f190bd2c4614836e2258346e7e847da2db
 
             # if the time point is between the cell's start time and the end of G1 phase, then count it as being in G1.
             if cell.startT <= t <= g2:
@@ -119,11 +140,19 @@ def inG1_or_G2(X, time):
 
             # if the time point is between the start of the cell's G1 phase and the end time, then count it as being in G2.
             if g2 <= t <= cell.endT:
+<<<<<<< HEAD
                 count_G2 += 1
 
             # if the time point is within the cell's lifetime, count it as being alive.
             if cell.startT <= t <= cell.endT:
                 count_numCell += 1
+=======
+                count_G2+=1
+
+            # if the time point is within the cell's lifetime, count it as being alive.
+            if cell.startT <= t <= cell.endT:
+                count_numCell+=1
+>>>>>>> ecc2d2f190bd2c4614836e2258346e7e847da2db
 
         num_G1.append(count_G1)
         num_G2.append(count_G2)
@@ -140,12 +169,12 @@ def separate_pop(numLineages, X):
 
     Args:
     -----
-        numLineages (int): the number of lineages, which here basically is the number of initial cells.
-        X (list): is the lineage, a list of objects representing cells.
+    numLineages (int): the number of lineages, which here basically is the number of initial cells.
+    X (list): is the lineage, a list of objects representing cells.
 
     Returns:
     --------
-        population (list of lists): a list that holds lists of cells that belong tothe same parent.
+    population (list of lists): a list that holds lists of cells that belong tothe same parent.
     """
 
     population = []
@@ -157,4 +186,8 @@ def separate_pop(numLineages, X):
                 list_cell.append(cell)
         population.append(list_cell)
 
+<<<<<<< HEAD
     return population
+=======
+    return population
+>>>>>>> ecc2d2f190bd2c4614836e2258346e7e847da2db

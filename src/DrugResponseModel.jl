@@ -1,6 +1,6 @@
 module DrugResponseModel
 
-using DelayDiffEq, DiffEqParamEstim, DataFrames, BlackBoxOptim, Plots, CSV, Distributed, DataFrames
+using DelayDiffEq, DiffEqParamEstim, DataFrames, BlackBoxOptim, Plots, CSV, DataFrames
 
 include("DDEmodel.jl")
 include("ODEmodel.jl")
