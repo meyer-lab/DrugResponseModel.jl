@@ -31,7 +31,7 @@ upper_bnd = [0.0, 0.0, 6.0, 6.0, 0.0, 0.0]
 bound = collect(zip(lower_bnd, upper_bnd))
 
 # max number of steps
-maxSteps = 15
+maxSteps = 5
 # Estimating the parameters for trial j
 parameters = optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound, maxSteps)
 
@@ -43,4 +43,4 @@ end
 
 # profiling to DDEmodel
 @profile optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound, maxSteps)
-Profile.print()
+Profile.print(noisefloor=10.0)

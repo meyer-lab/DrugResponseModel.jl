@@ -17,37 +17,37 @@ class CellNode:
         """
         Args:
         -----
-            gen (int): the generation of the cell, root cells are of generation 1,
-                each division adds 1 to the previous generation.
+        gen (int): the generation of the cell, root cells are of generation 1,
+            each division adds 1 to the previous generation.
 
-            linID (int): the lineage identity of the cell, keeps track of what
-            lineage a cell belongs to.
+        linID (int): the lineage identity of the cell, keeps track of what
+        lineage a cell belongs to.
 
-            startT (float): the starting time of the cell, the point at which
-            it spawned into existence.
+        startT (float): the starting time of the cell, the point at which
+        it spawned into existence.
 
-            endT (float): the end time of the cell, the point at which it either
-            divided or died, can be NaN.
+        endT (float): the end time of the cell, the point at which it either
+        divided or died, can be NaN.
 
-            tau (float): [avoiding self.t, since that is a common function
-            (i.e. transposing matrices)] tau is how long the cell lived.
+        tau (float): [avoiding self.t, since that is a common function
+        (i.e. transposing matrices)] tau is how long the cell lived.
 
-            fate (0/1): the fate at the endT of the cell, 0 is death, 1 is division.
+        fate (0/1): the fate at the endT of the cell, 0 is death, 1 is division.
 
-            left (obj): the left daughter of the cell, either returns a CellNode
-            or NoneType object.
+        left (obj): the left daughter of the cell, either returns a CellNode
+        or NoneType object.
 
-            right (obj): the right daughter of the cell, either returns a CellNode
-            or NoneType object.
+        right (obj): the right daughter of the cell, either returns a CellNode
+        or NoneType object.
 
-            parent (obj): the parent of the cell, returns a CellNode object
-            (except at the root node)
+        parent (obj): the parent of the cell, returns a CellNode object
+        (except at the root node)
 
 
-            true_state (0/1): indicates whether cell is PC9 (0) or H1299 (1)
+        true_state (0/1): indicates whether cell is PC9 (0) or H1299 (1)
 
-            fateObserved (T/F): marks whether the cell reached the true end
-            of its lifetime (has truely died or divided)
+        fateObserved (T/F): marks whether the cell reached the true end
+        of its lifetime (has truely died or divided)
 
         """
         self.gen = gen
@@ -133,17 +133,12 @@ class CellNode:
 
         Args:
         -----
-            endT (float): end time of the cell
-
-        kwargs:
-            trackID_d1 & trackID_d2: since trackID is an attribute of experimental data,
-            so when we generate the lineage we need to assing "None" to the trackID
-            of the left and right daughter cell
+        endT (float): end time of the cell
 
         Returns:
         --------
-            self.left (obj): left new born daughter cell
-            self.right (obj): right new born daughter cell
+        self.left (obj): left new born daughter cell
+        self.right (obj): right new born daughter cell
 
         """
         self.endT = endT
@@ -172,7 +167,7 @@ class CellNode:
 
         Returns:
         --------
-            curr_cell (obj): the ancestor cell if a lineage
+        curr_cell (obj): the ancestor cell if a lineage
 
         """
         cell_linID = self.linID

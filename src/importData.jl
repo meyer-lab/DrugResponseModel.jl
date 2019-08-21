@@ -36,6 +36,7 @@ function get_data(path_g2::String, path_total::String)
     return pop, g2, g1, g2_0, g1_0
 end
 
+# to remove the peaks from the raw data
 function remove_peaks(data)
     data = copy(data)
 
@@ -46,4 +47,16 @@ function remove_peaks(data)
     end
 
     return data
+end
+
+# make it easy to import all the data and remove peaks
+function import_data(path_g2::String, path_total::String)
+    pop, g2, g1, g1_0, g2_0 = get_data(path_g2, path_total)
+    # remove peaks from the raw data
+    for i in 1:8
+        pop[:, i] = remove_peaks(pop[:, i])
+        g2[:, i] = remove_peaks(g2[:, i])
+        g1[:, i] = remove_peaks(g1[:, i])
+    end
+    return pop, g2, g1, g1_0, g2_0
 end
