@@ -5,7 +5,7 @@ include("DDEmodel.jl")
 
 
 # hillParams should be something like [EC50, min, max, b]
-hill(p, concentration) =  p[2] + ((p[3] - 1*p[2]) / (1 + 10^((concentration - 1*p[1])*p[4])))
+hill(p, concentration) =  p[2] + ((p[3] - p[2]) / (1 + 10^((concentration - p[1])*p[4])))
 
 function residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
     """ This functions takes in hill parameters for all the concentrations and calculates
