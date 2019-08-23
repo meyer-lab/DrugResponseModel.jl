@@ -1,7 +1,7 @@
 using DelayDiffEq, DiffEqParamEstim, BlackBoxOptim, Plots, LsqFit
 gr()
 """
-        This file contains functions to fit the data to a Delay Differential Equation model, and find the parameters.
+        This file contains functions to fit the data to a Delay Differential Equation model, and find the parameters
 """
 
 # DDE model 
