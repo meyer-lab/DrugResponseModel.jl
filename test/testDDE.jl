@@ -4,8 +4,7 @@ using Profile
 using DrugResponseModel
 
 ##------------------ Simple tests for get_input function -----------------------##
-pop, g2, g1, g1_0, g2_0 = get_data(joinpath("..", "data", "lap.csv"),
-                                   joinpath("..", "data", "lap_pop.csv"))
+_, pop, g2, g1, g1_0, g2_0 = setup_data("lapatinib")
 
 @test size(pop[:, 1],1) == size(g2[:, 1],1)
 @test size(pop[:, 1],1) == size(g1[:, 1],1)
@@ -28,19 +27,18 @@ initial_guess  = [0.02798, 0.025502, 21.3481, 10.2881, 0.0001, 0.0001]
 # bounds 
 lower_bnd = [-6.0, -6.0, 2.0, 2.0, -10.0, -10.0]
 upper_bnd = [0.0, 0.0, 6.0, 6.0, 0.0, 0.0]
-bound = collect(zip(lower_bnd, upper_bnd))
 
 # max number of steps
 maxSteps = 5
 # Estimating the parameters for trial j
-parameters = optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound, maxSteps)
+parameters = optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower_bnd, upper_bnd, maxSteps)
 
 # to test the estimated parameters are still in the range
 @test length(parameters) == 6
 for i in 1:6
-    @test upper_bnd[i] >= log.(parameters[i]) >= lower_bnd[i]
+    @test upper_bnd[i] >= parameters[i] >= lower_bnd[i]
 end
 
 # profiling to DDEmodel
-@profile optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound, maxSteps)
+@profile optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower_bnd, upper_bnd, maxSteps)
 Profile.print(noisefloor=10.0)

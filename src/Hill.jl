@@ -38,12 +38,13 @@ function optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, num_steps)
     # changing the objective function to be compatible with bboptimize
     residue(hillParams) = residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
     # lower bound
-    low = [1.0, 1.8, 0.006, 0.04, 0.03, 0.04, 26.0, 5.0, 7.0, 7.0, 0.002, 0.02]
+    low = [10.5, 0.001, 0.001, 0.001, 0.001, 0.001, 10.0, 2.0, 7.0, 4.0, 0.001, 0.001]
     # upper bound
-    high = [2.4, 6.7, 0.008, 0.1, 0.06, 0.06, 40.0, 10.0, 12.0, 11.0, 0.006, 0.04]
-    res = bboptimize(residue; SearchRange=collect(zip(low, high)), TraceMode=:compact, MaxSteps=num_steps, TraceInterval=50, Method = :adaptive_de_rand_1_bin_radiuslimited)
-    return res, best_candidate(res)
+    high = [200.3, 1.0, 0.1, 0.09, 0.09, 0.09, 40.0, 15.0, 32.0, 11.0, 0.09, 0.09]
 
+    println("global optimization begins ...")
+    res = bboptimize(residue; SearchRange=collect(zip(low, high)), MaxSteps=num_steps, TraceInterval=50, Method =:adaptive_de_rand_1_bin_radiuslimited)
+    return best_fitness(res), best_candidate(res)
 end
 
 function getDDEparams(p, concentrations)

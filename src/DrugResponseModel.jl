@@ -8,6 +8,6 @@ include("plot.jl")
 include("Hill.jl")
 include("importData.jl")
 
-export get_data, remove_peaks, ddesolve, optimization, plotIt, residHill, optimize_hill
+export setup_data, remove_peaks, ddesolve, optimization, plotIt, residHill, optimize_hill, getDDEparams
 
 end # module

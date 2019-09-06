@@ -1,4 +1,4 @@
-using DelayDiffEq, DiffEqParamEstim, BlackBoxOptim, Plots, LsqFit
+using DelayDiffEq, DiffEqParamEstim, BlackBoxOptim, Plots, LsqFit, Optim
 gr()
 """
         This file contains functions to fit the data to a Delay Differential Equation model, and find the parameters
@@ -50,19 +50,18 @@ function ddesolve(g1, g2, g1_0, g2_0, params, j)
     obj = build_loss_objective(prob, alg, L2Loss(times, data);
                                prob_generator=prob_generator,
                                verbose_opt=false)
-
     # returning estimated parameteres and the objective function
     return obj(params)
 end
 
-function optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound, num_steps)
+function optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower, upper, num_steps)
     times = range(0.0; stop = 95.5, length = 192)
     data = vcat(g1[:, j]', g2[:, j]')
     
     # history function
     fit1, fit2 = find_history(g1, g2)
     h(p, t) = [exp_model(t, fit1); exp_model(t, fit2)]
-
+    bound = collect(zip(lower, upper))
     # problem
     prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), initial_guess;
                       constant_lags = [initial_guess[3], initial_guess[4]])
@@ -74,8 +73,15 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j, bound, num_steps)
                                prob_generator=prob_generator,
                                verbose_opt = false)
     # optimizing
+    println("blackbox optim begins")
     results_dde = bboptimize(obj; SearchRange=bound,
                                     NumDimensions=6, TraceInterval=100, MasSteps=num_steps, Method=:adaptive_de_rand_1_bin_radiuslimited)
-    # returning estimated parameteres and the objective function
-    return exp.(best_candidate(results_dde))
+    println("fitness before local optimization", best_fitness(results_dde))
+    new_guess = best_candidate(results_dde)
+
+    println("local optimization begins")
+    optim_res = optimize(obj, lower, upper, new_guess, Fminbox(), Optim.Options(show_trace=true))
+    println("the fitness after optimization", Optim.minimum(optim_res))
+    return Optim.minimizer(optim_res)
+
 end
