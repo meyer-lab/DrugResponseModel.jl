@@ -3,8 +3,8 @@ using Test
 using Profile
 using DrugResponseModel
 
-##------------------ Simple tests for get_input function -----------------------##
-_, pop, g2, g1, g1_0, g2_0 = setup_data("lapatinib")
+##------------------ Import data -----------------------##
+_, pop, g2, g1, g1_0, g2_0 = setup_data("doxorubicin")
 
 @test size(pop[:, 1],1) == size(g2[:, 1],1)
 @test size(pop[:, 1],1) == size(g1[:, 1],1)
@@ -25,18 +25,22 @@ j = 6
 initial_guess  = [0.02798, 0.025502, 21.3481, 10.2881, 0.0001, 0.0001]
 
 # bounds 
-lower_bnd = [-6.0, -6.0, 2.0, 2.0, -10.0, -10.0]
+lower_bnd = [-6.0, -6.0, 0.0, 0.0, -10.0, -10.0]
 upper_bnd = [0.0, 0.0, 6.0, 6.0, 0.0, 0.0]
 
 # max number of steps
 maxSteps = 5
-# Estimating the parameters for trial j
-parameters = optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower_bnd, upper_bnd, maxSteps)
 
-# to test the estimated parameters are still in the range
-@test length(parameters) == 6
-for i in 1:6
-    @test upper_bnd[i] >= parameters[i] >= lower_bnd[i]
+# Estimating the parameters for all trials
+for j in 1:8
+    best_fit, parameters = optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower_bnd, upper_bnd, maxSteps)
+    println("trial number $j")
+    # to test the estimated parameters are still in the range
+    @test length(parameters) == 6
+    for i in 1:6
+        @test upper_bnd[i] >= parameters[i] >= lower_bnd[i]
+    end
+
 end
 
 # profiling to DDEmodel
