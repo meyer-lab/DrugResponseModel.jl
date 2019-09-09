@@ -1,5 +1,5 @@
 using DelayDiffEq, DiffEqParamEstim, BlackBoxOptim, Plots, LsqFit, Optim, Printf
-gr()
+
 """
         This file contains functions to fit the data to a Delay Differential Equation model, and find the parameters
 """
