@@ -21,8 +21,6 @@ end
 @test size(g1[:, 1],1) == size(g2[:, 1],1)
 
 ##------------------ Simple tests for DDEsolve function -------------------------##
-# j is the number of the column we are using from the data (# of trial)
-j = 6
 
 # initial guess
 initial_guess  = [0.02798, 0.025502, 15.3481, 15.2881, 0.001, 0.001]

@@ -261,9 +261,9 @@ version = "1.8.0"
 
 [[DiffEqSensitivity]]
 deps = ["DataFrames", "DiffEqBase", "DiffEqCallbacks", "DiffEqDiffTools", "Flux", "ForwardDiff", "GLM", "LinearAlgebra", "Parameters", "QuadGK", "RecursiveArrayTools", "Statistics"]
-git-tree-sha1 = "4871d048d02f184d2cfe870a17559b0f31b406d6"
+git-tree-sha1 = "2fa846714b79bc8173fcd754f60c38eeb82b48c3"
 uuid = "41bf760c-e81c-5289-8e54-58b1f1f8abe2"
-version = "3.3.2"
+version = "4.0.0"
 
 [[DiffResults]]
 deps = ["Compat", "StaticArrays"]
@@ -313,9 +313,9 @@ version = "0.2.2"
 
 [[FFTW]]
 deps = ["AbstractFFTs", "BinaryProvider", "Conda", "Libdl", "LinearAlgebra", "Reexport", "Test"]
-git-tree-sha1 = "e1a479d3c972f20c9a70563eec740bbfc786f515"
+git-tree-sha1 = "03f8776fbdae28c20c0d1d2ae4e090cd1dfcd247"
 uuid = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
-version = "0.3.0"
+version = "1.0.0"
 
 [[FillArrays]]
 deps = ["LinearAlgebra", "Random", "SparseArrays"]
@@ -441,6 +441,12 @@ deps = ["LinearAlgebra", "SparseArrays", "StatsBase", "Test"]
 git-tree-sha1 = "c4b5da6d68517f46f70ed5157b28336b56cd2ff3"
 uuid = "7f8f8fb0-2700-5f03-b4bd-41f8cfc144b6"
 version = "0.2.2"
+
+[[LeastSquaresOptim]]
+deps = ["DiffEqDiffTools", "ForwardDiff", "LinearAlgebra", "Optim", "Printf", "SparseArrays", "Statistics", "SuiteSparse"]
+git-tree-sha1 = "57ac02fb5331d4926e1cf661c5a5347ef656d7e8"
+uuid = "0fc2ff8b-aaa3-5acd-a817-1944a5e08891"
+version = "0.7.4"
 
 [[LibGit2]]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"

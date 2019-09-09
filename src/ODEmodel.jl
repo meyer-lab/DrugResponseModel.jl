@@ -1,4 +1,4 @@
-using OrdinaryDiffEq, DiffEqParamEstim, Plots, CSV, Optim, DiffEqBase
+using OrdinaryDiffEq, DiffEqParamEstim, Plots, CSV, Optim, DiffEqBase, LeastSquaresOptim
 
 
 """
@@ -36,7 +36,7 @@ function ode_optimIt(initial_guess::Array, lower_bound::Array, upper_bound::Arra
     return results_dde.minimizer
 end
 
-function ode_plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop::DataFrame, i::Int, title::String)
+function ode_plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop, i::Int, title::String)
     """ Given estimated parameters for each trial, 
     solve the DDE model plot the predicted curve 
     for # of cells in G1, G2, or total, 

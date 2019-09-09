@@ -76,12 +76,13 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower, upper, num_st
     println("blackbox optim begins ...")
     results_dde = bboptimize(obj; SearchRange=bound,
                                     NumDimensions=6, TraceInterval=100, MasSteps=num_steps, Method=:adaptive_de_rand_1_bin_radiuslimited)
-    println("fitness before local optimization : ", best_fitness(results_dde))
+    println("fitness before local optimization : ")
+    println(best_fitness(results_dde))
     new_guess = best_candidate(results_dde)
 
     println("local optimization begins")
     optim_res = optimize(obj, lower, upper, new_guess, Fminbox(), Optim.Options(show_trace=true))
-    println("the fitness after local optimization : ", Optim.minimum(optim_res))
-    @assert Optim.minimum(optim_res) <= best_fitness(results_dde)
-    return Optim.minimum(optim_res), Optim.minimizer(optim_res)
+    println("the fitness after local optimization : ")
+    println(Optim.minimum(optim_res))
+    return Optim.minimum(optim_res), exp.(Optim.minimizer(optim_res))
 end
