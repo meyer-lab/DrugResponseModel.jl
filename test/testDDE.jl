@@ -23,14 +23,14 @@ end
 ##------------------ Simple tests for DDEsolve function -------------------------##
 
 # initial guess
-initial_guess  = [0.02798, 0.025502, 15.3481, 15.2881, 0.001, 0.001]
+initial_guess  = [0.02798, 0.025502, 21.3481, 10.2881, 0.0001, 0.0001]
 
 # bounds 
 lower_bnd = [-6.0, -6.0, 1.0, 1.0, -10.0, -10.0]
 upper_bnd = [0.0, 0.0, 6.0, 6.0, 0.0, 0.0]
 
 # max number of steps
-maxSteps = 5
+maxSteps = 50
 
 println("+++++++++++++++++ trials for lapatinib +++++++++++++++++++")
 # Estimating the parameters for all trials
@@ -41,7 +41,7 @@ for j in 1:8
     @test length(parameters) == 6
     for i in 1:6
         @test upper_bnd[i] >= parameters[i] >= lower_bnd[i]
-        @test best_fit <= 6000
+        @test best_fit <= 9000
     end
 
 end
@@ -54,7 +54,7 @@ for j in 1:8
     @test length(parameters) == 6
     for i in 1:6
         @test upper_bnd[i] >= parameters[i] >= lower_bnd[i]
-        @test best_fit <= 6000
+        @test best_fit <= 9000
     end
 
 end
@@ -67,7 +67,7 @@ for j in 1:8
     @test length(parameters) == 6
     for i in 1:6
         @test upper_bnd[i] >= parameters[i] >= lower_bnd[i]
-        @test best_fit <= 6000
+        @test best_fit <= 9000
     end
 
 end
@@ -80,7 +80,7 @@ for j in 1:8
     @test length(parameters) == 6
     for i in 1:6
         @test upper_bnd[i] >= parameters[i] >= lower_bnd[i]
-        @test best_fit <= 6000
+        @test best_fit <= 9000
     end
 
 end

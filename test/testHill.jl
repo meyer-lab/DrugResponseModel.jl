@@ -14,15 +14,18 @@ conc_t, popt, g2t, g1t, g2_0t, g1_0t = setup_data("paclitaxel")
 # testing the BlackBoxOptim 
 
 # guess
-guess = [100.0, 1.0 , 0.007, 0.01, 0.05, 0.045, 8.0286, 30.1100, 12.0, 8.0, 0.0035, 0.04]
+l_guess = [100.0, 1.0 , 0.007, 0.01, 0.05, 0.045, 8.0286, 30.1100, 12.0, 8.0, 0.0035, 0.04]
+d_guess = [150.8, 0.09, 0.06, 0.009, 0.008, 0.043, 38.94, 5.49, 19.9, 3.2, 0.0029, 0.022]
+g_guess = [80.0, 0.097836, 0.00682578, 0.00958013, 0.00503788, 0.0433964, 38.941, 5.49712, 9.94827, 7.20807, 0.00294624, 0.0222821]
+t_guess = [80.0, 0.097836, 0.00682578, 0.00958013, 0.00503788, 0.0433964, 38.941, 5.49712, 9.94827, 7.20807, 0.00294624, 0.0222821]
 # max number of iterations 
-num_steps=1e4
+num_steps=1e3
 
 # do the optimization
-best_fitL, pt_l = optimize_hill(guess, conc_l, g1l, g2l, g1_0l, g2_0l, num_steps)
-best_fitD, pt_d = optimize_hill(guess, conc_d, g1d, g2d, g1_0d, g2_0d, num_steps)
-best_fitG, pt_g = optimize_hill(guess, conc_g, g1g, g2g, g1_0g, g2_0g, num_steps)
-best_fitT, pt_t = optimize_hill(guess, conc_t, g1t, g2t, g1_0t, g2_0t, num_steps)
+best_fitL, pt_l = optimize_hill(l_guess, conc_l, g1l, g2l, g1_0l, g2_0l, num_steps)
+best_fitD, pt_d = optimize_hill(d_guess, conc_d, g1d, g2d, g1_0d, g2_0d, num_steps)
+best_fitG, pt_g = optimize_hill(g_guess, conc_g, g1g, g2g, g1_0g, g2_0g, num_steps)
+best_fitT, pt_t = optimize_hill(t_guess, conc_t, g1t, g2t, g1_0t, g2_0t, num_steps)
 
 # check all the parameters to be positive
 @test all(x -> x>0, pt_l)
@@ -51,6 +54,11 @@ for i in 1:6
     @test all(x -> x>0, temp)
 end
 
+# test the fitness of the model
+@test best_fitL <= 9e5
+@test best_fitD <= 9e5
+@test best_fitG <= 9e5
+@test best_fitT <= 9e5
 # profiling for Hill model
 @profile optimize_hill(guess, conc_l, g1l, g2l, g1_0l, g2_0l, num_steps)
 Profile.print(noisefloor=10.0)

@@ -51,10 +51,10 @@ function ode_plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Ar
     prob_new = ODEProblem(ODEmodel, u0_new, tspan_new, params)
     solution = solve(prob_new, Tsit5())
 
-    plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, title = title, xlabel = "time [hours]", ylabel = "# of cells")
-    plot!(t, g1[:, i], label = "G1", dpi = 150)
-    plot!(t_new, solution(t_new, idxs=2).u, label = "G2 est", legend=:topleft, dpi = 150)
-    plot!(t, g2[:, i], label = "G2", dpi = 150)
-    plot!(t_new, (solution(t_new, idxs=2).u + solution(t_new, idxs=1).u), label = "total est", dpi = 150)
-    plot!(t, pop[i], label = "total", dpi = 150)
+    plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, title = title, xlabel = "time [hours]", ylabel = "# of cells", lw=2.0, alpha = 0.6)
+    plot!(t, g1[:, i], label = "G1", dpi = 150, markersize = 1.0, marker=([:dot :d], 1, 0.8, Plots.stroke(0.1, :gray)))
+    plot!(t_new, solution(t_new, idxs=2).u, label = "G2 est", legend=:topleft, dpi = 150, lw=2.0, alpha = 0.6)
+    plot!(t, g2[:, i], label = "G2", dpi = 150, markersize = 1.0, marker=([:dot :d], 1, 0.8, Plots.stroke(0.1, :gray)))
+    plot!(t_new, (solution(t_new, idxs=2).u + solution(t_new, idxs=1).u), label = "total est", dpi = 150, lw=2.0, alpha = 0.6)
+    plot!(t, pop[i], label = "total", dpi = 150, markersize = 1.0, marker=([:dot :d], 1, 0.8, Plots.stroke(0.1, :gray)))
 end
