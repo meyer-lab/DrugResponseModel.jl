@@ -45,7 +45,7 @@ function optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, num_steps)
     println("global optimization begins ...")
     res = bboptimize(residue; SearchRange=collect(zip(low, high)), MaxSteps=num_steps, TraceInterval=50, Method =:adaptive_de_rand_1_bin_radiuslimited)
     new_guess = best_candidate(res)
-    optim_res = optimize(residue, low, high, new_guess, Fminbox(), Optim.Options(show_trace=false))
+    optim_res = optimize(residue, low, high, new_guess, Fminbox(), Optim.Options(show_trace=true))
     return Optim.minimum(optim_res), Optim.minimizer(optim_res)
 end
 
