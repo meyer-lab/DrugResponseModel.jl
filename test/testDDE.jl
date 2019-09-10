@@ -30,7 +30,7 @@ lower_bnd = [-6.0, -6.0, 1.0, 1.0, -10.0, -10.0]
 upper_bnd = [0.0, 0.0, 6.0, 6.0, 0.0, 0.0]
 
 # max number of steps
-maxSteps = 50
+maxSteps = 5
 
 println("+++++++++++++++++ trials for lapatinib +++++++++++++++++++")
 # Estimating the parameters for all trials
