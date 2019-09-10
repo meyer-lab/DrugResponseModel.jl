@@ -3,6 +3,7 @@ using Profile
 using CSV
 using DrugResponseModel
 
+println("#####################   hill tests begin ...")
 # import G1, G2, population, and concentrations data
 conc_l, popl, g2l, g1l, g2_0l, g1_0l = setup_data("lapatinib")
 conc_d, popd, g2d, g1d, g2_0d, g1_0d = setup_data("doxorubicin")
@@ -22,9 +23,13 @@ t_guess = [80.0, 0.097836, 0.00682578, 0.00958013, 0.00503788, 0.0433964, 38.941
 num_steps=500
 
 # do the optimization
+println("### lapatinib ###")
 best_fitL, pt_l = optimize_hill(l_guess, conc_l, g1l, g2l, g1_0l, g2_0l, num_steps)
+println("### doxorubicin ###")
 best_fitD, pt_d = optimize_hill(d_guess, conc_d, g1d, g2d, g1_0d, g2_0d, num_steps)
+println("### gemcitabine ###")
 best_fitG, pt_g = optimize_hill(g_guess, conc_g, g1g, g2g, g1_0g, g2_0g, num_steps)
+println("### paclitaxel ###")
 best_fitT, pt_t = optimize_hill(t_guess, conc_t, g1t, g2t, g1_0t, g2_0t, num_steps)
 
 # check all the parameters to be positive

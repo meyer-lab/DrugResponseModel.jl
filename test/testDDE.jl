@@ -3,6 +3,7 @@ using Test
 using Profile
 using DrugResponseModel
 
+println("####################  DDE model tests begin ... ")
 ##------------------ Import data -----------------------##
 _, pop, g2, g1, g1_0, g2_0 = setup_data("lapatinib")
 _, popd, g2d, g1d, g1_0d, g2_0d = setup_data("doxorubicin")
