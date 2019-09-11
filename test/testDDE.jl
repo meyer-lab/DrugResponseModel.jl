@@ -24,14 +24,17 @@ end
 ##------------------ Simple tests for DDEsolve function -------------------------##
 
 # initial guess
-initial_guess  = [0.02798, 0.025502, 21.3481, 10.2881, 0.0001, 0.0001]
+initial_guess  = [0.02798, 0.025502, 15.3481, 15.2881, 0.001, 0.001]
 
 # bounds 
 lower_bnd = [-6.0, -6.0, 1.0, 1.0, -10.0, -10.0]
 upper_bnd = [0.0, 0.0, 6.0, 6.0, 0.0, 0.0]
 
 # max number of steps
-maxSteps = 5
+maxSteps = 50
+# profiling to DDEmodel
+@profile optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower_bnd, upper_bnd, maxSteps)
+Profile.print(noisefloor=10.0)
 
 println("+++++++++++++++++ trials for lapatinib +++++++++++++++++++")
 # Estimating the parameters for all trials
@@ -86,6 +89,3 @@ for j in 1:8
 
 end
 
-# profiling to DDEmodel
-@profile optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower_bnd, upper_bnd, maxSteps)
-Profile.print(noisefloor=10.0)

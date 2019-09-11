@@ -123,9 +123,9 @@ version = "3.1.0"
 
 [[CUDAnative]]
 deps = ["Adapt", "CUDAapi", "CUDAdrv", "DataStructures", "InteractiveUtils", "LLVM", "Libdl", "Logging", "Printf", "TimerOutputs"]
-git-tree-sha1 = "0a00bef482b7c9127495c7f4a2a85e73b13b5af8"
+git-tree-sha1 = "52ae1ce10ebfa686e227655c47b19add89308623"
 uuid = "be33ccc6-a3ff-5ff2-a52e-74243cff1e17"
-version = "2.3.0"
+version = "2.3.1"
 
 [[Calculus]]
 deps = ["Compat"]
@@ -261,9 +261,9 @@ version = "1.8.0"
 
 [[DiffEqSensitivity]]
 deps = ["DataFrames", "DiffEqBase", "DiffEqCallbacks", "DiffEqDiffTools", "Flux", "ForwardDiff", "GLM", "LinearAlgebra", "Parameters", "QuadGK", "RecursiveArrayTools", "Statistics"]
-git-tree-sha1 = "2fa846714b79bc8173fcd754f60c38eeb82b48c3"
+git-tree-sha1 = "48a83c8c3441334f8ccbd1ba7a83bb14c8b12318"
 uuid = "41bf760c-e81c-5289-8e54-58b1f1f8abe2"
-version = "4.0.0"
+version = "4.0.1"
 
 [[DiffResults]]
 deps = ["Compat", "StaticArrays"]
@@ -429,6 +429,12 @@ deps = ["CEnum", "Libdl", "Printf", "Unicode"]
 git-tree-sha1 = "52cfea426bd248a427aace7d88eb5d45b84ea297"
 uuid = "929cbde3-209d-540e-8aea-75f648917ca0"
 version = "1.2.0"
+
+[[LaTeXStrings]]
+deps = ["Compat"]
+git-tree-sha1 = "7ab9b8788cfab2bdde22adf9004bda7ad9954b6c"
+uuid = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+version = "1.0.3"
 
 [[LazyArrays]]
 deps = ["FillArrays", "LinearAlgebra", "MacroTools", "StaticArrays"]
