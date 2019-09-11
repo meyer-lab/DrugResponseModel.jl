@@ -23,7 +23,7 @@ t_guess =  [125.0, 0.04, 0.007, 0.005, 0.007, 0.005, 30.0, 3.0, 20.0, 4.0, 0.003
 num_steps=5
 
 # profiling for Hill model
-@profile optimize_hill(guess, conc_l, g1l, g2l, g1_0l, g2_0l, num_steps)
+@profile optimize_hill(l_guess, conc_l, g1l, g2l, g1_0l, g2_0l, num_steps)
 Profile.print(noisefloor=10.0)
 
 # do the optimization
@@ -52,20 +52,9 @@ dde_paramsD = getDDEparams(pt_d, conc_d)
 dde_paramsG = getDDEparams(pt_g, conc_g)
 dde_paramsT = getDDEparams(pt_t, conc_t)
 
-for i in 1:6
-    temp = dde_paramsL[i]
-    @test all(x -> x>0, temp)
-    temp = dde_paramsD[i]
-    @test all(x -> x>0, temp)
-    temp = dde_paramsG[i]
-    @test all(x -> x>0, temp)
-    temp = dde_paramsT[i]
-    @test all(x -> x>0, temp)
-end
-
 # test the fitness of the model
-@test best_fitL <= 9e5
-@test best_fitD <= 9e5
-@test best_fitG <= 9e5
-@test best_fitT <= 9e5
+@test best_fitL <= 1e6
+@test best_fitD <= 1e6
+@test best_fitG <= 1e6
+@test best_fitT <= 1e6
 

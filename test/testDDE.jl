@@ -32,6 +32,7 @@ upper_bnd = [0.0, 0.0, 6.0, 6.0, 0.0, 0.0]
 
 # max number of steps
 maxSteps = 50
+j = 6
 # profiling to DDEmodel
 @profile optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower_bnd, upper_bnd, maxSteps)
 Profile.print(noisefloor=10.0)
@@ -44,7 +45,7 @@ for j in 1:8
     # to test the estimated parameters are still in the range
     @test length(parameters) == 6
     for i in 1:6
-        @test upper_bnd[i] >= parameters[i] >= lower_bnd[i]
+        @test exp.(upper_bnd[i]) >= parameters[i] >= exp.(lower_bnd[i])
         @test best_fit <= 9000
     end
 
@@ -57,7 +58,7 @@ for j in 1:8
     # to test the estimated parameters are still in the range
     @test length(parameters) == 6
     for i in 1:6
-        @test upper_bnd[i] >= parameters[i] >= lower_bnd[i]
+        @test exp.(upper_bnd[i]) >= parameters[i] >= exp.(lower_bnd[i])
         @test best_fit <= 9000
     end
 
@@ -70,7 +71,7 @@ for j in 1:8
     # to test the estimated parameters are still in the range
     @test length(parameters) == 6
     for i in 1:6
-        @test upper_bnd[i] >= parameters[i] >= lower_bnd[i]
+        @test exp.(upper_bnd[i]) >= parameters[i] >= exp.(lower_bnd[i])
         @test best_fit <= 9000
     end
 
@@ -83,7 +84,7 @@ for j in 1:8
     # to test the estimated parameters are still in the range
     @test length(parameters) == 6
     for i in 1:6
-        @test upper_bnd[i] >= parameters[i] >= lower_bnd[i]
+        @test exp.(upper_bnd[i]) >= parameters[i] >= exp.(lower_bnd[i])
         @test best_fit <= 9000
     end
 
