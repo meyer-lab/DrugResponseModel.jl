@@ -1,4 +1,4 @@
-using OrdinaryDiffEq, DiffEqParamEstim, Plots, CSV, Optim, DiffEqBase, LeastSquaresOptim
+using OrdinaryDiffEq, DiffEqParamEstim, Plots, CSV, Optim, DiffEqBase, BlackBoxOptim
 
 
 """
@@ -13,27 +13,25 @@ function ODEmodel(du, u, p, t)
     du[2] = p[1]*u[1] - p[2]*u[2] - p[4]*u[2]
 end
 
-function ODEsolve(par::Array, i::Int, g1_0::Array, g2_0::Array)
+function ODEoptimizer(lower_bound::Array, upper_bound::Array, par::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
     t = LinRange(0.0, 95.5, 192)
-    tspan = (0.0, 95.5)
+    times = range(0.0; stop = 95.5, length = 192)
+    data = vcat(g1[:, i]', g2[:, i]')
+
     u0 = [g1_0[i], g2_0[i]]
-    prob = ODEProblem(ODEmodel, u0, tspan, par)
-    solve(prob, Tsit5())
-end
+    # generating the ODEproblem
+    prob = ODEProblem(ODEmodel, u0, extrema(times), par)
+    # solver algorithm
+    alg = Tsit5()
+    # lower and upper bounds for the parameters
+    bound = collect(zip(lower_bound, upper_bound))
+    # objective function
+    obj = build_loss_objective(prob, alg, L2Loss(times, data);
+                               verbose_opt = false)
+    # global optimization with black box optimization
+    results_ode = bboptimize(obj; SearchRange=bound, NumDimensions=4, TraceInterval=100)
 
-function residual(par, i, g1_0, g2_0, g1, g2)
-    t = LinRange(0.0, 95.5, 192)
-    res = zeros(2, 192)
-    sol = ODEsolve(par, i, g1_0, g2_0)
-    res[1, :] = sol(t, idxs=1).u - g1[:, i]
-    res[2, :] = sol(t, idxs=2).u - g2[:, i]
-    return res
-end
-
-function ode_optimIt(initial_guess::Array, lower_bound::Array, upper_bound::Array, i::Int, g1::Matrix, g2::Matrix, g1_0, g2_0)
-    residuals(pp) = residual(pp, i, g1_0, g2_0, g1, g2)
-    results_dde = optimize(residuals, initial_guess, Dogleg(), lower = lower_bound, upper = upper_bound)
-    return results_dde.minimizer
+    return best_candidate(results_ode)
 end
 
 function ode_plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop, i::Int, title::String)
@@ -53,7 +51,7 @@ function ode_plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Ar
 
     plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, title = title, xlabel = "time [hours]", ylabel = "# of cells", lw=2.0, alpha = 0.6)
     plot!(t, g1[:, i], label = "G1", dpi = 150, markersize = 1.0, marker=([:dot :d], 1, 0.8, Plots.stroke(0.1, :gray)))
-    plot!(t_new, solution(t_new, idxs=2).u, label = "G2 est", legend=:topleft, dpi = 150, lw=2.0, alpha = 0.6)
+    plot!(t_new, solution(t_new, idxs=2).u, label = "G2 est", legend=:topleft, legendfontsize=5,  dpi = 150, lw=2.0, alpha = 0.6)
     plot!(t, g2[:, i], label = "G2", dpi = 150, markersize = 1.0, marker=([:dot :d], 1, 0.8, Plots.stroke(0.1, :gray)))
     plot!(t_new, (solution(t_new, idxs=2).u + solution(t_new, idxs=1).u), label = "total est", dpi = 150, lw=2.0, alpha = 0.6)
     plot!(t, pop[i], label = "total", dpi = 150, markersize = 1.0, marker=([:dot :d], 1, 0.8, Plots.stroke(0.1, :gray)))
