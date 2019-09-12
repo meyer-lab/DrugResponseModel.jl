@@ -2,7 +2,6 @@ import CSV, DataFrames
 """
         Imports data works for both ODE and DDE model
 """
-
 function get_data(path_g2::String, path_total::String)
     # Import data all the trials for each drug
     data = CSV.read(path_g2)
@@ -33,6 +32,12 @@ function get_data(path_g2::String, path_total::String)
         g2_0[i] = init_cells*(drug[1, i]/100.0)
         g1_0[i] = init_cells*(1 - drug[1, i]/100.0)
     end
+    # removing the peaks
+    for i in 1:8
+        pop[:, i] = remove_peaks(pop[:, i])
+        g2[:, i] = remove_peaks(g2[:, i])
+        g1[:, i] = remove_peaks(g1[:, i])
+    end
     return pop, g2, g1, g2_0, g1_0
 end
 
@@ -49,14 +54,42 @@ function remove_peaks(data)
     return data
 end
 
-# make it easy to import all the data and remove peaks
-function import_data(path_g2::String, path_total::String)
-    pop, g2, g1, g1_0, g2_0 = get_data(path_g2, path_total)
-    # remove peaks from the raw data
-    for i in 1:8
-        pop[:, i] = remove_peaks(pop[:, i])
-        g2[:, i] = remove_peaks(g2[:, i])
-        g1[:, i] = remove_peaks(g1[:, i])
+function setup_data(drug_name::String)
+    """ This function takes in the drug name which is a string and must be among this list: ["lapatinib", "doxorubicin", "paclitaxel", "gemcitabine"]. It returns the cnocentrations, population, cell, and initial cell number for that drug."""
+
+    #----------- import concentrations
+    concentration = CSV.read(joinpath("..", "data", "concentrations.csv"))
+    # lapatinib
+    conc_l = [Float64(concentration[1, col]) for col in 2:9]
+    # doxorubicin
+    conc_d = [Float64(concentration[2, col]) for col in 2:9]
+    # gemcitabine
+    conc_g = [Float64(concentration[3, col]) for col in 2:9]
+    # paclitaxel
+    conc_t = [Float64(concentration[4, col]) for col in 2:9]
+
+    #------------ import cell data
+    # lapatinib
+    pop_l, g2_l, g1_l, g2_0_l, g1_0_l = get_data(joinpath("..", "data", "lap.csv"),
+                                       joinpath("..", "data", "lap_pop.csv"));
+    # doxorubicin
+    pop_d, g2_d, g1_d, g2_0_d, g1_0_d = get_data(joinpath("..", "data", "dox.csv"),
+                                       joinpath("..", "data", "dox_pop.csv"));
+    # gemcitabine
+    pop_g, g2_g, g1_g, g2_0_g, g1_0_g = get_data(joinpath("..", "data", "gem.csv"),
+                                       joinpath("..", "data", "gem_pop.csv"));
+    # paclitaxel
+    pop_t, g2_t, g1_t, g2_0_t, g1_0_t = get_data(joinpath("..", "data", "taxol1.csv"),
+                                       joinpath("..", "data", "taxol1_pop.csv"));
+    if drug_name == "lapatinib"
+        return conc_l, pop_l, g2_l, g1_l, g2_0_l, g1_0_l
+    elseif drug_name == "doxorubicin"
+        return conc_d, pop_d, g2_d, g1_d, g2_0_d, g1_0_d
+    elseif drug_name == "gemcitabine"
+        return conc_g, pop_g, g2_g, g1_g, g2_0_g, g1_0_g
+    elseif drug_name == "paclitaxel"
+        return conc_t, pop_t, g2_t, g1_t, g2_0_t, g1_0_t
+    else
+        error("The drug is not amongst the data, please check the drug_name.")
     end
-    return pop, g2, g1, g1_0, g2_0
 end
