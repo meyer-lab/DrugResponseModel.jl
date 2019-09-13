@@ -64,7 +64,7 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower, upper, num_st
     bound = collect(zip(lower, upper))
     # problem
     prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), initial_guess;
-                      constant_lags = [initial_guess[3], initial_guess[4]])
+                      constant_lags = [30.0, 8.0])
     # algorithm to solve
     alg = MethodOfSteps(AutoTsit5(Rosenbrock23()); constrained=true)
 
@@ -73,16 +73,12 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower, upper, num_st
                                prob_generator=prob_generator,
                                verbose_opt = false)
     # optimizing
-    println("blackbox optim begins ...")
     results_dde = bboptimize(obj; SearchRange=bound,
-                                    NumDimensions=6, TraceInterval=100, MasSteps=num_steps, Method=:adaptive_de_rand_1_bin_radiuslimited)
-    println("fitness before local optimization : ")
-    println(best_fitness(results_dde))
+                                    NumDimensions=4,
+                                    TraceInterval=100,
+                                    MasSteps=num_steps,
+                                    Method=:adaptive_de_rand_1_bin_radiuslimited)
+
     new_guess = best_candidate(results_dde)
     return best_fitness(results_dde), exp.(new_guess)
-#     println("local optimization begins")
-#     optim_res = optimize(obj, lower, upper, new_guess, Fminbox(), Optim.Options(show_trace=true))
-#     println("the fitness after local optimization : ")
-#     println(Optim.minimum(optim_res))
-#     return Optim.minimum(optim_res), exp.(Optim.minimizer(optim_res))
 end
