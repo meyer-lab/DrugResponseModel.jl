@@ -57,19 +57,24 @@ end
 # this function is used for DDE fitting
 function DDEsolve(initial_guess, g1, g2, g1_0, g2_0, j)
 
+    # initial guess has 34 values, there are 8 * 4 parameters for transition and death rates for each conentration, and the last two are delays for G1 and G2.
     times = range(0.0; stop = 95.5, length = 192)
+
     # history function
     fit1, fit2 = find_history(g1, g2)
     h(p, t) = [exp_model(t, fit1); exp_model(t, fit2)]
-    pars = append!(initial_guess[4*j - 3 : 4*j], [initial_guess[33], initial_guess[34]])
+
+    # the parameters for a specific concentration, j determines that
+    pars = append!([initial_guess[4*j - 3], initial_guess[4*j - 2]], [initial_guess[33], initial_guess[34], initial_guess[4*j - 1], initial_guess[4*j]])
     # problem
     prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), pars;
-                          constant_lags = [initial_guess[33], initial_guess[34]])
+                          constant_lags = [pars[5], pars[6]])
+
+    # the algorithm to solve the dde problem
     alg = MethodOfSteps(AutoTsit5(Rosenbrock23()); constrained=true)
 
-    println("hello")
-    solve(prob)
-    println("hello again")
+    sol = solve(prob, alg)
+    return sol
 end
 
 function cost_function(initial_guess, g1, g2, g1_0, g2_0)
@@ -78,26 +83,24 @@ function cost_function(initial_guess, g1, g2, g1_0, g2_0)
     total_cost = zeros(8)
     for j in 1:8
         sol = DDEsolve(initial_guess, g1, g2, g1_0, g2_0, j)
-        res1 = sum((sol(t, idxs=1).u - g1[:, j]).^2)
-        res2 = sum((sol(t, idxs=2).u - g2[:, j]).^2)
+        res1 = sum((sol(times, idxs=1).u - g1[:, j]).^2)
+        res2 = sum((sol(times, idxs=2).u - g2[:, j]).^2)
         total_cost[j] = res1 + res2
     end
+    # the output of the cost function must be an scalar, so we sum all the squared errors.
     return sum(total_cost)
 end
 
-function optimization(g1, g2, g1_0, g2_0, initial_guess, lower, upper, num_steps)
+function optimization(g1, g2, g1_0, g2_0, initial_guess, lower, upper)
 
     # the cost function must just be a function of parameters
-    cost_function(initial_guess) = cost_function(initial_guess, g1, g2, g1_0, g2_0)
+    cost_fcn(initial_guess) = cost_function(initial_guess, g1, g2, g1_0, g2_0)
     bound = collect(zip(lower, upper))
-
+    optim_res = optimize(cost_fcn, lower, upper, initial_guess, Fminbox(), Optim.Options(show_trace=true))
+    return Optim.minimum(optim_res), Optim.minimizer(optim_res)
     # optimizing
-    results_dde = bboptimize(cost_function; SearchRange=bound,
-                                        NumDimensions=34,
-                                        TraceInterval=100,
-                                        MasSteps=num_steps,
-                                        Method=:adaptive_de_rand_1_bin_radiuslimited)
+#     results_dde = bboptimize(cost_fcn; SearchRange=bound, Method=:adaptive_de_rand_1_bin_radiuslimited)
 
-    new_guess = best_candidate(results_dde)
-    return best_fitness(results_dde), exp.(new_guess)
+#     new_guess = best_candidate(results_dde)
+#     return best_fitness(results_dde), new_guess
 end
