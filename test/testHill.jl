@@ -15,10 +15,10 @@ conc_t, popt, g2t, g1t, g2_0t, g1_0t = setup_data("paclitaxel")
 # testing the BlackBoxOptim 
 
 # guess
-l_guess =  [125.0, 0.04, 0.007, 0.005, 0.007, 0.005, 30.0, 3.0, 20.0, 4.0, 0.003, 0.02]
-d_guess =  [125.0, 0.04, 0.007, 0.005, 0.007, 0.005, 30.0, 3.0, 20.0, 4.0, 0.003, 0.02]
-g_guess =  [125.0, 0.04, 0.007, 0.005, 0.007, 0.005, 30.0, 3.0, 20.0, 4.0, 0.003, 0.02]
-t_guess =  [125.0, 0.04, 0.007, 0.005, 0.007, 0.005, 30.0, 3.0, 20.0, 4.0, 0.003, 0.02]
+l_guess =  [125.0, 0.04, 0.007, 0.005, 0.007, 0.005, 30.0, 20.0, 0.003, 0.02]
+d_guess =  [125.0, 0.04, 0.007, 0.005, 0.007, 0.005, 30.0, 20.0, 0.003, 0.02]
+g_guess =  [125.0, 0.04, 0.007, 0.005, 0.007, 0.005, 30.0, 20.0, 0.003, 0.02]
+t_guess =  [125.0, 0.04, 0.007, 0.005, 0.007, 0.005, 30.0, 20.0, 0.003, 0.02]
 # max number of iterations 
 num_steps=5
 
@@ -38,13 +38,13 @@ best_fitT, pt_t = optimize_hill(t_guess, conc_t, g1t, g2t, g1_0t, g2_0t, num_ste
 
 # check all the parameters to be positive
 @test all(x -> x>0, pt_l)
-@test length(pt_l) == 12
+@test length(pt_l) == 10
 @test all(x -> x>0, pt_d)
-@test length(pt_d) == 12
+@test length(pt_d) == 10
 @test all(x -> x>0, pt_g)
-@test length(pt_g) == 12
+@test length(pt_g) == 10
 @test all(x -> x>0, pt_t)
-@test length(pt_t) == 12
+@test length(pt_t) == 10
 
 # make sure all the dde parameters are positive
 dde_paramsL = getDDEparams(pt_l, conc_l)
