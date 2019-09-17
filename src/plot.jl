@@ -1,7 +1,7 @@
 using Plots, CSV, DataFrames
 include("importData.jl")
 include("DDEmodel.jl")
-pyplot()
+gr()
 """ 
         This file contains a function to plot the parameters against the  drug concentrations, in a 2x2 subplot.
 """
