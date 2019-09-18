@@ -31,7 +31,7 @@ function prob_generator(prob, p)
     remake(prob; p = exp_p, constant_lags = [exp_p[3], exp_p[4]])
 end
 
-# for hill fitting 
+
 function ddesolve(g1, g2, g1_0, g2_0, params, j)
     times = range(0.0; stop = 95.5, length = 192)
     data = vcat(g1[:, j]', g2[:, j]')
@@ -53,7 +53,6 @@ function ddesolve(g1, g2, g1_0, g2_0, params, j)
     # returning estimated parameteres and the objective function
     return obj(params)
 end
-
 
 function optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower, upper, num_steps)
     times = range(0.0; stop = 95.5, length = 192)
@@ -77,7 +76,7 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower, upper, num_st
     println("blackbox optim begins ...")
     results_dde = bboptimize(obj; SearchRange=bound,
                                     NumDimensions=6, TraceInterval=100, MasSteps=num_steps, Method=:adaptive_de_rand_1_bin_radiuslimited)
-    println("fitness before local optimization:  ")
+    println("fitness before local optimization : ")
     println(best_fitness(results_dde))
     new_guess = best_candidate(results_dde)
     return best_fitness(results_dde), exp.(new_guess)
