@@ -33,11 +33,14 @@ upper_bnd = [0.0, 0.0, 6.0, 6.0, 0.0, 0.0]
 # max number of steps
 maxSteps = 50
 j = 6
+Profile.init(delay=0.5)
 # profiling to DDEmodel
 println("  \n profiling find_history  \n ")
 @profile find_history(g1, g2)
+Profile.print(noisefloor=10.0)
 println("  \n profiling ddesolve function  \n")
 @profile ddesolve(g1, g2, g1_0, g2_0, initial_guess, j)
+Profile.print(noisefloor=10.0)
 println("  \n profiling optimization function   \n")
 @profile optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower_bnd, upper_bnd, maxSteps)
 Profile.print(noisefloor=10.0)
