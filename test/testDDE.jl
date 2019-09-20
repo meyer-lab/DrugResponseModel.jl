@@ -98,3 +98,6 @@ for j in 1:8
 
 end
 
+# profiling the plot function
+@profile plotIt(parameters, 6, "", :false)
+
