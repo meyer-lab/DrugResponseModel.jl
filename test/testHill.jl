@@ -7,9 +7,7 @@ using BlackBoxOptim
 println("#####################   hill tests begin ...")
 # import G1, G2, population, and concentrations data
 conc_l, popl, g2l, g1l, g2_0l, g1_0l = setup_data("lapatinib")
-conc_d, popd, g2d, g1d, g2_0d, g1_0d = setup_data("doxorubicin")
-conc_g, popg, g2g, g1g, g2_0g, g1_0g = setup_data("gemcitabine")
-conc_t, popt, g2t, g1t, g2_0t, g1_0t = setup_data("paclitaxel")
+
 # make sure there are 8 concentrations
 @test length(conc_l) == length(conc_d) == length(conc_g) == length(conc_t) == 8
 
@@ -18,7 +16,7 @@ conc_t, popt, g2t, g1t, g2_0t, g1_0t = setup_data("paclitaxel")
 # guess
 guess =  [125.0, 0.04, 0.007, 0.005, 0.007, 0.005, 30.0, 20.0, 0.003, 0.02]
 # max number of iterations 
-num_steps=5
+num_steps=50
 
 # profiling for Hill model
 println("profiling for residHill function  \n")
@@ -39,12 +37,6 @@ Profile.print(noisefloor=10.0)
 # do the optimization
 println("### lapatinib ###")
 best_fitL, pt_l = optimize_hill(guess, conc_l, g1l, g2l, g1_0l, g2_0l, num_steps)
-println("### doxorubicin ###")
-best_fitD, pt_d = optimize_hill(guess, conc_d, g1d, g2d, g1_0d, g2_0d, num_steps)
-println("### gemcitabine ###")
-best_fitG, pt_g = optimize_hill(guess, conc_g, g1g, g2g, g1_0g, g2_0g, num_steps)
-println("### paclitaxel ###")
-best_fitT, pt_t = optimize_hill(guess, conc_t, g1t, g2t, g1_0t, g2_0t, num_steps)
 
 Profile.init(delay=0.5)
 # profiling the get_dde params
@@ -53,19 +45,9 @@ println("profiling the getDDEparams  \n")
 # check all the parameters to be positive
 @test all(x -> x>0, pt_l)
 @test length(pt_l) == 10
-@test all(x -> x>0, pt_d)
-@test length(pt_d) == 10
-@test all(x -> x>0, pt_g)
-@test length(pt_g) == 10
-@test all(x -> x>0, pt_t)
-@test length(pt_t) == 10
 
 # make sure all the dde parameters are positive
 dde_paramsL = getDDEparams(pt_l, conc_l)
 
 # test the fitness of the model
 @test best_fitL <= 5e5
-@test best_fitD <= 5e5
-@test best_fitG <= 5e5
-@test best_fitT <= 5e5
-
