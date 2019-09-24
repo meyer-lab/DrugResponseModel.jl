@@ -53,8 +53,8 @@ dde_paramsG = getDDEparams(pt_g, conc_g)
 dde_paramsT = getDDEparams(pt_t, conc_t)
 
 # test the fitness of the model
-@test best_fitL <= 5e4
-@test best_fitD <= 5e4
-@test best_fitG <= 5e4
-@test best_fitT <= 5e4
+@test best_fitL <= 5e5
+@test best_fitD <= 5e5
+@test best_fitG <= 5e5
+@test best_fitT <= 5e5
 
