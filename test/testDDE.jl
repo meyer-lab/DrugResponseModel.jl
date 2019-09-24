@@ -31,7 +31,7 @@ lower_bnd = [-6.0, -6.0, 1.0, 1.0, -10.0, -10.0]
 upper_bnd = [0.0, 0.0, 6.0, 6.0, 0.0, 0.0]
 
 # max number of steps
-maxSteps = 50
+maxSteps = 5
 j = 6
 times = range(0.0; stop = 95.5, length = 192)
 
@@ -102,4 +102,9 @@ end
 best_fit, parameters = optimization(g1t, g2t, g1_0t, g2_0t, initial_guess, 6, lower_bnd, upper_bnd, maxSteps)
 # profiling the plot function
 @profile plotIt(parameters, 6, "", :false)
+labels = ["control", "conc. 5nM", "conc. 10nM", "conc. 25nM", "conc. 50nM", "conc. 100nM", "conc. 250nM", "conc. 500nM"]
+xlabel = "G1 numbers"
+ylabel = "G2 numbers"
+ymax = 40
+@profile correlationPlot(g1, g2, labels, xlabel, ylabel, ymax)
 

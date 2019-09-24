@@ -76,9 +76,4 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower, upper, num_st
     println(best_fitness(results_dde))
     new_guess = best_candidate(results_dde)
     return best_fitness(results_dde), exp.(new_guess)
-#     println("local optimization begins")
-#     optim_res = optimize(obj, lower, upper, new_guess, Fminbox(), Optim.Options(show_trace=true))
-#     println("the fitness after local optimization : ")
-#     println(Optim.minimum(optim_res))
-#     return Optim.minimum(optim_res), exp.(Optim.minimizer(optim_res))
 end
