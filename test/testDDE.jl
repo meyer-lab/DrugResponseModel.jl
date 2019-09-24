@@ -36,7 +36,15 @@ j = 6
 
 @profile ddesolve(times, g1, g2, g1_0, g2_0, initial_guess, j)
 @profile find_history(g1, g2)
+
 # profiling to DDEmodel
+println("  \n profiling find_history  \n ")
+@profile find_history(g1, g2)
+Profile.print(noisefloor=10.0)
+println("  \n profiling ddesolve function  \n")
+@profile ddesolve(g1, g2, g1_0, g2_0, initial_guess, j)
+Profile.print(noisefloor=10.0)
+println("  \n profiling optimization function   \n")
 @profile optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower_bnd, upper_bnd, maxSteps)
 Profile.print(noisefloor=10.0)
 
@@ -92,4 +100,8 @@ for j in 1:8
     end
 
 end
+
+best_fit, parameters = optimization(g1t, g2t, g1_0t, g2_0t, initial_guess, 6, lower_bnd, upper_bnd, maxSteps)
+# profiling the plot function
+@profile plotIt(parameters, 6, "", :false)
 

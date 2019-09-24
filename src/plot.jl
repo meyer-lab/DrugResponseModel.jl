@@ -29,3 +29,20 @@ function plotIt(params::Array, i::Int, title::String, bool::Any)
     plot!(n_times, (solution(n_times, idxs=2).u + solution(n_times, idxs=1).u), label = "total est", dpi = 150, lw=2.0, alpha = 0.6)
     scatter!(times, pop[i], label = "total", dpi = 150, markersize = 1.0, marker=([:dot :d], 1, 0.8, Plots.stroke(0.1, :gray)))
 end
+
+#-------------------------- plot for the G1 G2 correlation ---------------------------#
+function correlationPlot(g1, g2, labels, xlabel, ylabel, ymax)
+
+    p1 = scatter(g1[:,1], g2[:,1], title = labels[1], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
+    p2 = scatter(g1[:,2], g2[:,2], title = labels[2], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
+    p3 = scatter(g1[:,3], g2[:,3], title = labels[3], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
+    p4 = scatter(g1[:,4], g2[:,4], title = labels[4], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
+    p5 = scatter(g1[:,5], g2[:,5], title = labels[5], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
+    p6 = scatter(g1[:,6], g2[:,6], title = labels[6], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
+    p7 = scatter(g1[:,7], g2[:,7], title = labels[7], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
+    p8 = scatter(g1[:,8], g2[:,8], title = labels[8], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
+    plot(p1, p2, p3, p4, p5, p6, p7, p8, legend=:false)
+    plot!(size=(1100,1000))
+    ylims!((0, ymax))
+    xlims!((0, ymax))
+end

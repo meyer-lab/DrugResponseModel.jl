@@ -2,6 +2,7 @@ using Test
 using Profile
 using CSV
 using DrugResponseModel
+using BlackBoxOptim
 
 println("#####################   hill tests begin ...")
 # import G1, G2, population, and concentrations data
@@ -23,6 +24,21 @@ t_guess =  [125.0, 0.04, 0.007, 0.005, 0.007, 0.005, 30.0, 20.0, 0.003, 0.02]
 num_steps=50
 
 # profiling for Hill model
+println("profiling for residHill function  \n")
+@profile residHill(l_guess, conc_l, g1l, g2l, g1_0l, g2_0l)
+Profile.print(noisefloor=10.0)
+
+residue(hillParams) = residHill(l_guess, conc_l, g1l, g2l, g1_0l, g2_0l)
+
+# lower bound
+low = [50.0, 0.01, 0.005, 0.04, 0.005, 0.01, 20.0, 5.0, 0.0001, 0.0001]
+# upper bound
+high = [250, 2.0, 0.02, 0.1, 0.2, 0.03, 40.0, 20.0, 0.05, 0.1]
+
+println("profiling bboptimize in Hill ")
+@profile bboptimize(residue; SearchRange=collect(zip(low, high)), MaxSteps=100, Method =:adaptive_de_rand_1_bin_radiuslimited)
+Profile.print(noisefloor=10.0)
+
 @profile optimize_hill(l_guess, conc_l, g1l, g2l, g1_0l, g2_0l, num_steps)
 Profile.print(noisefloor=10.0)
 
@@ -36,6 +52,10 @@ best_fitG, pt_g = optimize_hill(g_guess, conc_g, g1g, g2g, g1_0g, g2_0g, num_ste
 println("### paclitaxel ###")
 best_fitT, pt_t = optimize_hill(t_guess, conc_t, g1t, g2t, g1_0t, g2_0t, num_steps)
 
+Profile.init(delay=0.5)
+# profiling the get_dde params
+println("profiling the getDDEparams  \n")
+@profile getDDEparams(pt_l, conc_l)
 # check all the parameters to be positive
 @test all(x -> x>0, pt_l)
 @test length(pt_l) == 10
