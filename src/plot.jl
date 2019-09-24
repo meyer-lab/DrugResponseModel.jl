@@ -16,15 +16,11 @@ function plotIt(params::Array, i::Int, title::String, bool::Any)
     original time (~195 hours)
     """
     _, pop, g2, g1, g2_0, g1_0 = setup_data("lapatinib")
-    lags = [params[3], params[4]]
     times = range(0.0; stop = 95.5, length = 192)
-    n_times = range(0.0; stop = 195.5, length = 292)
-    fit1, fit2 = find_history(g1, g2)
-    h(p, t) = [exp_model(t, fit1); exp_model(t, fit2)]
-    u0_new = [g1_0[i], g2_0[i]]
-    prob_new = DDEProblem(DDEmodel, u0_new, h, extrema(n_times), params; constant_lags = lags)
-    
-    solution = solve(prob_new, MethodOfSteps(AutoTsit5(Rosenbrock23()); constrained=true))
+    n_times = range(0.0; stop = 200.0, length = 400)
+    alg, n_prob, _ = ddesolve(n_times, g1, g2, g1_0, g2_0, params, i)
+
+    solution = solve(n_prob, alg; constrained=true)
 
     plot(n_times, solution(n_times, idxs=1).u, label = "G1 est", dpi = 150, title = title, xlabel = "time [hours]", ylabel = "# of cells", lw=2.0, alpha = 0.6)
     scatter!(times, g1[:, i], label = "G1", dpi = 150, markersize = 1.0, marker=([:dot :d], 1, 0.8, Plots.stroke(0.1, :gray)))

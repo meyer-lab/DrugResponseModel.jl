@@ -32,13 +32,12 @@ function prob_generator(prob, p)
 end
 
 
-function ddesolve(g1, g2, g1_0, g2_0, params, j)
-    times = range(0.0; stop = 95.5, length = 192)
-    data = vcat(g1[:, j]', g2[:, j]')
+function ddesolve(times, g1, g2, g1_0, g2_0, params, j)
     
     # history function
     fit1, fit2 = find_history(g1, g2)
     h(p, t) = [exp_model(t, fit1); exp_model(t, fit2)]
+    data = vcat(g1[:, j]', g2[:, j]')
 
     # problem
     prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), params;
@@ -46,38 +45,25 @@ function ddesolve(g1, g2, g1_0, g2_0, params, j)
     # algorithm to solve
     alg = MethodOfSteps(AutoTsit5(Rosenbrock23()); constrained=true)
 
-    # objective function
-    obj = build_loss_objective(prob, alg, L2Loss(times, data);
-                               prob_generator=prob_generator,
-                               verbose_opt=false)
     # returning estimated parameteres and the objective function
-    return obj(params)
+    return alg, prob, data
 end
+
 
 function optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower, upper, num_steps)
     times = range(0.0; stop = 95.5, length = 192)
-    data = vcat(g1[:, j]', g2[:, j]')
-    
-    # history function
-    fit1, fit2 = find_history(g1, g2)
-    h(p, t) = [exp_model(t, fit1); exp_model(t, fit2)]
-    bound = collect(zip(lower, upper))
-    # problem
-    prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), initial_guess;
-                      constant_lags = [initial_guess[3], initial_guess[4]])
-    # algorithm to solve
-    alg = MethodOfSteps(AutoTsit5(Rosenbrock23()); constrained=true)
 
-    # objective function
+    alg, prob, data = ddesolve(times, g1, g2, g1_0, g2_0, initial_guess, j)
     obj = build_loss_objective(prob, alg, L2Loss(times, data);
                                prob_generator=prob_generator,
-                               verbose_opt = false)
+                               verbose_opt=false)
     # optimizing
     println("blackbox optim begins ...")
+    bound = collect(zip(lower, upper))
     results_dde = bboptimize(obj; SearchRange=bound,
                                     NumDimensions=6, TraceInterval=100, MasSteps=num_steps, Method=:adaptive_de_rand_1_bin_radiuslimited)
-    println("fitness before local optimization : ")
-    println(best_fitness(results_dde))
+
+    println("best fitness ", best_fitness(results_dde))
     new_guess = best_candidate(results_dde)
     return best_fitness(results_dde), exp.(new_guess)
 #     println("local optimization begins")
