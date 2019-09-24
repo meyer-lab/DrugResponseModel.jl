@@ -16,19 +16,16 @@ conc_t, popt, g2t, g1t, g2_0t, g1_0t = setup_data("paclitaxel")
 # testing the BlackBoxOptim 
 
 # guess
-l_guess =  [125.0, 0.04, 0.007, 0.005, 0.007, 0.005, 30.0, 20.0, 0.003, 0.02]
-d_guess =  [125.0, 0.04, 0.007, 0.005, 0.007, 0.005, 30.0, 20.0, 0.003, 0.02]
-g_guess =  [125.0, 0.04, 0.007, 0.005, 0.007, 0.005, 30.0, 20.0, 0.003, 0.02]
-t_guess =  [125.0, 0.04, 0.007, 0.005, 0.007, 0.005, 30.0, 20.0, 0.003, 0.02]
+guess =  [125.0, 0.04, 0.007, 0.005, 0.007, 0.005, 30.0, 20.0, 0.003, 0.02]
 # max number of iterations 
-num_steps=50
+num_steps=5
 
 # profiling for Hill model
 println("profiling for residHill function  \n")
-@profile residHill(l_guess, conc_l, g1l, g2l, g1_0l, g2_0l)
+@profile residHill(guess, conc_l, g1l, g2l, g1_0l, g2_0l)
 Profile.print(noisefloor=10.0)
 
-residue(hillParams) = residHill(l_guess, conc_l, g1l, g2l, g1_0l, g2_0l)
+residue(hillParams) = residHill(guess, conc_l, g1l, g2l, g1_0l, g2_0l)
 
 # lower bound
 low = [50.0, 0.01, 0.005, 0.04, 0.005, 0.01, 20.0, 5.0, 0.0001, 0.0001]
@@ -41,13 +38,13 @@ Profile.print(noisefloor=10.0)
 
 # do the optimization
 println("### lapatinib ###")
-best_fitL, pt_l = optimize_hill(l_guess, conc_l, g1l, g2l, g1_0l, g2_0l, num_steps)
+best_fitL, pt_l = optimize_hill(guess, conc_l, g1l, g2l, g1_0l, g2_0l, num_steps)
 println("### doxorubicin ###")
-best_fitD, pt_d = optimize_hill(d_guess, conc_d, g1d, g2d, g1_0d, g2_0d, num_steps)
+best_fitD, pt_d = optimize_hill(guess, conc_d, g1d, g2d, g1_0d, g2_0d, num_steps)
 println("### gemcitabine ###")
-best_fitG, pt_g = optimize_hill(g_guess, conc_g, g1g, g2g, g1_0g, g2_0g, num_steps)
+best_fitG, pt_g = optimize_hill(guess, conc_g, g1g, g2g, g1_0g, g2_0g, num_steps)
 println("### paclitaxel ###")
-best_fitT, pt_t = optimize_hill(t_guess, conc_t, g1t, g2t, g1_0t, g2_0t, num_steps)
+best_fitT, pt_t = optimize_hill(guess, conc_t, g1t, g2t, g1_0t, g2_0t, num_steps)
 
 Profile.init(delay=0.5)
 # profiling the get_dde params
@@ -65,9 +62,6 @@ println("profiling the getDDEparams  \n")
 
 # make sure all the dde parameters are positive
 dde_paramsL = getDDEparams(pt_l, conc_l)
-dde_paramsD = getDDEparams(pt_d, conc_d)
-dde_paramsG = getDDEparams(pt_g, conc_g)
-dde_paramsT = getDDEparams(pt_t, conc_t)
 
 # test the fitness of the model
 @test best_fitL <= 5e5

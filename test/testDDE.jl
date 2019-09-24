@@ -31,7 +31,7 @@ lower_bnd = [-6.0, -6.0, 1.0, 1.0, -10.0, -10.0]
 upper_bnd = [0.0, 0.0, 6.0, 6.0, 0.0, 0.0]
 
 # max number of steps
-maxSteps = 5
+maxSteps = 1
 j = 6
 times = range(0.0; stop = 95.5, length = 192)
 
