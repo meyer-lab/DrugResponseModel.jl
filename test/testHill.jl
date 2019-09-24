@@ -39,9 +39,6 @@ println("profiling bboptimize in Hill ")
 @profile bboptimize(residue; SearchRange=collect(zip(low, high)), MaxSteps=100, Method =:adaptive_de_rand_1_bin_radiuslimited)
 Profile.print(noisefloor=10.0)
 
-@profile optimize_hill(l_guess, conc_l, g1l, g2l, g1_0l, g2_0l, num_steps)
-Profile.print(noisefloor=10.0)
-
 # do the optimization
 println("### lapatinib ###")
 best_fitL, pt_l = optimize_hill(l_guess, conc_l, g1l, g2l, g1_0l, g2_0l, num_steps)

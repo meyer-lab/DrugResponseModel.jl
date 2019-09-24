@@ -102,9 +102,3 @@ end
 best_fit, parameters = optimization(g1t, g2t, g1_0t, g2_0t, initial_guess, 6, lower_bnd, upper_bnd, maxSteps)
 # profiling the plot function
 @profile plotIt(parameters, 6, "", :false)
-labels = ["control", "conc. 5nM", "conc. 10nM", "conc. 25nM", "conc. 50nM", "conc. 100nM", "conc. 250nM", "conc. 500nM"]
-xlabel = "G1 numbers"
-ylabel = "G2 numbers"
-ymax = 40
-@profile correlationPlot(g1, g2, labels, xlabel, ylabel, ymax)
-
