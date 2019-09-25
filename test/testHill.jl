@@ -15,10 +15,10 @@ num_steps=500
 
 # profiling for Hill model
 residHill(guess, conc_l, g1l, g2l, g1_0l, g2_0l)
-Profile.init()
+Profile.clear()
 println("profiling for residHill function  \n")
 @profile residHill(guess, conc_l, g1l, g2l, g1_0l, g2_0l)
-Profile.print(noisefloor=10.0)
+Profile.print(noisefloor=1.0)
 
 # lower bound
 low = [50.0, 0.01, 0.005, 0.04, 0.005, 0.01, 22.0, 20.0, 6.0, 5.0, 0.0001, 0.0001]
