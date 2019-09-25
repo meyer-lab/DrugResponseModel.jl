@@ -1,3 +1,6 @@
+using Test
+using Profile
+using DrugResponseModel
 
 println("####################  ODE model tests begin ... ")
 
@@ -20,5 +23,4 @@ for i in 1:8
 end
 params_ode = ODEoptimizer(low, upp, p, 5, g1, g2, g1_0, g2_0)
 @profile ODEoptimizer(low, upp, p, 5, g1, g2, g1_0, g2_0)
-@profile ode_plotIt(params_ode, g1, g2, g1_0, g2_0, pop, 8, "", false)
-
+@profile ode_plotIt(params_ode, g1, g2, g1_0, g2_0, pop, 8, "")
