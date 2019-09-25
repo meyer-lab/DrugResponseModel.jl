@@ -6,7 +6,7 @@ using OrdinaryDiffEq, DiffEqParamEstim, Plots, CSV, Optim, DiffEqBase, BlackBoxO
 """
 
 
-##---------------------------- Building the function and residuals -------------------------####
+##---------------------------- Building the function and residuals -------------------------##
 function ODEmodel(du, u, p, t)
     # p = [alpha, beta, gamma1, gamma2, initg1, initg2]
     du[1] = -p[1]*u[1] + 2*p[2]*u[2] - p[3]*u[1]
@@ -26,10 +26,10 @@ function ODEoptimizer(lower_bound::Array, upper_bound::Array, par::Array, i::Int
     # lower and upper bounds for the parameters
     bound = collect(zip(lower_bound, upper_bound))
     # objective function
-    obj = build_loss_objective(prob, alg, L2Loss(times, data); verbose_opt = false)
-
+    obj = build_loss_objective(prob, alg, L2Loss(times, data);
+                               verbose_opt = false)
     # global optimization with black box optimization
-    results_ode = bboptimize(obj; SearchRange=bound, NumDimensions=4, TraceMode=:silent)
+    results_ode = bboptimize(obj; SearchRange=bound, NumDimensions=4, TraceInterval=100)
 
     return best_candidate(results_ode)
 end
