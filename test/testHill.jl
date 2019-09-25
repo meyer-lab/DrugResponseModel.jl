@@ -1,8 +1,3 @@
-using Test
-using Profile
-using CSV
-using DrugResponseModel
-using BlackBoxOptim
 
 println("#####################   hill tests begin ...")
 # import G1, G2, population, and concentrations data
@@ -19,6 +14,8 @@ guess = [125.0, 0.04, 0.007, 0.005, 0.007, 0.005, 39.0, 30.0, 11.0, 20.0, 0.003,
 num_steps=500
 
 # profiling for Hill model
+residHill(guess, conc_l, g1l, g2l, g1_0l, g2_0l)
+Profile.init()
 println("profiling for residHill function  \n")
 @profile residHill(guess, conc_l, g1l, g2l, g1_0l, g2_0l)
 Profile.print(noisefloor=10.0)
@@ -32,10 +29,6 @@ high = [250, 0.01, 0.02, 0.1, 0.2, 0.03, 40.0, 35.0, 15.0, 20.0, 0.05, 0.1]
 println("### lapatinib ###")
 best_fitL, pt_l = optimize_hill(guess, conc_l, g1l, g2l, g1_0l, g2_0l, num_steps)
 
-Profile.init(delay=0.5)
-# profiling the get_dde params
-println("profiling the getDDEparams  \n")
-@profile getDDEparams(pt_l, conc_l)
 # check all the parameters to be positive
 @test all(x -> x>0, pt_l)
 @test length(pt_l) == 12

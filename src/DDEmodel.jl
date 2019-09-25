@@ -13,8 +13,7 @@ end
 # estimate history function
 exp_model(t, p) = @. p[1]*exp(t*p[2]) # exponential model
 
-function find_history(g1, g2)
-
+function find_history(g1::Matrix{Float64}, g2::Matrix{Float64})
     control_g1 = g1[:, 1] # y1
     control_g2= g2[:, 1] # y2
     p0 = [1.0, 0.5]
@@ -32,7 +31,7 @@ function prob_generator(prob, p)
 end
 
 
-function ddesolve(times, g1, g2, g1_0, g2_0, params, j)
+function ddesolve(times::Vector{Float64}, g1::Matrix{Float64}, g2::Matrix{Float64}, g1_0::Vector{Float64}, g2_0::Vector{Float64}, params::Vector{Float64}, j::Int)
     
     # history function
     fit1, fit2 = find_history(g1, g2)
@@ -50,30 +49,18 @@ function ddesolve(times, g1, g2, g1_0, g2_0, params, j)
 end
 
 
-function optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower, upper, num_steps)
+function optimization(g1::Matrix{Float64}, g2::Matrix{Float64}, g1_0::Vector{Float64}, g2_0::Vector{Float64}, initial_guess::Vector{Float64}, j::Int, lower::Vector{Float64}, upper::Vector{Float64}, num_steps::Int)
     times = range(0.0; stop = 95.5, length = 192)
-    data = vcat(g1[:, j]', g2[:, j]')
-    
-    # history function
-    fit1, fit2 = find_history(g1, g2)
-    h(p, t) = [exp_model(t, fit1); exp_model(t, fit2)]
-    bound = collect(zip(lower, upper))
-    # problem
-    prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), initial_guess;
-                      constant_lags = [initial_guess[3], initial_guess[4]])
-    # algorithm to solve
-    alg = MethodOfSteps(AutoTsit5(Rosenbrock23()); constrained=true)
+
+    alg, prob, data = ddesolve(collect(times), g1, g2, g1_0, g2_0, initial_guess, j)
 
     # objective function
     obj = build_loss_objective(prob, alg, L2Loss(times, data);
                                prob_generator=prob_generator,
                                verbose_opt = false)
     # optimizing
-    println("blackbox optim begins ...")
-    results_dde = bboptimize(obj; SearchRange=bound,
-                                    NumDimensions=6, TraceInterval=100, MasSteps=num_steps, Method=:adaptive_de_rand_1_bin_radiuslimited)
-    println("fitness before local optimization : ")
-    println(best_fitness(results_dde))
+    results_dde = bboptimize(obj; SearchRange=collect(zip(lower, upper)),
+                                    NumDimensions=6, TraceMode=:silent, MasSteps=num_steps, Method=:adaptive_de_rand_1_bin_radiuslimited)
     new_guess = best_candidate(results_dde)
     return best_fitness(results_dde), exp.(new_guess)
 end

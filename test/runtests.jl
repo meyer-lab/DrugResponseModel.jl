@@ -1,4 +1,4 @@
-using Test, DrugResponseModel
+using Test, DrugResponseModel, Profile
 
 println("Starting tests")
 
