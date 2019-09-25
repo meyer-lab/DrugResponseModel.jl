@@ -27,10 +27,10 @@ maxSteps = 10000
 times = range(0.0; stop = 95.5, length = 192)
 
 optimization(g1, g2, g1_0, g2_0, initial_guess, 6, lower_bnd, upper_bnd, maxSteps)
-Profile.init()
+Profile.clear()
 println("  \n profiling optimization function   \n")
 @profile optimization(g1, g2, g1_0, g2_0, initial_guess, 6, lower_bnd, upper_bnd, maxSteps)
-Profile.print(noisefloor=10.0)
+Profile.print(noisefloor=2.0)
 
 println("+++++++++++++++++ trials for lapatinib +++++++++++++++++++")
 # Estimating the parameters for all trials
