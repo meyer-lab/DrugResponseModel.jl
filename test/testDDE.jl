@@ -57,6 +57,6 @@ for j in 1:8
 end
 
 
-best_fit, parameters = optimization(g1l, g2l, g1_0l, g2_0l, initial_guess, 6, lower_bnd, upper_bnd, maxSteps)
+best_fit, parameters = optimization(g1, g2, g1_0, g2_0, initial_guess, 6, lower_bnd, upper_bnd, maxSteps)
 # profiling the plot function
 @profile plotIt(parameters, 6, "", :false)
