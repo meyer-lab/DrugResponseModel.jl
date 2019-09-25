@@ -32,13 +32,12 @@ function prob_generator(prob, p)
 end
 
 
-function ddesolve(g1, g2, g1_0, g2_0, params, j)
-    times = range(0.0; stop = 95.5, length = 192)
-    data = vcat(g1[:, j]', g2[:, j]')
+function ddesolve(times, g1, g2, g1_0, g2_0, params, j)
     
     # history function
     fit1, fit2 = find_history(g1, g2)
     h(p, t) = [exp_model(t, fit1); exp_model(t, fit2)]
+    data = vcat(g1[:, j]', g2[:, j]')
 
     # problem
     prob = DDEProblem(DDEmodel, [g1_0[j], g2_0[j]], h, extrema(times), params;
@@ -46,13 +45,10 @@ function ddesolve(g1, g2, g1_0, g2_0, params, j)
     # algorithm to solve
     alg = MethodOfSteps(AutoTsit5(Rosenbrock23()); constrained=true)
 
-    # objective function
-    obj = build_loss_objective(prob, alg, L2Loss(times, data);
-                               prob_generator=prob_generator,
-                               verbose_opt=false)
     # returning estimated parameteres and the objective function
-    return obj(params)
+    return alg, prob, data
 end
+
 
 function optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower, upper, num_steps)
     times = range(0.0; stop = 95.5, length = 192)
@@ -80,9 +76,4 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower, upper, num_st
     println(best_fitness(results_dde))
     new_guess = best_candidate(results_dde)
     return best_fitness(results_dde), exp.(new_guess)
-#     println("local optimization begins")
-#     optim_res = optimize(obj, lower, upper, new_guess, Fminbox(), Optim.Options(show_trace=true))
-#     println("the fitness after local optimization : ")
-#     println(Optim.minimum(optim_res))
-#     return Optim.minimum(optim_res), exp.(Optim.minimizer(optim_res))
 end
