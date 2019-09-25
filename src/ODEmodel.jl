@@ -6,7 +6,7 @@ using OrdinaryDiffEq, DiffEqParamEstim, Plots, CSV, Optim, DiffEqBase, BlackBoxO
 """
 
 
-##---------------------------- Building the function and residuals -------------------------##
+##---------------------------- Building the function and residuals -------------------------####
 function ODEmodel(du, u, p, t)
     # p = [alpha, beta, gamma1, gamma2, initg1, initg2]
     du[1] = -p[1]*u[1] + 2*p[2]*u[2] - p[3]*u[1]
