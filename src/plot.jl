@@ -22,13 +22,12 @@ function plotIt(params::Array, i::Int, title::String, bool::Any)
 
     solution = solve(n_prob, alg; constrained=true)
 
-    plot(n_times, solution(n_times, idxs=1).u, label = "G1 est", dpi = 150, xlabel = "time [hours]", ylabel = "# of cells", lw=2.0, alpha = 0.6, color =:green)
-    plot!(times, g1[:, i], label = "G1", dpi = 150, markersize = 1.0, color=:darkgreen)
-    plot!(n_times, solution(n_times, idxs=2).u, label = "G2 est", legend=bool, legendfontsize=7, fg_legend = :transparent, lw=2.0, alpha = 0.6, color=:sienna)
-    plot!(times, g2[:, i], label = "G2", dpi = 150, markersize = 1.0, color=:darkorange)
-    plot!(n_times, (solution(n_times, idxs=2).u + solution(n_times, idxs=1).u), label = "total est", dpi = 150, lw=2.0, alpha = 0.6, color=:hotpink)
-    plot!(times, pop[i], label = "total", dpi = 150, markersize = 1.0, color=:indigo)
-    plot!( annotation=[ (75,90, text(title, 12)) ])
+    plot(n_times, solution(n_times, idxs=1).u, label = "G1 est", dpi = 150, title = title, xlabel = "time [hours]", ylabel = "# of cells", lw=2.0, alpha = 0.6)
+    scatter!(times, g1[:, i], label = "G1", dpi = 150, markersize = 1.0, marker=([:dot :d], 1, 0.8, Plots.stroke(0.1, :gray)))
+    plot!(n_times, solution(n_times, idxs=2).u, label = "G2 est", legend=bool, legendfontsize=5, fg_legend = :transparent, lw=2.0, alpha = 0.6)
+    scatter!(times, g2[:, i], label = "G2", dpi = 150, markersize = 1.0, marker=([:dot :d], 1, 0.8, Plots.stroke(0.1, :gray)))
+    plot!(n_times, (solution(n_times, idxs=2).u + solution(n_times, idxs=1).u), label = "total est", dpi = 150, lw=2.0, alpha = 0.6)
+    scatter!(times, pop[i], label = "total", dpi = 150, markersize = 1.0, marker=([:dot :d], 1, 0.8, Plots.stroke(0.1, :gray)))
 end
 
 #-------------------------- plot for the G1 G2 correlation ---------------------------#
@@ -42,9 +41,8 @@ function correlationPlot(g1, g2, labels, xlabel, ylabel, ymax)
     p6 = scatter(g1[:,6], g2[:,6], title = labels[6], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
     p7 = scatter(g1[:,7], g2[:,7], title = labels[7], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
     p8 = scatter(g1[:,8], g2[:,8], title = labels[8], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
-    plot(p1, p2, p3, p4, p5, p6, p7, p8, legend=:false, layout=(2,4))
-    plot!(size=(1200,600), dpi=200)
+    plot(p1, p2, p3, p4, p5, p6, p7, p8, legend=:false)
+    plot!(size=(1100,1000))
     ylims!((0, ymax))
     xlims!((0, ymax))
-    savefig("corr.png")
 end
