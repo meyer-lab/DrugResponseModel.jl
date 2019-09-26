@@ -1,6 +1,6 @@
-using Test, DrugResponseModel
+using Test, DrugResponseModel, Profile
 
-println("Starting tests")
+println("Start tests")
 
 include("testODE.jl")
 include("testDDE.jl")

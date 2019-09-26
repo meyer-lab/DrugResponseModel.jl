@@ -1,6 +1,6 @@
 using Plots, CSV, DataFrames
 include("importData.jl")
-include("DDEmodel.jl")
+include("Hill.jl")
 gr()
 """ 
         This file contains a function to plot the parameters against the  drug concentrations, in a 2x2 subplot.
@@ -18,7 +18,7 @@ function plotIt(params::Array, i::Int, title::String, bool::Any)
     _, pop, g2, g1, g2_0, g1_0 = setup_data("lapatinib")
     times = range(0.0; stop = 95.5, length = 192)
     n_times = range(0.0; stop = 200.0, length = 400)
-    alg, n_prob, _ = ddesolve(n_times, g1, g2, g1_0, g2_0, params, i)
+    alg, n_prob, _ = ddesolve(collect(n_times), g1, g2, g1_0, g2_0, params, i)
 
     solution = solve(n_prob, alg; constrained=true)
 

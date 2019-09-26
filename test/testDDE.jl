@@ -1,8 +1,3 @@
-# FactCheck and Base.Test are two functions to use for testing
-using Test
-using Profile
-using DrugResponseModel
-
 println("####################  DDE model tests begin ... ")
 ##------------------ Import data -----------------------##
 _, pop, g2, g1, g1_0, g2_0 = setup_data("lapatinib")
@@ -28,32 +23,27 @@ lower_bnd = [-6.0, -6.0, 1.0, 1.0, -10.0, -10.0]
 upper_bnd = [0.0, 0.0, 6.0, 6.0, 0.0, 0.0]
 
 # max number of steps
-maxSteps = 1e4
+maxSteps = 10000
 times = range(0.0; stop = 95.5, length = 192)
 
-# profiling to DDEmodel
-println("  \n profiling find_history  \n ")
-@profile find_history(g1, g2)
-Profile.print(noisefloor=10.0)
-println("  \n profiling ddesolve function  \n")
-@profile ddesolve(times, g1, g2, g1_0, g2_0, initial_guess, 6)
-Profile.print(noisefloor=10.0)
+optimization(g1, g2, g1_0, g2_0, initial_guess, 6, lower_bnd, upper_bnd, maxSteps)
+Profile.clear()
 println("  \n profiling optimization function   \n")
 @profile optimization(g1, g2, g1_0, g2_0, initial_guess, 6, lower_bnd, upper_bnd, maxSteps)
-Profile.print(noisefloor=10.0)
+Profile.print(noisefloor=2.0)
 
 println("+++++++++++++++++ trials for lapatinib +++++++++++++++++++")
 # Estimating the parameters for all trials
-for j in 1:8
+for j in 1:2
     best_fit, parameters = optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower_bnd, upper_bnd, maxSteps)
     println("trial number $j")
     # to test the estimated parameters are still in the range
     @test length(parameters) == 6
     for i in 1:6
         @test exp.(upper_bnd[i]) >= parameters[i] >= exp.(lower_bnd[i])
-        @test best_fit <= 9000
     end
 
+    @test best_fit <= 9000
 end
 
 

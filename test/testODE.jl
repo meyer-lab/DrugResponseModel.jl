@@ -24,4 +24,3 @@ end
 params_ode = ODEoptimizer(low, upp, p, 5, g1, g2, g1_0, g2_0)
 @profile ODEoptimizer(low, upp, p, 5, g1, g2, g1_0, g2_0)
 @profile ode_plotIt(params_ode, g1, g2, g1_0, g2_0, pop, 8, "")
-
