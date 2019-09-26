@@ -26,10 +26,9 @@ function ODEoptimizer(lower_bound::Array, upper_bound::Array, par::Array, i::Int
     # lower and upper bounds for the parameters
     bound = collect(zip(lower_bound, upper_bound))
     # objective function
-    obj = build_loss_objective(prob, alg, L2Loss(times, data);
-                               verbose_opt = false)
+    obj = build_loss_objective(prob, alg, L2Loss(times, data); verbose_opt = false)
     # global optimization with black box optimization
-    results_ode = bboptimize(obj; SearchRange=bound, NumDimensions=4, TraceInterval=100)
+    results_ode = bboptimize(obj; SearchRange=bound, NumDimensions=4, TraceMode=:silent)
 
     return best_candidate(results_ode)
 end
