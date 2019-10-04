@@ -69,11 +69,8 @@ function optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower, upper, num_st
                                prob_generator=prob_generator,
                                verbose_opt = false)
     # optimizing
-    println("blackbox optim begins ...")
     results_dde = bboptimize(obj; SearchRange=bound,
-                                    NumDimensions=6, TraceInterval=100, MasSteps=num_steps, Method=:adaptive_de_rand_1_bin_radiuslimited)
-    println("fitness before local optimization : ")
-    println(best_fitness(results_dde))
+                                    NumDimensions=6, TraceMode=:silent, MasSteps=num_steps, Method=:adaptive_de_rand_1_bin_radiuslimited)
     new_guess = best_candidate(results_dde)
     return best_fitness(results_dde), exp.(new_guess)
 end
