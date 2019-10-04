@@ -1,8 +1,3 @@
-# FactCheck and Base.Test are two functions to use for testing
-using Test
-using Profile
-using DrugResponseModel
-
 println("####################  DDE model tests begin ... ")
 ##------------------ Import data -----------------------##
 conc, pop, g2, g1, g1_0, g2_0 = setup_data("lapatinib")
@@ -31,16 +26,11 @@ upper_bnd = [0.0, 0.0, 6.0, 6.0, 0.0, 0.0]
 maxSteps = 10000
 times = range(0.0; stop = 95.5, length = 192)
 
-# profiling to DDEmodel
-println("  \n profiling find_history  \n ")
-@profile find_history(g1, g2)
-Profile.print(noisefloor=10.0)
-println("  \n profiling ddesolve function  \n")
-@profile ddesolve(times, g1, g2, g1_0, g2_0, initial_guess, 6)
-Profile.print(noisefloor=10.0)
+optimization(g1, g2, g1_0, g2_0, initial_guess, 6, lower_bnd, upper_bnd, maxSteps)
+Profile.clear()
 println("  \n profiling optimization function   \n")
 @profile optimization(g1, g2, g1_0, g2_0, initial_guess, 6, lower_bnd, upper_bnd, maxSteps)
-Profile.print(noisefloor=10.0)
+Profile.print(noisefloor=2.0)
 
 parameters = zeros(6, 8)
 println("+++++++++++++++++ trials for lapatinib +++++++++++++++++++")
@@ -54,6 +44,7 @@ for j in 1:8
         @test best_fit <= 9000
     end
 
+    @test best_fit <= 9000
 end
 
 

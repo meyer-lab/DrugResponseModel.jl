@@ -1,14 +1,16 @@
+
+__precompile__()
 module DrugResponseModel
 
 using DelayDiffEq, DiffEqParamEstim, DataFrames, BlackBoxOptim, Plots, CSV, DataFrames
 
-include("DDEmodel.jl")
 include("ODEmodel.jl")
 include("plot.jl")
 include("Hill.jl")
-include("importData.jl")
 
 
 export setup_data, remove_peaks, find_history, ODEoptimizer, ode_plotIt, ddesolve, optimization, plotIt, residHill, optimize_hill, getDDEparams, correlationPlot, plot_all, plot_parameters, ODEplot_all
+
+precompile(optimization, (Matrix{Float64}, Matrix{Float64}, Vector{Float64}, Vector{Float64}, Vector{Float64}, Int, Vector{Float64}, Vector{Float64}, Int))
 
 end # module

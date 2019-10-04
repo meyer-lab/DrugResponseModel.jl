@@ -29,7 +29,7 @@ function residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
         # collecting all the DDE model parameters
         pp = log.([alpha, beta, tau1, tau2, gamma1, gamma2])
         # calculating the residulas for this set of parameters
-        alg, prob, data = ddesolve(times, g1, g2, g1_0, g2_0, pp, ii)
+        alg, prob, data = ddesolve(collect(times), g1, g2, g1_0, g2_0, pp, ii)
         obj = build_loss_objective(prob, alg, L2Loss(times, data);
                                prob_generator=prob_generator,
                                verbose_opt=false)
