@@ -58,7 +58,7 @@ function ode_plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Ar
     plot!( annotation=[ (75,90, text(title, 12)) ])
 end
 
-function ODEplot_all(params_ode::Array{Float64,2}, g1_l::Matrix, g2_l::Matrix, g1_0_l::Array, g2_0_l::Array, pop_l)
+function ODEplot_all(params_ode, g1_l::Matrix, g2_l::Matrix, g1_0_l::Array, g2_0_l::Array, pop_l)
     # plotting the fitted curves
     r1 = ode_plotIt(params_ode[:, 1], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 1, "", false)
     r2 = ode_plotIt(params_ode[:, 2], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 2, "", false)

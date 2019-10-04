@@ -49,7 +49,7 @@ function correlationPlot(g1::Matrix, g2::Matrix, labels::Array, xlabel::String, 
 end
 
 
-function plot_all(parameters::Array, pop, g2::Matrix, g1::Matrix, g2_0::Array, g1_0::Array)
+function plot_all(parameters, pop, g2::Matrix, g1::Matrix, g2_0::Array, g1_0::Array)
     # i showas the trial number, which could be from 1:control, ..., 8: maximum drug concentraation
     p1 = plotIt(parameters[:, 1], 1, "", false, pop, g2, g1, g2_0, g1_0)
     p2 = plotIt(parameters[:, 2], 2, "", false, pop, g2, g1, g2_0, g1_0)
@@ -64,7 +64,7 @@ function plot_all(parameters::Array, pop, g2::Matrix, g1::Matrix, g2_0::Array, g
     ylims!((0.0, 120.0))
 end
 
-function plot_parameters(conc_l::Array, parameters::Array)
+function plot_parameters(conc_l::Array, parameters)
     new_conc = append!([0.5], conc_l[2:end])
     conc = log.(new_conc)
     p1 = plot(conc, parameters[1,:], xlabel = "drug conc. [nM]", label="", lw= 2.0, alpha = 0.6, color=[:black :gray], line=(:dot, 1), marker=([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
