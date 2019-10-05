@@ -1,6 +1,6 @@
 println("####################  DDE model tests begin ... ")
 ##------------------ Import data -----------------------##
-_, pop, g2, g1, g1_0, g2_0 = setup_data("lapatinib")
+conc, pop, g2, g1, g1_0, g2_0 = setup_data("lapatinib")
 
 @test size(pop[:, 1],1) == size(g2[:, 1],1)
 @test size(pop[:, 1],1) == size(g1[:, 1],1)
@@ -32,21 +32,24 @@ println("  \n profiling optimization function   \n")
 @profile optimization(g1, g2, g1_0, g2_0, initial_guess, 6, lower_bnd, upper_bnd, maxSteps)
 Profile.print(noisefloor=2.0)
 
+parameters = zeros(6, 8)
 println("+++++++++++++++++ trials for lapatinib +++++++++++++++++++")
 # Estimating the parameters for all trials
-for j in 1:2
-    best_fit, parameters = optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower_bnd, upper_bnd, maxSteps)
+for j in 1:8
+    best_fit, parameters[:, j] = optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower_bnd, upper_bnd, maxSteps)
     println("trial number $j")
     # to test the estimated parameters are still in the range
-    @test length(parameters) == 6
     for i in 1:6
-        @test exp.(upper_bnd[i]) >= parameters[i] >= exp.(lower_bnd[i])
+        @test exp.(upper_bnd[i]) >= parameters[i,j] >= exp.(lower_bnd[i])
+        @test best_fit <= 9000
     end
 
     @test best_fit <= 9000
 end
 
 
-best_fit, parameters = optimization(g1, g2, g1_0, g2_0, initial_guess, 6, lower_bnd, upper_bnd, maxSteps)
+best_fit, parameter = optimization(g1, g2, g1_0, g2_0, initial_guess, 6, lower_bnd, upper_bnd, maxSteps)
 # profiling the plot function
-@profile plotIt(parameters, 6, "", :false)
+plotIt(parameter, 6, "", :false, pop, g2, g1, g2_0, g1_0)
+plot_all(parameters, pop, g2, g1, g2_0, g1_0)
+plot_parameters(conc, parameters)

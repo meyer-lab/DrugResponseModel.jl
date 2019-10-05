@@ -53,14 +53,13 @@ function optimization(g1::Matrix{Float64}, g2::Matrix{Float64}, g1_0::Vector{Flo
     times = range(0.0; stop = 95.5, length = 192)
 
     alg, prob, data = ddesolve(collect(times), g1, g2, g1_0, g2_0, initial_guess, j)
-
+    bound = collect(zip(lower, upper))
     # objective function
     obj = build_loss_objective(prob, alg, L2Loss(times, data);
                                prob_generator=prob_generator,
                                verbose_opt = false)
     # optimizing
-    results_dde = bboptimize(obj; SearchRange=collect(zip(lower, upper)),
-                                    NumDimensions=6, TraceMode=:silent, MasSteps=num_steps, Method=:adaptive_de_rand_1_bin_radiuslimited)
+    results_dde = bboptimize(obj; SearchRange=bound, NumDimensions=6, TraceMode=:silent, MasSteps=num_steps, Method=:adaptive_de_rand_1_bin_radiuslimited)
     new_guess = best_candidate(results_dde)
     return best_fitness(results_dde), exp.(new_guess)
 end
