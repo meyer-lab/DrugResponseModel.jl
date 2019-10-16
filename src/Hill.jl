@@ -24,8 +24,8 @@ function residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
         beta = hill(append!([hillParams[1], hillParams[6], hillParams[5]], [hillParams[2]]), concentrations[ii])
         tau1 = hill(append!([hillParams[1], hillParams[8], hillParams[7]], [hillParams[2]]), concentrations[ii])
         tau2 = hill(append!([hillParams[1], hillParams[10], hillParams[9]], [hillParams[2]]), concentrations[ii])
-        gamma1 = hill(append!([hillParams[1], 0.0, hillParams[11]], [hillParams[2]]), concentrations[ii])
-        gamma2 = hill(append!([hillParams[1], 0.0, hillParams[12]], [hillParams[2]]), concentrations[ii])
+        gamma1 = hill(append!([hillParams[13], 0.0, hillParams[11]], [hillParams[2]]), concentrations[ii])
+        gamma2 = hill(append!([hillParams[14], 0.0, hillParams[12]], [hillParams[2]]), concentrations[ii])
 
         # collecting all the DDE model parameters
         pp = log.([alpha, beta, tau1, tau2, gamma1, gamma2])
@@ -45,9 +45,9 @@ function optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, num_steps)
     # changing the objective function to be compatible with bboptimize
     residue(hillParams) = residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
     # lower bound
-    low = [1.0, 0.1, 0.005, 0.04, 0.005, 0.01, 12.0, 10.0, 6.0, 5.0, 0.00001, 0.00001]
+    low = [1.0, 0.1, 0.005, 0.04, 0.005, 0.01, 12.0, 10.0, 6.0, 5.0, 0.00001, 0.00001, 1.0, 1.0]
     # upper bound
-    high = [14, 10.0, 0.1, 0.1, 0.2, 0.03, 40.0, 35.0, 15.0, 20.0, 0.05, 0.01]
+    high = [14, 10.0, 0.1, 0.1, 0.2, 0.03, 40.0, 35.0, 15.0, 20.0, 0.05, 0.01, 14.0, 14.0]
 
     res = bboptimize(residue; SearchRange=collect(zip(low, high)), MaxSteps=num_steps, TraceInterval=100, Method =:adaptive_de_rand_1_bin_radiuslimited)
     new_guess = best_candidate(res)
@@ -61,8 +61,8 @@ function getDDEparams(p, concentrations)
         effects[2, i] = hill(append!([p[1], p[6]], [p[5], p[2]]), concentrations[i])
         effects[3, i] = hill(append!([p[1], p[8]], [p[7], p[2]]), concentrations[i])
         effects[4, i] = hill(append!([p[1], p[10]], [p[9], p[2]]), concentrations[i])
-        effects[5, i] = hill(append!([p[1], 0.0, p[11]], [p[2]]), concentrations[i])
-        effects[6, i] = hill(append!([p[1], 0.0, p[12]], [p[2]]), concentrations[i])
+        effects[5, i] = hill(append!([p[13], 0.0, p[11]], [p[2]]), concentrations[i])
+        effects[6, i] = hill(append!([p[14], 0.0, p[12]], [p[2]]), concentrations[i])
     end
     return effects
 end
