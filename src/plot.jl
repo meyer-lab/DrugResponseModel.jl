@@ -26,7 +26,7 @@ function plotIt(params::Array, i::Int, title::String, bool::Any, pop, g2::Matrix
     plot!(n_times, solution(n_times, idxs=2).u, label = "G2 est", legend=bool, legendfontsize=7, fg_legend = :transparent, lw=2.0, alpha = 0.6, color=:sienna)
     plot!(times, g2[:, i], label = "G2", dpi = 150, markersize = 1.0, color=:darkorange)
     plot!(n_times, (solution(n_times, idxs=2).u + solution(n_times, idxs=1).u), label = "total est", dpi = 150, lw=2.0, alpha = 0.6, color=:hotpink)
-    plot!(times, pop[i], label = "total", dpi = 150, markersize = 1.0, color=:indigo)
+    plot!(times, pop[i], label = "total", dpi = 100, markersize = 1.0, color=:indigo)
     plot!( annotation=[ (75,90, text(title, 12)) ])
 end
 
@@ -42,7 +42,7 @@ function correlationPlot(g1::Matrix, g2::Matrix, labels::Array, xlabel::String, 
     p7 = scatter(g1[:,7], g2[:,7], title = labels[7], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
     p8 = scatter(g1[:,8], g2[:,8], title = labels[8], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
     plot(p1, p2, p3, p4, p5, p6, p7, p8, legend=:false, layout=(2,4))
-    plot!(size=(1200,600), dpi=200)
+    plot!(size=(1200,600), dpi=100)
     ylims!((0, ymax))
     xlims!((0, ymax))
 #     savefig("corr.png")
@@ -60,7 +60,7 @@ function plot_all(parameters, pop, g2::Matrix, g1::Matrix, g2_0::Array, g1_0::Ar
     p7 = plotIt(parameters[:, 7], 7, "", false, pop, g2, g1, g2_0, g1_0)
     p8 = plotIt(parameters[:, 8], 8, "", :topleft, pop, g2, g1, g2_0, g1_0)
     plot(p1, p2, p3, p4, p5, p6, p7, p8, layout=(2,4))
-    plot!(size = (1200, 600), dpi = 200)
+    plot!(size = (1200, 600), dpi = 100)
     ylims!((0.0, 120.0))
 end
 
@@ -86,5 +86,5 @@ function plot_parameters(conc_l::Array, parameters)
         ylabel = "gamma2"); ylims!(0.0, 1.2*maximum(parameters[6,:]))
 
     plot(p1, p2, p3, p4, p5, p6)
-    plot!(size = (1200, 600), dpi = 200)
+    plot!(size = (1200, 600), dpi = 100)
 end
