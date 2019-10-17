@@ -65,8 +65,8 @@ function plot_all(parameters, pop, g2::Matrix, g1::Matrix, g2_0::Array, g1_0::Ar
 end
 
 function plot_parameters(conc_l::Array, parameters)
-    new_conc = append!([0.5], conc_l[2:end])
-    conc = log.(new_conc)
+#     new_conc = append!([0.5], conc_l[2:end])
+    conc = log.(conc_l)
     p1 = plot(conc, parameters[1,:], xlabel = "drug conc. [nM]", label="", lw= 2.0, alpha = 0.6, color=[:black :gray], line=(:dot, 1), marker=([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "alpha"); ylims!(0.0, 1.2*maximum(parameters[1,:]))
 
