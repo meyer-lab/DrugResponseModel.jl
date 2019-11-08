@@ -67,16 +67,30 @@ function getDDEparams(p, concentrations)
     return effects
 end
 
-function combination(p1, p2)
-    """ A function to combine the two drugs by 50% effect, and reporting the new effect.
-    For instance, p1 is lapatinib (a drug extending G1 phase) and p2 is gemcitabine 
-    (a drug extending G2 phase). Here we add 50% of each of their effects to get
-    the combination effect. """
-    CombinationEffect = zeros(6,8)
-    for i in 1:8
-        for j in 1:6
-            CombinationEffect[j,i] = 0.5*p1[j,i] + 0.5*p2[j,i]
+function ParamForBliss(p)
+    """ To calculate Bliss independence drug effect
+    we assume delays are constant, death rates are additive,
+    and will keep the alpha and beta intact."""
+    par = zeros(3,8)
+    par[1,:] = p[1,:] # alpha stays the same
+    par[2,:] = p[2,:] # beta stays the same
+    par[3,:] = p[5,:] + p[6,:] # additivity assumption for death rates
+    return par
+end
+
+function BlissCombination(p1, p2)
+    """ A function to calculate Bliss independence for drug combination assuming
+    the two drugs hit different pathways and they effect completely independently. """
+
+    param1 = ParamForBliss(p1)
+    param2 = ParamForBliss(p2)
+    Effect = zeros(8,8,3)
+    for i in 1:3
+        for j in 1:8
+            for k in 1:8
+                Effect[j,k,i] = param1[i,j] + param2[i,k] - param1[i,j] * param2[i,k]
+                end
+            end
         end
-    end
-    return CombinationEffect
-end       
+    return Effect
+end
