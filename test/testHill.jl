@@ -38,3 +38,13 @@ dde_paramsL = getDDEparams(pt_l, conc_l)
 
 # test the fitness of the model
 @test best_fitL <= 5e4
+
+# testing Bliss helper function
+pBliss = ParamForBliss(dde_paramsL)
+
+@test maximum(pBliss) <= 1.0
+
+# testing Bliss combination
+combo = BlissCombination(dde_paramsL, dde_paramsL) # a drug with itself just to test the function
+@test maximum(combo) <= 1.0
+

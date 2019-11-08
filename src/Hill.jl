@@ -4,9 +4,9 @@ include("DDEmodel.jl")
         This file contains Hill function, residuals of Hill based off of DDE, and optimization of it.
 """
 
-hill(p, concentration) = p[2] + ((p[3]-p[2])/(1 + ((p[1])/(concentration))^p[4]))
+hill(p::Array{Float64}, concentration::Float64) = p[2] + ((p[3]-p[2])/(1 + ((p[1])/(concentration))^p[4]))
 
-function residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
+function residHill(hillParams::Array{Float64}, concentrations::Array{Float64}, g1::Matrix{Float64}, g2::Matrix{Float64}, g1_0::Array{Float64}, g2_0::Array{Float64})
     """ This functions takes in hill parameters for all the concentrations and calculates
     DDE parameters, passes them to residual function and based off of these, optimizes the model
     and estimates hill parameters. """
@@ -39,7 +39,7 @@ function residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
 end
 
 # optimization function for the Hill model
-function optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, num_steps, lowEC50, highEC50)
+function optimize_hill(guess::Array{Float64}, concentrations::Array{Float64}, g1::Matrix{Float64}, g2::Matrix{Float64}, g1_0::Array{Float64}, g2_0::Array{Float64}, num_steps::Int, lowEC50::Float64, highEC50::Float64)
     """ A function to do the optimization given the lower and upper bound of estimation space. """
     # changing the objective function to be compatible with bboptimize
     residue(hillParams) = residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
@@ -53,7 +53,7 @@ function optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, num_steps, low
     return best_fitness(res), new_guess
 end
 
-function getDDEparams(p, concentrations)
+function getDDEparams(p::Array{Float64}, concentrations::Array{Float64})
     """ A function to convert the estimated hill parameters back to DDE parameters. """
     effects = zeros(6, 8)
     for i in 1:8
@@ -78,7 +78,7 @@ function ParamForBliss(p)
     return par
 end
 
-function BlissCombination(p1, p2)
+function BlissCombination(p1::Matrix{Float64}, p2::Matrix{Float64})
     """ A function to calculate Bliss independence for drug combination assuming
     the two drugs hit different pathways and they effect completely independently. """
 
