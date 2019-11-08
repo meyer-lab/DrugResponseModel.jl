@@ -88,14 +88,3 @@ function plot_parameters(conc_l::Array, parameters)
     plot(p1, p2, p3, p4, p5, p6)
     plot!(size = (1200, 600), dpi = 150)
 end
-
-using Plots; pyplot();
-function plot3D(parsL, parsG, j::Int, title::String)
-
-    param1 = ParamForBliss(parsL)
-    param2 = ParamForBliss(parsG)
-    combin = BlissCombination(parsL, parsG)
-
-    plot(param1[j,:],param2[j,:],combin[:,:,j],st=:surface,camera=(-40,20), xlabel="lapatinib", ylabel="gemcitabine", zlabel="combination", title=title)
-    plot!(size = (800, 600), dpi=150)
-end
