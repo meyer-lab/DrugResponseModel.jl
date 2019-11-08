@@ -37,7 +37,7 @@ best_fitL, pt_l = optimize_hill(guess, conc_l, g1l, g2l, g1_0l, g2_0l, num_steps
 dde_paramsL = getDDEparams(pt_l, conc_l)
 
 # test the fitness of the model
-@test best_fitL <= 5e4
+@test best_fitL <= 7e4
 
 # testing Bliss helper function
 pBliss = ParamForBliss(dde_paramsL)
