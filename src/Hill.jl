@@ -1,11 +1,9 @@
 include("DDEmodel.jl")
+
 """ 
         This file contains Hill function, residuals of Hill based off of DDE, and optimization of it.
 """
 
-
-# hillParams should be something like [EC50, min, max, b]
-# hill(p, concentration) =  p[2] + ((p[3] - p[2]) / (1 + 10^((concentration - p[1])*p[4])))
 hill(p, concentration) = p[2] + ((p[3]-p[2])/(1 + ((p[1])/(concentration))^p[4]))
 
 function residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
@@ -42,12 +40,13 @@ end
 
 # optimization function for the Hill model
 function optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, num_steps, lowEC50, highEC50)
+    """ A function to do the optimization given the lower and upper bound of estimation space. """
     # changing the objective function to be compatible with bboptimize
     residue(hillParams) = residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
     # lower bound
-    low = [lowEC50, 0.1, 0.005, 0.04, 0.005, 0.01, 12.0, 10.0, 6.0, 5.0, lowEC50, 0.00001, lowEC50, 0.00001]
+    low = [lowEC50, 0.1, 0.005, 0.04, 0.005, 0.01, 6.0, 5.0, 6.0, 5.0, lowEC50, 0.00001, lowEC50, 0.00001]
     # upper bound
-    high = [highEC50, 10.0, 0.1, 0.1, 0.2, 0.03, 40.0, 35.0, 15.0, 20.0, highEC50, 0.05, highEC50, 0.01]
+    high = [highEC50, 10.0, 0.1, 0.1, 0.2, 0.03, 30.0, 25.0, 30.0, 25.0, highEC50, 0.05, highEC50, 0.01]
 
     res = bboptimize(residue; SearchRange=collect(zip(low, high)), MaxSteps=num_steps, TraceInterval=100, Method =:adaptive_de_rand_1_bin_radiuslimited)
     new_guess = best_candidate(res)
@@ -55,6 +54,7 @@ function optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, num_steps, low
 end
 
 function getDDEparams(p, concentrations)
+    """ A function to convert the estimated hill parameters back to DDE parameters. """
     effects = zeros(6, 8)
     for i in 1:8
         effects[1, i] = hill(append!([p[1], p[4]], [p[3], p[2]]), concentrations[i])
@@ -66,3 +66,17 @@ function getDDEparams(p, concentrations)
     end
     return effects
 end
+
+function combination(p1, p2)
+    """ A function to combine the two drugs by 50% effect, and reporting the new effect.
+    For instance, p1 is lapatinib (a drug extending G1 phase) and p2 is gemcitabine 
+    (a drug extending G2 phase). Here we add 50% of each of their effects to get
+    the combination effect. """
+    CombinationEffect = zeros(6,8)
+    for i in 1:8
+        for j in 1:6
+            CombinationEffect[j,i] = 0.5*p1[j,i] + 0.5*p2[j,i]
+        end
+    end
+    return CombinationEffect
+end       
