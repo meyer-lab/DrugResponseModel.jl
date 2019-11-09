@@ -85,11 +85,9 @@ function BlissCombination(p1::Matrix{Float64}, p2::Matrix{Float64})
     param1 = ParamForBliss(p1)
     param2 = ParamForBliss(p2)
     Effect = zeros(8,8,3)
-    for i in 1:3
-        for j in 1:8
-            for k in 1:8
-                Effect[j,k,i] = param1[i,j] + param2[i,k] - param1[i,j] * param2[i,k]
-                end
+    for j in 1:8
+        for k in 1:8
+            Effect[j,k,:] .= param1[:,j] .+ param2[:,k] .- param1[:,j] .* param2[:,k]
             end
         end
     return Effect
