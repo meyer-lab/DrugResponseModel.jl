@@ -26,7 +26,7 @@ function plotIt(params::Array, i::Int, title::String, bool::Any, pop, g2::Matrix
     plot!(n_times, solution(n_times, idxs=2).u, label = "G2 est", legend=bool, legendfontsize=7, fg_legend = :transparent, lw=2.0, alpha = 0.6, color=:sienna)
     plot!(times, g2[:, i], label = "G2", dpi = 150, markersize = 1.0, color=:darkorange)
     plot!(n_times, (solution(n_times, idxs=2).u + solution(n_times, idxs=1).u), label = "total est", dpi = 150, lw=2.0, alpha = 0.6, color=:hotpink)
-    plot!(times, pop[i], label = "total", dpi = 100, markersize = 1.0, color=:indigo)
+    plot!(times, pop[i], label = "total", dpi = 150, markersize = 1.0, color=:indigo)
     plot!( annotation=[ (75,90, text(title, 12)) ])
 end
 
@@ -42,7 +42,7 @@ function correlationPlot(g1::Matrix, g2::Matrix, labels::Array, xlabel::String, 
     p7 = scatter(g1[:,7], g2[:,7], title = labels[7], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
     p8 = scatter(g1[:,8], g2[:,8], title = labels[8], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
     plot(p1, p2, p3, p4, p5, p6, p7, p8, legend=:false, layout=(2,4))
-    plot!(size=(1200,600), dpi=100)
+    plot!(size=(1200,600), dpi=150)
     ylims!((0, ymax))
     xlims!((0, ymax))
 #     savefig("corr.png")
@@ -60,7 +60,7 @@ function plot_all(parameters, pop, g2::Matrix, g1::Matrix, g2_0::Array, g1_0::Ar
     p7 = plotIt(parameters[:, 7], 7, "", false, pop, g2, g1, g2_0, g1_0)
     p8 = plotIt(parameters[:, 8], 8, "", :topleft, pop, g2, g1, g2_0, g1_0)
     plot(p1, p2, p3, p4, p5, p6, p7, p8, layout=(2,4))
-    plot!(size = (1200, 600), dpi = 100)
+    plot!(size = (1200, 600), dpi = 150)
     ylims!((0.0, 120.0))
 end
 
@@ -74,10 +74,10 @@ function plot_parameters(conc_l::Array, parameters)
         ylabel = "beta"); ylims!(0.0, 1.2*maximum(parameters[2,:]))
 
     p3 = plot(conc, parameters[3,:], xlabel = "drug conc. [nM]", label="", lw= 2.0, alpha = 0.6, color=[:black :gray], line=(:dot, 1), marker=([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "tau1"); ylims!(0.0, 1.2*maximum(parameters[3,:]))
+        ylabel = "tau1")
 
     p4 = plot(conc, parameters[4,:], xlabel = "drug conc. [nM]", label = "", lw= 2.0, alpha = 0.6, color=[:black :gray], line=(:dot, 1), marker=([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "tau2"); ylims!(0.0, 1.2*maximum(parameters[4,:]))
+        ylabel = "tau2")
 
     p5 = plot(conc, parameters[5,:], xlabel = "drug conc. [nM]", label = "", lw= 2.0, alpha = 0.6, color=[:black :gray], line=(:dot, 1), marker=([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "gamma1"); ylims!(0.0, 1.2*maximum(parameters[5,:]))
@@ -86,5 +86,5 @@ function plot_parameters(conc_l::Array, parameters)
         ylabel = "gamma2"); ylims!(0.0, 1.2*maximum(parameters[6,:]))
 
     plot(p1, p2, p3, p4, p5, p6)
-    plot!(size = (1200, 600), dpi = 100)
+    plot!(size = (1200, 600), dpi = 150)
 end

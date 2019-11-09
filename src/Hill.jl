@@ -1,14 +1,12 @@
 include("DDEmodel.jl")
+
 """ 
         This file contains Hill function, residuals of Hill based off of DDE, and optimization of it.
 """
 
+hill(p::Array{Float64}, concentration::Float64) = p[2] + ((p[3]-p[2])/(1 + ((p[1])/(concentration))^p[4]))
 
-# hillParams should be something like [EC50, min, max, b]
-# hill(p, concentration) =  p[2] + ((p[3] - p[2]) / (1 + 10^((concentration - p[1])*p[4])))
-hill(p, concentration) = p[2] + ((p[3]-p[2])/(1 + ((p[1])/(concentration))^p[4]))
-
-function residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
+function residHill(hillParams::Array{Float64}, concentrations::Array{Float64}, g1::Matrix{Float64}, g2::Matrix{Float64}, g1_0::Array{Float64}, g2_0::Array{Float64})
     """ This functions takes in hill parameters for all the concentrations and calculates
     DDE parameters, passes them to residual function and based off of these, optimizes the model
     and estimates hill parameters. """
@@ -41,20 +39,22 @@ function residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
 end
 
 # optimization function for the Hill model
-function optimize_hill(guess, concentrations, g1, g2, g1_0, g2_0, num_steps, lowEC50, highEC50)
+function optimize_hill(guess::Array{Float64}, concentrations::Array{Float64}, g1::Matrix{Float64}, g2::Matrix{Float64}, g1_0::Array{Float64}, g2_0::Array{Float64}, num_steps::Int, lowEC50::Float64, highEC50::Float64)
+    """ A function to do the optimization given the lower and upper bound of estimation space. """
     # changing the objective function to be compatible with bboptimize
     residue(hillParams) = residHill(hillParams, concentrations, g1, g2, g1_0, g2_0)
     # lower bound
-    low = [lowEC50, 0.1, 0.005, 0.04, 0.005, 0.01, 12.0, 10.0, 6.0, 5.0, lowEC50, 0.00001, lowEC50, 0.00001]
+    low = [lowEC50, 0.1, 0.005, 0.04, 0.005, 0.01, 6.0, 5.0, 6.0, 5.0, lowEC50, 0.00001, lowEC50, 0.00001]
     # upper bound
-    high = [highEC50, 10.0, 0.1, 0.1, 0.2, 0.03, 40.0, 35.0, 15.0, 20.0, highEC50, 0.05, highEC50, 0.01]
+    high = [highEC50, 10.0, 0.1, 0.1, 0.2, 0.03, 30.0, 25.0, 30.0, 25.0, highEC50, 0.05, highEC50, 0.01]
 
     res = bboptimize(residue; SearchRange=collect(zip(low, high)), MaxSteps=num_steps, TraceInterval=100, Method =:adaptive_de_rand_1_bin_radiuslimited)
     new_guess = best_candidate(res)
     return best_fitness(res), new_guess
 end
 
-function getDDEparams(p, concentrations)
+function getDDEparams(p::Array{Float64}, concentrations::Array{Float64})
+    """ A function to convert the estimated hill parameters back to DDE parameters. """
     effects = zeros(6, 8)
     for i in 1:8
         effects[1, i] = hill(append!([p[1], p[4]], [p[3], p[2]]), concentrations[i])
@@ -65,4 +65,30 @@ function getDDEparams(p, concentrations)
         effects[6, i] = hill(append!([p[13], 0.0, p[14]], [p[2]]), concentrations[i])
     end
     return effects
+end
+
+function ParamForBliss(p)
+    """ To calculate Bliss independence drug effect
+    we assume delays are constant, death rates are additive,
+    and will keep the alpha and beta intact."""
+    par = zeros(3,8)
+    par[1,:] = p[1,:] # alpha stays the same
+    par[2,:] = p[2,:] # beta stays the same
+    par[3,:] = p[5,:] + p[6,:] # additivity assumption for death rates
+    return par
+end
+
+function BlissCombination(p1::Matrix{Float64}, p2::Matrix{Float64})
+    """ A function to calculate Bliss independence for drug combination assuming
+    the two drugs hit different pathways and they effect completely independently. """
+
+    param1 = ParamForBliss(p1)
+    param2 = ParamForBliss(p2)
+    Effect = zeros(8,8,3)
+    for j in 1:8
+        for k in 1:8
+            Effect[j,k,:] .= param1[:,j] .+ param2[:,k] .- param1[:,j] .* param2[:,k]
+            end
+        end
+    return Effect
 end
