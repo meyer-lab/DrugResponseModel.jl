@@ -92,3 +92,21 @@ function BlissCombination(p1::Matrix{Float64}, p2::Matrix{Float64})
         end
     return Effect
 end
+
+function DDEcombinationParam(Effects, p1::Matrix{Float64}, p2::Matrix{Float64})
+   """ To put together parameters of the combination, into the DDE parameter format, 
+    To be able to plot the number of cells over time with the combined effect. """
+    ddeParam = zeros(8,8,6)
+    ddeParam[:,:,1:2] = Effects[:,:,1:2]
+    ddeParam[:,:,5] = Effects[:,:,3]./2
+    ddeParam[:,:,6] = Effects[:,:,3]./2
+    
+    for k in 3:4
+        for j in 1:8
+            for i in 1:8
+                ddeParam[i,j,k] = 0.5*(p1[k,j] + p2[k,i])
+            end
+        end
+    end
+    return ddeParam
+end
