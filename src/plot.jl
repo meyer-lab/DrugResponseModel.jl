@@ -27,7 +27,7 @@ function plotIt(params::Array, i::Int, title::String, bool::Any, pop, g2::Matrix
     plot!(times, g2[:, i], label = "G2", dpi = 150, markersize = 1.0, color=:darkorange)
     plot!(n_times, (solution(n_times, idxs=2).u + solution(n_times, idxs=1).u), label = "total est", dpi = 150, lw=2.0, alpha = 0.6, color=:hotpink)
     plot!(times, pop[i], label = "total", dpi = 150, markersize = 1.0, color=:indigo)
-    plot!( annotation=[ (75,90, text(title, 12)) ])
+    plot!( annotation=[ (75,90, title) ])
 end
 
 #-------------------------- plot for the G1 G2 correlation ---------------------------#
@@ -89,7 +89,7 @@ function plot_parameters(conc_l::Array, parameters::Matrix)
     plot!(size = (1200, 600), dpi = 150)
 end
 
-function plotUnitCombin(params::Array, i::Int, title::String, bool::Any, g2::Matrix, g1::Matrix, g2_0::Array, g1_0::Array)
+function plotUnitCombin(params::Array, i::Int, title::String, bool::Any, g2::Matrix, g1::Matrix, g2_0::Array, g1_0::Array, ConcGem)
     """ Given estimated parameters for each trial, 
     solve the DDE model plot the predicted curve 
     for # of cells in G1, G2, or total, 
@@ -102,24 +102,26 @@ function plotUnitCombin(params::Array, i::Int, title::String, bool::Any, g2::Mat
 
     solution = solve(n_prob, alg; constrained=true)
 
-    plot(n_times, solution(n_times, idxs=1).u, label = "G1", dpi = 150, xlabel = "time [hours]", ylabel = "number of cells", lw=2.0, alpha = 0.6, color =:green)
-    plot!(n_times, solution(n_times, idxs=2).u, label = "G2", legend=bool, legendfontsize=7, fg_legend = :transparent, lw=2.0, alpha = 0.6, color=:sienna)
-    plot!(n_times, (solution(n_times, idxs=2).u + solution(n_times, idxs=1).u), label = "total", dpi = 250, lw=2.0, alpha = 0.6, color=:hotpink)
-    plot!( annotation=[ (75,90, text(title, 12))])
+    plot(n_times, solution(n_times, idxs=1).u, label = "G1", xlabel = "time [hours]", ylabel = "number of cells", lw=2.0, alpha = 0.6, color =:green)
+    plot!(n_times, solution(n_times, idxs=2).u, label = "G2", legend=bool, legendfontsize=4, fg_legend = :transparent, lw=2.0, alpha = 0.6, color=:sienna)
+    plot!(n_times, (solution(n_times, idxs=2).u + solution(n_times, idxs=1).u), label = "total", dpi = 250, lw=2.0, alpha = 0.6, color=:hotpink, title=" $ConcGem nM gemcitabine")
+#     plot!(annotation=(90.5,290.0,"$concLap nM lapatinib"))
 end
 
 
-function plot4combin(ddeparam, g2_l::Matrix, g1_l::Matrix, g2_0_l::Array, g1_0_l::Array, i::Int)
+function plot4combin(ddeparam, g2_l::Matrix, g1_l::Matrix, g2_0_l::Array, g1_0_l::Array, i::Int, conc_l ,conc_g)
     """ here we plot 8 combinations of lapatinib i and all the gemcitabines """ 
-    p1 = plotUnitCombin(ddeparam[i,1,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l)
-    p2 = plotUnitCombin(ddeparam[i,2,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l)
-    p3 = plotUnitCombin(ddeparam[i,3,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l)
-    p4 = plotUnitCombin(ddeparam[i,4,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l)
-    p5 = plotUnitCombin(ddeparam[i,5,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l)
-    p6 = plotUnitCombin(ddeparam[i,6,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l)
-    p7 = plotUnitCombin(ddeparam[i,7,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l)
-    p8 = plotUnitCombin(ddeparam[i,8,:], 1, "", :topleft, g2_l, g1_l, g2_0_l, g1_0_l)
-    plot(p1, p2, p3, p4, p5, p6, p7, p8, layout=(2,4))
-    plot!(size = (1200, 600), dpi = 150)
+    concLap = conc_l[i]
+    p1 = plotUnitCombin(ddeparam[i,1,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, conc_g[1])
+    p2 = plotUnitCombin(ddeparam[i,2,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, conc_g[2])
+    p3 = plotUnitCombin(ddeparam[i,3,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, conc_g[3])
+    p4 = plotUnitCombin(ddeparam[i,4,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, conc_g[4])
+    p5 = plotUnitCombin(ddeparam[i,5,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, conc_g[5])
+    p6 = plotUnitCombin(ddeparam[i,6,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, conc_g[6])
+    p7 = plotUnitCombin(ddeparam[i,7,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, conc_g[7])
+    p8 = plotUnitCombin(ddeparam[i,8,:], 1, "", true, g2_l, g1_l, g2_0_l, g1_0_l, conc_g[8])
+    plot(p1, p2, p3, p4, p5, p6, p7, p8, layout=(2,4), annotation=(90.5,295.0, text("$concLap nM lapatinib", 6)))
+#     plot!(annotation=(90.5,295.0, text("$concLap nM lapatinib", 6)))
+    plot!(size = (1600, 500), dpi = 250)
     ylims!((0.0, 300.0))
 end
