@@ -97,14 +97,14 @@ function DDEcombinationParam(Effects, p1::Matrix{Float64}, p2::Matrix{Float64})
    """ To put together parameters of the combination, into the DDE parameter format, 
     To be able to plot the number of cells over time with the combined effect. """
     ddeParam = zeros(8,8,6)
-    ddeParam[:,:,1:2] = Effects[:,:,1:2]
-    ddeParam[:,:,5] = Effects[:,:,3]./2
-    ddeParam[:,:,6] = Effects[:,:,3]./2
+    ddeParam[:,:,1:2] = Effects[:,:,1:2] # alpha and beta
+    ddeParam[:,:,5] = Effects[:,:,3]./2 # gamma_1 is the half of gamma we have as the total death rate
+    ddeParam[:,:,6] = Effects[:,:,3]./2 # gamma_2 is the half of gamma we have as the total death rate
     
     for k in 3:4
         for j in 1:8
             for i in 1:8
-                ddeParam[i,j,k] = 0.5*(p1[k,j] + p2[k,i])
+                ddeParam[i,j,k] = 0.5*(p1[k,j] + p2[k,i]) # the average of the parameters for gemcitabine and lapatinib of each concentration 
             end
         end
     end
