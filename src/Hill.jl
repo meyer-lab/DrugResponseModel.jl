@@ -103,3 +103,4 @@ function DDEcombinationParam(Effects, p1::Matrix, p2::Matrix)
     ddeParam[:,:,5] = Effects[:,:,3] # death rate
     return ddeParam
 end
+
