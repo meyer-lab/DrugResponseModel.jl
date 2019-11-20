@@ -1,4 +1,4 @@
-using Plots, CSV, DataFrames
+using Plots, CSV, DataFrames, Measures
 include("importData.jl")
 include("Hill.jl")
 gr()
@@ -27,7 +27,8 @@ function plotIt(params::Array, i::Int, title::String, bool::Any, pop, g2::Matrix
     plot!(times, g2[:, i], label = "G2", dpi = 150, markersize = 1.0, color=:darkorange)
     plot!(n_times, (solution(n_times, idxs=2).u + solution(n_times, idxs=1).u), label = "total est", dpi = 150, lw=2.0, alpha = 0.6, color=:hotpink)
     plot!(times, pop[i], label = "total", dpi = 150, markersize = 1.0, color=:indigo)
-    plot!( annotation=[ (75,90, text(title, 12)) ])
+    plot!( annotation=[ (75,90, title) ])
+
 end
 
 #-------------------------- plot for the G1 G2 correlation ---------------------------#
@@ -64,7 +65,7 @@ function plot_all(parameters, pop, g2::Matrix, g1::Matrix, g2_0::Array, g1_0::Ar
     ylims!((0.0, 120.0))
 end
 
-function plot_parameters(conc_l::Array, parameters)
+function plot_parameters(conc_l::Array, parameters::Matrix)
 #     new_conc = append!([0.5], conc_l[2:end])
     conc = log.(conc_l)
     p1 = plot(conc, parameters[1,:], xlabel = "drug conc. [nM]", label="", lw= 2.0, alpha = 0.6, color=[:black :gray], line=(:dot, 1), marker=([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
@@ -87,4 +88,42 @@ function plot_parameters(conc_l::Array, parameters)
 
     plot(p1, p2, p3, p4, p5, p6)
     plot!(size = (1200, 600), dpi = 150)
+end
+
+
+# pyplot();
+function plotUnitCombin(params::Array, i::Int, title::String, bool::Any, g2::Matrix, g1::Matrix, g2_0::Array, g1_0::Array, concL, ConcGem)
+    """ Given estimated parameters for each trial, 
+    solve the DDE model plot the predicted curve 
+    for # of cells in G1, G2, or total, 
+    along with their corresponding real data,
+    for a longer time which is 2 times of the 
+    original time (~195 hours)
+    """
+    n_times = range(0.0; stop = 200.0, length = 400)
+    alg, n_prob, _ = ddesolve(collect(n_times), g1, g2, g1_0, g2_0, params, i)
+
+    solution = solve(n_prob, alg; constrained=true)
+
+    plot(n_times, solution(n_times, idxs=1).u, label = "G1", xlabel = "time [hours]", ylabel = "number of cells", lw=2.0, alpha = 0.6, color =:green)
+    plot!(n_times, solution(n_times, idxs=2).u, label = "G2", legend=bool, legendfontsize=7, fg_legend = :transparent, lw=2.0, alpha = 0.6, color=:sienna)
+    plot!(n_times, (solution(n_times, idxs=2).u + solution(n_times, idxs=1).u), label = "total", dpi = 250, lw=2.0, alpha = 0.6, color=:hotpink, margin = 20mm)
+    plot!(annotation=(100.5,125.0, text("$concL nM lapat. & $ConcGem nM Dox.", 10)))
+end
+
+
+function plot4combin(ddeparam, g2_l::Matrix, g1_l::Matrix, g2_0_l::Array, g1_0_l::Array, i::Int, conc_l ,conc_g)
+    """ here we plot 8 combinations of lapatinib i and all the doxorubicin """ 
+    concLap = conc_l[i]
+    p1 = plotUnitCombin(ddeparam[i,1,:], 1, "", true, g2_l, g1_l, g2_0_l, g1_0_l, concLap, conc_g[1])
+    p2 = plotUnitCombin(ddeparam[i,2,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, concLap, conc_g[2])
+    p3 = plotUnitCombin(ddeparam[i,3,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, concLap, conc_g[3])
+    p4 = plotUnitCombin(ddeparam[i,4,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, concLap, conc_g[4])
+    p5 = plotUnitCombin(ddeparam[i,5,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, concLap, conc_g[5])
+    p6 = plotUnitCombin(ddeparam[i,6,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, concLap, conc_g[6])
+    p7 = plotUnitCombin(ddeparam[i,7,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, concLap, conc_g[7])
+    p8 = plotUnitCombin(ddeparam[i,8,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, concLap, conc_g[8])
+    plot(p1, p2, p3, p4, p5, p6, p7, p8, layout=(2,4))
+    plot!(size = (1600, 600), dpi = 250)
+    ylims!((0.0, 120.0))
 end

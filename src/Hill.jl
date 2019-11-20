@@ -92,3 +92,15 @@ function BlissCombination(p1::Matrix{Float64}, p2::Matrix{Float64})
         end
     return Effect
 end
+
+function DDEcombinationParam(Effects, p1::Matrix, p2::Matrix)
+   """ To put together parameters of the combination, into the DDE parameter format, 
+    To be able to plot the number of cells over time with the combined effect. """
+    ddeParam = zeros(8,8,5)
+    ddeParam[:,:,1:2] = Effects[:,:,1:2] # alpha and beta
+    ddeParam[:,:,3] = ((p1[3,4] + p2[3,4])/2)*ones(8,8) # I'm keeping the forth delay as the consant one
+    ddeParam[:,:,4] = ((p1[4,4] + p2[4,4])/2)*ones(8,8) # I'm keeping the forth delay as the consant one
+    ddeParam[:,:,5] = Effects[:,:,3] # death rate
+    return ddeParam
+end
+
