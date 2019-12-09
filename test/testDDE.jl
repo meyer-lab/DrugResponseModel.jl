@@ -30,7 +30,6 @@
 	# Estimating the parameters for all trials
 	for j in 1:8
 		best_fit, parameters[:, j] = optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower_bnd, upper_bnd, maxSteps)
-		println("trial number $j")
 		# to test the estimated parameters are still in the range
 		@test all(exp.(upper_bnd) .>= parameters[:, j] .>= exp.(lower_bnd))
 		@test best_fit <= 9000
