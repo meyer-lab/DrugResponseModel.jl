@@ -1,6 +1,5 @@
 using Plots, CSV, DataFrames, Measures
 include("importData.jl")
-include("Hill.jl")
 gr()
 """ 
         This file contains a function to plot the parameters against the  drug concentrations, in a 2x2 subplot.

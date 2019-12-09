@@ -6,8 +6,8 @@ using DelayDiffEq, DiffEqParamEstim, DataFrames, BlackBoxOptim, Plots, CSV, Data
 
 include("ODEmodel.jl")
 include("plot.jl")
+include("DDEmodel.jl")
 include("Hill.jl")
-
 
 export setup_data, remove_peaks, find_history, ODEoptimizer, ode_plotIt, ddesolve, optimization, plotIt, residHill, optimize_hill, getDDEparams, ParamForBliss, BlissCombination, correlationPlot, plot_all, plot_parameters, ODEplot_all
 
