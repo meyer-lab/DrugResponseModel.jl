@@ -21,8 +21,8 @@ exp_model(t, p) = @. p[1]*exp(t*p[2]) # exponential model
 function find_history(g1::Matrix{Float64}, g2::Matrix{Float64})
     """ to find the history function based on the control trial. """
     times = range(0.0; stop = 95.5, length = 192) # x
-    fit_g1 = curve_fit(exp_model, times, g1[:, 1], [1.0, 0.5]) 
-    fit_g2 = curve_fit(exp_model, times, g2[:, 1], [1.0, 0.5]) 
+    fit_g1 = curve_fit(exp_model, times, g1[:, 1], [10.0, 0.01])
+    fit_g2 = curve_fit(exp_model, times, g2[:, 1], [10.0, 0.01])
 
     return coef(fit_g1), coef(fit_g2)
 end
