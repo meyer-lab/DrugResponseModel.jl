@@ -2,8 +2,19 @@
 __precompile__()
 module DrugResponseModel
 
-using DelayDiffEq, DiffEqParamEstim, DataFrames, BlackBoxOptim, Plots, CSV, DataFrames
+using CSV
+using DataFrames
+using Plots
+using Measures
+using LsqFit
+using DelayDiffEq
+using DiffEqParamEstim
+using BlackBoxOptim
+using OrdinaryDiffEq
+using DiffEqOperators
+using DiffEqBase
 
+include("importData.jl")
 include("ODEmodel.jl")
 include("plot.jl")
 include("DDEmodel.jl")

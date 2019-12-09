@@ -1,8 +1,3 @@
-using OrdinaryDiffEq
-using DiffEqBase
-using DiffEqOperators
-
-
 """
         In this file we want to estimate parameters of an ODE model describing the number of cells in G1 or G2 phase of the cell cycle 
 """
