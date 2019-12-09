@@ -1,4 +1,4 @@
-using DelayDiffEq, DiffEqParamEstim, BlackBoxOptim, LsqFit, Optim, Printf
+using DelayDiffEq, DiffEqParamEstim, BlackBoxOptim, LsqFit
 
 """
         This file contains functions to fit the data to a Delay Differential Equation model, and find the parameters
