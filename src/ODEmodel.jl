@@ -1,4 +1,6 @@
-using OrdinaryDiffEq, DiffEqParamEstim, Plots, CSV, Optim, DiffEqBase, BlackBoxOptim
+using OrdinaryDiffEq
+using DiffEqBase
+using DiffEqOperators
 
 
 """
@@ -7,10 +9,9 @@ using OrdinaryDiffEq, DiffEqParamEstim, Plots, CSV, Optim, DiffEqBase, BlackBoxO
 
 
 ##---------------------------- Building the function and residuals -------------------------##
-function ODEmodel(du, u, p, t)
+function ODEmodel(p)
     # p = [alpha, beta, gamma1, gamma2, initg1, initg2]
-    du[1] = -p[1]*u[1] + 2*p[2]*u[2] - p[3]*u[1]
-    du[2] = p[1]*u[1] - p[2]*u[2] - p[4]*u[2]
+    return DiffEqArrayOperator([-p[1]-p[3] 2*p[2]; p[1] -p[2]-p[4]])
 end
 
 function ODEoptimizer(lower_bound::Array, upper_bound::Array, par::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
@@ -20,13 +21,11 @@ function ODEoptimizer(lower_bound::Array, upper_bound::Array, par::Array, i::Int
 
     u0 = [g1_0[i], g2_0[i]]
     # generating the ODEproblem
-    prob = ODEProblem(ODEmodel, u0, extrema(times), par)
-    # solver algorithm
-    alg = Tsit5()
+    prob = ODEProblem(ODEmodel(par), u0, extrema(times))
     # lower and upper bounds for the parameters
     bound = collect(zip(lower_bound, upper_bound))
     # objective function
-    obj = build_loss_objective(prob, alg, L2Loss(times, data); verbose_opt = false)
+    obj = build_loss_objective(prob, LinearExponential(), L2Loss(times, data); verbose_opt=false)
     # global optimization with black box optimization
     results_ode = bboptimize(obj; SearchRange=bound, NumDimensions=4, TraceMode=:silent)
 
@@ -45,8 +44,8 @@ function ode_plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Ar
     t_new = LinRange(0.0, 195.5, 292)
     tspan_new = (0.0, 195.5)
     u0_new = [g1_0[i], g2_0[i]]
-    prob_new = ODEProblem(ODEmodel, u0_new, tspan_new, params)
-    solution = solve(prob_new, Tsit5())
+    prob_new = ODEProblem(ODEmodel(params), u0_new, tspan_new)
+    solution = solve(prob_new, LinearExponential())
 
     plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, xlabel = "time [hours]", ylabel = "# of cells", lw=2.0, alpha = 0.6, color=:green)
     plot!(t, g1[:, i], label = "G1", dpi = 150, markersize = 1.0, color=:darkgreen)
