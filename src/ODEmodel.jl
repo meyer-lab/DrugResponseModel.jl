@@ -1,22 +1,21 @@
-using OrdinaryDiffEq
-using DiffEqBase
-using DiffEqOperators
-
-
 """
         In this file we want to estimate parameters of an ODE model describing the number of cells in G1 or G2 phase of the cell cycle 
 """
 
 
 """ Time- and state-invariant model Jacobian. """
+function update_coef(A, u, p, t)
+    A[:, :] .= [-p[1]-p[3] 2*p[2]; p[1] -p[2]-p[4]]
+end
+
 function ODEmodel(p)
-    # p = [alpha, beta, gamma1, gamma2, initg1, initg2]
-    return DiffEqArrayOperator([-p[1]-p[3] 2*p[2]; p[1] -p[2]-p[4]])
+    # p = [alpha, beta, gamma1, gamma2]
+    @assert all(p .>= 0.0)
+    return DiffEqArrayOperator([-p[1]-p[3] 2*p[2]; p[1] -p[2]-p[4]], update_func=update_coef)
 end
 
 """ Fit the ODE model to data. """
 function ODEoptimizer(lower_bound::Array, upper_bound::Array, par::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
-    t = LinRange(0.0, 95.5, 192)
     times = range(0.0; stop = 95.5, length = 192)
     data = vcat(g1[:, i]', g2[:, i]')
 
@@ -28,13 +27,13 @@ function ODEoptimizer(lower_bound::Array, upper_bound::Array, par::Array, i::Int
     # objective function
     obj = build_loss_objective(prob, LinearExponential(), L2Loss(times, data); verbose_opt=false)
     # global optimization with black box optimization
-    results_ode = bboptimize(obj; SearchRange=bound, NumDimensions=4, TraceMode=:silent)
+    results_ode = bboptimize(obj; SearchRange=bound, NumDimensions=4, TraceMode=:silent, MaxSteps=50000)
 
     return best_candidate(results_ode)
 end
 
 
-function ode_plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop, i::Int, title::String, legend::Any)
+function ode_plotIt(params::Vector{Float64}, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop, i::Int, title::String, legend::Any)
     """ Given estimated parameters for each trial, solve the DDE model plot the predicted curve 
     for # of cells in G1, G2, or total, along with their corresponding real data,
     for a longer time which is 2 times of the original time (~195 hours)
@@ -43,7 +42,7 @@ function ode_plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Ar
     t_new = LinRange(0.0, 195.5, 292)
     tspan_new = (0.0, 195.5)
     u0_new = [g1_0[i], g2_0[i]]
-    prob_new = ODEProblem(ODEmodel(params), u0_new, tspan_new)
+    prob_new = ODEProblem(ODEmodel(params), u0_new, tspan_new, params)
     solution = solve(prob_new, LinearExponential())
 
     plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, xlabel = "time [hours]", ylabel = "# of cells", lw=2.0, alpha = 0.6, color=:green)
@@ -51,7 +50,7 @@ function ode_plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Ar
     plot!(t_new, solution(t_new, idxs=2).u, label = "G2 est", legend=legend, legendfontsize=6, fg_legend = :transparent, lw=2.0, alpha = 0.6, color=:sienna)
     plot!(t, g2[:, i], label = "G2", dpi = 150, markersize = 1.0, color=:darkorange)
     plot!(t_new, (solution(t_new, idxs=2).u + solution(t_new, idxs=1).u), label = "total est", dpi = 150, lw=2.0, alpha = 0.6, color=:hotpink)
-    plot!(t, pop[i], label = "total", dpi = 150, markersize = 1.0, color=:indigo)
+    plot!(t, pop[!, i], label = "total", dpi = 150, markersize = 1.0, color=:indigo)
     plot!( annotation=[ (75,90, text(title, 12)) ])
 end
 

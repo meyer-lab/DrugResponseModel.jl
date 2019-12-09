@@ -8,11 +8,11 @@
 	params_ode = zeros(4,8)
 	# ODE optimization and estimation of the parameters
 	for i in 1:8
-	    params_ode[:,i] = ODEoptimizer(low, upp, p, i, g1, g2, g1_0, g2_0)
-	    # to test the estimated parameters are still in the range
-	    for j in 1:4
-	        @test upp[j] >= params_ode[j,i] >= low[j]
-	    end
+		params_ode[:,i] = ODEoptimizer(low, upp, p, i, g1, g2, g1_0, g2_0)
+		# to test the estimated parameters are still in the range
+		for j in 1:4
+			@test upp[j] >= params_ode[j,i] >= low[j]
+		end
 	end
 
 	# Check that these at least run
