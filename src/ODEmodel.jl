@@ -46,7 +46,7 @@ function ode_plotIt(params::Array, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Ar
     plot!(t_new, solution(t_new, idxs=2).u, label = "G2 est", legend=legend, legendfontsize=6, fg_legend = :transparent, lw=2.0, alpha = 0.6, color=:sienna)
     plot!(t, g2[:, i], label = "G2", dpi = 150, markersize = 1.0, color=:darkorange)
     plot!(t_new, (solution(t_new, idxs=2).u + solution(t_new, idxs=1).u), label = "total est", dpi = 150, lw=2.0, alpha = 0.6, color=:hotpink)
-    plot!(t, pop[i], label = "total", dpi = 150, markersize = 1.0, color=:indigo)
+    plot!(t, pop[!, i], label = "total", dpi = 150, markersize = 1.0, color=:indigo)
     plot!( annotation=[ (75,90, text(title, 12)) ])
 end
 

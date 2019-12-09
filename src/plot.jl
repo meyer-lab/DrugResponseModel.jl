@@ -23,7 +23,7 @@ function plotIt(params::Array, i::Int, title::String, bool::Any, pop, g2::Matrix
     plot!(n_times, solution(n_times, idxs=2).u, label = "G2 est", legend=bool, legendfontsize=7, fg_legend = :transparent, lw=2.0, alpha = 0.6, color=:sienna)
     plot!(times, g2[:, i], label = "G2", dpi = 150, markersize = 1.0, color=:darkorange)
     plot!(n_times, (solution(n_times, idxs=2).u + solution(n_times, idxs=1).u), label = "total est", dpi = 150, lw=2.0, alpha = 0.6, color=:hotpink)
-    plot!(times, pop[i], label = "total", dpi = 150, markersize = 1.0, color=:indigo)
+    plot!(times, pop[!, i], label = "total", dpi = 150, markersize = 1.0, color=:indigo)
     plot!( annotation=[ (75,90, title) ])
 
 end
