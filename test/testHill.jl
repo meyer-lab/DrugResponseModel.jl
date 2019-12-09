@@ -16,7 +16,7 @@
 	residHill(guess, conc_l, g1l, g2l, g1_0l, g2_0l)
 
 	@profile residHill(guess, conc_l, g1l, g2l, g1_0l, g2_0l)
-	Profile.print(noisefloor=5.0)
+	Profile.print(noisefloor=2.0)
 
 	# lower bound
 	low = [50.0, 0.01, 0.005, 0.04, 0.005, 0.01, 22.0, 20.0, 6.0, 5.0, 50.0, 0.0001, 50.0, 0.0001]
