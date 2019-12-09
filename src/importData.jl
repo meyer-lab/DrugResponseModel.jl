@@ -55,9 +55,10 @@ end
 
 function setup_data(drug_name::String)
     """ This function takes in the drug name which is a string and must be among this list: ["lapatinib", "doxorubicin", "paclitaxel", "gemcitabine"]. It returns the cnocentrations, population, cell, and initial cell number for that drug."""
+    basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data")
 
     #----------- import concentrations
-    concentration = CSV.read(joinpath("..", "data", "concentrations.csv"))
+    concentration = CSV.read(joinpath(basePath, "concentrations.csv"))
     # lapatinib
     conc_l = [Float64(concentration[1, col]) for col in 2:9]
     # doxorubicin
@@ -69,17 +70,17 @@ function setup_data(drug_name::String)
 
     #------------ import cell data
     # lapatinib
-    pop_l, g2_l, g1_l, g2_0_l, g1_0_l = get_data(joinpath("..", "data", "lap.csv"),
-                                       joinpath("..", "data", "lap_pop.csv"));
+    pop_l, g2_l, g1_l, g2_0_l, g1_0_l = get_data(joinpath(basePath, "lap.csv"),
+                                       joinpath(basePath, "lap_pop.csv"));
     # doxorubicin
-    pop_d, g2_d, g1_d, g2_0_d, g1_0_d = get_data(joinpath("..", "data", "dox.csv"),
-                                       joinpath("..", "data", "dox_pop.csv"));
+    pop_d, g2_d, g1_d, g2_0_d, g1_0_d = get_data(joinpath(basePath, "dox.csv"),
+                                       joinpath(basePath, "dox_pop.csv"));
     # gemcitabine
-    pop_g, g2_g, g1_g, g2_0_g, g1_0_g = get_data(joinpath("..", "data", "gem.csv"),
-                                       joinpath("..", "data", "gem_pop.csv"));
+    pop_g, g2_g, g1_g, g2_0_g, g1_0_g = get_data(joinpath(basePath, "gem.csv"),
+                                       joinpath(basePath, "gem_pop.csv"));
     # paclitaxel
-    pop_t, g2_t, g1_t, g2_0_t, g1_0_t = get_data(joinpath("..", "data", "taxol1.csv"),
-                                       joinpath("..", "data", "taxol1_pop.csv"));
+    pop_t, g2_t, g1_t, g2_0_t, g1_0_t = get_data(joinpath(basePath, "taxol1.csv"),
+                                       joinpath(basePath, "taxol1_pop.csv"));
     if drug_name == "lapatinib"
         return conc_l, pop_l, g2_l, g1_l, g2_0_l, g1_0_l
     elseif drug_name == "doxorubicin"
