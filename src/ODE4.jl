@@ -11,9 +11,10 @@ end
 
 """ Predicts the model given a set of parametrs. """
 function predict(p, g1_0, g2_0, i, t)
-    u0 = 0.5*[g1_0[i], g1_0[i], g2_0[i], g2_0[i]]
+    u0 = [p[7]*g1_0[i], (1-p[7])*g1_0[i], p[8]*g2_0[i], (1-p[8])*g2_0[i]]
     A = zeros(eltype(p), 4, 4)
-    update_coef4(A, nothing, p, nothing)
+    par = p[1:6]
+    update_coef4(A, nothing, par, nothing)
     Op = DiffEqArrayOperator(A, update_func=update_coef4)
     prob = ODEProblem(Op, u0, extrema(t), p)
     solution = solve(prob, AutoTsit5(Rosenbrock23()))
@@ -34,10 +35,12 @@ function cost(p, g1_0, g2_0, g1, g2, i)
 end
 
 """ Fit the ODE model to data. """
-function ODEoptimizer4(lower_bound::Array, upper_bound::Array, p::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
+function ODEoptimizer4(p::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
     
     residuals(p) = cost(p, g1_0, g2_0, g1, g2, i)
     # lower and upper bounds for the parameters
+    lower_bound = zeros(8)
+    upper_bound = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0, 1.0]
     bound = collect(zip(lower_bound, upper_bound))
 
     # global optimization with black box optimization
