@@ -4,13 +4,15 @@
 
 
 """ Time- and state-invariant model Jacobian. """
-function update_coef4(A, u, p,t)
+function update_coef4(A, u, p, t)
     A[:, :] .= [-p[1] .- p[5] 0.0 0.0 2.0*p[4]; p[1] -p[2] .- p[5] 0.0 0.0; 0.0 p[2] -p[3] .- p[6] 0.0; 0.0 0.0 p[3] -p[4] .- p[6]]
 end
 
 function ODEmodel4(p)
     @assert all(p .>= 0.0)
-    return DiffEqArrayOperator([-p[1] .- p[5] 0.0 0.0 2.0*p[4]; p[1] -p[2] .- p[5] 0.0 0.0; 0.0 p[2] -p[3] .- p[6] 0.0; 0.0 0.0 p[3] -p[4] .- p[6]], update_func=update_coef4)
+    A = zeros(eltype(p), 4, 4)
+    update_coef4(A, nothing, p, nothing)
+    return DiffEqArrayOperator(A, update_func=update_coef4)
 end
 
 """ Predicts the model given a set of parametrs. """
