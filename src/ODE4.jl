@@ -8,17 +8,14 @@ function update_coef4(A, u, p, t)
     A[:, :] .= [-p[1] .- p[5] 0.0 0.0 2.0*p[4]; p[1] -p[2] .- p[5] 0.0 0.0; 0.0 p[2] -p[3] .- p[6] 0.0; 0.0 0.0 p[3] -p[4] .- p[6]]
 end
 
-function ODEmodel4(p)
-    @assert all(p .>= 0.0)
-    A = zeros(eltype(p), 4, 4)
-    update_coef4(A, nothing, p, nothing)
-    return DiffEqArrayOperator(A, update_func=update_coef4)
-end
 
 """ Predicts the model given a set of parametrs. """
 function predict(p, g1_0, g2_0, i, t)
     u0 = 0.5*[g1_0[i], g1_0[i], g2_0[i], g2_0[i]]
-    prob = ODEProblem(ODEmodel4(p), u0, extrema(t), p)
+    A = zeros(eltype(p), 4, 4)
+    update_coef4(A, nothing, p, nothing)
+    Op = DiffEqArrayOperator(A, update_func=update_coef4)
+    prob = ODEProblem(Op, u0, extrema(t), p)
     solution = solve(prob, AutoTsit5(Rosenbrock23()))
     return prob, solution
 end
