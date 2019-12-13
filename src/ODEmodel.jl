@@ -32,6 +32,20 @@ function ODEoptimizer(lower_bound::Array, upper_bound::Array, par::Array, i::Int
     return best_candidate(results_ode)
 end
 
+""" A function for Turing 2-equation model ODE. """
+function turingODE(i, params_ode, g1, g2, g1_0, g2_0)
+
+    par = params_ode[:,i]
+    priors = [Uniform(0.0, 1.0),Uniform(0.0, 1.0),Uniform(0.0, 1.0),Uniform(0.0, 1.0)]
+    times = collect(range(0.0; stop = 95.5, length = 192))
+    data = vcat(g1[:, i]', g2[:, i]')
+
+    u0 = [g1_0[i], g2_0[i]]
+    # generating the ODEproblem
+    prob1 = ODEProblem(ODEmodel(par), u0, extrema(times), par)
+    bayesian_result = turing_inference(prob1,Tsit5(),times,data,priors;num_samples=500, syms=[:alpha, :beta, :gamma1, :gamma2])
+    return bayesian_result
+end
 
 function ode_plotIt(params::Vector{Float64}, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop, i::Int, title::String, legend::Any)
     """ Given estimated parameters for each trial, solve the DDE model plot the predicted curve 

@@ -20,4 +20,5 @@
 	ODEoptimizer(low, upp, p, 5, g1, g2, g1_0, g2_0)
 	ode_plotIt(params_ode[:, 8], g1, g2, g1_0, g2_0, pop, 8, "", false)
 	ODEplot_all(params_ode, g1, g2, g1_0, g2_0, pop)
+    turingODE(5, params_ode, g1, g2, g1_0, g2_0)
 end
