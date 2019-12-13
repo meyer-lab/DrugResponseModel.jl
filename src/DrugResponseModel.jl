@@ -13,6 +13,8 @@ using BlackBoxOptim
 using OrdinaryDiffEq
 using DiffEqOperators
 using DiffEqBase
+using DiffEqBayes
+using Distributions
 
 include("importData.jl")
 include("ODEmodel.jl")
