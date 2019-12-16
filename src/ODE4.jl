@@ -3,23 +3,29 @@
 """
 
 
-""" Time- and state-invariant model Jacobian. """
-function update_coef4(A, u, p, t)
-    A[:, :] .= [-p[1] .- p[5] 0.0 0.0 2.0*p[4]; p[1] -p[2] .- p[5] 0.0 0.0; 0.0 p[2] -p[3] .- p[6] 0.0; 0.0 0.0 p[3] -p[4] .- p[6]]
+""" Actual differential equation. """
+function ODEmodelFlex(du, u, p, t, nG1)
+    # p = [alpha, beta, gamma1, gamma2, initg1, initg2]
+
+    # G1
+    du[2:nG1] .= p[1] .* u[1:(nG1-1)]
+    du[1:nG1] .= -p[1] .* u[1:nG1] .- p[3] .* u[1:nG1]
+    du[1] += 2*p[2]*u[end]
+
+    # G2
+    du[(nG1 + 2):end] .= p[2] .* u[(nG1 + 1):(length(u)-1)]
+    du[(nG1 + 1):end] .= -p[1] .* u[(nG1 + 1):end] .- p[3] .* u[(nG1 + 1):end]
 end
 
 
 """ Predicts the model given a set of parametrs. """
 function predict(p, g1_0, g2_0, i, t)
     u0 = [p[7]*g1_0[i], (1-p[7])*g1_0[i], p[8]*g2_0[i], (1-p[8])*g2_0[i]]
-    A = zeros(eltype(p), 4, 4)
-    par = p[1:6]
-    update_coef4(A, nothing, par, nothing)
-    Op = DiffEqArrayOperator(A, update_func=update_coef4)
-    prob = ODEProblem(Op, u0, extrema(t), p)
+    prob = ODEProblem((a, b, c, d) -> ODEmodelFlex(a, b, c, d, 2), u0, extrema(t), p[1:6])
     solution = solve(prob, AutoTsit5(Rosenbrock23()))
     return prob, solution
 end
+
 
 """ Calculates the cost function for a given set of parameters. """
 function cost(p, g1_0, g2_0, g1, g2, i)
