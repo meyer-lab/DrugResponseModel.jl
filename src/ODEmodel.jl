@@ -25,7 +25,7 @@ function ODEoptimizer(lower_bound::Array, upper_bound::Array, par::Array, i::Int
     # lower and upper bounds for the parameters
     bound = collect(zip(lower_bound, upper_bound))
     # objective function
-    obj = build_loss_objective(prob, LinearExponential(), L2Loss(times, data); verbose_opt=false)
+    obj = build_loss_objective(prob, AutoTsit5(Rosenbrock23()), L2Loss(times, data); verbose_opt=false)
     # global optimization with black box optimization
     results_ode = bboptimize(obj; SearchRange=bound, NumDimensions=4, TraceMode=:silent, MaxSteps=50000)
 
@@ -43,7 +43,7 @@ function ode_plotIt(params::Vector{Float64}, g1::Matrix, g2::Matrix, g1_0::Array
     tspan_new = (0.0, 195.5)
     u0_new = [g1_0[i], g2_0[i]]
     prob_new = ODEProblem(ODEmodel(params), u0_new, tspan_new, params)
-    solution = solve(prob_new, LinearExponential())
+    solution = solve(prob_new, AutoTsit5(Rosenbrock23()))
 
     plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, xlabel = "time [hours]", ylabel = "# of cells", lw=2.0, alpha = 0.6, color=:green)
     plot!(t, g1[:, i], label = "G1", dpi = 150, markersize = 1.0, color=:darkgreen)
