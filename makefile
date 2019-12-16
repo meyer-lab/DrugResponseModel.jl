@@ -4,7 +4,7 @@ coverage.cob:
 	python3 ~/.local/lib/python3.7/site-packages/lcov_cobertura.py coverage-lcov.info -o coverage.cob
 
 %.pdf: %.ipynb
-	pip3 install jupyter
+	pip3 install --user jupyter
 	julia -e 'using Pkg; Pkg.add("IJulia"); Pkg.precompile()'
 	jupyter nbconvert --execute --ExecutePreprocessor.timeout=6000 --to pdf $< --output $@
 
