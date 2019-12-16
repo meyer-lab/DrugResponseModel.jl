@@ -12,9 +12,9 @@ coverage.cob:
 	pip3 install --user lcov_cobertura
 	python3 ~/.local/lib/python3.7/site-packages/lcov_cobertura.py coverage-lcov.info -o coverage.cob
 
-%.pdf: %.ipynb venv
+%.html: %.ipynb venv
 	. venv/bin/activate && julia -e 'using Pkg; Pkg.add("IJulia"); Pkg.precompile()'
-	. venv/bin/activate && jupyter nbconvert --execute --ExecutePreprocessor.timeout=6000 --to pdf $< --output $@
+	. venv/bin/activate && jupyter nbconvert --execute --ExecutePreprocessor.timeout=6000 --to html $< --output $@
 
 clean:
 	rm -rf *.pdf *.aux *.log *.out

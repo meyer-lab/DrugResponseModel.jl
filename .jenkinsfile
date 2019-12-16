@@ -15,8 +15,8 @@ pipeline {
     }
     stage ('Build') {
       steps {
-        sh 'make DDEmodel.pdf ODEmodel.pdf ODE4.pdf'
-        archiveArtifacts artifacts: '*.pdf', onlyIfSuccessful: true
+        sh 'make DDEmodel.html ODEmodel.html ODE4.html'
+        archiveArtifacts artifacts: '*.html', onlyIfSuccessful: true
       }
     }
   }
