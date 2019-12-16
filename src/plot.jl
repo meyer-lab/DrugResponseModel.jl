@@ -30,16 +30,8 @@ end
 
 #-------------------------- plot for the G1 G2 correlation ---------------------------#
 function correlationPlot(g1::Matrix, g2::Matrix, labels::Array, xlabel::String, ylabel::String, ymax::Int)
-
-    p1 = scatter(g1[:,1], g2[:,1], title = labels[1], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
-    p2 = scatter(g1[:,2], g2[:,2], title = labels[2], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
-    p3 = scatter(g1[:,3], g2[:,3], title = labels[3], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
-    p4 = scatter(g1[:,4], g2[:,4], title = labels[4], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
-    p5 = scatter(g1[:,5], g2[:,5], title = labels[5], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
-    p6 = scatter(g1[:,6], g2[:,6], title = labels[6], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
-    p7 = scatter(g1[:,7], g2[:,7], title = labels[7], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
-    p8 = scatter(g1[:,8], g2[:,8], title = labels[8], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
-    plot(p1, p2, p3, p4, p5, p6, p7, p8, legend=:false, layout=(2,4))
+    pl = [scatter(g1[:, i], g2[:, i], title=labels[i], xlabel=xlabel, ylabel=ylabel, alpha=0.6, color=[:gray], line=:dot, marker=(:dot, 1.5)) for i in 1:8]
+    plot(pl..., legend=:false, layout=(2,4), fmt = :png)
     plot!(size=(1200,600), dpi=150)
     ylims!((0, ymax))
     xlims!((0, ymax))
@@ -49,15 +41,9 @@ end
 
 function plot_all(parameters, pop, g2::Matrix, g1::Matrix, g2_0::Array, g1_0::Array)
     # i showas the trial number, which could be from 1:control, ..., 8: maximum drug concentraation
-    p1 = plotIt(parameters[:, 1], 1, "", false, pop, g2, g1, g2_0, g1_0)
-    p2 = plotIt(parameters[:, 2], 2, "", false, pop, g2, g1, g2_0, g1_0)
-    p3 = plotIt(parameters[:, 3], 3, "", false, pop, g2, g1, g2_0, g1_0)
-    p4 = plotIt(parameters[:, 4], 4, "", false, pop, g2, g1, g2_0, g1_0)
-    p5 = plotIt(parameters[:, 5], 5, "", false, pop, g2, g1, g2_0, g1_0)
-    p6 = plotIt(parameters[:, 6], 6, "", false, pop, g2, g1, g2_0, g1_0)
-    p7 = plotIt(parameters[:, 7], 7, "", false, pop, g2, g1, g2_0, g1_0)
+    pl = [plotIt(parameters[:, i], i, "", false, pop, g2, g1, g2_0, g1_0) for i in 1:7]
     p8 = plotIt(parameters[:, 8], 8, "", :topleft, pop, g2, g1, g2_0, g1_0)
-    plot(p1, p2, p3, p4, p5, p6, p7, p8, layout=(2,4))
+    plot(pl..., p8, layout=(2,4))
     plot!(size = (1200, 600), dpi = 150)
     ylims!((0.0, 120.0))
 end
@@ -111,16 +97,8 @@ end
 
 function plot4combin(ddeparam, g2_l::Matrix, g1_l::Matrix, g2_0_l::Array, g1_0_l::Array, i::Int, conc_l ,conc_g)
     """ here we plot 8 combinations of lapatinib i and all the doxorubicin """ 
-    concLap = conc_l[i]
-    p1 = plotUnitCombin(ddeparam[i,1,:], 1, "", true, g2_l, g1_l, g2_0_l, g1_0_l, concLap, conc_g[1])
-    p2 = plotUnitCombin(ddeparam[i,2,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, concLap, conc_g[2])
-    p3 = plotUnitCombin(ddeparam[i,3,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, concLap, conc_g[3])
-    p4 = plotUnitCombin(ddeparam[i,4,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, concLap, conc_g[4])
-    p5 = plotUnitCombin(ddeparam[i,5,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, concLap, conc_g[5])
-    p6 = plotUnitCombin(ddeparam[i,6,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, concLap, conc_g[6])
-    p7 = plotUnitCombin(ddeparam[i,7,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, concLap, conc_g[7])
-    p8 = plotUnitCombin(ddeparam[i,8,:], 1, "", false, g2_l, g1_l, g2_0_l, g1_0_l, concLap, conc_g[8])
-    plot(p1, p2, p3, p4, p5, p6, p7, p8, layout=(2,4))
+    pl = [plotUnitCombin(ddeparam[i,j,:], 1, "", j == 1, g2_l, g1_l, g2_0_l, g1_0_l, conc_l[i], conc_g[j]) for j in 1:8]
+    plot(pl..., layout=(2,4))
     plot!(size = (1600, 600), dpi = 250)
     ylims!((0.0, 120.0))
 end
