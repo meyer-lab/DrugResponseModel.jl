@@ -65,7 +65,7 @@ function ODEplot_all(params_ode, g1_l::Matrix, g2_l::Matrix, g1_0_l::Array, g2_0
     r6 = ode_plotIt(params_ode[:, 6], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 6, "", false)
     r7 = ode_plotIt(params_ode[:, 7], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 7, "", false)
     r8 = ode_plotIt(params_ode[:, 8], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 8, "", :topleft)
-    plot(r1, r2, r3, r4, r5, r6, r7, r8, layout = (2,4))
+    plot(r1, r2, r3, r4, r5, r6, r7, r8, layout = (2,4), fmt = :png)
     plot!(size=(1200, 600), layout = (4,2), dpi=200)
     ylims!((0.0, 120.0))
 end

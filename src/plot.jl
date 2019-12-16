@@ -39,7 +39,7 @@ function correlationPlot(g1::Matrix, g2::Matrix, labels::Array, xlabel::String, 
     p6 = scatter(g1[:,6], g2[:,6], title = labels[6], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
     p7 = scatter(g1[:,7], g2[:,7], title = labels[7], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
     p8 = scatter(g1[:,8], g2[:,8], title = labels[8], xlabel = xlabel, ylabel=ylabel, alpha = 0.6, color=[:gray], line=:dot, marker=(:dot, 1.5))
-    plot(p1, p2, p3, p4, p5, p6, p7, p8, legend=:false, layout=(2,4))
+    plot(p1, p2, p3, p4, p5, p6, p7, p8, legend=:false, layout=(2,4), fmt = :png)
     plot!(size=(1200,600), dpi=150)
     ylims!((0, ymax))
     xlims!((0, ymax))
@@ -57,7 +57,7 @@ function plot_all(parameters, pop, g2::Matrix, g1::Matrix, g2_0::Array, g1_0::Ar
     p6 = plotIt(parameters[:, 6], 6, "", false, pop, g2, g1, g2_0, g1_0)
     p7 = plotIt(parameters[:, 7], 7, "", false, pop, g2, g1, g2_0, g1_0)
     p8 = plotIt(parameters[:, 8], 8, "", :topleft, pop, g2, g1, g2_0, g1_0)
-    plot(p1, p2, p3, p4, p5, p6, p7, p8, layout=(2,4))
+    plot(p1, p2, p3, p4, p5, p6, p7, p8, layout=(2,4), fmt = :png)
     plot!(size = (1200, 600), dpi = 150)
     ylims!((0.0, 120.0))
 end
