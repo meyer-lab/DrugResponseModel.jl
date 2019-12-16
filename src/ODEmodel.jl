@@ -8,26 +8,38 @@ function update_coef(A, u, p, t)
     A[:, :] .= [-p[1]-p[3] 2*p[2]; p[1] -p[2]-p[4]]
 end
 
-function ODEmodel(p)
-    # p = [alpha, beta, gamma1, gamma2]
-    @assert all(p .>= 0.0)
-    return DiffEqArrayOperator([-p[1]-p[3] 2*p[2]; p[1] -p[2]-p[4]], update_func=update_coef)
+""" Predicts the model given a set of parametrs. """
+function predict(p, g1_0, g2_0, i, t)
+    u0 = [g1_0[i], g2_0[i]]
+    A = zeros(eltype(p), 2, 2)
+    update_coef(A, nothing, p, nothing)
+    Op = DiffEqArrayOperator(A, update_func=update_coef)
+    prob = ODEProblem(Op, u0, extrema(t), p)
+    solution = solve(prob, AutoTsit5(Rosenbrock23()))
+    return prob, solution
 end
 
+""" Calculates the cost function for a given set of parameters. """
+function cost(p, g1_0, g2_0, g1, g2, i)
+    t = range(0.0; stop = 95.5, length = 192)
+    _, solution = predict(p, g1_0, g2_0, i, t)
+    res = zeros(2, 192)
+    G1 = solution(t, idxs=1).u
+    G2 = solution(t, idxs=2).u
+    res[1, :] = (G1 - g1[:, i]).^2
+    res[2, :] = (G2 - g2[:, i]).^2
+    summ = sum(res[1,:]) + sum(res[2,:])
+    return summ
+end
 """ Fit the ODE model to data. """
-function ODEoptimizer(lower_bound::Array, upper_bound::Array, par::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
-    times = range(0.0; stop = 95.5, length = 192)
-    data = vcat(g1[:, i]', g2[:, i]')
-
-    u0 = [g1_0[i], g2_0[i]]
-    # generating the ODEproblem
-    prob = ODEProblem(ODEmodel(par), u0, extrema(times))
+function ODEoptimizer(par::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
+    residuals(par) = cost(par, g1_0, g2_0, g1, g2, i)
     # lower and upper bounds for the parameters
+    lower_bound = zeros(4)
+    upper_bound = 2*ones(4)
     bound = collect(zip(lower_bound, upper_bound))
-    # objective function
-    obj = build_loss_objective(prob, AutoTsit5(Rosenbrock23()), L2Loss(times, data); verbose_opt=false)
     # global optimization with black box optimization
-    results_ode = bboptimize(obj; SearchRange=bound, NumDimensions=4, TraceMode=:silent, MaxSteps=50000)
+    results_ode = bboptimize(residuals; SearchRange=bound, NumDimensions=4, TraceMode=:silent, MaxSteps=50000)
 
     return best_candidate(results_ode)
 end

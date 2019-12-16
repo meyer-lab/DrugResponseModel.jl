@@ -8,9 +8,8 @@ function update_coef4(A, u, p, t)
     A[:, :] .= [-p[1] .- p[5] 0.0 0.0 2.0*p[4]; p[1] -p[2] .- p[5] 0.0 0.0; 0.0 p[2] -p[3] .- p[6] 0.0; 0.0 0.0 p[3] -p[4] .- p[6]]
 end
 
-
 """ Predicts the model given a set of parametrs. """
-function predict(p, g1_0, g2_0, i, t)
+function predict4(p, g1_0, g2_0, i, t)
     u0 = [p[7]*g1_0[i], (1-p[7])*g1_0[i], p[8]*g2_0[i], (1-p[8])*g2_0[i]]
     A = zeros(eltype(p), 4, 4)
     par = p[1:6]
@@ -22,9 +21,9 @@ function predict(p, g1_0, g2_0, i, t)
 end
 
 """ Calculates the cost function for a given set of parameters. """
-function cost(p, g1_0, g2_0, g1, g2, i)
+function cost4(p, g1_0, g2_0, g1, g2, i)
     t = range(0.0; stop = 95.5, length = 192)
-    _, solution = predict(p, g1_0, g2_0, i, t)
+    _, solution = predict4(p, g1_0, g2_0, i, t)
     res = zeros(2, 192)
     G1 = solution(t, idxs=1).u + solution(t, idxs=2).u
     G2 = solution(t, idxs=3).u + solution(t, idxs=4).u
@@ -37,7 +36,7 @@ end
 """ Fit the ODE model to data. """
 function ODEoptimizer4(p::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
     
-    residuals(p) = cost(p, g1_0, g2_0, g1, g2, i)
+    residuals(p) = cost4(p, g1_0, g2_0, g1, g2, i)
     # lower and upper bounds for the parameters
     lower_bound = zeros(8)
     upper_bound = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0, 1.0]
