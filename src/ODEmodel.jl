@@ -59,7 +59,7 @@ function ODEplot_all(params_ode, g1_l::Matrix, g2_l::Matrix, g1_0_l::Array, g2_0
     # plotting the fitted curves
     rl = [ode_plotIt(params_ode[:, i], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, i, "", false) for i in 1:7]
     r8 = ode_plotIt(params_ode[:, 8], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 8, "", :topleft)
-    plot(rl..., r8, layout = (2,4), fmt = :png)
+    plot(rl..., r8, layout = (2,4))
     plot!(size=(1200, 600), layout = (4,2), dpi=200)
     ylims!((0.0, 120.0))
 end

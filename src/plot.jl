@@ -43,7 +43,7 @@ function plot_all(parameters, pop, g2::Matrix, g1::Matrix, g2_0::Array, g1_0::Ar
     # i showas the trial number, which could be from 1:control, ..., 8: maximum drug concentraation
     pl = [plotIt(parameters[:, i], i, "", false, pop, g2, g1, g2_0, g1_0) for i in 1:7]
     p8 = plotIt(parameters[:, 8], 8, "", :topleft, pop, g2, g1, g2_0, g1_0)
-    plot(pl..., p8, layout=(2,4), fmt = :png)
+    plot(pl..., p8, layout=(2,4))
     plot!(size = (1200, 600), dpi = 150)
     ylims!((0.0, 120.0))
 end
@@ -69,7 +69,7 @@ function plot_parameters(conc_l::Array, parameters::Matrix)
     p6 = plot(conc, parameters[6,:], xlabel = "drug conc. [nM]", label = "", lw= 2.0, alpha = 0.6, color=[:black :gray], line=(:dot, 1), marker=([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "gamma2"); ylims!(0.0, 1.2*maximum(parameters[6,:]))
 
-    plot(p1, p2, p3, p4, p5, p6, fmt = :png)
+    plot(p1, p2, p3, p4, p5, p6)
     plot!(size = (1200, 600), dpi = 150)
 end
 
