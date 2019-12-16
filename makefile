@@ -3,6 +3,7 @@ venv: venv/bin/activate
 
 venv/bin/activate:
 	test -d venv || virtualenv venv
+	tlmgr install tcolorbox
 	. venv/bin/activate && pip install -Uq jupyter
 	touch venv/bin/activate
 
