@@ -30,9 +30,4 @@
 	best_fit, parameters = optimization(g1, g2, g1_0, g2_0, initial_guess, 6, lower_bnd, upper_bnd, maxSteps)
 	# to test the estimated parameters are still in the range
 	@test all(exp.(upper_bnd) .>= parameters .>= exp.(lower_bnd))
-
-	# profiling the plot function
-	plotIt(parameters, 6, "", :false, pop, g2, g1, g2_0, g1_0)
-	plot_all(parameters, pop, g2, g1, g2_0, g1_0)
-	plot_parameters(conc, parameters)
 end
