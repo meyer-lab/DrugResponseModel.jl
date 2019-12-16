@@ -83,7 +83,7 @@ function plot_parameters(conc_l::Array, parameters::Matrix)
     p6 = plot(conc, parameters[6,:], xlabel = "drug conc. [nM]", label = "", lw= 2.0, alpha = 0.6, color=[:black :gray], line=(:dot, 1), marker=([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "gamma2"); ylims!(0.0, 1.2*maximum(parameters[6,:]))
 
-    plot(p1, p2, p3, p4, p5, p6)
+    plot(p1, p2, p3, p4, p5, p6, fmt = :png)
     plot!(size = (1200, 600), dpi = 150)
 end
 
