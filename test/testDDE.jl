@@ -26,17 +26,13 @@
 
 	# Add profile of fitness function?
 
-	parameters = zeros(6, 8)
 	# Estimating the parameters for all trials
-	for j in 1:8
-		best_fit, parameters[:, j] = optimization(g1, g2, g1_0, g2_0, initial_guess, j, lower_bnd, upper_bnd, maxSteps)
-		# to test the estimated parameters are still in the range
-		@test all(exp.(upper_bnd) .>= parameters[:, j] .>= exp.(lower_bnd))
-		@test best_fit <= 9000
-	end
+	best_fit, parameters = optimization(g1, g2, g1_0, g2_0, initial_guess, 6, lower_bnd, upper_bnd, maxSteps)
+	# to test the estimated parameters are still in the range
+	@test all(exp.(upper_bnd) .>= parameters .>= exp.(lower_bnd))
 
 	# profiling the plot function
-	plotIt(parameters[:, 8], 6, "", :false, pop, g2, g1, g2_0, g1_0)
+	plotIt(parameters, 6, "", :false, pop, g2, g1, g2_0, g1_0)
 	plot_all(parameters, pop, g2, g1, g2_0, g1_0)
 	plot_parameters(conc, parameters)
 end
