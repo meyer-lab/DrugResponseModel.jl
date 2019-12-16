@@ -13,6 +13,12 @@ pipeline {
         cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'coverage.cob', enableNewApi: true, failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
       }
     }
+    stage ('Build') {
+      steps {
+        sh 'make DDEmodel.html ODEmodel.html ODE4.html'
+        archiveArtifacts artifacts: '*.html', onlyIfSuccessful: true
+      }
+    }
   }
   post {
     always {

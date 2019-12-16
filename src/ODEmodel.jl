@@ -25,7 +25,7 @@ function ODEoptimizer(lower_bound::Array, upper_bound::Array, par::Array, i::Int
     # lower and upper bounds for the parameters
     bound = collect(zip(lower_bound, upper_bound))
     # objective function
-    obj = build_loss_objective(prob, LinearExponential(), L2Loss(times, data); verbose_opt=false)
+    obj = build_loss_objective(prob, AutoTsit5(Rosenbrock23()), L2Loss(times, data); verbose_opt=false)
     # global optimization with black box optimization
     results_ode = bboptimize(obj; SearchRange=bound, NumDimensions=4, TraceMode=:silent, MaxSteps=50000)
 
@@ -43,7 +43,7 @@ function ode_plotIt(params::Vector{Float64}, g1::Matrix, g2::Matrix, g1_0::Array
     tspan_new = (0.0, 195.5)
     u0_new = [g1_0[i], g2_0[i]]
     prob_new = ODEProblem(ODEmodel(params), u0_new, tspan_new, params)
-    solution = solve(prob_new, LinearExponential())
+    solution = solve(prob_new, AutoTsit5(Rosenbrock23()))
 
     plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, xlabel = "time [hours]", ylabel = "# of cells", lw=2.0, alpha = 0.6, color=:green)
     plot!(t, g1[:, i], label = "G1", dpi = 150, markersize = 1.0, color=:darkgreen)
@@ -57,15 +57,9 @@ end
 """ Plot the data and curves for all concentrations. """
 function ODEplot_all(params_ode, g1_l::Matrix, g2_l::Matrix, g1_0_l::Array, g2_0_l::Array, pop_l)
     # plotting the fitted curves
-    r1 = ode_plotIt(params_ode[:, 1], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 1, "", false)
-    r2 = ode_plotIt(params_ode[:, 2], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 2, "", false)
-    r3 = ode_plotIt(params_ode[:, 3], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 3, "", false)
-    r4 = ode_plotIt(params_ode[:, 4], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 4, "", false)
-    r5 = ode_plotIt(params_ode[:, 5], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 5, "", false)
-    r6 = ode_plotIt(params_ode[:, 6], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 6, "", false)
-    r7 = ode_plotIt(params_ode[:, 7], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 7, "", false)
+    rl = [ode_plotIt(params_ode[:, i], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, i, "", false) for i in 1:7]
     r8 = ode_plotIt(params_ode[:, 8], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 8, "", :topleft)
-    plot(r1, r2, r3, r4, r5, r6, r7, r8, layout = (2,4))
+    plot(rl..., r8, layout = (2,4))
     plot!(size=(1200, 600), layout = (4,2), dpi=200)
     ylims!((0.0, 120.0))
 end
