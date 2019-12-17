@@ -12,7 +12,9 @@ using OrdinaryDiffEq
 using DiffEqOperators
 using DiffEqBase
 using Distributions
+using DifferentialEquations
 using Turing
+using StatsPlots
 
 include("importData.jl")
 include("ODEmodel.jl")

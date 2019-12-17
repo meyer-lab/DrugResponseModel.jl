@@ -33,42 +33,42 @@ function remakeProblem(prob, p, SaveAt)
 end
 
 """ Turing for 2-eq ODE. """
-function turing(p, g1_0, g2_0, i)
+function turing(params_ode, g1_0, g2_0, i)
     t = range(0.0; stop = 95.5, length = 192)
-    tp = collect(range(0, stop=191))
+    tp = collect(t)
 
-    prob, sol = predict(p, g1_0, g2_0, i, t)
+    prob, sol = predict(params_ode, g1_0, g2_0, i, t)
     newsol = zeros(2, 192)
     newsol[1, :] = sol(t, idxs=1).u
     newsol[2, :] = sol(t, idxs=2).u
 
-    @model bayesODE(prob, x, tp) = begin
-      alpha ~ Uniform(0.0, 2.0)
-      beta ~ Uniform(0.0, 2.0)
-      gamma1 ~ Uniform(0.0, 2.0)
-      gamma2 ~ Uniform(0.0, 2.0)
+    @model bayesODE(prob, x, tp, params_ode) = begin
+      alpha ~ truncated(Normal(0.5, 0.2), 0.0, 1.0)
+      beta ~ truncated(Normal(0.5, 0.2), 0.0, 1.0)
+      gamma1 ~ truncated(Normal(0.5, 0.2), 0.0, 1.0)
+      gamma2 ~ truncated(Normal(0.5, 0.2), 0.0, 1.0)
 
       # gather parameters and solve equation
       p = [alpha, beta, gamma1 ,gamma2]
-      sol_tmp = remakeProblem(prob, p, tp)
-      N = length(tp)
+      sol_tmp = remakeProblem(prob, params_ode, tp)
+          N = length(tp)
 
-      fill_length = length(tp) - length(sol_tmp.u)
+          fill_length = length(tp) - length(sol_tmp.u)
 
-      for i in 1:fill_length
-        if eltype(sol_tmp.u) <: Number
-          push!(sol_tmp.u, Inf)
-        else
-          push!(sol_tmp.u, fill(Inf, size(sol_tmp[1])))
-        end
+          for i in 1:fill_length
+            if eltype(sol_tmp.u) <: Number
+              push!(sol_tmp.u, Inf)
+            else
+              push!(sol_tmp.u, fill(Inf, size(sol_tmp[1])))
+            end
 
-      end
-      print(sol_tmp.u)
+          end
+
       for i in 1:N
-        x[:,i] ~ MvNormal(sol_tmp.u[i], [0.5,0.5])
+        x[:,i] ~ MvNormal(sol_tmp.u[i], [0.01,0.01])
       end
     end
-    chain = sample(bayesODE(prob, newsol, tp), NUTS(0.65), 1000)
+    chain = sample(bayesODE(prob, newsol, tp, params_ode), NUTS(0.65), 2000)
     return chain
 end
 
