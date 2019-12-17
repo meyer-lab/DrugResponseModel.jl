@@ -13,6 +13,6 @@ include("importData.jl")
 include("ODEmodel.jl")
 include("plot.jl")
 
-export setup_data, remove_peaks, ODEoptimizer, ode_plotIt, plotIt, correlationPlot, plot_all, plot_parameters, ODEplot_all, cost, predict
+export setup_data, ODEoptimizer, ode_plotIt, plotIt, correlationPlot, plot_all, ODEplot_all
 
 end # module
