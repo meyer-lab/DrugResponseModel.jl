@@ -3,36 +3,6 @@
 """
 
 
-""" Time- and state-invariant model Jacobian. """
-function update_coef(A, u, p, t)
-    A[:, :] .= [-p[1]-p[3] 2*p[2]; p[1] -p[2]-p[4]]
-end
-
-function ODEmodel(p)
-    # p = [alpha, beta, gamma1, gamma2]
-    @assert all(p .>= 0.0)
-    return DiffEqArrayOperator([-p[1]-p[3] 2*p[2]; p[1] -p[2]-p[4]], update_func=update_coef)
-end
-
-""" Fit the ODE model to data. """
-function ODEoptimizer(lower_bound::Array, upper_bound::Array, par::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
-    times = range(0.0; stop = 95.5, length = 192)
-    data = vcat(g1[:, i]', g2[:, i]')
-
-    u0 = [g1_0[i], g2_0[i]]
-    # generating the ODEproblem
-    prob = ODEProblem(ODEmodel(par), u0, extrema(times))
-    # lower and upper bounds for the parameters
-    bound = collect(zip(lower_bound, upper_bound))
-    # objective function
-    obj = build_loss_objective(prob, AutoTsit5(Rosenbrock23()), L2Loss(times, data); verbose_opt=false)
-    # global optimization with black box optimization
-    results_ode = bboptimize(obj; SearchRange=bound, NumDimensions=4, TraceMode=:silent, MaxSteps=50000)
-
-    return best_candidate(results_ode)
-end
-
-
 function ode_plotIt(params::Vector{Float64}, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop, i::Int, title::String, legend::Any)
     """ Given estimated parameters for each trial, solve the DDE model plot the predicted curve 
     for # of cells in G1, G2, or total, along with their corresponding real data,
@@ -42,7 +12,7 @@ function ode_plotIt(params::Vector{Float64}, g1::Matrix, g2::Matrix, g1_0::Array
     t_new = LinRange(0.0, 195.5, 292)
     tspan_new = (0.0, 195.5)
     u0_new = [g1_0[i], g2_0[i]]
-    prob_new = ODEProblem(ODEmodel(params), u0_new, tspan_new, params)
+    prob_new = ODEProblem((a, b, c, d) -> ODEmodelFlex(a, b, c, d, 1), u0_new, tspan_new, params)
     solution = solve(prob_new, AutoTsit5(Rosenbrock23()))
 
     plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, xlabel = "time [hours]", ylabel = "# of cells", lw=2.0, alpha = 0.6, color=:green)

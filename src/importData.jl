@@ -40,7 +40,7 @@ function get_data(path_g2::String, path_total::String)
     return pop, g2, g1, g2_0, g1_0
 end
 
-# to remove the peaks from the raw data
+""" Removes noise peaks from the raw data. """
 function remove_peaks(data)
     data = copy(data)
 
@@ -53,43 +53,28 @@ function remove_peaks(data)
     return data
 end
 
+""" This function takes in the drug name which is a string and must be among this list: ["lapatinib", "doxorubicin", "paclitaxel", "gemcitabine"]. It returns the cnocentrations, population, cell, and initial cell number for that drug."""
 function setup_data(drug_name::String)
-    """ This function takes in the drug name which is a string and must be among this list: ["lapatinib", "doxorubicin", "paclitaxel", "gemcitabine"]. It returns the cnocentrations, population, cell, and initial cell number for that drug."""
     basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data")
 
-    #----------- import concentrations
-    concentration = CSV.read(joinpath(basePath, "concentrations.csv"))
-    # lapatinib
-    conc_l = [Float64(concentration[1, col]) for col in 2:9]
-    # doxorubicin
-    conc_d = [Float64(concentration[2, col]) for col in 2:9]
-    # gemcitabine
-    conc_g = [Float64(concentration[3, col]) for col in 2:9]
-    # paclitaxel
-    conc_t = [Float64(concentration[4, col]) for col in 2:9]
-
-    #------------ import cell data
-    # lapatinib
-    pop_l, g2_l, g1_l, g2_0_l, g1_0_l = get_data(joinpath(basePath, "lap.csv"),
-                                       joinpath(basePath, "lap_pop.csv"));
-    # doxorubicin
-    pop_d, g2_d, g1_d, g2_0_d, g1_0_d = get_data(joinpath(basePath, "dox.csv"),
-                                       joinpath(basePath, "dox_pop.csv"));
-    # gemcitabine
-    pop_g, g2_g, g1_g, g2_0_g, g1_0_g = get_data(joinpath(basePath, "gem.csv"),
-                                       joinpath(basePath, "gem_pop.csv"));
-    # paclitaxel
-    pop_t, g2_t, g1_t, g2_0_t, g1_0_t = get_data(joinpath(basePath, "taxol1.csv"),
-                                       joinpath(basePath, "taxol1_pop.csv"));
     if drug_name == "lapatinib"
-        return conc_l, pop_l, g2_l, g1_l, g2_0_l, g1_0_l
+        dfname, dfname2, idx = "lap.csv", "lap_pop.csv", 1
     elseif drug_name == "doxorubicin"
-        return conc_d, pop_d, g2_d, g1_d, g2_0_d, g1_0_d
+        dfname, dfname2, idx = "dox.csv", "dox_pop.csv", 2
     elseif drug_name == "gemcitabine"
-        return conc_g, pop_g, g2_g, g1_g, g2_0_g, g1_0_g
+        dfname, dfname2, idx = "gem.csv", "gem_pop.csv", 3
     elseif drug_name == "paclitaxel"
-        return conc_t, pop_t, g2_t, g1_t, g2_0_t, g1_0_t
+        dfname, dfname2, idx = "taxol1.csv", "taxol1_pop.csv", 4
     else
         error("The drug is not amongst the data, please check the drug_name.")
     end
+
+    #----------- import concentrations
+    concentration = CSV.read(joinpath(basePath, "concentrations.csv"))
+    conc_l = [Float64(concentration[idx, col]) for col in 2:9]
+
+    #------------ import cell data
+    pop_l, g2_l, g1_l, g2_0_l, g1_0_l = get_data(joinpath(basePath, dfname), joinpath(basePath, dfname2));
+
+    return conc_l, pop_l, g2_l, g1_l, g2_0_l, g1_0_l
 end
