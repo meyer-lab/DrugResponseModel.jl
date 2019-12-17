@@ -20,10 +20,10 @@ end
 
 """ Predicts the model given a set of parametrs. """
 function predict(p, g1_0, g2_0, t, nG1, nG2)
-    u0 = [ones(nG1)*g1_0/nG1  ones(nG1)*g2_0/nG2]
+    u0 = [ones(nG1)*g1_0/nG1  ones(nG2)*g2_0/nG2]
     prob = ODEProblem((a, b, c, d) -> ODEmodelFlex(a, b, c, d, nG1), u0, extrema(t), p)
     solution = solve(prob, Tsit5())
-    return solution(t).u
+    return solution
 end
 
 
@@ -31,14 +31,11 @@ end
 function cost(p, g1_0, g2_0, g1, g2, nG1, nG2)
     t = range(0.0; stop = 95.5, length = 192)
     solution = predict(p, g1_0, g2_0, t, nG1, nG2)
-    solution = vcat(transpose.(solution)...)
-    res = zeros(2, 192)
-    G1 = sum(solution[:, 1:nG1], dims=2)
-    G2 = sum(solution[:, nG1+1:end], dims=2)
-    res[1, :] = (G1 - g1).^2
-    res[2, :] = (G2 - g2).^2
-    summ = sum(res[1,:]) + sum(res[2,:])
-    return summ
+
+    G1 = sum(solution(t, idxs=1:nG1), dims=1)
+    G2 = sum(solution(t, idxs=nG1+1:nG1+nG2), dims=1)
+
+    return sum((vec(G1) - g1).^2 + (vec(G2) - g2).^2)
 end
 
 
@@ -65,7 +62,7 @@ function ode_plotIt4(params::Vector{Float64}, g1::Matrix, g2::Matrix, g1_0::Arra
     """
     t = range(0.0; stop = 95.5, length = 192)
     t_new = LinRange(0.0, 195.5, 292)
-    _, solution = predict(params, g1_0, g2_0, i, t_new)
+    solution = predict(params, g1_0[i], g2_0[i], t_new, 2, 2)
 
     plot(t_new, solution(t_new, idxs=1).u + solution(t_new, idxs=2).u, label = "G1 est", dpi = 150, xlabel = "time [hours]", ylabel = "# of cells", lw=2.0, alpha = 0.6, color=:green)
     plot!(t, g1[:, i], label = "G1", dpi = 150, markersize = 1.0, color=:darkgreen)
