@@ -1,12 +1,16 @@
 @testset "ODE tests" begin
 	_, pop, g2, g1, g1_0, g2_0 = setup_data("lapatinib")
 
+	t = range(0.0; stop = 95.5, length = 192)
+	DrugResponseModel.predict([1.0, 1.1, 0.2, 0.3], 1.0, 1.0, t, 3, 3)
+
 	# ODE optimization and estimation of the parameters
-	fitness, params_ode = ODEoptimizer(ones(4)*0.5, 4, g1, g2, g1_0, g2_0, 1, 1)
+	fitness, params_ode = ODEoptimizer(4, g1, g2, g1_0, g2_0, 1, 1)
+	println(fitness)
 
-	@time ODEoptimizer(ones(4)*0.5, 4, g1, g2, g1_0, g2_0, 1, 1)
+	@time ODEoptimizer(4, g1, g2, g1_0, g2_0, 1, 1)
 
-	@profile ODEoptimizer(ones(4)*0.5, 4, g1, g2, g1_0, g2_0, 1, 1)
+	@profile ODEoptimizer(4, g1, g2, g1_0, g2_0, 1, 1)
 
 	Profile.print(noisefloor=5.0)
 
