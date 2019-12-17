@@ -4,19 +4,72 @@
 
 
 """ Time- and state-invariant model Jacobian. """
-function update_coef(A, u, p, t)
-    A[:, :] .= [-p[1]-p[3] 2*p[2]; p[1] -p[2]-p[4]]
+# function update_coef(A, u, p, t)
+#     A[:, :] .= [-p[1]-p[3] 2*p[2]; p[1] -p[2]-p[4]]
+# end
+
+function ODEmodel(du, u, p, t)
+    # p = [alpha, beta, gamma1, gamma2, initg1, initg2]
+    du[1] = -p[1]*u[1] + 2*p[2]*u[2] - p[3]*u[1]
+    du[2] = p[1]*u[1] - p[2]*u[2] - p[4]*u[2]
 end
 
 """ Predicts the model given a set of parametrs. """
 function predict(p, g1_0, g2_0, i, t)
     u0 = [g1_0[i], g2_0[i]]
-    A = zeros(eltype(p), 2, 2)
-    update_coef(A, nothing, p, nothing)
-    Op = DiffEqArrayOperator(A, update_func=update_coef)
-    prob = ODEProblem(Op, u0, extrema(t), p)
+#     A = zeros(eltype(p), 2, 2)
+#     update_coef(A, nothing, p, nothing)
+#     Op = DiffEqArrayOperator(A, update_func=update_coef)
+#     prob = ODEProblem(Op, u0, extrema(t), p)
+    prob = ODEProblem(ODEmodel, u0, extrema(t), p)
     solution = solve(prob, AutoTsit5(Rosenbrock23()))
     return prob, solution
+end
+
+""" Remake the problem by creating dual type. """
+function remakeProblem(prob, p, SaveAt)
+  _prob = remake(prob;u0=convert.(eltype(p),prob.u0),p=p)
+  solve(_prob,AutoTsit5(Rosenbrock23()), saveat=SaveAt;abstol=1e-6, reltol= 1e-6)
+end
+
+""" Turing for 2-eq ODE. """
+function turing(p, g1_0, g2_0, i)
+    t = range(0.0; stop = 95.5, length = 192)
+    tp = collect(range(0, stop=191))
+
+    prob, sol = predict(p, g1_0, g2_0, i, t)
+    newsol = zeros(2, 192)
+    newsol[1, :] = sol(t, idxs=1).u
+    newsol[2, :] = sol(t, idxs=2).u
+
+    @model bayesODE(prob, x, tp) = begin
+      alpha ~ Uniform(0.0, 2.0)
+      beta ~ Uniform(0.0, 2.0)
+      gamma1 ~ Uniform(0.0, 2.0)
+      gamma2 ~ Uniform(0.0, 2.0)
+
+      # gather parameters and solve equation
+      p = [alpha, beta, gamma1 ,gamma2]
+      sol_tmp = remakeProblem(prob, p, tp)
+      N = length(tp)
+
+      fill_length = length(tp) - length(sol_tmp.u)
+
+      for i in 1:fill_length
+        if eltype(sol_tmp.u) <: Number
+          push!(sol_tmp.u, Inf)
+        else
+          push!(sol_tmp.u, fill(Inf, size(sol_tmp[1])))
+        end
+
+      end
+      print(sol_tmp.u)
+      for i in 1:N
+        x[:,i] ~ MvNormal(sol_tmp.u[i], [0.5,0.5])
+      end
+    end
+    chain = sample(bayesODE(prob, newsol, tp), NUTS(0.65), 1000)
+    return chain
 end
 
 """ Calculates the cost function for a given set of parameters. """
@@ -39,7 +92,7 @@ function ODEoptimizer(par::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g
     upper_bound = 2*ones(4)
     bound = collect(zip(lower_bound, upper_bound))
     # global optimization with black box optimization
-    results_ode = bboptimize(residuals; SearchRange=bound, NumDimensions=4, TraceMode=:silent, MaxSteps=10000)
+    results_ode = bboptimize(residuals; SearchRange=bound, NumDimensions=4, TraceMode=:silent, MaxSteps=20000)
 
     return best_fitness(results_ode), best_candidate(results_ode)
 end
