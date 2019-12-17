@@ -8,13 +8,13 @@ function ODEmodelFlex(du, u, p, t, nG1)
     # p = [alpha, beta, gamma1, gamma2, initg1, initg2]
 
     # G1
-    du[2:nG1] .= p[1] .* u[1:(nG1-1)]
-    du[1:nG1] .= -p[1] .* u[1:nG1] .- p[3] .* u[1:nG1]
-    du[1] += 2*p[2]*u[end]
+    du[1] = 2*p[2]*u[end]
+    du[2:(nG1+1)] .= p[1] .* u[1:nG1]
+    du[1:nG1] .+= -p[1] .* u[1:nG1] .- p[3] .* u[1:nG1]
 
     # G2
     du[(nG1 + 2):end] .= p[2] .* u[(nG1 + 1):(length(u)-1)]
-    du[(nG1 + 1):end] .= -p[1] .* u[(nG1 + 1):end] .- p[4] .* u[(nG1 + 1):end]
+    du[(nG1 + 1):end] .+= -p[1] .* u[(nG1 + 1):end] .- p[4] .* u[(nG1 + 1):end]
 end
 
 
