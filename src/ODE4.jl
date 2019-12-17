@@ -19,23 +19,23 @@ end
 
 
 """ Predicts the model given a set of parametrs. """
-function predict(p, g1_0, g2_0, i, t)
-    u0 = [p[7]*g1_0[i], (1-p[7])*g1_0[i], p[8]*g2_0[i], (1-p[8])*g2_0[i]]
-    prob = ODEProblem((a, b, c, d) -> ODEmodelFlex(a, b, c, d, 2), u0, extrema(t), p[1:6])
+function predict(p, g1_0, g2_0, t, nG1, nG2)
+    u0 = [ones(nG1)*g1_0/nG1  ones(nG1)*g2_0/nG2]
+    prob = ODEProblem((a, b, c, d) -> ODEmodelFlex(a, b, c, d, nG1), u0, extrema(t), p)
     solution = solve(prob, AutoTsit5(Rosenbrock23()))
-    return prob, solution
+    return solution
 end
 
 
 """ Calculates the cost function for a given set of parameters. """
-function cost(p, g1_0, g2_0, g1, g2, i)
+function cost(p, g1_0, g2_0, g1, g2)
     t = range(0.0; stop = 95.5, length = 192)
-    _, solution = predict(p, g1_0, g2_0, i, t)
+    solution = predict(p, g1_0, g2_0, t, 2, 2)
     res = zeros(2, 192)
     G1 = solution(t, idxs=1).u + solution(t, idxs=2).u
     G2 = solution(t, idxs=3).u + solution(t, idxs=4).u
-    res[1, :] = (G1 - g1[:, i]).^2
-    res[2, :] = (G2 - g2[:, i]).^2
+    res[1, :] = (G1 - g1).^2
+    res[2, :] = (G2 - g2).^2
     summ = sum(res[1,:]) + sum(res[2,:])
     return summ
 end
@@ -43,7 +43,7 @@ end
 """ Fit the ODE model to data. """
 function ODEoptimizer4(p::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
     
-    residuals(p) = cost(p, g1_0, g2_0, g1, g2, i)
+    residuals(p) = cost(p, g1_0[i], g2_0[i], g1[:, i], g2[:, i], i)
     # lower and upper bounds for the parameters
     lower_bound = zeros(8)
     upper_bound = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0, 1.0]
