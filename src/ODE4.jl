@@ -22,28 +22,30 @@ end
 function predict(p, g1_0, g2_0, t, nG1, nG2)
     u0 = [ones(nG1)*g1_0/nG1  ones(nG1)*g2_0/nG2]
     prob = ODEProblem((a, b, c, d) -> ODEmodelFlex(a, b, c, d, nG1), u0, extrema(t), p)
-    solution = solve(prob, AutoTsit5(Rosenbrock23()))
-    return solution
+    solution = solve(prob, Tsit5())
+    return solution(t).u
 end
 
 
 """ Calculates the cost function for a given set of parameters. """
-function cost(p, g1_0, g2_0, g1, g2)
+function cost(p, g1_0, g2_0, g1, g2, nG1, nG2)
     t = range(0.0; stop = 95.5, length = 192)
-    solution = predict(p, g1_0, g2_0, t, 2, 2)
+    solution = predict(p, g1_0, g2_0, t, nG1, nG2)
+    solution = vcat(transpose.(solution)...)
     res = zeros(2, 192)
-    G1 = solution(t, idxs=1).u + solution(t, idxs=2).u
-    G2 = solution(t, idxs=3).u + solution(t, idxs=4).u
+    G1 = sum(solution[:, 1:nG1], 2)
+    G2 = sum(solution[:, nG1+1:end], 2)
     res[1, :] = (G1 - g1).^2
     res[2, :] = (G2 - g2).^2
     summ = sum(res[1,:]) + sum(res[2,:])
     return summ
 end
 
+
 """ Fit the ODE model to data. """
 function ODEoptimizer4(p::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
     
-    residuals(p) = cost(p, g1_0[i], g2_0[i], g1[:, i], g2[:, i], i)
+    residuals(p) = cost(p, g1_0[i], g2_0[i], g1[:, i], g2[:, i], 2, 2)
     # lower and upper bounds for the parameters
     lower_bound = zeros(8)
     upper_bound = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0, 1.0]
@@ -77,15 +79,9 @@ end
 """ Plot all the concentrations. """
 function ODEplot_all4(params_ode, g1_l::Matrix, g2_l::Matrix, g1_0_l::Array, g2_0_l::Array, pop_l)
     # plotting the fitted curves
-    r1 = ode_plotIt4(params_ode[:, 1], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 1, "", false)
-    r2 = ode_plotIt4(params_ode[:, 2], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 2, "", false)
-    r3 = ode_plotIt4(params_ode[:, 3], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 3, "", false)
-    r4 = ode_plotIt4(params_ode[:, 4], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 4, "", false)
-    r5 = ode_plotIt4(params_ode[:, 5], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 5, "", false)
-    r6 = ode_plotIt4(params_ode[:, 6], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 6, "", false)
-    r7 = ode_plotIt4(params_ode[:, 7], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 7, "", false)
+    rl = [ode_plotIt4(params_ode[:, ii], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, ii, "", false) for ii in 1:7]
     r8 = ode_plotIt4(params_ode[:, 8], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 8, "", :topleft)
-    plot(r1, r2, r3, r4, r5, r6, r7, r8, layout = (2,4))
+    plot(rl..., r8, layout = (2,4))
     plot!(size=(800, 400), layout = (4,2), dpi=200)
     ylims!((0.0, 120.0))
 end

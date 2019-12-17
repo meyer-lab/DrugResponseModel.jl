@@ -4,18 +4,13 @@
 
 """ Fit the ODE model to data. """
 function ODEoptimizer(lower_bound::Array, upper_bound::Array, par::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
-    times = range(0.0; stop = 95.5, length = 192)
-    data = vcat(g1[:, i]', g2[:, i]')
-
     u0 = [g1_0[i], g2_0[i]]
     # generating the ODEproblem
-    prob = ODEProblem((a, b, c, d) -> ODEmodelFlex(a, b, c, d, 1), u0, extrema(times))
+    residuals(p) = cost(p, g1_0[i], g2_0[i], g1[:, i], g2[:, i], 2, 2)
     # lower and upper bounds for the parameters
     bound = collect(zip(lower_bound, upper_bound))
-    # objective function
-    obj = build_loss_objective(prob, AutoTsit5(Rosenbrock23()), L2Loss(times, data); verbose_opt=false)
     # global optimization with black box optimization
-    results_ode = bboptimize(obj; SearchRange=bound, NumDimensions=4, TraceMode=:silent, MaxSteps=50000)
+    results_ode = bboptimize(residuals; SearchRange=bound, NumDimensions=4, TraceMode=:silent, MaxSteps=50000)
 
     return best_candidate(results_ode)
 end

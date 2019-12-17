@@ -6,7 +6,6 @@ using CSV
 using DataFrames
 using Plots
 using Measures
-using DiffEqParamEstim
 using BlackBoxOptim
 using OrdinaryDiffEq
 
