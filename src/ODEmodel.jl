@@ -2,19 +2,6 @@
         In this file we want to estimate parameters of an ODE model describing the number of cells in G1 or G2 phase of the cell cycle .
 """
 
-""" Fit the ODE model to data. """
-function ODEoptimizer(lower_bound::Array, upper_bound::Array, par::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
-    u0 = [g1_0[i], g2_0[i]]
-    # generating the ODEproblem
-    residuals(p) = cost(p, g1_0[i], g2_0[i], g1[:, i], g2[:, i], 2, 2)
-    # lower and upper bounds for the parameters
-    bound = collect(zip(lower_bound, upper_bound))
-    # global optimization with black box optimization
-    results_ode = bboptimize(residuals; SearchRange=bound, NumDimensions=4, TraceMode=:silent, MaxSteps=50000)
-
-    return best_candidate(results_ode)
-end
-
 
 function ode_plotIt(params::Vector{Float64}, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop, i::Int, title::String, legend::Any)
     """ Given estimated parameters for each trial, solve the DDE model plot the predicted curve 

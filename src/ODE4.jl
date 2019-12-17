@@ -14,7 +14,7 @@ function ODEmodelFlex(du, u, p, t, nG1)
 
     # G2
     du[(nG1 + 2):end] .= p[2] .* u[(nG1 + 1):(length(u)-1)]
-    du[(nG1 + 1):end] .= -p[1] .* u[(nG1 + 1):end] .- p[3] .* u[(nG1 + 1):end]
+    du[(nG1 + 1):end] .= -p[1] .* u[(nG1 + 1):end] .- p[4] .* u[(nG1 + 1):end]
 end
 
 
@@ -40,16 +40,16 @@ end
 
 
 """ Fit the ODE model to data. """
-function ODEoptimizer4(p::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
+function ODEoptimizer(p::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, nG1, nG2)
     
-    residuals(p) = cost(p, g1_0[i], g2_0[i], g1[:, i], g2[:, i], 2, 2)
+    residuals(p) = cost(p, g1_0[i], g2_0[i], g1[:, i], g2[:, i], nG1, nG2)
     # lower and upper bounds for the parameters
-    lower_bound = zeros(8)
-    upper_bound = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0, 1.0]
+    lower_bound = zeros(4)
+    upper_bound = [0.5, 0.5, 0.5, 0.5]
     bound = collect(zip(lower_bound, upper_bound))
 
     # global optimization with black box optimization
-    results_ode = bboptimize(residuals; SearchRange=bound, NumDimensions=8, TraceMode=:silent, MaxSteps=50000)
+    results_ode = bboptimize(residuals; SearchRange=bound, NumDimensions=4, TraceMode=:silent, MaxSteps=50000)
 
     return best_fitness(results_ode), best_candidate(results_ode)
 end
