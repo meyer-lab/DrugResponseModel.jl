@@ -20,14 +20,26 @@ end
 
 """ Predicts the model given a set of parametrs. """
 function predict(p, g1_0, g2_0, t, nG1::Int, nG2::Int)
-    u0 = vec([ones(nG1)*g1_0/nG1  ones(nG2)*g2_0/nG2])
-    prob = ODEProblem((a, b, c, d) -> ODEmodelFlex(a, b, c, d, nG1), u0, extrema(t), p)
-    solution = solve(prob, Tsit5())
+    # Some assumptions
+    @assert t[1] == 0.0
 
-    G1 = sum(solution(t, idxs=1:nG1), dims=1)
-    G2 = sum(solution(t, idxs=nG1+1:nG1+nG2), dims=1)
+    v = vec([ones(nG1)*g1_0/nG1  ones(nG2)*g2_0/nG2])
+    A = ForwardDiff.jacobian((y, x) -> ODEmodelFlex(y, x, p, nothing, nG1), zeros(length(v)), v)
 
-    return vec(G1), vec(G2)
+    G1 = zeros(length(t))
+    G2 = zeros(length(t))
+
+    dt = t[2] - t[1]
+    M = exp(dt*A)
+
+    for ii in 1:length(G1)
+        G1[ii] = sum(v[1:nG1])
+        G2[ii] = sum(v[nG1+1:nG1+nG2])
+
+        LinearAlgebra.mul!(v, M, v)
+    end
+
+    return G1, G2
 end
 
 
@@ -59,7 +71,7 @@ end
     for a longer time which is 2 times of the original time (~195 hours) """
 function ode_plotIt(params::Vector{Float64}, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop, i::Int, title::String, legend::Any, nG1::Int, nG2::Int)
     t = LinRange(0.0, 95.5, 192)
-    t_new = LinRange(0.0, 195.5, 292)
+    t_new = LinRange(0.0, 150, 200)
     G1, G2 = predict(params, g1_0[i], g2_0[i], t_new, nG1, nG2)
 
     plot(t_new, G1, label = "G1 est", dpi = 150, xlabel = "time [hours]", ylabel = "# of cells", lw=2.0, alpha = 0.6, color=:green)
