@@ -17,7 +17,6 @@ function ODEmodelFlex(du, u, p, t, nG1)
     du[(nG1 + 1):end] .+= -p[1] .* u[(nG1 + 1):end] .- p[4] .* u[(nG1 + 1):end]
 end
 
-
 """ Predicts the model given a set of parametrs. """
 function predict(p, g1_0, g2_0, t, nG1, nG2)
     u0 = [ones(nG1)*g1_0/nG1  ones(nG2)*g2_0/nG2]
