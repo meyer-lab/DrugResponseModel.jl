@@ -33,8 +33,8 @@ function cost(p, g1_0, g2_0, g1, g2, nG1, nG2)
     solution = predict(p, g1_0, g2_0, t, nG1, nG2)
     solution = vcat(transpose.(solution)...)
     res = zeros(2, 192)
-    G1 = sum(solution[:, 1:nG1], 2)
-    G2 = sum(solution[:, nG1+1:end], 2)
+    G1 = sum(solution[:, 1:nG1], dims=2)
+    G2 = sum(solution[:, nG1+1:end], dims=2)
     res[1, :] = (G1 - g1).^2
     res[2, :] = (G2 - g2).^2
     summ = sum(res[1,:]) + sum(res[2,:])
