@@ -11,6 +11,8 @@ using BlackBoxOptim
 using OrdinaryDiffEq
 using DiffEqOperators
 using DiffEqBase
+using Distributions
+using Turing
 
 include("importData.jl")
 include("ODEmodel.jl")

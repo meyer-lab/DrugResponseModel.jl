@@ -38,7 +38,7 @@ function ODEoptimizer4(p::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2
     
     residuals(p) = cost4(p, g1_0, g2_0, g1, g2, i)
     # lower and upper bounds for the parameters
-    lower_bound = zeros(8)
+    lower_bound = 0.0001*ones(8)
     upper_bound = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0, 1.0]
     bound = collect(zip(lower_bound, upper_bound))
 

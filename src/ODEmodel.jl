@@ -35,13 +35,13 @@ end
 function ODEoptimizer(par::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
     residuals(par) = cost(par, g1_0, g2_0, g1, g2, i)
     # lower and upper bounds for the parameters
-    lower_bound = zeros(4)
+    lower_bound = 0.0001*ones(4)
     upper_bound = 2*ones(4)
     bound = collect(zip(lower_bound, upper_bound))
     # global optimization with black box optimization
-    results_ode = bboptimize(residuals; SearchRange=bound, NumDimensions=4, TraceMode=:silent, MaxSteps=50000)
+    results_ode = bboptimize(residuals; SearchRange=bound, NumDimensions=4, TraceMode=:silent, MaxSteps=10000)
 
-    return best_candidate(results_ode)
+    return best_fitness(results_ode), best_candidate(results_ode)
 end
 
 
@@ -52,10 +52,7 @@ function ode_plotIt(params::Vector{Float64}, g1::Matrix, g2::Matrix, g1_0::Array
     """
     t = LinRange(0.0, 95.5, 192)
     t_new = LinRange(0.0, 195.5, 292)
-    tspan_new = (0.0, 195.5)
-    u0_new = [g1_0[i], g2_0[i]]
-    prob_new = ODEProblem(ODEmodel(params), u0_new, tspan_new, params)
-    solution = solve(prob_new, AutoTsit5(Rosenbrock23()))
+    _, solution = predict(params, g1_0, g2_0, i, t_new)
 
     plot(t_new, solution(t_new, idxs=1).u, label = "G1 est", dpi = 150, xlabel = "time [hours]", ylabel = "# of cells", lw=2.0, alpha = 0.6, color=:green)
     plot!(t, g1[:, i], label = "G1", dpi = 150, markersize = 1.0, color=:darkgreen)
