@@ -23,21 +23,19 @@ function predict(p, g1_0, g2_0, t, nG1, nG2)
     u0 = [ones(nG1)*g1_0/nG1  ones(nG2)*g2_0/nG2]
     prob = ODEProblem((a, b, c, d) -> ODEmodelFlex(a, b, c, d, nG1), u0, extrema(t), p)
     solution = solve(prob, Tsit5())
-    return solution
+    return prob, solution
 end
-
 
 """ Calculates the cost function for a given set of parameters. """
 function cost(p, g1_0, g2_0, g1, g2, nG1, nG2)
     t = range(0.0; stop = 95.5, length = 192)
-    solution = predict(p, g1_0, g2_0, t, nG1, nG2)
+    _, solution = predict(p, g1_0, g2_0, t, nG1, nG2)
 
     G1 = sum(solution(t, idxs=1:nG1), dims=1)
     G2 = sum(solution(t, idxs=nG1+1:nG1+nG2), dims=1)
 
     return sum((vec(G1) - g1).^2 + (vec(G2) - g2).^2)
 end
-
 
 """ Fit the ODE model to data. """
 function ODEoptimizer(p::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, nG1, nG2)
@@ -52,6 +50,51 @@ function ODEoptimizer(p::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_
     return best_fitness(results_ode), best_candidate(results_ode)
 end
 
+""" Remake the problem by creating dual type. """
+function remakeProblem(prob, p, SaveAt)
+  _prob = remake(prob;u0=convert.(eltype(p),prob.u0),p=p)
+  solve(_prob,AutoTsit5(Rosenbrock23()), saveat=SaveAt;abstol=1e-6, reltol= 1e-6)
+end
+
+""" Turing for 2-eq ODE. """
+function turingODE(params_ode, g1_0, g2_0, i)
+    t = range(0.0; stop = 95.5, length = 192)
+    tp = collect(t)
+
+    prob, sol = predict(params_ode, g1_0, g2_0, t, 2, 2)
+    newsol = zeros(2, 192)
+    newsol[1, :] = sol(t, idxs=1).u
+    newsol[2, :] = sol(t, idxs=2).u
+
+    @model bayesODE(prob, x, tp, params_ode) = begin
+      alpha ~ truncated(Normal(0.5, 0.2), 0.0, 1.0)
+      beta ~ truncated(Normal(0.5, 0.2), 0.0, 1.0)
+      gamma1 ~ truncated(Normal(0.5, 0.2), 0.0, 1.0)
+      gamma2 ~ truncated(Normal(0.5, 0.2), 0.0, 1.0)
+
+      # gather parameters and solve equation
+      p = [alpha, beta, gamma1 ,gamma2]
+      sol_tmp = remakeProblem(prob, params_ode, tp)
+          N = length(tp)
+
+#           fill_length = length(tp) - length(sol_tmp.u)
+
+#           for i in 1:fill_length
+#             if eltype(sol_tmp.u) <: Number
+#               push!(sol_tmp.u, Inf)
+#             else
+#               push!(sol_tmp.u, fill(Inf, size(sol_tmp[1])))
+#             end
+
+#           end
+
+      for i in 1:N
+        x[:,i] ~ MvNormal(sol_tmp.u[i], [0.01,0.01])
+      end
+    end
+    chain = sample(bayesODE(prob, newsol, tp, params_ode), NUTS(0.65), 2000)
+    return chain
+end
 
 function ode_plotIt4(params::Vector{Float64}, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop, i::Int, title::String, legend::Any)
     """ Given estimated parameters for each trial, solve the DDE model plot the predicted curve 
@@ -60,7 +103,7 @@ function ode_plotIt4(params::Vector{Float64}, g1::Matrix, g2::Matrix, g1_0::Arra
     """
     t = range(0.0; stop = 95.5, length = 192)
     t_new = LinRange(0.0, 195.5, 292)
-    solution = predict(params, g1_0[i], g2_0[i], t_new, 2, 2)
+    _, solution = predict(params, g1_0[i], g2_0[i], t_new, 2, 2)
 
     plot(t_new, solution(t_new, idxs=1).u + solution(t_new, idxs=2).u, label = "G1 est", dpi = 150, xlabel = "time [hours]", ylabel = "# of cells", lw=2.0, alpha = 0.6, color=:green)
     plot!(t, g1[:, i], label = "G1", dpi = 150, markersize = 1.0, color=:darkgreen)
