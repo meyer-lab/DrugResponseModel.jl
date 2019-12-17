@@ -20,7 +20,7 @@ end
 
 """ Predicts the model given a set of parametrs. """
 function predict(p, g1_0, g2_0, t, nG1::Int, nG2::Int)
-    u0 = [ones(nG1)*g1_0/nG1  ones(nG2)*g2_0/nG2]
+    u0 = vec([ones(nG1)*g1_0/nG1  ones(nG2)*g2_0/nG2])
     prob = ODEProblem((a, b, c, d) -> ODEmodelFlex(a, b, c, d, nG1), u0, extrema(t), p)
     solution = solve(prob, Tsit5())
 
