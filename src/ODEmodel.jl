@@ -51,7 +51,7 @@ end
 function ODEoptimizer(i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, nG1::Int, nG2::Int)
     residuals(p) = cost(p, g1_0[i], g2_0[i], g1[:, i], g2[:, i], nG1, nG2)
     # lower and upper bounds for the parameters
-    bound = collect(zip(zeros(4), ones(4)))
+    bound = collect(zip(zeros(4), ones(4)*nG1*0.1))
 
     # global optimization with black box optimization
     results_ode = bboptimize(residuals; SearchRange=bound, NumDimensions=4, TraceMode=:silent, MaxSteps=50000)
