@@ -7,8 +7,7 @@ using DataFrames
 using Plots
 using Measures
 using BlackBoxOptim
-import ForwardDiff
-import LinearAlgebra
+using LinearAlgebra
 
 include("importData.jl")
 include("ODEmodel.jl")

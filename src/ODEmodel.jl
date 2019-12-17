@@ -2,19 +2,14 @@
         In this file we want to estimate parameters of an ODE model describing the number of cells in G1 or G2 phase of the cell cycle 
 """
 
-
-""" Actual differential equation. """
-function ODEmodelFlex(du, u, p, t, nG1::Int)
+""" Make the transition matrix. """
+function ODEjac(p, nG1, nG2)
     # p = [alpha, beta, gamma1, gamma2]
+    A = diagm( 0 => vec([-ones(nG1)*(p[3]+p[1]); -ones(nG2)*(p[4]+p[2])]),
+              -1 => vec([ones(nG1)*p[1];  ones(nG2-1)*p[2]]))
+    A[1, end] = 2*p[2]
 
-    # G1
-    du[1] = 2*p[2]*u[end]
-    du[2:(nG1+1)] .= p[1] .* u[1:nG1]
-    du[1:nG1] .+= -p[1] .* u[1:nG1] .- p[3] .* u[1:nG1]
-
-    # G2
-    du[(nG1 + 2):end] .= p[2] .* u[(nG1 + 1):(length(u)-1)]
-    du[(nG1 + 1):end] .+= -p[1] .* u[(nG1 + 1):end] .- p[4] .* u[(nG1 + 1):end]
+    return A
 end
 
 
@@ -24,7 +19,7 @@ function predict(p, g1_0, g2_0, t, nG1::Int, nG2::Int)
     @assert t[1] == 0.0
 
     v = vec([ones(nG1)*g1_0/nG1  ones(nG2)*g2_0/nG2])
-    A = ForwardDiff.jacobian((y, x) -> ODEmodelFlex(y, x, p, nothing, nG1), zeros(length(v)), v)
+    A = ODEjac(p, nG1, nG2)
 
     G1 = zeros(length(t))
     G2 = zeros(length(t))
@@ -36,7 +31,7 @@ function predict(p, g1_0, g2_0, t, nG1::Int, nG2::Int)
         G1[ii] = sum(v[1:nG1])
         G2[ii] = sum(v[nG1+1:nG1+nG2])
 
-        LinearAlgebra.mul!(v, M, v)
+        v = M*v
     end
 
     return G1, G2
@@ -53,8 +48,7 @@ end
 
 
 """ Fit the ODE model to data. """
-function ODEoptimizer(p::Array, i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, nG1::Int, nG2::Int)
-    
+function ODEoptimizer(i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, nG1::Int, nG2::Int)
     residuals(p) = cost(p, g1_0[i], g2_0[i], g1[:, i], g2[:, i], nG1, nG2)
     # lower and upper bounds for the parameters
     bound = collect(zip(zeros(4), ones(4)))
