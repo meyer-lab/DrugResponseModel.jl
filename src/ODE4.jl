@@ -5,7 +5,7 @@
 
 """ Actual differential equation. """
 function ODEmodelFlex(du, u, p, t, nG1)
-    # p = [alpha, beta, gamma1, gamma2, initg1, initg2]
+    # p = [alpha, beta, gamma1, gamma2]
 
     # G1
     du[1] = 2*p[2]*u[end]
