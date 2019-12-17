@@ -10,6 +10,6 @@
 	end
 
 	# Check that these at least run
-	ode_plotIt(params_ode[:, 8], g1, g2, g1_0, g2_0, pop, 8, "", false)
-	ODEplot_all(params_ode, g1, g2, g1_0, g2_0, pop)
+	ode_plotIt(params_ode[:, 8], g1, g2, g1_0, g2_0, pop, 8, "", false, 1, 1)
+	ODEplot_all(params_ode, g1, g2, g1_0, g2_0, pop, 1, 1)
 end
