@@ -31,7 +31,7 @@ function predict(p, g1_0, g2_0, t, nG1::Int, nG2::Int)
         G1[ii] = sum(v[1:nG1])
         G2[ii] = sum(v[nG1+1:nG1+nG2])
 
-        v = M*v
+        v = A*v
     end
 
     return G1, G2
