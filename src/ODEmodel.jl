@@ -21,17 +21,17 @@ function predict(p, g1_0::Real, g2_0::Real, t, nG1::Int, nG2::Int)
     # Some assumptions
     @assert t[1] == 0.0
 
-    v = vec([ones(nG1)*g1_0/nG1; ones(nG2)*g2_0/nG2])
+    v = [ones(nG1)*g1_0/nG1; ones(nG2)*g2_0/nG2]
     A = ODEjac(p, t[2], nG1, nG2)
 
     G1 = Vector{eltype(p)}(undef, length(t))
     G2 = Vector{eltype(p)}(undef, length(t))
 
     for ii in 1:length(G1)
-        @inbounds G1[ii] = sum(v[1:nG1])
-        @inbounds G2[ii] = sum(v[nG1+1:nG1+nG2])
+        G1[ii] = sum(v[1:nG1])
+        G2[ii] = sum(v[nG1+1:nG1+nG2])
 
-        @inbounds v = A*v
+        v = A*v
     end
 
     return G1, G2
