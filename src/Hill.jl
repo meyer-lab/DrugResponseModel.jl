@@ -13,9 +13,9 @@ function residHill(hillParams::Array{Float64,1}, concentrations::Array{Float64,1
     for ii in 1:length(concentrations)
         # [EC50, left, right, steepness]
         alpha =  hill([hillParams[1], hillParams[2], hillParams[3], hillParams[4]], concentrations[ii])
-        beta =   hill([hillParams[5], hillParams[6], hillParams[7], hillParams[8]], concentrations[ii])
-        gamma1 = hill([hillParams[9], 0.0, hillParams[10], hillParams[11]], concentrations[ii])
-        gamma2 = hill([hillParams[9], 0.0, hillParams[12], hillParams[11]], concentrations[ii])
+        beta =   hill([hillParams[1], hillParams[5], hillParams[6], hillParams[4]], concentrations[ii])
+        gamma1 = hill([hillParams[7], 0.0, hillParams[8], hillParams[9]], concentrations[ii])
+        gamma2 = hill([hillParams[7], 0.0, hillParams[10], hillParams[9]], concentrations[ii])
 
         # collecting all the DDE model parameters
         pp = [alpha, beta, gamma1, gamma2]
@@ -44,9 +44,9 @@ function getODEparams(p::Array{Float64,1}, concentrations::Array{Float64,1})
     effects = zeros(4, 8)
     for i in 1:8
         effects[1, i] = hill([p[1], p[2], p[3], p[4]], concentrations[i])
-        effects[2, i] = hill([p[5], p[6], p[7], p[8]], concentrations[i])
-        effects[3, i] = hill([p[9], 0.0, p[10], p[11]], concentrations[i])
-        effects[4, i] = hill([p[9], 0.0, p[12], p[11]], concentrations[i])
+        effects[2, i] = hill([p[1], p[5], p[6], p[4]], concentrations[i])
+        effects[3, i] = hill([p[7], 0.0,  p[8], p[9]], concentrations[i])
+        effects[4, i] = hill([p[7], 0.0, p[10], p[9]], concentrations[i])
     end
     return effects
 end
