@@ -3,11 +3,14 @@
 """
 
 """ Make the transition matrix. """
-function ODEjac(p, nG1::Int, nG2::Int)
+function ODEjac(p, dt::Real, nG1::Int, nG2::Int)
     # p = [alpha, beta, gamma1, gamma2]
     A = diagm( 0 => vec([-ones(nG1)*(p[3]+p[1]); -ones(nG2)*(p[4]+p[2])]),
               -1 => vec([ones(nG1)*p[1];  ones(nG2-1)*p[2]]))
     A[1, end] = 2*p[2]
+
+    rmul!(A, dt)
+    A = LinearAlgebra.exp!(A)
 
     return A
 end
@@ -19,18 +22,16 @@ function predict(p, g1_0::Real, g2_0::Real, t, nG1::Int, nG2::Int)
     @assert t[1] == 0.0
 
     v = vec([ones(nG1)*g1_0/nG1; ones(nG2)*g2_0/nG2])
-    A = ODEjac(p, nG1, nG2)
+    A = ODEjac(p, t[2], nG1, nG2)
 
     G1 = Vector{eltype(p)}(undef, length(t))
     G2 = Vector{eltype(p)}(undef, length(t))
-
-    @inbounds M = exp(t[2]*A)
 
     for ii in 1:length(G1)
         @inbounds G1[ii] = sum(v[1:nG1])
         @inbounds G2[ii] = sum(v[nG1+1:nG1+nG2])
 
-        @inbounds v = M*v
+        @inbounds v = A*v
     end
 
     return G1, G2
@@ -39,10 +40,20 @@ end
 
 """ Calculates the cost function for a given set of parameters. """
 function cost(p, g1_0, g2_0, g1, g2, nG1::Int, nG2::Int)
-    t = LinRange(0.0, 95.5, 192)
-    G1, G2 = predict(p, g1_0, g2_0, t, nG1, nG2)
+    v = [ones(nG1)*g1_0/nG1; ones(nG2)*g2_0/nG2]
+    temp = similar(v)
+    A = ODEjac(p, 0.5, nG1, nG2)
 
-    return sum((G1 - g1).^2 + (G2 - g2).^2)
+    cost = 0.0
+    for ii in 1:length(g1)
+        @inbounds cost += (sum(v[1:nG1]) - g1[ii])^2
+        @inbounds cost += (sum(v[nG1+1:nG1+nG2]) - g2[ii])^2
+
+        @inbounds LinearAlgebra.mul!(temp, A, v)
+        @inbounds copyto!(v, temp)
+    end
+
+    return cost
 end
 
 
