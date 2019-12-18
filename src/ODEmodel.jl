@@ -25,7 +25,7 @@ function predict(p, g1_0, g2_0, t, nG1::Int, nG2::Int)
     G2 = zeros(length(t))
 
     lmul!(t[2], A)
-    exp!(A)
+    LinearAlgebra.exp!(A)
 
     for ii in 1:length(G1)
         G1[ii] = sum(v[1:nG1])
