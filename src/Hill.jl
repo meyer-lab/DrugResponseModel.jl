@@ -43,10 +43,10 @@ function getODEparams(p::Array{Float64,1}, concentrations::Array{Float64,1})
     """ A function to convert the estimated hill parameters back to ODE parameters. """
     effects = zeros(4, 8)
     for i in 1:8
-        effects[1, i] = hill(append!([p[1], p[2]], [p[3], p[4]]), concentrations[i])
-        effects[2, i] = hill(append!([p[5], p[6]], [p[7], p[8]]), concentrations[i])
-        effects[3, i] = hill(append!([p[9], 0.0, p[10]], [p[11]]), concentrations[i])
-        effects[4, i] = hill(append!([p[12], 0.0, p[13]], [p[14]]), concentrations[i])
+        effects[1, i] = hill([p[1], p[2], p[3], p[4]], concentrations[i])
+        effects[2, i] = hill([p[5], p[6], p[7], p[8]], concentrations[i])
+        effects[3, i] = hill([p[9], 0.0, p[10], p[11]], concentrations[i])
+        effects[4, i] = hill([p[9], 0.0, p[12], p[11]], concentrations[i])
     end
     return effects
 end
