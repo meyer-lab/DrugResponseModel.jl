@@ -8,9 +8,9 @@
 	fitness, params_ode = ODEoptimizer(4, g1, g2, g1_0, g2_0, 1, 1)
 	println(fitness)
 
-	@time ODEoptimizer(4, g1, g2, g1_0, g2_0, 1, 1)
+	@time ODEoptimizer(4, g1, g2, g1_0, g2_0, 3, 3)
 
-	@profile ODEoptimizer(4, g1, g2, g1_0, g2_0, 1, 1)
+	@profile ODEoptimizer(4, g1, g2, g1_0, g2_0, 3, 3)
 
 	Profile.print(noisefloor=5.0)
 
