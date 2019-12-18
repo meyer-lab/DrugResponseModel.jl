@@ -39,8 +39,8 @@ function optimize_hill(guess::Array{Float64,1}, concentrations::Array{Float64,1}
     return best_fitness(res), best_candidate(res)
 end
 
-function getDDEparams(p::Array{Float64,1}, concentrations::Array{Float64,1})
-    """ A function to convert the estimated hill parameters back to DDE parameters. """
+function getODEparams(p::Array{Float64,1}, concentrations::Array{Float64,1})
+    """ A function to convert the estimated hill parameters back to ODE parameters. """
     effects = zeros(4, 8)
     for i in 1:8
         effects[1, i] = hill(append!([p[1], p[2]], [p[3], p[4]]), concentrations[i])
