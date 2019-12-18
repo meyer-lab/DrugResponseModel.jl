@@ -13,7 +13,7 @@ function correlationPlot(g1::Matrix, g2::Matrix, labels::Array, xlabel::String, 
 end
 
 
-function plot_parameters(conc_l::Array, parameters::Matrix)
+function plot_parameters(conc_l, parameters)
 #     new_conc = append!([0.5], conc_l[2:end])
     conc = log.(conc_l)
     p1 = plot(conc, parameters[1,:], xlabel = "drug conc. [nM]", label="", lw= 2.0, alpha = 0.6, color=[:black :gray], line=(:dot, 1), marker=([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
@@ -22,20 +22,14 @@ function plot_parameters(conc_l::Array, parameters::Matrix)
     p2 = plot(conc, parameters[2,:], xlabel = "drug conc. [nM]", label = "", lw= 2.0, alpha = 0.6, color=[:black :gray], line=(:dot, 1), marker=([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "beta"); ylims!(0.0, 1.2*maximum(parameters[2,:]))
 
-    p3 = plot(conc, parameters[3,:], xlabel = "drug conc. [nM]", label="", lw= 2.0, alpha = 0.6, color=[:black :gray], line=(:dot, 1), marker=([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "tau1")
+    p3 = plot(conc, parameters[3,:], xlabel = "drug conc. [nM]", label = "", lw= 2.0, alpha = 0.6, color=[:black :gray], line=(:dot, 1), marker=([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
+        ylabel = "gamma1"); ylims!(0.0, 1.2*maximum(parameters[3,:]))
 
     p4 = plot(conc, parameters[4,:], xlabel = "drug conc. [nM]", label = "", lw= 2.0, alpha = 0.6, color=[:black :gray], line=(:dot, 1), marker=([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "tau2")
+        ylabel = "gamma2"); ylims!(0.0, 1.2*maximum(parameters[4,:]))
 
-    p5 = plot(conc, parameters[5,:], xlabel = "drug conc. [nM]", label = "", lw= 2.0, alpha = 0.6, color=[:black :gray], line=(:dot, 1), marker=([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "gamma1"); ylims!(0.0, 1.2*maximum(parameters[5,:]))
-
-    p6 = plot(conc, parameters[6,:], xlabel = "drug conc. [nM]", label = "", lw= 2.0, alpha = 0.6, color=[:black :gray], line=(:dot, 1), marker=([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "gamma2"); ylims!(0.0, 1.2*maximum(parameters[6,:]))
-
-    plot(p1, p2, p3, p4, p5, p6)
-    plot!(size = (1200, 600), dpi = 150)
+    plot(p1, p2, p3, p4)
+    plot!(size = (800, 400), dpi = 150)
 end
 
 
