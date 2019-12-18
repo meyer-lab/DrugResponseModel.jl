@@ -3,7 +3,7 @@
 """
 
 """ Make the transition matrix. """
-function ODEjac(p, nG1, nG2)
+function ODEjac(p, nG1::Int, nG2::Int)
     # p = [alpha, beta, gamma1, gamma2]
     A = diagm( 0 => vec([-ones(nG1)*(p[3]+p[1]); -ones(nG2)*(p[4]+p[2])]),
               -1 => vec([ones(nG1)*p[1];  ones(nG2-1)*p[2]]))
@@ -14,11 +14,12 @@ end
 
 
 """ Predicts the model given a set of parametrs. """
-function predict(p, g1_0, g2_0, t, nG1::Int, nG2::Int)
+function predict(p, g1_0::Real, g2_0::Real, t, nG1::Int, nG2::Int)
     # Some assumptions
     @assert t[1] == 0.0
 
     v = vec([ones(nG1)*g1_0/nG1; ones(nG2)*g2_0/nG2])
+    vv = similar(v)
     A = ODEjac(p, nG1, nG2)
 
     G1 = zeros(length(t))
@@ -31,7 +32,8 @@ function predict(p, g1_0, g2_0, t, nG1::Int, nG2::Int)
         G1[ii] = sum(v[1:nG1])
         G2[ii] = sum(v[nG1+1:nG1+nG2])
 
-        v = A*v
+        LinearAlgebra.mul!(vv, A, v)
+        copyto!(v, vv)
     end
 
     return G1, G2
