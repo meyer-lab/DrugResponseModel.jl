@@ -24,14 +24,13 @@ function predict(p, g1_0::Real, g2_0::Real, t, nG1::Int, nG2::Int)
     G1 = Vector{eltype(p)}(undef, length(t))
     G2 = Vector{eltype(p)}(undef, length(t))
 
-    @inbounds lmul!(t[2], A)
-    @inbounds LinearAlgebra.exp!(A)
+    @inbounds M = exp(t[2]*A)
 
     for ii in 1:length(G1)
         @inbounds G1[ii] = sum(v[1:nG1])
         @inbounds G2[ii] = sum(v[nG1+1:nG1+nG2])
 
-        @inbounds v = A*v
+        @inbounds v = M*v
     end
 
     return G1, G2
