@@ -18,13 +18,14 @@ function predict(p, g1_0, g2_0, t, nG1::Int, nG2::Int)
     # Some assumptions
     @assert t[1] == 0.0
 
-    v = vec([ones(nG1)*g1_0/nG1  ones(nG2)*g2_0/nG2])
+    v = vec([ones(nG1)*g1_0/nG1; ones(nG2)*g2_0/nG2])
     A = ODEjac(p, nG1, nG2)
 
     G1 = zeros(length(t))
     G2 = zeros(length(t))
 
-    M = exp(t[2]*A)
+    lmul!(t[2], A)
+    exp!(A)
 
     for ii in 1:length(G1)
         G1[ii] = sum(v[1:nG1])
