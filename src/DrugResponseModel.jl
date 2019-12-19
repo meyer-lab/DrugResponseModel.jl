@@ -13,6 +13,15 @@ include("ODEmodel.jl")
 include("Hill.jl")
 include("plot.jl")
 
-export setup_data, ODEoptimizer, ode_plotIt, plotIt, correlationPlot, plot_all, ODEplot_all, plot_parameters, optimize_hill, getODEparams
+export setup_data,
+    ODEoptimizer,
+    ode_plotIt,
+    plotIt,
+    correlationPlot,
+    plot_all,
+    ODEplot_all,
+    plot_parameters,
+    optimize_hill,
+    getODEparams
 
 end # module
