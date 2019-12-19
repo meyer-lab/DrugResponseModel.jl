@@ -16,9 +16,10 @@ function residHill(hillParams::Array{Float64,1}, concentrations::Array{Float64,1
         beta =   hill([hillParams[1], hillParams[5], hillParams[6], hillParams[4]], concentrations[ii])
         gamma1 = hill([hillParams[7], 0.0, hillParams[8], hillParams[9]], concentrations[ii])
         gamma2 = hill([hillParams[7], 0.0, hillParams[10], hillParams[9]], concentrations[ii])
+        initPercentage = hillParams[11]
 
         # collecting all the DDE model parameters
-        pp = [alpha, beta, gamma1, gamma2]
+        pp = [alpha, beta, gamma1, gamma2, initPercentage]
         # calculating the residulas for this set of parameters
         residues += cost(pp, g1_0[ii], g2_0[ii], g1[:,ii], g2[:,ii], nG1, nG2)
     end 
@@ -31,9 +32,9 @@ function optimize_hill(guess::Array{Float64,1}, concentrations::Array{Float64,1}
     # changing the objective function to be compatible with bboptimize
     residue(hillParams) = residHill(hillParams, concentrations, g1, g2, g1_0, g2_0, nG1, nG2)
     # lower bound
-    low = [lowEC50, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, lowEC50, 1e-5, 1e-5, 1e-5]
+    low = [lowEC50, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, lowEC50, 1e-5, 1e-5, 1e-5, 0.0]
     # upper bound
-    high = [highEC50, 3.0, 3.0, 3.0, 3.0, 3.0, highEC50, 3.0, 3.0, 3.0]
+    high = [highEC50, 3.0, 3.0, 3.0, 3.0, 3.0, highEC50, 3.0, 3.0, 3.0, 1.0]
 
     res = bboptimize(residue; SearchRange=collect(zip(low, high)), MaxSteps=60000, TraceMode=:silent)
     return best_fitness(res), best_candidate(res)
@@ -41,12 +42,13 @@ end
 
 function getODEparams(p::Array{Float64,1}, concentrations::Array{Float64,1})
     """ A function to convert the estimated hill parameters back to ODE parameters. """
-    effects = zeros(4, 8)
+    effects = zeros(5, 8)
     for i in 1:8
         effects[1, i] = hill([p[1], p[2], p[3], p[4]], concentrations[i])
         effects[2, i] = hill([p[1], p[5], p[6], p[4]], concentrations[i])
         effects[3, i] = hill([p[7], 0.0,  p[8], p[9]], concentrations[i])
         effects[4, i] = hill([p[7], 0.0, p[10], p[9]], concentrations[i])
+        effects[5, i] = p[11]
     end
     return effects
 end

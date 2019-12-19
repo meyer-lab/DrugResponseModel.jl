@@ -21,8 +21,8 @@ function predict(p, g1_0::Real, g2_0::Real, t, nG1::Int, nG2::Int)
     # Some assumptions
     @assert t[1] == 0.0
 
-    v = [ones(nG1)*g1_0/nG1; ones(nG2)*g2_0/nG2]
-    A = ODEjac(p, t[2], nG1, nG2)
+    v = [ones(nG1)*p[5]*(g1_0+g2_0)/nG1; ones(nG2)*(1.0-p[5])*(g1_0+g2_0)/nG2]
+    A = ODEjac(p[1:4], t[2], nG1, nG2)
 
     G1 = Vector{eltype(p)}(undef, length(t))
     G2 = Vector{eltype(p)}(undef, length(t))
@@ -40,9 +40,9 @@ end
 
 """ Calculates the cost function for a given set of parameters. """
 function cost(p, g1_0, g2_0, g1, g2, nG1::Int, nG2::Int)
-    v = [ones(nG1)*g1_0/nG1; ones(nG2)*g2_0/nG2]
+    v = [ones(nG1)*p[5]*(g1_0+g2_0)/nG1; ones(nG2)*(1.0-p[5])*(g1_0+g2_0)/nG2]
     temp = similar(v)
-    A = ODEjac(p, 0.5, nG1, nG2)
+    A = ODEjac(p[1:4], 0.5, nG1, nG2)
 
     cost = 0.0
     for ii in 1:length(g1)
@@ -61,10 +61,11 @@ end
 function ODEoptimizer(i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, nG1::Int, nG2::Int)
     residuals(p) = cost(p, g1_0[i], g2_0[i], g1[:, i], g2[:, i], nG1, nG2)
     # lower and upper bounds for the parameters
-    bound = collect(zip(zeros(4), ones(4)*nG1*0.1))
+    upper = [nG1*0.1, nG1*0.1, nG1*0.1, nG1*0.1, 1.0]
+    bound = collect(zip(zeros(5), upper))
 
     # global optimization with black box optimization
-    results_ode = bboptimize(residuals; SearchRange=bound, NumDimensions=4, TraceMode=:silent, MaxSteps=50000)
+    results_ode = bboptimize(residuals; SearchRange=bound, NumDimensions=5, TraceMode=:silent, MaxSteps=50000)
 
     return best_fitness(results_ode), best_candidate(results_ode)
 end
