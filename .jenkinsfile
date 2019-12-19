@@ -15,7 +15,7 @@ pipeline {
     }
     stage ('Build') {
       steps {
-        sh 'make ODEmodel.html ODE4.html'
+        sh 'make ODEmodel.html Hill.html'
         archiveArtifacts artifacts: '*.html', onlyIfSuccessful: true
       }
     }
