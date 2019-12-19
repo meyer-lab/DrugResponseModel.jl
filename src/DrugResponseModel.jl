@@ -6,7 +6,6 @@ using DataFrames
 using Plots
 using Measures
 using BlackBoxOptim
-using Turing
 using LinearAlgebra
 
 include("importData.jl")
