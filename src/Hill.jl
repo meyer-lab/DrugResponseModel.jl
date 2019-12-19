@@ -48,7 +48,7 @@ function optimize_hill(lowEC50::Float64, highEC50::Float64, conc_l::Array{Float6
                                            TraceInterval=50,
                                            MaxSteps=4E4);
 
-    return best_candidate(results_ode)
+    returnbest_fitness(results_ode), best_candidate(results_ode)
 end
 
 """ A function to convert the estimated hill parameters back to ODE parameters. """
