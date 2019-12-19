@@ -10,16 +10,10 @@ function residHill(hillParams::Array{Float64,1}, concentrations::Array{Float64,1
     and estimates hill parameters. """
     residues = 0.0
 
+    _, _, params = getODEparams(hillParams, concentrations)
     for ii in 1:length(concentrations)
-        # [EC50, left, right, steepness]
-        alpha =  hill([hillParams[1], hillParams[2], hillParams[3], hillParams[4]], concentrations[ii])
-        beta =   hill([hillParams[1], hillParams[5], hillParams[6], hillParams[4]], concentrations[ii])
-        gamma1 = hill([hillParams[7], 0.0, hillParams[8], hillParams[9]], concentrations[ii])
-        gamma2 = hill([hillParams[7], 0.0, hillParams[10], hillParams[9]], concentrations[ii])
-        initPercentage = hillParams[11]
-
         # collecting all the DDE model parameters
-        pp = [alpha, beta, gamma1, gamma2, initPercentage]
+        pp = [params[1,ii], params[2,ii], params[3,ii], params[4,ii], params[5,ii]]
         # calculating the residulas for this set of parameters
         residues += cost(pp, g1_0[ii], g2_0[ii], g1[:,ii], g2[:,ii], nG1, nG2)
     end 
@@ -56,6 +50,7 @@ function getODEparams(p::Array{Float64,1}, concentrations::Array{Float64,1})
 
     effects = zeros(5, 8)
     for i in 1:8
+        # [EC50, left, right, steepness]
         effects[1, i] = hill([p[1], p[2], p[3], p[4]], concentrations[i])
         effects[2, i] = hill([p[1], p[5], p[6], p[4]], concentrations[i])
         effects[3, i] = hill([p[7], 0.0,  p[8], p[9]], concentrations[i])
