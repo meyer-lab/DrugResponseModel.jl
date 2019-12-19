@@ -12,6 +12,6 @@
 	Profile.print(noisefloor=5.0)
 
     # Check that these at least run
-    nG1, nG2, effects = getODEparams(params, conc)
+    effects = getODEparams(params, conc)
 	plot_parameters(conc, effects)
 end
