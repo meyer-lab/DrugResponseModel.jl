@@ -39,9 +39,9 @@ function optimize_hill(guess::Array{Float64,1}, concentrations::Array{Float64,1}
     return best_fitness(res), best_candidate(res)
 end
 
-function getODEparams(p::Array{Float64,1}, concentrations::Array{Float64,1})
+function getODEparams(p::Vector, concentrations::Vector)
     """ A function to convert the estimated hill parameters back to ODE parameters. """
-    effects = zeros(4, 8)
+    effects = zeros(eltype(p), 4, 8)
     for i in 1:8
         effects[1, i] = hill([p[1], p[2], p[3], p[4]], concentrations[i])
         effects[2, i] = hill([p[1], p[5], p[6], p[4]], concentrations[i])
@@ -49,35 +49,4 @@ function getODEparams(p::Array{Float64,1}, concentrations::Array{Float64,1})
         effects[4, i] = hill([p[7], 0.0, p[10], p[9]], concentrations[i])
     end
     return effects
-end
-
-""" Turing model for Hill fitting. """
-function turingODE(params_ode, g1_0, g2_0, nG1, nG2)
-    t = range(0.0; stop = 95.5, length = 192)
-    tp = collect(t)
-
-    prob, sol = predict(params_ode, g1_0, g2_0, t, nG1, nG2)
-    newsol = zeros(4, 192)
-    newsol[1, :] = sol(t, idxs=1).u
-    newsol[2, :] = sol(t, idxs=2).u
-    newsol[3, :] = sol(t, idxs=3).u
-    newsol[4, :] = sol(t, idxs=4).u
-
-    @model bayesODE(prob, x, tp, params_ode) = begin
-      alpha ~ truncated(Normal(0.5, 0.2), 0.0, 1.0)
-      beta ~ truncated(Normal(0.5, 0.2), 0.0, 1.0)
-      gamma1 ~ truncated(Normal(0.5, 0.2), 0.0, 1.0)
-      gamma2 ~ truncated(Normal(0.5, 0.2), 0.0, 1.0)
-
-      # gather parameters and solve equation
-      p = [alpha, beta, gamma1 ,gamma2]
-      sol_tmp = remakeProblem(prob, p, tp)
-      N = length(tp)
-
-      for i in 1:N
-        x[i,i] ~ MvNormal([sol_tmp.u[i][1] + sol_tmp.u[i][2], sol_tmp.u[i][3] + sol_tmp.u[i][4]], 0.1*ones(2))
-      end
-    end
-    chain = sample(bayesODE(prob, newsol, tp, params_ode), NUTS(0.65), 2000)
-    return chain
 end
