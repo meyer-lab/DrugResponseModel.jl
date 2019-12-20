@@ -31,33 +31,3 @@ function plot_parameters(conc_l, parameters)
     plot(p1, p2, p3, p4)
     plot!(size = (800, 400), dpi = 150)
 end
-
-
-# pyplot();
-function plotUnitCombin(params::Array, i::Int, title::String, bool::Any, g2::Matrix, g1::Matrix, g2_0::Array, g1_0::Array, concL, ConcGem)
-    """ Given estimated parameters for each trial, 
-    solve the DDE model plot the predicted curve 
-    for # of cells in G1, G2, or total, 
-    along with their corresponding real data,
-    for a longer time which is 2 times of the 
-    original time (~195 hours)
-    """
-    n_times = range(0.0; stop = 200.0, length = 400)
-    alg, n_prob, _ = ddesolve(collect(n_times), g1, g2, g1_0, g2_0, params, i)
-
-    solution = solve(n_prob, alg; constrained=true)
-
-    plot(n_times, solution(n_times, idxs=1).u, label = "G1", xlabel = "time [hours]", ylabel = "number of cells", lw=2.0, alpha = 0.6, color =:green)
-    plot!(n_times, solution(n_times, idxs=2).u, label = "G2", legend=bool, legendfontsize=7, fg_legend = :transparent, lw=2.0, alpha = 0.6, color=:sienna)
-    plot!(n_times, (solution(n_times, idxs=2).u + solution(n_times, idxs=1).u), label = "total", dpi = 250, lw=2.0, alpha = 0.6, color=:hotpink, margin = 20mm)
-    plot!(annotation=(100.5,125.0, text("$concL nM lapat. & $ConcGem nM Dox.", 10)))
-end
-
-
-function plot4combin(ddeparam, g2_l::Matrix, g1_l::Matrix, g2_0_l::Array, g1_0_l::Array, i::Int, conc_l ,conc_g)
-    """ here we plot 8 combinations of lapatinib i and all the doxorubicin """ 
-    pl = [plotUnitCombin(ddeparam[i,j,:], 1, "", j == 1, g2_l, g1_l, g2_0_l, g1_0_l, conc_l[i], conc_g[j]) for j in 1:8]
-    plot(pl..., layout=(2,4))
-    plot!(size = (1600, 600), dpi = 250)
-    ylims!((0.0, 120.0))
-end
