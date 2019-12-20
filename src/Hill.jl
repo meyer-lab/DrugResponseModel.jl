@@ -16,7 +16,7 @@ function residHill(hillParams::Vector, concentrations::Vector{Float64}, g1::Matr
         atomic_add!(res, cost(params[1:5, ii], g1_0[ii], g2_0[ii], g1[:,ii], g2[:,ii], Int(floor(params[6, ii])), Int(floor(params[7, ii]))))
     end
 
-    return res
+    return convert(eltype(hillParams), res)
 end
 
 """ Hill optimization function. """
