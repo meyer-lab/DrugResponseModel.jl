@@ -13,7 +13,7 @@ coverage.cob:
 
 %.html: %.ipynb venv
 	. venv/bin/activate && julia -e 'using Pkg; Pkg.add("IJulia"); Pkg.precompile()'
-	. venv/bin/activate && jupyter nbconvert --execute --ExecutePreprocessor.timeout=6000 --to html $< --output $@
+	. venv/bin/activate && jupyter nbconvert --execute --ExecutePreprocessor.timeout=60000 --to html $< --output $@
 
 clean:
 	rm -rf *.pdf *.aux *.log *.out
