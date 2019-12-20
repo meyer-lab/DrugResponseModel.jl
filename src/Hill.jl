@@ -31,7 +31,7 @@ function optimize_hill(lowEC50::Float64, highEC50::Float64, conc_l::Array{Float6
                                            NumDimensions=length(low),
                                            TraceMode=:verbose,
                                            TraceInterval=50,
-                                           MaxSteps=4E4);
+                                           MaxSteps=6E4);
 
     return best_fitness(results_ode), best_candidate(results_ode)
 end
