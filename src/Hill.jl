@@ -13,7 +13,7 @@ function residHill(hillParams::Array{Float64,1}, concentrations::Array{Float64,1
     params = getODEparams(hillParams, concentrations)
     for ii in 1:length(concentrations)
         # calculating the residulas for this set of parameters
-        residues += cost(params[:, ii], g1_0[ii], g2_0[ii], g1[:,ii], g2[:,ii], Int(floor(pp[6])), Int(floor(pp[7])))
+        residues += cost(params[:, ii], g1_0[ii], g2_0[ii], g1[:,ii], g2[:,ii], Int(floor(params[6, ii])), Int(floor(params[7, ii])))
     end 
     return residues
 end
