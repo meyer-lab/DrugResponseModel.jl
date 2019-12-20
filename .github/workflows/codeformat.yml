@@ -15,13 +15,11 @@ jobs:
       - uses: julia-actions/setup-julia@latest
         with:
           version: ${{ matrix.julia-version }}
-
       - uses: actions/checkout@v1
       - name: Install JuliaFormatter and format
         run: |
           julia  -e 'import Pkg; Pkg.add("JuliaFormatter")'
-          julia  -e 'using JuliaFormatter; format(".")'
-      # https://github.com/marketplace/actions/create-pull-request
+          julia  -e 'using JuliaFormatter; format(".", whitespace_typedefs=true, margin=150, whitespace_ops_in_indices=true)'
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v1.9.0
         with:
