@@ -17,7 +17,7 @@ end
 
 
 """ Predicts the model given a set of parametrs. """
-function predict(p, g1_0::Real, g2_0::Real, t, nG1::Int, nG2::Int)
+function predict(p, g1_0::Real, g2_0::Real, t, nG1::Integer, nG2::Integer)
     # Some assumptions
     @assert t[1] == 0.0
 

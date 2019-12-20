@@ -40,8 +40,8 @@ end
 
 """ A function to convert the estimated hill parameters back to ODE parameters. """
 function getODEparams(p::Array{Float64,1}, concentrations::Array{Float64,1})
+    effects = zeros(eltype(p), 7, 8)
 
-    effects = zeros(7, 8)
     for i in 1:8
         # [EC50, left, right, steepness]
         effects[1, i] = hill([p[1], p[2], p[3], p[4]], concentrations[i])
