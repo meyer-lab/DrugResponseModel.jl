@@ -43,7 +43,7 @@ function getODEparams(p::Array{Float64,1}, concentrations::Array{Float64,1})
 
     for i in 1:8
         # [EC50, left, right, steepness]
-        effects[1, i] = hill(@view p[1:4], concentrations[i])
+        effects[1, i] = hill(view(p, 1:4), concentrations[i])
         effects[2, i] = hill([p[1], p[5], p[6], p[4]], concentrations[i])
         effects[3, i] = hill([p[7], 0.0,  p[8], p[9]], concentrations[i])
         effects[4, i] = hill([p[7], 0.0, p[10], p[9]], concentrations[i])
