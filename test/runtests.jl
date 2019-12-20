@@ -3,3 +3,4 @@ using Profile
 using DrugResponseModel
 
 include("testODE.jl")
+include("testHill.jl")
