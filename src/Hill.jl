@@ -12,10 +12,8 @@ function residHill(hillParams::Array{Float64,1}, concentrations::Array{Float64,1
 
     params = getODEparams(hillParams, concentrations)
     for ii in 1:length(concentrations)
-        # collecting all the DDE model parameters
-        pp = [params[1,ii], params[2,ii], params[3,ii], params[4,ii], params[5,ii], params[6,ii], params[7,ii]]
         # calculating the residulas for this set of parameters
-        residues += cost(pp, g1_0[ii], g2_0[ii], g1[:,ii], g2[:,ii], Int(floor(pp[6])), Int(floor(pp[7])))
+        residues += cost(params[:, ii], g1_0[ii], g2_0[ii], g1[:,ii], g2[:,ii], Int(floor(pp[6])), Int(floor(pp[7])))
     end 
     return residues
 end
