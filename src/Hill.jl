@@ -23,7 +23,7 @@ function optimize_hill(lowEC50::Float64, highEC50::Float64, conc_l::Array{Float6
     lowEC50 = 50.0
     highEC50 = 350.0
     hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2, g1_0, g2_0)
-#     hillCost(hillParams) = fullHillCost(hillParams, conc_l, g1, g2, g1_0, g2_0) 
+
     low =  [lowEC50, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, lowEC50, 1e-5, 1e-5, 1e-5, 0.0, 1, 1]
     high = [highEC50, 3.0, 3.0, 3.0, 3.0, 3.0, highEC50, 3.0, 3.0, 3.0, 1.0, 60, 60]
 
@@ -31,7 +31,7 @@ function optimize_hill(lowEC50::Float64, highEC50::Float64, conc_l::Array{Float6
                                            NumDimensions=length(low),
                                            TraceMode=:verbose,
                                            TraceInterval=50,
-                                           MaxSteps=4E4);
+                                           MaxSteps=1E5);
 
     return best_fitness(results_ode), best_candidate(results_ode)
 end
