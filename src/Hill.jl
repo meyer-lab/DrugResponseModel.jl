@@ -45,9 +45,11 @@ function getODEparams(p::Array{Float64,1}, concentrations::Array{Float64,1})
         effects[2, i] = hill([p[1], p[5], p[6], p[4]], concentrations[i])
         effects[3, i] = hill([p[7], 0.0,  p[8], p[9]], concentrations[i])
         effects[4, i] = hill([p[7], 0.0, p[10], p[9]], concentrations[i])
-        effects[5, i] = p[11]
-        effects[6, i] = floor(p[12])
-        effects[7, i] = floor(p[13])
     end
+
+    effects[5, :] .= p[11]
+    effects[6, :] .= floor(p[12])
+    effects[7, :] .= floor(p[13])
+
     return effects
 end
