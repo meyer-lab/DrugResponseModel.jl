@@ -20,12 +20,10 @@ end
 
 """ Hill optimization function. """
 function optimize_hill(lowEC50::Float64, highEC50::Float64, conc_l::Array{Float64,1}, g1::Array{Float64,2}, g2::Array{Float64,2}, g1_0::Array{Float64,1}, g2_0::Array{Float64,1})
-    lowEC50 = 50.0
-    highEC50 = 350.0
     hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2, g1_0, g2_0)
 
-    low =  [lowEC50, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, lowEC50, 1e-5, 1e-5, 1e-5, 0.0, 1, 1]
-    high = [highEC50, 3.0, 3.0, 3.0, 3.0, 3.0, highEC50, 3.0, 3.0, 3.0, 1.0, 60, 60]
+    low =  [lowEC50, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 0.0, 1, 1]
+    high = [highEC50, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 1.0, 60, 60]
 
     results_ode = bboptimize(hillCost; SearchRange=collect(zip(low, high)),
                                            NumDimensions=length(low),
@@ -44,11 +42,11 @@ function getODEparams(p::Array{Float64,1}, concentrations::Array{Float64,1})
         # [EC50, left, right, steepness]
         effects[1, i] = hill([p[1], p[2], p[3], p[4]], concentrations[i])
         effects[2, i] = hill([p[1], p[5], p[6], p[4]], concentrations[i])
-        effects[3, i] = hill([p[7], 0.0,  p[8], p[9]], concentrations[i])
-        effects[4, i] = hill([p[7], 0.0, p[10], p[9]], concentrations[i])
-        effects[5, i] = p[11]
-        effects[6, i] = floor(p[12])
-        effects[7, i] = floor(p[13])
+        effects[3, i] = hill([p[1], 0.0,  p[7], p[4]], concentrations[i])
+        effects[4, i] = hill([p[1], 0.0,  p[8], p[4]], concentrations[i])
+        effects[5, i] = p[9]
+        effects[6, i] = floor(p[10])
+        effects[7, i] = floor(p[11])
     end
     return effects
 end
