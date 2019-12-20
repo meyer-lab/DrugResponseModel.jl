@@ -7,6 +7,7 @@ using Plots
 using Measures
 using BlackBoxOptim
 using LinearAlgebra
+using Base.Threads
 
 include("importData.jl")
 include("ODEmodel.jl")
