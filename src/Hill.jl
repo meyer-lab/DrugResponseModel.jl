@@ -8,11 +8,12 @@ hill(p, concentration) = p[2] + ((p[3]-p[2])/(1 + ((p[1])/(concentration))^p[4])
 DDE parameters, passes them to residual function and based off of these, optimizes the model
 and estimates hill parameters. """
 function residHill(hillParams::Vector, concentrations::Vector{Float64}, g1::Matrix{Float64}, g2::Matrix{Float64}, g1_0::Array{Float64,1}, g2_0::Array{Float64,1})
+    res = Atomic{Float64}(0.0)
     params = getODEparams(hillParams, concentrations)
 
     # Solve each concentration separately
-    res = @distributed (+) for ii in 1:length(concentrations)
-        cost(params[:, ii], g1_0[ii], g2_0[ii], g1[:,ii], g2[:,ii], Int(floor(params[6, ii])), Int(floor(params[7, ii])))
+    @threads for ii in 1:length(concentrations)
+        atomic_add!(res, cost(params[:, ii], g1_0[ii], g2_0[ii], g1[:,ii], g2[:,ii], Int(floor(params[6, ii])), Int(floor(params[7, ii]))))
     end
 
     return res
