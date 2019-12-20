@@ -21,7 +21,7 @@ function predict(p, g1_0::Real, g2_0::Real, t, nG1::Int, nG2::Int)
     # Some assumptions
     @assert t[1] == 0.0
 
-    v = [ones(nG1)*g1_0/nG1; ones(nG2)*g2_0/nG2]
+    v = [ones(nG1)*p[5]*(g1_0+g2_0)/nG1; ones(nG2)*(1.0-p[5])*(g1_0+g2_0)/nG2]
     A = ODEjac(p, t[2], nG1, nG2)
 
     G1 = Vector{eltype(p)}(undef, length(t))
@@ -40,7 +40,7 @@ end
 
 """ Calculates the cost function for a given set of parameters. """
 function cost(p, g1_0, g2_0, g1, g2, nG1::Int, nG2::Int)
-    v = [ones(nG1)*g1_0/nG1; ones(nG2)*g2_0/nG2]
+    v = [ones(nG1)*p[5]*(g1_0+g2_0)/nG1; ones(nG2)*(1.0-p[5])*(g1_0+g2_0)/nG2]
     temp = similar(v)
     A = ODEjac(p, 0.5, nG1, nG2)
 
