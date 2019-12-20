@@ -23,7 +23,7 @@ function optimize_hill(lowEC50::Float64, highEC50::Float64, conc_l::Array{Float6
     lowEC50 = 50.0
     highEC50 = 350.0
     hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2, g1_0, g2_0)
-#     hillCost(hillParams) = fullHillCost(hillParams, conc_l, g1, g2, g1_0, g2_0) 
+
     low =  [lowEC50, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, lowEC50, 1e-5, 1e-5, 1e-5, 0.0, 1, 1]
     high = [highEC50, 3.0, 3.0, 3.0, 3.0, 3.0, highEC50, 3.0, 3.0, 3.0, 1.0, 60, 60]
 
@@ -47,8 +47,8 @@ function getODEparams(p::Array{Float64,1}, concentrations::Array{Float64,1})
         effects[3, i] = hill([p[7], 0.0,  p[8], p[9]], concentrations[i])
         effects[4, i] = hill([p[7], 0.0, p[10], p[9]], concentrations[i])
         effects[5, i] = p[11]
-        effects[6, i] = p[12]
-        effects[7, i] = p[13]
+        effects[6, i] = floor(p[12])
+        effects[7, i] = floor(p[13])
     end
     return effects
 end
