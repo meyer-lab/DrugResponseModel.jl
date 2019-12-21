@@ -47,7 +47,7 @@ function optimize_hill(
         NumDimensions = length(low),
         TraceMode = :verbose,
         TraceInterval = 50,
-        MaxSteps = 6E4,
+        MaxSteps = 8E4,
     )
 
     return best_fitness(results_ode), best_candidate(results_ode)
