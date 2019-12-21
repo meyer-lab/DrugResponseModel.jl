@@ -1,9 +1,12 @@
 
+all: lapatinib.html doxorubicin.html gemcitabine.html paclitaxel.html
+
 venv: venv/bin/activate
 
 venv/bin/activate:
 	test -d venv || virtualenv venv
 	. venv/bin/activate && pip install -Uq jupyter
+	. venv/bin/activate && julia -e 'using Pkg; Pkg.add("IJulia"); Pkg.precompile()'
 	touch venv/bin/activate
 
 coverage.cob:
@@ -12,8 +15,7 @@ coverage.cob:
 	python3 ~/.local/lib/python3.7/site-packages/lcov_cobertura.py coverage-lcov.info -o coverage.cob
 
 %.html: %.ipynb venv
-	. venv/bin/activate && julia -e 'using Pkg; Pkg.add("IJulia"); Pkg.precompile()'
-	. venv/bin/activate && JULIA_NUM_THREADS=20 jupyter nbconvert --execute --ExecutePreprocessor.timeout=60000 --to html $< --output $@
+	. venv/bin/activate && jupyter nbconvert --execute --ExecutePreprocessor.timeout=60000 --to html $< --output $@
 
 clean:
 	rm -rf *.pdf *.aux *.log *.out
