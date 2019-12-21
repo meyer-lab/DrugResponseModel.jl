@@ -24,15 +24,15 @@ function get_data(path_g2::String, path_total::String)
     init_cells = 20.0
 
     # Unifying the dataset to be all in the unit of [# of cells] at each time point forall the trials for a drug
-    for i in 1:8
-        pop[:, i] = init_cells*pop[:, i]
-        g2[:, i] = 0.01*pop[:, i] .* drug[:, i]
+    for i = 1:8
+        pop[:, i] = init_cells * pop[:, i]
+        g2[:, i] = 0.01 * pop[:, i] .* drug[:, i]
         g1[:, i] = pop[:, i] .- g2[:, i]
-        g2_0[i] = init_cells*(drug[1, i]/100.0)
-        g1_0[i] = init_cells*(1 - drug[1, i]/100.0)
+        g2_0[i] = init_cells * (drug[1, i] / 100.0)
+        g1_0[i] = init_cells * (1 - drug[1, i] / 100.0)
     end
     # removing the peaks
-    for i in 1:8
+    for i = 1:8
         pop[:, i] = remove_peaks(pop[:, i])
         g2[:, i] = remove_peaks(g2[:, i])
         g1[:, i] = remove_peaks(g1[:, i])
@@ -44,9 +44,10 @@ end
 function remove_peaks(data)
     data = copy(data)
 
-    for i in 1:length(data) - 3
-        if (abs(data[i+2] - data[i+1]) > 20*abs(data[i+3] - data[i+2])) && (abs(data[i+1] - data[i]) > 20*abs(data[i+3] - data[i+2]))
-            data[i+1] = (data[i] + data[i+2])/2
+    for i = 1:(length(data) - 3)
+        if (abs(data[i + 2] - data[i + 1]) > 20 * abs(data[i + 3] - data[i + 2])) &&
+           (abs(data[i + 1] - data[i]) > 20 * abs(data[i + 3] - data[i + 2]))
+            data[i + 1] = (data[i] + data[i + 2]) / 2
         end
     end
 
@@ -71,10 +72,10 @@ function setup_data(drug_name::String)
 
     #----------- import concentrations
     concentration = CSV.read(joinpath(basePath, "concentrations.csv"))
-    conc_l = [Float64(concentration[idx, col]) for col in 2:9]
+    conc_l = [Float64(concentration[idx, col]) for col = 2:9]
 
     #------------ import cell data
-    pop_l, g2_l, g1_l, g2_0_l, g1_0_l = get_data(joinpath(basePath, dfname), joinpath(basePath, dfname2));
+    pop_l, g2_l, g1_l, g2_0_l, g1_0_l = get_data(joinpath(basePath, dfname), joinpath(basePath, dfname2))
 
     return conc_l, pop_l, g2_l, g1_l, g2_0_l, g1_0_l
 end
