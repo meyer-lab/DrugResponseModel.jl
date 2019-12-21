@@ -39,10 +39,10 @@ uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 version = "0.5.20"
 
 [[CategoricalArrays]]
-deps = ["Compat", "DataAPI", "Future", "JSON", "Missings", "Printf", "Reexport", "Unicode"]
-git-tree-sha1 = "9c3fd1ebb503d271943c4ea94332d55ea900c9cb"
+deps = ["Compat", "DataAPI", "Future", "JSON", "Missings", "Printf", "Reexport", "Statistics", "Unicode"]
+git-tree-sha1 = "9127b0c2ee1bfd810921dd688dd8d73be1d9fb57"
 uuid = "324d7699-5711-5eae-9e2f-1d82baa6b597"
-version = "0.7.4"
+version = "0.7.5"
 
 [[ColorTypes]]
 deps = ["FixedPointNumbers", "Random"]
@@ -262,9 +262,10 @@ uuid = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 version = "0.28.4"
 
 [[PooledArrays]]
-git-tree-sha1 = "6e8c38927cb6e9ae144f7277c753714861b27d14"
+deps = ["DataAPI"]
+git-tree-sha1 = "b1333d4eced1826e15adbdf01a4ecaccca9d353c"
 uuid = "2dfb63ee-cc39-5dd5-95bd-886bf059d720"
-version = "0.5.2"
+version = "0.5.3"
 
 [[Printf]]
 deps = ["Unicode"]
