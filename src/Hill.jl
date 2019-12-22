@@ -38,8 +38,8 @@ function optimize_hill(
 )
     hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2, g1_0, g2_0)
 
-    low = [lowEC50, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, lowEC50, 1e-5, 1e-5, 1e-5, 0.0, 3, 3]
-    high = [highEC50, 3.0, 3.0, 3.0, 3.0, 3.0, highEC50, 3.0, 3.0, 3.0, 1.0, 100, 100]
+    low = [lowEC50, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 0.0, 3, 3]
+    high = [highEC50, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 1.0, 100, 100]
 
     results_ode = bboptimize(
         hillCost;
@@ -61,13 +61,13 @@ function getODEparams(p::Array{Float64, 1}, concentrations::Array{Float64, 1})
         # [EC50, left, right, steepness]
         effects[1, i] = hill(view(p, 1:4), concentrations[i])
         effects[2, i] = hill([p[1], p[5], p[6], p[4]], concentrations[i])
-        effects[3, i] = hill([p[7], 0.0, p[8], p[9]], concentrations[i])
-        effects[4, i] = hill([p[7], 0.0, p[10], p[9]], concentrations[i])
+        effects[3, i] = hill([p[1], 0.0, p[7], p[4]], concentrations[i])
+        effects[4, i] = hill([p[1], 0.0, p[8], p[4]], concentrations[i])
     end
 
-    effects[5, :] .= p[11]
-    effects[6, :] .= floor(p[12])
-    effects[7, :] .= floor(p[13])
+    effects[5, :] .= p[9]
+    effects[6, :] .= floor(p[10])
+    effects[7, :] .= floor(p[11])
 
     return effects
 end
