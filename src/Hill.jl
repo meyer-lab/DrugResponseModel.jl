@@ -32,7 +32,8 @@ function optimize_hill(
     g1::Array{Float64, 2},
     g2::Array{Float64, 2},
     g1_0::Array{Float64, 1},
-    g2_0::Array{Float64, 1},
+    g2_0::Array{Float64, 1};
+    maxstep = 8E2
 )
     hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2, g1_0, g2_0)
 
@@ -44,14 +45,15 @@ function optimize_hill(
         SearchRange = collect(zip(low, high)),
         NumDimensions = length(low),
         TraceMode = :verbose,
+        Method = :dxnes,
         TraceInterval = 100,
-        MaxSteps = 8E3,
+        MaxSteps = maxstep,
     )
 
-    res = optimize(hillCost, best_candidate(results_ode), lower=low, upper=high)
-    summary(res)
+    res = optimize(hillCost, best_candidate(results_ode))
+    println(res)
 
-    return minimum(res), minimizer(res)
+    return Optim.minimum(res), Optim.minimizer(res)
 end
 
 """ A function to convert the estimated hill parameters back to ODE parameters. """
