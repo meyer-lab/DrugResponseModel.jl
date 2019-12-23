@@ -28,8 +28,6 @@ end
 
 """ Hill optimization function. """
 function optimize_hill(
-    lowEC50::Float64,
-    highEC50::Float64,
     conc_l::Array{Float64, 1},
     g1::Array{Float64, 2},
     g2::Array{Float64, 2},
@@ -38,8 +36,8 @@ function optimize_hill(
 )
     hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2, g1_0, g2_0)
 
-    low = [lowEC50, 1e-9, 1e-9, 0.01, 1e-9, 1e-9, 1e-9, 1e-9, 0.4, 3, 3]
-    high = [highEC50, 10.0, 10.0, 10.0, 10.0, 10.0, 1.0, 1.0, 0.6, 35, 120]
+    low = [minimum(conc_l), 1e-9, 1e-9, 0.01, 1e-9, 1e-9, 1e-9, 1e-9, 0.4, 3, 3]
+    high = [maximum(conc_l), 10.0, 10.0, 10.0, 10.0, 10.0, 1.0, 1.0, 0.6, 35, 120]
 
     results_ode = bboptimize(
         hillCost;
@@ -47,7 +45,7 @@ function optimize_hill(
         NumDimensions = length(low),
         TraceMode = :verbose,
         TraceInterval = 50,
-        MaxSteps = 8E4,
+        MaxSteps = 8E3,
     )
 
     return best_fitness(results_ode), best_candidate(results_ode)
