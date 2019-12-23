@@ -2,7 +2,7 @@
 This file fits Hill function to the parameters.
 """
 
-hill(p, concentration) = p[2] + ((p[3] - p[2]) / (1 + ((p[1]) / (concentration))^p[4]))
+hill(p, concentration) = p[2] .+ ((p[3] - p[2]) ./ (1.0 .+ (p[1] / concentration) .^ p[4]))
 
 """ This functions takes in hill parameters for all the concentrations and calculates
 DDE parameters, passes them to residual function and based off of these, optimizes the model
@@ -44,7 +44,7 @@ function optimize_hill(
         SearchRange = collect(zip(low, high)),
         NumDimensions = length(low),
         TraceMode = :verbose,
-        TraceInterval = 50,
+        TraceInterval = 100,
         MaxSteps = 8E3,
     )
 
@@ -55,14 +55,11 @@ end
 function getODEparams(p::Array{Float64, 1}, concentrations::Array{Float64, 1})
     effects = zeros(eltype(p), 7, 8)
 
-    for i = 1:8
-        # [EC50, left, right, steepness]
-        effects[1, i] = hill(view(p, 1:4), concentrations[i])
-        effects[2, i] = hill([p[1], p[5], p[6], p[4]], concentrations[i])
-        effects[3, i] = hill([p[1], 0.0, p[7], p[4]], concentrations[i])
-        effects[4, i] = hill([p[1], 0.0, p[8], p[4]], concentrations[i])
-    end
-
+    # [EC50, left, right, steepness]
+    effects[1, :] = hill(view(p, 1:4), concentrations)
+    effects[2, :] = hill([p[1], p[5], p[6], p[4]], concentrations)
+    effects[3, :] = hill([p[1], 0.0, p[7], p[4]], concentrations)
+    effects[4, :] = hill([p[1], 0.0, p[8], p[4]], concentrations)
     effects[5, :] .= p[9]
     effects[6, :] .= floor(p[10])
     effects[7, :] .= floor(p[11])
