@@ -48,7 +48,10 @@ function optimize_hill(
         MaxSteps = 8E3,
     )
 
-    return best_fitness(results_ode), best_candidate(results_ode)
+    res = optimize(hillCost, best_candidate(results_ode), lower=low, upper=high)
+    summary(res)
+
+    return minimum(res), minimizer(res)
 end
 
 """ A function to convert the estimated hill parameters back to ODE parameters. """
