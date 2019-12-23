@@ -45,7 +45,6 @@ function optimize_hill(
         SearchRange = collect(zip(low, high)),
         NumDimensions = length(low),
         TraceMode = :verbose,
-        Method = :dxnes,
         TraceInterval = 100,
         MaxSteps = maxstep,
     )
