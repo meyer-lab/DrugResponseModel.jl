@@ -79,14 +79,12 @@ function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::A
     t_new = LinRange(0.0, 120, 200)
     G1, G2 = predict(params, g1_0[i], g2_0[i], t_new, Int(floor(params[6])), Int(floor(params[7])))
 
-    kwargs = (lw = 2.0, alpha = 0.6)
-
-    plot(t_new, G1, label = "G1 est", xlabel = "time [hours]", ylabel = "# of cells", color = :green, kwargs...)
-    plot!(t, g1[:, i], label = "G1", markersize = 1.0, color = :darkgreen)
-    plot!(t_new, G2, label = "G2 est", legend = legend, legendfontsize = 6, fg_legend = :transparent, color = :sienna, kwargs...)
-    plot!(t, g2[:, i], label = "G2", markersize = 1.0, color = :darkorange)
-    plot!(t_new, G1 .+ G2, label = "total est", color = :hotpink, kwargs...)
-    plot!(t, pop[!, i], label = "total", markersize = 1.0, color = :indigo)
+    plot(t_new, G1, label = "G1 est", dpi = 150, xlabel = "time [hours]", ylabel = "# of cells", lw = 2.0, alpha = 0.6, color = :green)
+    plot!(t, g1[:, i], label = "G1", dpi = 150, markersize = 1.0, color = :darkgreen)
+    plot!(t_new, G2, label = "G2 est", legend = legend, legendfontsize = 6, fg_legend = :transparent, lw = 2.0, alpha = 0.6, color = :sienna)
+    plot!(t, g2[:, i], label = "G2", dpi = 150, markersize = 1.0, color = :darkorange)
+    plot!(t_new, G1 .+ G2, label = "total est", dpi = 150, lw = 2.0, alpha = 0.6, color = :hotpink)
+    plot!(t, pop[!, i], label = "total", dpi = 150, markersize = 1.0, color = :indigo)
     plot!(annotation = [(75, 90, text(title, 12))])
 end
 
