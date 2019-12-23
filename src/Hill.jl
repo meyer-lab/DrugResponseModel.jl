@@ -50,10 +50,7 @@ function optimize_hill(
         MaxSteps = maxstep,
     )
 
-    res = optimize(hillCost, best_candidate(results_ode))
-    println(res)
-
-    return Optim.minimum(res), Optim.minimizer(res)
+    return best_fitness(results_ode), best_candidate(results_ode)
 end
 
 """ A function to convert the estimated hill parameters back to ODE parameters. """
