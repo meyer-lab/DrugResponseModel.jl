@@ -5,7 +5,7 @@
     p = [1.0, 1.1, 0.2, 0.3, 0.5, 20, 20]
     DrugResponseModel.predict(p, 1.0, 1.0, t, 20, 20)
 
-# ODE optimization and estimation of the parameters
+    # ODE optimization and estimation of the parameters
     fitness, params_ode = ODEoptimizer(4, g1, g2, g1_0, g2_0)
     println(fitness)
 

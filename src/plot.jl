@@ -27,7 +27,7 @@ end
 
 
 function plot_parameters(conc_l, parameters)
-#     new_conc = append!([0.5], conc_l[2:end])
+    #     new_conc = append!([0.5], conc_l[2:end])
     conc = log.(conc_l)
     p1 = plot(
         conc,
