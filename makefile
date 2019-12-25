@@ -1,5 +1,5 @@
 
-all: Hill.html
+all: lapatinib.html doxorubicin.html gemcitabine.html paclitaxel.html
 
 venv: venv/bin/activate
 
