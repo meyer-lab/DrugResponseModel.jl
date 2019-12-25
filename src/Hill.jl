@@ -2,8 +2,6 @@
 This file fits Hill function to the parameters.
 """
 
-hill(p, concentration) = p[2] + ((p[3] - p[2]) / (1 + ((p[1]) / (concentration))^p[4]))
-
 """ This functions takes in hill parameters for all the concentrations and calculates
 DDE parameters, passes them to residual function and based off of these, optimizes the model
 and estimates hill parameters. """
@@ -54,17 +52,17 @@ function optimize_hill(
 end
 
 """ A function to convert the estimated hill parameters back to ODE parameters. """
-function getODEparams(p::Array{Float64, 1}, concentrations::Array{Float64, 1})
-    effects = zeros(eltype(p), 7, 8)
+function getODEparams(p::Vector, concentrations::Vector{Float64})
+    effects = Matrix{eltype(p)}(undef, 7, 8)
 
-    for i = 1:8
-        # [EC50, left, right, steepness]
-        effects[1, i] = hill(view(p, 1:4), concentrations[i])
-        effects[2, i] = hill([p[1], p[5], p[6], p[4]], concentrations[i])
-        effects[3, i] = hill([p[1], 0.0, p[7], p[4]], concentrations[i])
-        effects[4, i] = hill([p[1], 0.0, p[8], p[4]], concentrations[i])
-    end
+    # Scaled drug effect
+    xx = 1.0 ./ (1.0 .+ (p[1] ./ concentrations) .^ p[4])
 
+    # [EC50, left, right, steepness]
+    effects[1, :] = p[2] .+ (p[3] - p[2]) .* xx
+    effects[2, :] = p[5] .+ (p[6] - p[5]) .* xx
+    effects[3, :] = p[7] .* xx
+    effects[4, :] = p[8] .* xx
     effects[5, :] .= p[9]
     effects[6, :] .= floor(p[10])
     effects[7, :] .= floor(p[11])
