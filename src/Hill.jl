@@ -44,8 +44,8 @@ function optimize_hill(
         SearchRange = collect(zip(low, high)),
         NumDimensions = length(low),
         TraceMode = :verbose,
-        TraceInterval = 50,
-        MaxSteps = 8E4,
+        TraceInterval = 100,
+        MaxSteps = 4E4,
     )
 
     return best_fitness(results_ode), best_candidate(results_ode)
@@ -68,4 +68,23 @@ function getODEparams(p::Vector, concentrations::Vector{Float64})
     effects[7, :] .= floor(p[11])
 
     return effects
+end
+
+""" To find the sensitivity of the model to parameters. """
+function sensitivity(
+    params::Vector,
+    conc::Vector{Float64},
+    i::Int,
+    g1_0::Vector{Float64},
+    g2_0::Vector{Float64},
+    g1::Matrix{Float64},
+    g2::Matrix{Float64}
+)
+    result = zeros(200)
+    paramRange = LinRange(0.1*params[i], 10*params[i], 200)
+    for j=1:200
+        params[i]= paramRange[j]
+        result[j] = residHill(params, conc, g1, g2, g1_0, g2_0)
+    end
+    return result, paramRange
 end
