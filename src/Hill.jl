@@ -31,12 +31,12 @@ function optimize_hill(
     g2::Array{Float64, 2},
     g1_0::Array{Float64, 1},
     g2_0::Array{Float64, 1};
-    maxstep = 3E5
+    maxstep = 5E5
 )
     hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2, g1_0, g2_0)
 
     low = [minimum(conc_l), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.45, 2, 10]
-    high = [maximum(conc_l), 5.0, 5.0, 10.0, 5.0, 5.0, 1.0, 1.0, 0.55, 35, 120]
+    high = [maximum(conc_l), 3.0, 3.0, 10.0, 3.0, 3.0, 1.0, 1.0, 0.55, 35, 120]
 
     results_ode = bboptimize(
         hillCost;
