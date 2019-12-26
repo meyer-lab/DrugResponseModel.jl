@@ -1,7 +1,7 @@
 pipeline {
   agent { label 'docker' }
   options {
-    timeout(time: 4, unit: 'HOURS')
+    timeout(time: 8, unit: 'HOURS')
     parallelsAlwaysFailFast()
   }
   stages {
@@ -15,7 +15,7 @@ pipeline {
     }
     stage ('Build') {
       steps {
-        sh 'make -j 4 all'
+        sh 'make -j 2 all'
         archiveArtifacts artifacts: '*.html', onlyIfSuccessful: true
       }
     }
