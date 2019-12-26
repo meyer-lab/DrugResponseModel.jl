@@ -76,7 +76,7 @@ end
     for a longer time which is 2 times of the original time (~195 hours) """
 function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop, i::Int, title::String, legend::Any)
     t = LinRange(0.0, 95.5, 192)
-    t_new = LinRange(0.0, 150, 200)
+    t_new = LinRange(0.0, 120, 200)
     G1, G2 = predict(params, g1_0[i], g2_0[i], t_new, Int(floor(params[6])), Int(floor(params[7])))
 
     plot(t_new, G1, label = "G1 est", dpi = 150, xlabel = "time [hours]", ylabel = "# of cells", lw = 2.0, alpha = 0.6, color = :green)
@@ -96,5 +96,5 @@ function ODEplot_all(params_ode, g1_l::Matrix, g2_l::Matrix, g1_0_l::Array, g2_0
     r8 = ode_plotIt(params_ode[:, 8], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 8, "", :topleft)
     plot(rl..., r8, layout = (2, 4))
     plot!(size = (900, 400), layout = (4, 2), dpi = 200)
-    ylims!((0.0, 120.0))
+    ylims!((0.0, 80.0))
 end
