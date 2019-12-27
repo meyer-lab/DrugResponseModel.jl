@@ -80,10 +80,17 @@ function sensitivity(
     g2::Matrix{Float64}
 )
     result = zeros(100)
-    paramRange = log10.(LinRange(0.1*params[i], 10*params[i], 100))
+    paramRange = LinRange(0.1*params[i], 10.0*params[i], 100)
     for j=1:100
         params[i]= paramRange[j]
         result[j] = residHill(params, conc, g1, g2, g1_0, g2_0)
     end
-    return log.(result), paramRange
+    return log.(result), log.(paramRange)
+end
+
+
+""" Plots the sensitivity for a parameter with a vertical line of the real value of the parameter."""
+function plotUnitSensitivity(paramRange, result, realParam)
+    plot(paramRange, result, legend=:false, xlabel="param range", ylabel="cost", ylim=(0.75*minimum(result), 1.25 * maximum(result)))
+    plot!([log.(realParam)], seriestype="vline")
 end
