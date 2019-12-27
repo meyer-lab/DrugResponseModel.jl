@@ -79,11 +79,11 @@ function sensitivity(
     g1::Matrix{Float64},
     g2::Matrix{Float64}
 )
-    result = zeros(200)
-    paramRange = LinRange(0.1*params[i], 10*params[i], 200)
-    for j=1:200
+    result = zeros(100)
+    paramRange = log10.(LinRange(0.1*params[i], 10*params[i], 100))
+    for j=1:100
         params[i]= paramRange[j]
         result[j] = residHill(params, conc, g1, g2, g1_0, g2_0)
     end
-    return result, paramRange
+    return log.(result), paramRange
 end
