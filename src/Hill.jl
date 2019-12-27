@@ -31,7 +31,7 @@ function optimize_hill(
     g2::Array{Float64, 2},
     g1_0::Array{Float64, 1},
     g2_0::Array{Float64, 1};
-    maxstep = 1E5
+    maxstep = 1E5,
 )
     hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2, g1_0, g2_0)
 
