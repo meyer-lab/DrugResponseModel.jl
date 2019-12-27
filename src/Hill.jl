@@ -91,6 +91,7 @@ end
 
 """ Plots the sensitivity for a parameter with a vertical line of the real value of the parameter."""
 function plotUnitSensitivity(paramRange, result, realParam)
-    plot(paramRange, result, legend=:false, xlabel="param range", ylabel="cost", ylim=(0.75*minimum(result), 1.25 * maximum(result)))
-    plot!([log.(realParam)], seriestype="vline")
+    plot(paramRange, result, legend=:false, xlabel="[log] param range", ylabel="[log] cost")
+    plot!([log.(realParam)], seriestype="vline", linestyple=:dash)
+    ylims!((8.0, 16.0))
 end
