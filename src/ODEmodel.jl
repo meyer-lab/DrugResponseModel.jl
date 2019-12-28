@@ -70,7 +70,6 @@ function ODEoptimizer(i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
     return best_fitness(results_ode), best_candidate(results_ode)
 end
 
-
 """ Given estimated parameters for each trial, solve the DDE model plot the predicted curve 
     for number of cells in G1, G2, or total, along with their corresponding real data,
     for a longer time which is 2 times of the original time (~195 hours) """
