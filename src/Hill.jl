@@ -72,6 +72,7 @@ end
 """ To find the sensitivity of the model to parameters. """
 function sensitivity(
     params::Vector,
+    paramRange::Vector,
     conc::Vector{Float64},
     i::Int,
     g1_0::Vector{Float64},
@@ -80,17 +81,17 @@ function sensitivity(
     g2::Matrix{Float64}
 )
     result = zeros(50)
-    paramRange = params[i] * (10.^(range(-1, stop=1, length=50)))
     for j=1:50
-        params[i]= paramRange[j]
-        result[j] = residHill(params, conc, g1, g2, g1_0, g2_0)
-    end
-    return result, paramRange
+        temp = copy(params)
+        temp[i]= paramRange[j]
+        result[j] = residHill(temp, conc, g1, g2, g1_0, g2_0)
+    end    
+    return result
 end
 
 """ Plots the sensitivity for a parameter with a vertical line of the real value of the parameter."""
 function plotUnitSensitivity(paramRange, result, realParam)
-    plot(paramRange, result, legend=:false, xlabel="[log] param range", ylabel="[log] cost", ylim=(0.75*minimum(result), 1.25*maximum(result)))
+    plot(paramRange, result, legend=:false, xlabel="[log] param range", ylabel="[log] cost", xaxis=:log10, yaxis=:log10)
     plot!([realParam], seriestype="vline")
-#     ylims!((8.0, 16.0))
+    ylims!((8.0, 16.0))
 end
