@@ -93,5 +93,5 @@ end
 function plotUnitSensitivity(paramRange, result, realParam)
     plot(paramRange, result, legend=:false, xlabel="[log] param range", ylabel="[log] cost", xaxis=:log10, yaxis=:log10)
     plot!([realParam], seriestype="vline")
-    ylims!((8.0, 16.0))
+    ylims!((5E3, 5E5))
 end
