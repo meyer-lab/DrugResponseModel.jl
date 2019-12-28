@@ -71,7 +71,7 @@ end
 
 """ To find the sensitivity of the model to parameters. """
 function sensitivity(
-    params,
+    params::Vector,
     conc::Vector{Float64},
     i::Int,
     g1_0::Vector{Float64},
@@ -80,7 +80,7 @@ function sensitivity(
     g2::Matrix{Float64}
 )
     result = zeros(50)
-    paramRange = LinRange(0.1*params[i], 10.0*params[i], 50)
+    paramRange = params[i] * (10.^(range(-1, stop=1, length=50)))
     for j=1:50
         params[i]= paramRange[j]
         result[j] = residHill(params, conc, g1, g2, g1_0, g2_0)
