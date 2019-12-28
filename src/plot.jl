@@ -20,7 +20,7 @@ function correlationPlot(g1::Matrix, g2::Matrix, labels::Array, xlabel::String, 
         for i = 1:8
     ]
     plot(pl..., legend = :false, layout = (2, 4), fmt = :png)
-    plot!(size = (1200, 600), dpi = 150)
+    plot!(size = (1200, 600), margin=0.4cm, dpi = 150)
     ylims!((0, ymax))
     xlims!((0, ymax))
 end
@@ -32,7 +32,7 @@ function plot_parameters(conc_l, parameters)
     p1 = plot(
         conc,
         parameters[1, :],
-        xlabel = "drug conc. [nM]",
+        xlabel = "log drug conc. [nM]",
         label = "",
         lw = 2.0,
         alpha = 0.6,
@@ -41,12 +41,12 @@ function plot_parameters(conc_l, parameters)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "alpha",
     )
-    ylims!(0.0, 1.2 * maximum(parameters[1, :]))
+#     ylims!(0.0, 1.2 * maximum(parameters[1, :]))
 
     p2 = plot(
         conc,
         parameters[2, :],
-        xlabel = "drug conc. [nM]",
+        xlabel = "log drug conc. [nM]",
         label = "",
         lw = 2.0,
         alpha = 0.6,
@@ -55,12 +55,12 @@ function plot_parameters(conc_l, parameters)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "beta",
     )
-    ylims!(0.0, 1.2 * maximum(parameters[2, :]))
+#     ylims!(0.0, 1.2 * maximum(parameters[2, :]))
 
     p3 = plot(
         conc,
         parameters[3, :],
-        xlabel = "drug conc. [nM]",
+        xlabel = "log drug conc. [nM]",
         label = "",
         lw = 2.0,
         alpha = 0.6,
@@ -69,12 +69,12 @@ function plot_parameters(conc_l, parameters)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "gamma1",
     )
-    ylims!(0.0, 1.2 * maximum(parameters[3, :]))
+#     ylims!(0.0, 1.2 * maximum(parameters[3, :]))
 
     p4 = plot(
         conc,
         parameters[4, :],
-        xlabel = "drug conc. [nM]",
+        xlabel = "log drug conc. [nM]",
         label = "",
         lw = 2.0,
         alpha = 0.6,
@@ -83,8 +83,9 @@ function plot_parameters(conc_l, parameters)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "gamma2",
     )
-    ylims!(0.0, 1.2 * maximum(parameters[4, :]))
+#     ylims!(0.0, 1.2 * maximum(parameters[4, :]))
 
     plot(p1, p2, p3, p4)
-    plot!(size = (800, 400), dpi = 150)
+    plot!(size = (600, 400), margin=0.4cm, dpi = 150)
+    ylims!((-0.2, maximum(parameters[1:4, :])))
 end

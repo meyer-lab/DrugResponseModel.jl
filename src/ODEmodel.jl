@@ -78,22 +78,22 @@ function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::A
     t_new = LinRange(0.0, 120, 200)
     G1, G2 = predict(params, g1_0[i], g2_0[i], t_new, Int(floor(params[6])), Int(floor(params[7])))
 
-    plot(t_new, G1, label = "G1 est", dpi = 150, xlabel = "time [hours]", ylabel = "# of cells", lw = 2.0, alpha = 0.6, color = :green)
+    plot(t_new, G1, label = "G1 est", xlabel = "time [hours]", ylabel = "# of cells",xguidefontsize=8, yguidefontsize=8, lw = 2.0, alpha = 0.6, color = :green)
     plot!(t, g1[:, i], label = "G1", dpi = 150, markersize = 1.0, color = :darkgreen)
-    plot!(t_new, G2, label = "G2 est", legend = legend, legendfontsize = 6, fg_legend = :transparent, lw = 2.0, alpha = 0.6, color = :sienna)
-    plot!(t, g2[:, i], label = "G2", dpi = 150, markersize = 1.0, color = :darkorange)
+    plot!(t_new, G2, label = "G2 est", legend = legend, legendfontsize = 4, fg_legend = :transparent, lw = 2.0, alpha = 0.6, color = :sienna)
+    plot!(t, g2[:, i], label = "G2", markersize = 1.0, color = :darkorange)
     plot!(t_new, G1 .+ G2, label = "total est", dpi = 150, lw = 2.0, alpha = 0.6, color = :hotpink)
-    plot!(t, pop[!, i], label = "total", dpi = 150, markersize = 1.0, color = :indigo)
-    plot!(annotation = [(75, 90, text(title, 12))])
+    plot!(t, pop[!, i], label = "total", markersize = 1.0, color = :indigo)
+    plot!(annotation = [(60, 75, text(title, 8))])
 end
 
 
 """ Plot the data and curves for all concentrations. """
-function ODEplot_all(params_ode, g1_l::Matrix, g2_l::Matrix, g1_0_l::Array, g2_0_l::Array, pop_l)
+function ODEplot_all(params_ode, g1_l::Matrix, g2_l::Matrix, g1_0_l::Array, g2_0_l::Array, pop_l, conc::Array{Float64,1})
     # plotting the fitted curves
-    rl = [ode_plotIt(params_ode[:, i], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, i, "", false) for i = 1:7]
-    r8 = ode_plotIt(params_ode[:, 8], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 8, "", :topleft)
+    rl = [ode_plotIt(params_ode[:, i], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, i, string(Int(conc[i]), " nM"), false) for i = 1:7]
+    r8 = ode_plotIt(params_ode[:, 8], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 8, string(Int(conc[8]), " nM"), :topleft)
     plot(rl..., r8, layout = (2, 4))
-    plot!(size = (900, 400), layout = (4, 2), dpi = 200)
+    plot!(size = (900, 400), margin=0.4cm,  dpi = 200)
     ylims!((0.0, 80.0))
 end
