@@ -41,7 +41,7 @@ function plot_parameters(conc_l, parameters)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "alpha",
     )
-#     ylims!(0.0, 1.2 * maximum(parameters[1, :]))
+    ylims!(0.0, 1.2 * maximum(parameters[1, :]))
 
     p2 = plot(
         conc,
@@ -55,7 +55,7 @@ function plot_parameters(conc_l, parameters)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "beta",
     )
-#     ylims!(0.0, 1.2 * maximum(parameters[2, :]))
+    ylims!(0.0, 1.2 * maximum(parameters[2, :]))
 
     p3 = plot(
         conc,
@@ -69,7 +69,7 @@ function plot_parameters(conc_l, parameters)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "gamma1",
     )
-#     ylims!(0.0, 1.2 * maximum(parameters[3, :]))
+    ylims!(0.0, 1.2 * maximum(parameters[3, :]))
 
     p4 = plot(
         conc,
@@ -83,9 +83,8 @@ function plot_parameters(conc_l, parameters)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "gamma2",
     )
-#     ylims!(0.0, 1.2 * maximum(parameters[4, :]))
+    ylims!(0.0, 1.2 * maximum(parameters[4, :]))
 
     plot(p1, p2, p3, p4)
     plot!(size = (600, 400), margin=0.4cm, dpi = 150)
-    ylims!((-0.2, maximum(parameters[1:4, :])))
 end
