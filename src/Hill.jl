@@ -90,8 +90,9 @@ function sensitivity(
 end
 
 """ Plots the sensitivity for a parameter with a vertical line of the real value of the parameter."""
-function plotUnitSensitivity(paramRange, result, realParam)
-    plot(paramRange, result, legend=:false, xlabel="[log] param range", ylabel="[log] cost", xaxis=:log10, yaxis=:log10)
-    plot!([realParam], seriestype="vline")
+function plotUnitSensitivity(paramRange, result, realParam, i)
+    label = ["EC50", "min alpha", "max alpha", "steepnsess", "min beta", "max beta", "max gamma G1", "max gamma G2", "% in G1", "# of G1 species", "# of G2 species"]
+    plot(paramRange, result, legend=:false, xlabel=string("[log] ", label[i], " range"), ylabel="[log] cost", yscale=:log10, xscale=:log10, xaxis=:log10, yaxis=:log10)
+    plot!([realParam], seriestype="vline", margin=0.3cm, legend=:false)
     ylims!((5E3, 5E5))
 end
