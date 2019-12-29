@@ -91,8 +91,8 @@ end
 """ Plot the data and curves for all concentrations. """
 function ODEplot_all(params_ode, g1_l::Matrix, g2_l::Matrix, g1_0_l::Array, g2_0_l::Array, pop_l, conc::Array{Float64,1})
     # plotting the fitted curves
-    rl = [ode_plotIt(params_ode[:, i], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, i, string(Int(conc[i]), " nM"), false) for i = 1:7]
-    r8 = ode_plotIt(params_ode[:, 8], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 8, string(Int(conc[8]), " nM"), :topleft)
+    rl = [ode_plotIt(params_ode[:, i], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, i, string(conc[i], " nM"), false) for i = 1:7]
+    r8 = ode_plotIt(params_ode[:, 8], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 8, string(conc[8], " nM"), :topleft)
     plot(rl..., r8, layout = (2, 4))
     plot!(size = (900, 400), margin=0.4cm,  dpi = 200)
     ylims!((0.0, 80.0))
