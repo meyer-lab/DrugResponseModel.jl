@@ -78,14 +78,14 @@ function sensitivity(
     g1_0::Vector{Float64},
     g2_0::Vector{Float64},
     g1::Matrix{Float64},
-    g2::Matrix{Float64}
+    g2::Matrix{Float64},
 )
     result = zeros(50)
-    for j=1:50
+    for j = 1:50
         temp = copy(params)
-        temp[i]= paramRange[j]
+        temp[i] = paramRange[j]
         result[j] = residHill(temp, conc, g1, g2, g1_0, g2_0)
-    end    
+    end
     return result
 end
 
