@@ -73,7 +73,7 @@ end
 """ Given estimated parameters for each trial, solve the DDE model plot the predicted curve 
     for number of cells in G1, G2, or total, along with their corresponding real data,
     for a longer time which is 2 times of the original time (~195 hours) """
-function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop, i::Int, title::String, legend::Any)
+function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop, i::Int, title::String, legend::Any, ymax)
     t = LinRange(0.0, 95.5, 192)
     t_new = LinRange(0.0, 120, 200)
     G1, G2 = predict(params, g1_0[i], g2_0[i], t_new, Int(floor(params[6])), Int(floor(params[7])))
@@ -95,16 +95,17 @@ function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::A
     plot!(t, g2[:, i], label = "G2", markersize = 1.0, color = :darkorange)
     plot!(t_new, G1 .+ G2, label = "total est", dpi = 150, lw = 2.0, alpha = 0.6, color = :hotpink)
     plot!(t, pop[!, i], label = "total", markersize = 1.0, color = :indigo)
-    plot!(annotation = [(60, 75, text(title, 8))])
+    plot!(annotation = [(60, ymax, text(title, 8))])
+    ylims!((0.0, ymax))
 end
 
 
 """ Plot the data and curves for all concentrations. """
 function ODEplot_all(params_ode, g1_l::Matrix, g2_l::Matrix, g1_0_l::Array, g2_0_l::Array, pop_l, conc::Array{Float64, 1})
     # plotting the fitted curves
-    rl = [ode_plotIt(params_ode[:, i], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, i, string(conc[i], " nM"), false) for i = 1:7]
-    r8 = ode_plotIt(params_ode[:, 8], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 8, string(conc[8], " nM"), :topleft)
-    plot(rl..., r8, layout = (2, 4))
+    rl = [ode_plotIt(params_ode[:, i], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, i, string(conc[i], " nM"), false, 80.0) for i = 1:4]
+    r2 = [ode_plotIt(params_ode[:, i], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, i, string(conc[i], " nM"), false, 40.0) for i = 5:7]
+    r8 = ode_plotIt(params_ode[:, 8], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 8, string(conc[8], " nM"), :topleft, 40.0)
+    plot(rl..., r2...,r8, layout = (2, 4))
     plot!(size = (900, 400), margin = 0.4cm, dpi = 200)
-    ylims!((0.0, 80.0))
 end
