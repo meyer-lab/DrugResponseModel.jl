@@ -18,4 +18,4 @@ coverage.cob:
 	. venv/bin/activate && jupyter nbconvert --execute --ExecutePreprocessor.timeout=60000 --to html $< --output $@
 
 clean:
-	rm -rf *.pdf *.aux *.log *.out
+	rm -rf *.html

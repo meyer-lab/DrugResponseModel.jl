@@ -69,7 +69,7 @@ function getODEparams(p::Vector, concentrations::Vector{Float64})
     return effects
 end
 
-""" To find the sensitivity of the model to parameters. """
+""" To find the sensitivity of the model to a parameter. """
 function sensitivity(
     params::Vector,
     paramRange::Vector,
@@ -80,13 +80,35 @@ function sensitivity(
     g1::Matrix{Float64},
     g2::Matrix{Float64},
 )
-    result = zeros(50)
-    for j = 1:50
+    result = zeros(length(paramRange))
+    for j = 1:length(paramRange)
         temp = copy(params)
         temp[i] = paramRange[j]
         result[j] = residHill(temp, conc, g1, g2, g1_0, g2_0)
     end
     return result
+end
+
+""" Calculate the sensitivity to all parameters. """
+function allSensitivity(
+    params::Vector,
+    conc_l::Vector{Float64},
+    g1_0::Vector{Float64},
+    g2_0::Vector{Float64},
+    g1::Matrix{Float64},
+    g2::Matrix{Float64},
+)
+    b = copy(params)
+    convRange = 10 .^ (range(-1, stop=1, length=101))
+    results = zeros(length(convRange), 11)
+    paramRanges = zeros(length(convRange), 11)
+
+    for k=1:11
+        paramRanges[:, k] = b[k] .* convRange
+        results[:, k] = sensitivity(b, paramRanges[:, k], conc_l, k, g1_0, g2_0, g1, g2)
+    end
+
+    return results, paramRanges
 end
 
 """ Plots the sensitivity for a parameter with a vertical line of the real value of the parameter."""
@@ -116,5 +138,5 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
         yaxis = :log10,
     )
     plot!([realParam], seriestype = "vline", margin = 0.3cm, legend = :false)
-    ylims!((5E3, 5E5))
+    ylims!((5E3, 1E5))
 end
