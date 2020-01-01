@@ -1,5 +1,5 @@
 
-all: lapatinib.pdf doxorubicin.pdf gemcitabine.pdf paclitaxel.pdf
+all: lapatinib.html doxorubicin.html gemcitabine.html paclitaxel.html
 
 venv: venv/bin/activate
 
@@ -14,8 +14,8 @@ coverage.cob:
 	pip3 install --user lcov_cobertura
 	python3 ~/.local/lib/python3.7/site-packages/lcov_cobertura.py coverage-lcov.info -o coverage.cob
 
-%.pdf: %.ipynb venv
-	. venv/bin/activate && jupyter nbconvert --execute --ExecutePreprocessor.timeout=60000 --to pdf $< --output $@
+%.html: %.ipynb venv
+	. venv/bin/activate && jupyter nbconvert --execute --ExecutePreprocessor.timeout=60000 --to html $< --output $@
 
 clean:
-	rm -rf *.pdf *.aux *.log *.out
+	rm -rf *.html
