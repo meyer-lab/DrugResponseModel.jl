@@ -25,6 +25,7 @@ export setup_data,
     optimize_hill,
     getODEparams,
     sensitivity,
-    plotUnitSensitivity
+    plotUnitSensitivity,
+    allSensitivity
 
 end # module
