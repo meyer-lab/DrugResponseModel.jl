@@ -138,5 +138,5 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
         yaxis = :log10,
     )
     plot!([realParam], seriestype = "vline", margin = 0.3cm, legend = :false)
-    ylims!((5E3, 5E5))
+    ylims!((5E3, 1E5))
 end
