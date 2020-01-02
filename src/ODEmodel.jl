@@ -5,8 +5,8 @@
 """ Make the transition matrix. """
 function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int)::Matrix{Float64}
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2]
-    @assert nG1 != 0
-    @assert nG2 != 0
+    @assert nG1 > 0
+    @assert nG2 > 0
     A = diagm(0 => [-ones(nG1) * p[1]; -ones(nG2) * p[2]], -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]])
     A[1, end] = 2 * p[2]
     A[nG1, nG1] -= p[3]
