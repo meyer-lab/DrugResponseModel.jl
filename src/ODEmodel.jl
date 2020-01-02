@@ -110,6 +110,6 @@ function ODEplot_all(params_ode, g1_l::Matrix, g2_l::Matrix, g1_0_l::Array, g2_0
     rl = [ode_plotIt(params_ode[:, i], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, i, string(conc[i], " nM"), false, 80.0) for i = 1:4]
     r2 = [ode_plotIt(params_ode[:, i], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, i, string(conc[i], " nM"), false, 40.0) for i = 5:7]
     r8 = ode_plotIt(params_ode[:, 8], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 8, string(conc[8], " nM"), :topleft, 40.0)
-    plot(rl..., r2...,r8, layout = (2, 4))
+    plot(rl..., r2..., r8, layout = (2, 4))
     plot!(size = (900, 400), margin = 0.4cm, dpi = 200)
 end
