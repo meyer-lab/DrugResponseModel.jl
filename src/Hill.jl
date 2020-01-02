@@ -99,11 +99,11 @@ function allSensitivity(
     g2::Matrix{Float64},
 )
     b = copy(params)
-    convRange = 10 .^ (range(-1, stop=1, length=101))
+    convRange = 10 .^ (range(-1, stop = 1, length = 101))
     results = zeros(length(convRange), 11)
     paramRanges = zeros(length(convRange), 11)
 
-    for k=1:11
+    for k = 1:11
         paramRanges[:, k] = b[k] .* convRange
         results[:, k] = sensitivity(b, paramRanges[:, k], conc_l, k, g1_0, g2_0, g1, g2)
     end
