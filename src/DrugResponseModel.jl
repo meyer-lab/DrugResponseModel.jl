@@ -26,7 +26,6 @@ export setup_data,
     getODEparams,
     sensitivity,
     plotUnitSensitivity,
-    allSensitivity,
-    ODEplot_allPerc
+    allSensitivity
 
 end # module
