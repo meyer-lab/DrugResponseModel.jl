@@ -109,3 +109,34 @@ function ODEplot_all(params_ode, g1_l::Matrix, g2_l::Matrix, g1_0_l::Array, g2_0
     plot(rl..., r2..., r8, layout = (2, 4))
     plot!(size = (900, 400), margin = 0.4cm, dpi = 200)
 end
+
+function plotPercentage(params::Vector, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop, i::Int, title::String, legend::Any, ymax)
+    t = LinRange(0.0, 95.5, 192)
+    t_new = LinRange(0.0, 120, 200)
+    G1, G2 = predict(params, g1_0[i], g2_0[i], t_new, Int(floor(params[6])), Int(floor(params[7])))
+
+    plot(
+        t_new,
+        100.0*G1 ./ (G1 .+ G2),
+        label = "G1 perc",
+        xlabel = "time [hours]",
+        ylabel = "% of cells",
+        xguidefontsize = 8,
+        yguidefontsize = 8,
+        lw = 2.0,
+        alpha = 0.6,
+        color = :green,
+    )
+    plot!(t, 100.0*g1[:, i] ./ pop[!, i], label = "G1", dpi = 150, markersize = 1.0, color = :darkgreen)
+    plot!(t_new, 100.0*G2 ./ (G1 .+ G2), label = "G2 perc", legend = legend, legendfontsize = 4, fg_legend = :transparent, lw = 2.0, alpha = 0.6, color = :sienna)
+    plot!(t, 100.0*g2[:, i] ./ pop[!,i], label = "G2", markersize = 1.0, color = :darkorange)
+    ylims!((0.0, ymax))
+end
+
+function ODEplot_allPerc(params_ode, g1_l::Matrix, g2_l::Matrix, g1_0_l::Array, g2_0_l::Array, pop_l, conc::Array{Float64, 1})
+    # plotting the fitted curves
+    rl = [plotPercentage(params_ode[:, i], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, i, string(conc[i], " nM"), false, 110.0) for i = 1:7]
+    r8 = plotPercentage(params_ode[:, 8], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 8, string(conc[8], " nM"), :topleft, 110.0)
+    plot(rl..., r8, layout = (2, 4))
+    plot!(size = (900, 400), margin = 0.4cm, dpi = 200)
+end
