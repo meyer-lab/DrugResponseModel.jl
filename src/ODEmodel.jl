@@ -149,7 +149,7 @@ function plotPercentage(params::Vector, g1::Matrix, g2::Matrix, g1_0::Array, g2_
 
     plot(
         t_new,
-        100.0*G1 ./ (G1 .+ G2),
+        100.0 * G1 ./ (G1 .+ G2),
         label = "G1 perc",
         xlabel = "time [hours]",
         ylabel = "% of cells",
