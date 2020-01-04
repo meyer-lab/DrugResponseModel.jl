@@ -5,6 +5,7 @@ gr()
 
 #-------------------------- plot for the G1 G2 correlation ---------------------------#
 function correlationPlot(g1::Matrix, g2::Matrix, labels::Array, xlabel::String, ylabel::String, ymax::Int)
+    theme(:mute)
     pl = [
         scatter(
             g1[:, i],
@@ -13,7 +14,7 @@ function correlationPlot(g1::Matrix, g2::Matrix, labels::Array, xlabel::String, 
             xlabel = xlabel,
             ylabel = ylabel,
             alpha = 0.6,
-            color = [:gray],
+#             color = [:gray],
             line = :dot,
             marker = (:dot, 1.5),
         )
@@ -26,9 +27,12 @@ function correlationPlot(g1::Matrix, g2::Matrix, labels::Array, xlabel::String, 
 end
 
 
-function plot_parameters(conc_l, parameters)
-    #     new_conc = append!([0.5], conc_l[2:end])
+function plot_parameters(conc_l, parameters, costResults, paramRange)
+
+    sd = errorbar_params(conc_l, costResults, paramRange)
+    
     conc = log.(conc_l)
+    theme(:mute)
     p1 = plot(
         conc,
         parameters[1, :],
@@ -36,10 +40,10 @@ function plot_parameters(conc_l, parameters)
         label = "",
         lw = 2.0,
         alpha = 0.6,
-        color = [:black :gray],
         line = (:dot, 1),
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "alpha",
+        ribbon = (sd[1,:])
     )
     ylims!(0.0, 1.2 * maximum(parameters[1, :]))
 
@@ -50,10 +54,10 @@ function plot_parameters(conc_l, parameters)
         label = "",
         lw = 2.0,
         alpha = 0.6,
-        color = [:black :gray],
         line = (:dot, 1),
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "beta",
+        ribbon = (sd[2,:])
     )
     ylims!(0.0, 1.2 * maximum(parameters[2, :]))
 
@@ -66,10 +70,10 @@ function plot_parameters(conc_l, parameters)
         label = "",
         lw = 2.0,
         alpha = 0.6,
-        color = [:black :gray],
         line = (:dot, 1),
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "gamma1",
+        ribbon = (sd[3,:])
     )
     ylims!(0.0, 1.2 * maxDeath)
 
@@ -80,13 +84,32 @@ function plot_parameters(conc_l, parameters)
         label = "",
         lw = 2.0,
         alpha = 0.6,
-        color = [:black :gray],
+#         color = [:black :gray],
         line = (:dot, 1),
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "gamma2",
+        ribbon = (sd[4,:])
     )
     ylims!(0.0, 1.2 * maxDeath)
 
     plot(p1, p2, p3, p4)
     plot!(size = (600, 400), margin = 0.4cm, dpi = 150)
+end
+
+""" Use the results from sensitivity analysis to plot a range for parameters vs. concentrations. """
+function errorbar_params(concentrations, results, paramRange)
+    newparam = zeros(3, 11)
+    for j in 1:11
+        ind_min = argmin(results[:, j])
+        if (ind_min <= 5 || ind_min >=95)
+            ind_min = 50
+        end
+        newparam[:, j] = paramRange[(ind_min - 5):5:(ind_min + 5), j]
+    end
+    odeparams = zeros(7,8,3)
+    for k in 1:3
+        odeparams[:, :, k] = getODEparams(newparam[k, :], concentrations)
+    end
+    sd = odeparams[:, :, 3] .- odeparams[:, :, 1]
+    return sd
 end
