@@ -117,7 +117,7 @@ function plotPercentage(params::Vector, g1::Matrix, g2::Matrix, g1_0::Array, g2_
 
     plot(
         t_new,
-        100.0*G1 ./ (G1 .+ G2),
+        100.0 * G1 ./ (G1 .+ G2),
         label = "G1 perc",
         xlabel = "time [hours]",
         ylabel = "% of cells",
@@ -127,9 +127,19 @@ function plotPercentage(params::Vector, g1::Matrix, g2::Matrix, g1_0::Array, g2_
         alpha = 0.6,
         color = :green,
     )
-    plot!(t, 100.0*g1[:, i] ./ pop[!, i], label = "G1", dpi = 150, markersize = 1.0, color = :darkgreen)
-    plot!(t_new, 100.0*G2 ./ (G1 .+ G2), label = "G2 perc", legend = legend, legendfontsize = 4, fg_legend = :transparent, lw = 2.0, alpha = 0.6, color = :sienna)
-    plot!(t, 100.0*g2[:, i] ./ pop[!,i], label = "G2", markersize = 1.0, color = :darkorange)
+    plot!(t, 100.0 * g1[:, i] ./ pop[!, i], label = "G1", dpi = 150, markersize = 1.0, color = :darkgreen)
+    plot!(
+        t_new,
+        100.0 * G2 ./ (G1 .+ G2),
+        label = "G2 perc",
+        legend = legend,
+        legendfontsize = 4,
+        fg_legend = :transparent,
+        lw = 2.0,
+        alpha = 0.6,
+        color = :sienna,
+    )
+    plot!(t, 100.0 * g2[:, i] ./ pop[!, i], label = "G2", markersize = 1.0, color = :darkorange)
     ylims!((0.0, ymax))
 end
 
