@@ -25,20 +25,28 @@ def polish(CONTROL):
         trial.append(tmp2)
     return trial
 
-def plotDist(TRIAL):
-    trial = polish(TRIAL)
+def estimate(trial):
+    parameters = []
+    for ind, x in enumerate(trial):
+        shape, _, scale = sp.rv_continuous.fit(sp.gamma, x, floc=0)
+        parameters.append([np.around(shape), round(scale, 3)])
 
-    plt.figure(figsize=(18,8))
+    return parameters
+
+def plotDist(control, trial, cont_pr, parameters, label):
     titles = ['G1', 'S-G2', 'total']
+
+    plt.figure(figsize=(18,8), dpi=200)
     for ind, x in enumerate(trial):
         plt.subplot(1,3,(ind+1))
-        plt.hist(x, alpha=0.8, density=True, bins=30)
+        plt.hist(control[ind], alpha=0.8, density=True, bins=30, label="control")
+        plt.hist(x, alpha=0.8, density=True, bins=30, label=label)
         plt.title(titles[ind])
-        shape, loc, scale = sp.rv_continuous.fit(sp.gamma, x, floc=0)
-        print(np.around(shape), round(scale, 3))
-        rv = sp.erlang(np.around(shape),loc,scale)
+        rv = sp.erlang(parameters[ind][0],0,parameters[ind][1])
         xx = np.linspace(0, max(x))
         plt.plot(xx, rv.pdf(xx), lw=2)
-        plt.text(50, 0.07, 'shape %d,\n scale %.3f' % (np.around(shape), round(scale, 3)), fontsize=12)
+        plt.text(50, 0.07, 'shape: %d \n scale: %.3f' % (parameters[ind][0],parameters[ind][1]), fontsize=14)
+        plt.text(50, 0.09, 'control shape: %d \n scale: %.3f' % (cont_pr[ind][0],cont_pr[ind][1]), fontsize=14)
         plt.ylim([0.0, 0.12])
         plt.xlim([0.0, 90.0])
+        plt.legend()
