@@ -39,8 +39,8 @@ def plotDist(control, trial, cont_pr, parameters, label):
     plt.figure(figsize=(18,8), dpi=200)
     for ind, x in enumerate(trial):
         plt.subplot(1,3,(ind+1))
-        plt.hist(x, alpha=0.8, density=True, bins=30, label=label)
         plt.hist(control[ind], alpha=0.8, density=True, bins=30, label="control")
+        plt.hist(x, alpha=0.8, density=True, bins=30, label=label)
         plt.title(titles[ind])
         rv = sp.erlang(parameters[ind][0],0,parameters[ind][1])
         xx = np.linspace(0, max(x))
