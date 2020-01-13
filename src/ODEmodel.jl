@@ -5,10 +5,14 @@
 """ Make the transition matrix. """
 function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{Float64}
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
-    A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]; -ones(nD2) * p[4]], -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; ones(nD1-1) * p[3] ; ones(nD2) * p[4]])
+    A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]; -ones(nD2) * p[4]], 
+             -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2] ; ones(nD1+1) * p[3]; ones(nD2-1) * p[4]])
+
     A[1, nG1+nG2] = 2 * p[2]
-    A[nG1+nG2+1, 1:nG1] = p[3]
-    A[nG1+nG2+nD1+1, (nG1+1):(nG1+nG2)] = p[4]
+    A[nG1+nG2+1, nG1+nG2] = 0.0
+    A[nG1+nG2+nD1+1, nG1+nG2+nD1] = 0.0
+    A[nG1+nG2+1, 1:nG1] .= p[3]
+    A[nG1+nG2+nD1+1, (nG1+1):(nG1+nG2)] .= p[4]
 
     rmul!(A, dt)
     A = LinearAlgebra.exp!(A)
