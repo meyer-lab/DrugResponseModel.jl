@@ -34,7 +34,7 @@ function predict(p, g1_0::Real, g2_0::Real, t, nG1::Integer, nG2::Integer, nD1, 
 
     for ii = 1:length(G1)
         G1[ii] = sum(v[1:nG1]) + sum(v[(nG1+nG2+1):(nG1+nG2+nD1)])
-        G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1+nG2+D1+1):(nG1+nG2+nD1+nD2)])
+        G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1+nG2+nD1+1):(nG1+nG2+nD1+nD2)])
 
         v = A * v
     end
@@ -120,7 +120,7 @@ end
 function plotPercentage(params::Vector, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop, i::Int, title::String, legend::Any, ymax)
     t = LinRange(0.0, 95.5, 192)
     t_new = LinRange(0.0, 120, 200)
-    G1, G2 = predict(params, g1_0[i], g2_0[i], t_new, Int(floor(params[6])), Int(floor(params[7])))
+    G1, G2 = predict(params, g1_0[i], g2_0[i], t_new, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
 
     plot(
         t_new,
