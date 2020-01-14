@@ -6,11 +6,9 @@
 function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{Float64}
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
     A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]; -ones(nD2) * p[4]], 
-             -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2] ; ones(nD1+1) * p[3]; ones(nD2-1) * p[4]])
+             -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2] ; 0.0; ones(nD1-1) * p[3] ;0.0; ones(nD2-1) * p[4]])
 
     A[1, nG1+nG2] = 2 * p[2]
-    A[nG1+nG2+1, nG1+nG2] = 0.0
-    A[nG1+nG2+nD1+1, nG1+nG2+nD1] = 0.0
     A[nG1+nG2+1, 1:nG1] .= p[3]
     A[nG1+nG2+nD1+1, (nG1+1):(nG1+nG2)] .= p[4]
 
@@ -26,7 +24,7 @@ function predict(p, g1_0::Real, g2_0::Real, t, nG1::Integer, nG2::Integer, nD1, 
     # Some assumptions
     @assert t[1] == 0.0
 
-    v = [ones(nG1) * p[5] * (g1_0 + g2_0) / (nG1+nD1); ones(nG2) * (1.0 - p[5]) * (g1_0 + g2_0) / (nG2+nD2); ones(nD1) * p[5] * (g1_0 + g2_0) / (nG1+nD1); ones(nD2)* (1-p[5]) * (g1_0 + g2_0) / (nG2+nD2)]
+    v = zeros(nG1+nG2+nD1+nD2)
     A = ODEjac(p, t[2], nG1, nG2, nD1, nD2)
 
     G1 = Vector{eltype(p)}(undef, length(t))
@@ -45,8 +43,7 @@ end
 
 """ Calculates the cost function for a given set of parameters. """
 function cost(p, g1_0::Real, g2_0::Real, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
-    v = [ones(nG1) * p[5] * (g1_0 + g2_0) / (nG1+nD1); ones(nG2) * (1.0 - p[5]) * (g1_0 + g2_0) / (nG2+nD2); ones(nD1) * p[5] * (g1_0 + g2_0) / (nG1+nD1); ones(nD2)* (1-p[5]) * (g1_0 + g2_0) / (nG2+nD2)]
-
+    v = zeros(nG1+nG2+nD1+nD2)
     temp = similar(v)
     A = ODEjac(p, 0.5, nG1, nG2, nD1, nD2)
 
