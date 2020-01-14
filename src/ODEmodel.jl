@@ -52,8 +52,8 @@ function cost(p, g1_0::Real, g2_0::Real, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
 
     cost = 0.0
     for ii = 1:length(g1)
-        @inbounds cost += (sum(view(v, 1:nG1)) - g1[ii])^2
-        @inbounds cost += (sum(view(v, (nG1 + 1):(nG1 + nG2))) - g2[ii])^2
+        @inbounds cost += (sum(view(v, (1:nG1)) .+ sum((view(v, nG1+nG2+1:nG1+nG2+nD1)))) - g1[ii])^2
+        @inbounds cost += (sum(view(v, (nG1 + 1):(nG1 + nG2)) .+ sum(view(v, nG1+nG2+nD1+1:nG1+nG2+nD1+nD2))) - g2[ii])^2
 
         @inbounds LinearAlgebra.mul!(temp, A, v)
         @inbounds copyto!(v, temp)
