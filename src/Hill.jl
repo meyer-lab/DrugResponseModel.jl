@@ -35,7 +35,7 @@ function optimize_hill(
 )
     hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2, g1_0, g2_0)
 
-    low = [minimum(conc_l), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.45, 2, 10, 1, 1]
+    low = [minimum(conc_l), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.45, 2, 10, 0, 0]
     high = [maximum(conc_l), 3.0, 3.0, 10.0, 3.0, 3.0, 1.0, 1.0, 0.55, 60, 180, 50, 50]
 
     results_ode = bboptimize(
