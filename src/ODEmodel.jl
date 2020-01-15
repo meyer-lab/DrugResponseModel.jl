@@ -13,9 +13,11 @@ function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2:
     A[nG1+nG2+nD1+1, (nG1+1):(nG1+nG2)] = p[4] * ones(1, nG2)
 
     rmul!(A, dt)
-    @assert A[1:nG1+nG2, nG1+nG2+1:end] == zeros(nG1+nG2, nD1+nD2)
+
+    @assert all(A[1:nG1+nG2, nG1+nG2+1:end] .== 0.0)
     @assert A[nG1+nG2+nD1+1, nG1+nG2+nD1] == 0.0
-    @assert A[nG1+nG2+1:nG1+nG2+nD1, nG1+nG2+nD1+1:end]== zeros(nD1, nD2)
+    @assert all(A[nG1+nG2+1:nG1+nG2+nD1, nG1+nG2+nD1+1:end] .== 0.0)
+
     A = LinearAlgebra.exp!(A)
 
     return A
@@ -46,17 +48,10 @@ end
 
 """ Calculates the cost function for a given set of parameters. """
 function cost(p, g1_0::Real, g2_0::Real, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
-
     t = LinRange(0.0, 95.5, 192)
     G1, G2 = predict(p, g1_0, g2_0, t, nG1, nG2, nD1, nD2)
 
-    cost = 0.0
-    for ii = 1:length(g1)
-        cost += (G1[ii] - g1[ii])^2
-        cost += (G2[ii] - g2[ii])^2
-    end
-
-    return cost
+    return sum((G1 - g1)^2 + (G2 - g2)^2)
 end
 
 
