@@ -36,7 +36,7 @@ function optimize_hill(
     hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2, g1_0, g2_0)
 
     function g!(G, hillParams)
-        Calculus.finite_difference!(hillCost, hillParams, G, :central)
+        G[:] .= gradient(hillCost, hillParams)
     end
 
     low = [minimum(conc_l), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.45, 2, 10, 1, 1]

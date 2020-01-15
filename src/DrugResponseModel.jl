@@ -9,7 +9,7 @@ using BlackBoxOptim
 using LinearAlgebra
 using Base.Threads
 using Optim
-import Calculus
+using Zygote
 
 include("importData.jl")
 include("ODEmodel.jl")
