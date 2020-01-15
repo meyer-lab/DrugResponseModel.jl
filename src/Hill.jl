@@ -18,7 +18,7 @@ function residHill(
 
     # Solve each concentration separately
     @threads for ii = 1:length(concentrations)
-        atomic_add!(res, cost(params[1:5, ii], g1_0[ii], g2_0[ii], g1[:, ii], g2[:, ii], Int(floor(params[6, ii])), Int(floor(params[7, ii]))))
+        atomic_add!(res, cost(params[1:5, ii], g1_0[ii], g2_0[ii], g1[:, ii], g2[:, ii], Int(floor(params[6, ii])), Int(floor(params[7, ii])), Int(floor(params[8, ii])), Int(floor(params[9, ii]))))
     end
 
     return res[]
@@ -35,8 +35,8 @@ function optimize_hill(
 )
     hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2, g1_0, g2_0)
 
-    low = [minimum(conc_l), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.45, 2, 10]
-    high = [maximum(conc_l), 3.0, 3.0, 10.0, 3.0, 3.0, 1.0, 1.0, 0.55, 60, 180]
+    low = [minimum(conc_l), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.45, 2, 10, 1, 1]
+    high = [maximum(conc_l), 3.0, 3.0, 10.0, 3.0, 3.0, 1.0, 1.0, 0.55, 60, 180, 50, 50]
 
     results_ode = bboptimize(
         hillCost;
@@ -52,7 +52,7 @@ end
 
 """ A function to convert the estimated hill parameters back to ODE parameters. """
 function getODEparams(p::Vector, concentrations::Vector{Float64})
-    effects = Matrix{eltype(p)}(undef, 7, 8)
+    effects = Matrix{eltype(p)}(undef, 9, 8)
 
     # Scaled drug effect
     xx = 1.0 ./ (1.0 .+ (p[1] ./ concentrations) .^ p[4])
@@ -65,6 +65,8 @@ function getODEparams(p::Vector, concentrations::Vector{Float64})
     effects[5, :] .= p[9]
     effects[6, :] .= floor(p[10])
     effects[7, :] .= floor(p[11])
+    effects[8, :] .= floor(p[12])
+    effects[9, :] .= floor(p[13])
 
     return effects
 end
