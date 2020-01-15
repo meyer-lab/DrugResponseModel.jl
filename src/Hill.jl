@@ -35,6 +35,10 @@ function optimize_hill(
 )
     hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2, g1_0, g2_0)
 
+    function g!(G, hillParams)
+        Calculus.finite_difference!(hillCost, hillParams, G, :central)
+    end
+
     low = [minimum(conc_l), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.45, 2, 10, 1, 1]
     high = [maximum(conc_l), 3.0, 3.0, 10.0, 3.0, 3.0, 1.0, 1.0, 0.55, 60, 180, 50, 50]
 
@@ -47,7 +51,9 @@ function optimize_hill(
         MaxSteps = maxstep,
     )
 
-    return best_fitness(results_ode), best_candidate(results_ode)
+    results = optimize(hillCost, g!, low, high, best_candidate(results_ode), Fminbox(GradientDescent()), Optim.Options(iterations = 10, show_trace = true))
+
+    return minimum(results), minimizer(results)
 end
 
 """ A function to convert the estimated hill parameters back to ODE parameters. """
