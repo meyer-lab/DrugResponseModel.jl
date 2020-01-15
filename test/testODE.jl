@@ -7,7 +7,7 @@
 
     # ODE optimization and estimation of the parameters
     fitness, params_ode = ODEoptimizer(4, g1, g2, g1_0, g2_0)
-#     @test fitness < 800.0
+    @test fitness < 800.0
 
     @time DrugResponseModel.cost(p, g1_0[1], g2_0[1], g1[:, 1], g2[:, 1], 100, 100, 20, 20)
 

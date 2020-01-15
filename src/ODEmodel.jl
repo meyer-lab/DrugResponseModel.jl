@@ -27,7 +27,7 @@ function predict(p, g1_0::Real, g2_0::Real, t, nG1::Integer, nG2::Integer, nD1, 
     # Some assumptions
     @assert t[1] == 0.0
 
-    v = zeros(nG1+nG2+nD1+nD2)
+    v = [ones(nG1) * p[5] * (g1_0 + g2_0) / nG1; ones(nG2) * (1.0 - p[5]) * (g1_0 + g2_0) / nG2; zeros(nD1); zeros(nD2)]
     A = ODEjac(p, t[2], nG1, nG2, nD1, nD2)
 
     G1 = Vector{eltype(p)}(undef, length(t))
@@ -46,17 +46,14 @@ end
 
 """ Calculates the cost function for a given set of parameters. """
 function cost(p, g1_0::Real, g2_0::Real, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
-    v = zeros(nG1+nG2+nD1+nD2)
-    temp = similar(v)
-    A = ODEjac(p, 0.5, nG1, nG2, nD1, nD2)
+
+    t = LinRange(0.0, 95.5, 192)
+    G1, G2 = predict(p, g1_0, g2_0, t, nG1, nG2, nD1, nD2)
 
     cost = 0.0
     for ii = 1:length(g1)
-        @inbounds cost += (sum(view(v, (1:nG1)) .+ sum((view(v, nG1+nG2+1:nG1+nG2+nD1)))) - g1[ii])^2
-        @inbounds cost += (sum(view(v, (nG1 + 1):(nG1 + nG2)) .+ sum(view(v, nG1+nG2+nD1+1:nG1+nG2+nD1+nD2))) - g2[ii])^2
-
-        @inbounds LinearAlgebra.mul!(temp, A, v)
-        @inbounds copyto!(v, temp)
+        cost += (G1[ii] - g1[ii])^2
+        cost += (G2[ii] - g2[ii])^2
     end
 
     return cost
