@@ -51,7 +51,7 @@ function cost(p, g1_0::Real, g2_0::Real, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
     t = LinRange(0.0, 95.5, 192)
     G1, G2 = predict(p, g1_0, g2_0, t, nG1, nG2, nD1, nD2)
 
-    return sum((G1 - g1)^2 + (G2 - g2)^2)
+    return sum((G1 - g1).^2.0 + (G2 - g2).^2.0)
 end
 
 
