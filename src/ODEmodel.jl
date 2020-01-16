@@ -5,18 +5,20 @@
 """ Make the transition matrix. """
 function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{Float64}
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
-    A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]; -ones(nD2) * p[4]], 
-             -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2] ; 0.0; ones(nD1-1) * p[3] ;0.0 ; ones(nD2-1) * p[4]])
+    A = diagm(
+        0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]; -ones(nD2) * p[4]],
+        -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; 0.0; ones(nD1 - 1) * p[3]; 0.0; ones(nD2 - 1) * p[4]],
+    )
 
-    A[1, nG1+nG2] = 2 * p[2]
-    A[nG1+nG2+1, 1:nG1] = p[3] * ones(1, nG1)
-    A[nG1+nG2+nD1+1, (nG1+1):(nG1+nG2)] = p[4] * ones(1, nG2)
+    A[1, nG1 + nG2] = 2 * p[2]
+    A[nG1 + nG2 + 1, 1:nG1] = p[3] * ones(1, nG1)
+    A[nG1 + nG2 + nD1 + 1, (nG1 + 1):(nG1 + nG2)] = p[4] * ones(1, nG2)
 
     rmul!(A, dt)
 
-    @assert all(A[1:nG1+nG2, nG1+nG2+1:end] .== 0.0)
-    @assert A[nG1+nG2+nD1+1, nG1+nG2+nD1] == 0.0
-    @assert all(A[nG1+nG2+1:nG1+nG2+nD1, nG1+nG2+nD1+1:end] .== 0.0)
+    @assert all(A[1:(nG1 + nG2), (nG1 + nG2 + 1):end] .== 0.0)
+    @assert A[nG1 + nG2 + nD1 + 1, nG1 + nG2 + nD1] == 0.0
+    @assert all(A[(nG1 + nG2 + 1):(nG1 + nG2 + nD1), (nG1 + nG2 + nD1 + 1):end] .== 0.0)
 
     A = LinearAlgebra.exp!(A)
 
@@ -36,8 +38,8 @@ function predict(p, g1_0::Real, g2_0::Real, t, nG1::Integer, nG2::Integer, nD1, 
     G2 = Vector{eltype(p)}(undef, length(t))
 
     for ii = 1:length(G1)
-        G1[ii] = sum(v[1:nG1]) + sum(v[(nG1+nG2+1):(nG1+nG2+nD1)])
-        G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1+nG2+nD1+1):(nG1+nG2+nD1+nD2)])
+        G1[ii] = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
+        G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
 
         v = A * v
     end
@@ -51,7 +53,7 @@ function cost(p, g1_0::Real, g2_0::Real, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
     t = LinRange(0.0, 95.5, 192)
     G1, G2 = predict(p, g1_0, g2_0, t, nG1, nG2, nD1, nD2)
 
-    return sum((G1 - g1).^2.0 + (G2 - g2).^2.0)
+    return sum((G1 - g1) .^ 2.0 + (G2 - g2) .^ 2.0)
 end
 
 
