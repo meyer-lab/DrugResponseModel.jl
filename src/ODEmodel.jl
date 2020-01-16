@@ -13,7 +13,7 @@ function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2:
         A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]; -ones(nD2) * p[4]], 
                  -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2] ; 0.0; ones(nD2-1) * p[4]])
 
-    elseif nD1 =!0 & nD2 == 0
+    elseif nD1 !=0 & nD2 == 0
         A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]; -ones(nD2) * p[4]], 
                  -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2] ; 0.0; ones(nD1-1) * p[3]])
 
@@ -63,7 +63,7 @@ function predict(p, g1_0::Real, g2_0::Real, t, nG1::Integer, nG2::Integer, nD1, 
 
             v = A * v
         end
-    elseif nD1 =!0 & nD2 == 0
+    elseif nD1 !=0 & nD2 == 0
         for ii = 1:length(G1)
             G1[ii] = sum(v[1:nG1])
             G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1+nG2+nD1+1):(nG1+nG2+nD1+nD2)])
