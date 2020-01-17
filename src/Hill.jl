@@ -18,7 +18,20 @@ function residHill(
 
     # Solve each concentration separately
     @threads for ii = 1:length(concentrations)
-        atomic_add!(res, cost(params[1:5, ii], g1_0[ii], g2_0[ii], g1[:, ii], g2[:, ii], Int(floor(params[6, ii])), Int(floor(params[7, ii])), Int(floor(params[8, ii])), Int(floor(params[9, ii]))))
+        atomic_add!(
+            res,
+            cost(
+                params[1:5, ii],
+                g1_0[ii],
+                g2_0[ii],
+                g1[:, ii],
+                g2[:, ii],
+                Int(floor(params[6, ii])),
+                Int(floor(params[7, ii])),
+                Int(floor(params[8, ii])),
+                Int(floor(params[9, ii])),
+            ),
+        )
     end
 
     return res[]
