@@ -8,8 +8,6 @@ using Measures
 using BlackBoxOptim
 using LinearAlgebra
 using Base.Threads
-using Optim
-using Zygote
 
 include("importData.jl")
 include("ODEmodel.jl")
