@@ -6,22 +6,21 @@
 function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{Float64}
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
     if nD1 == 0 & nD2 == 0
-        A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2])], -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]])
+        A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2])],
+                 -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]])
         A[1, end] = 2 * p[2]
 
     elseif nD1 == 0 & nD2 != 0
-        A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]; -ones(nD2) * p[4]], 
+        A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]);  -ones(nD2) * p[4]], 
                  -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2] ; 0.0; ones(nD2-1) * p[4]])
         A[1, nG1+nG2] = 2 * p[2]
-        A[nG1+nG2+1, 1:nG1] = p[3] * ones(1, nG1)
-        A[nG1+nG2+nD1+1, (nG1+1):(nG1+nG2)] = p[4] * ones(1, nG2)
+        A[nG1+nG2+1, (nG1+1):(nG1+nG2)] = p[4] * ones(1, nG2)
 
     elseif nD1 !=0 & nD2 == 0
-        A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]; -ones(nD2) * p[4]], 
+        A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]], 
                  -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2] ; 0.0; ones(nD1-1) * p[3]])
         A[1, nG1+nG2] = 2 * p[2]
         A[nG1+nG2+1, 1:nG1] = p[3] * ones(1, nG1)
-        A[nG1+nG2+nD1+1, (nG1+1):(nG1+nG2)] = p[4] * ones(1, nG2)
 
     else 
         A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]; -ones(nD2) * p[4]], 
@@ -65,16 +64,16 @@ function predict(p, g1_0::Real, g2_0::Real, t, nG1::Integer, nG2::Integer, nD1, 
     elseif nD1 == 0 & nD2 != 0
         v = [ones(nG1) * p[5] * (g1_0 + g2_0) / nG1; ones(nG2) * (1.0 - p[5]) * (g1_0 + g2_0) / nG2; zeros(nD2)]
         for ii = 1:length(G1)
-            G1[ii] = sum(v[1:nG1]) + sum(v[(nG1+nG2+1):(nG1+nG2+nD1)])
-            G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)])
+            G1[ii] = sum(v[1:nG1]) 
+            G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2 + nD2)])
 
             v = A * v
         end
-    elseif nD1 !=0 & nD2 == 0
+    elseif nD1 != 0 & nD2 == 0
         v = [ones(nG1) * p[5] * (g1_0 + g2_0) / nG1; ones(nG2) * (1.0 - p[5]) * (g1_0 + g2_0) / nG2; zeros(nD1)]
         for ii = 1:length(G1)
-            G1[ii] = sum(v[1:nG1])
-            G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1+nG2+nD1+1):(nG1+nG2+nD1+nD2)])
+            G1[ii] = sum(v[1:nG1]) + sum(v[(nG1+nG2+1):(nG1+nG2+nD1)])
+            G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) 
 
             v = A * v
         end
@@ -92,7 +91,7 @@ end
 
 
 """ Calculates the cost function for a given set of parameters. """
-function cost(p, g1_0::Real, g2_0::Real, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
+function cost(p, g1_0::Real, g2_0::Real, g1, g2, nG1::Int, nG2::Int, nD1::Int, nD2::Int)
     t = LinRange(0.0, 95.5, 192)
     G1, G2 = predict(p, g1_0, g2_0, t, nG1, nG2, nD1, nD2)
 
@@ -104,7 +103,7 @@ end
 function ODEoptimizer(i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
     residuals(p) = cost(p, g1_0[i], g2_0[i], g1[:, i], g2[:, i], Int(floor(p[6])), Int(floor(p[7])), Int(floor(p[8])), Int(floor(p[9])))
     # lower and upper bounds for the parameters
-    lower = [0.0, 0.0, 0.0, 0.0, 0.0, 1, 1, 1, 1]
+    lower = [0.0, 0.0, 0.0, 0.0, 0.0, 1, 1, 0, 0]
     upper = [3.0, 3.0, 3.0, 3.0, 1.0, 70, 70, 70, 70]
     bound = collect(zip(lower, upper))
 
