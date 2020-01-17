@@ -13,28 +13,19 @@ function residHill(
     g1_0::Vector{Float64},
     g2_0::Vector{Float64},
 )::Float64
-    res = Atomic{eltype(hillParams)}(0.0)
+    res = 0.0
     params = getODEparams(hillParams, concentrations)
 
     # Solve each concentration separately
-    @threads for ii = 1:length(concentrations)
-        atomic_add!(
-            res,
-            cost(
-                params[1:5, ii],
-                g1_0[ii],
-                g2_0[ii],
-                g1[:, ii],
-                g2[:, ii],
-                Int(floor(params[6, ii])),
-                Int(floor(params[7, ii])),
-                Int(floor(params[8, ii])),
-                Int(floor(params[9, ii])),
-            ),
-        )
+    for ii = 1:length(concentrations)
+        res += cost(params[1:5, ii], g1_0[ii], g2_0[ii], g1[:, ii], g2[:, ii],
+                    Int(floor(params[6, ii])),
+                    Int(floor(params[7, ii])),
+                    Int(floor(params[8, ii])),
+                    Int(floor(params[9, ii])))
     end
 
-    return res[]
+    return res
 end
 
 """ Hill optimization function. """
