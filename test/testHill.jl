@@ -8,6 +8,8 @@
 
     Profile.print(noisefloor = 5.0)
 
+    outt = DrugResponseModel.residHillG(params, conc, g1, g2, g1_0, g2_0)
+
     # Check that these at least run
     effects = getODEparams(params, conc)
 end

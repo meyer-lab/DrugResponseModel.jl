@@ -35,18 +35,14 @@ end
 function residHillG(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::Matrix, g1_0::Vector, g2_0::Vector)
     # Calculate the continuous parameters with central differencing.
     # Special strategy for integer parameters.
+    hillCost(x) = residHill(x, concentrations, g1, g2, g1_0, g2_0)
+
+    return Calculus.finite_difference(hillCost, hillParams)
 end
 
 
 """ Hill optimization function. """
-function optimize_hill(
-    conc_l::Array{Float64, 1},
-    g1::Array{Float64, 2},
-    g2::Array{Float64, 2},
-    g1_0::Array{Float64, 1},
-    g2_0::Array{Float64, 1};
-    maxstep = 1E5,
-)
+function optimize_hill(conc_l::Vector, g1::Matrix, g2::Matrix, g1_0::Vector, g2_0::Vector; maxstep = 1E5)
     hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2, g1_0, g2_0)
 
     low = [minimum(conc_l), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.45, 2, 10, 1, 1]
