@@ -111,10 +111,10 @@ function ODEplot_all(params_ode, g1_l::Matrix, g2_l::Matrix, pop_l, conc::Array{
     plot!(size = (900, 400), margin = 0.4cm, dpi = 200)
 end
 
-function plotPercentage(params::Vector, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop, i::Int, title::String, legend::Any, ymax)
+function plotPercentage(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, title::String, legend::Any, ymax)
     t = LinRange(0.0, 95.5, 192)
     t_new = LinRange(0.0, 120, 200)
-    G1, G2 = predict(params, g1_0[i], g2_0[i], t_new, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
+    G1, G2 = predict(params, g1[1] + g2[1], t_new, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
 
     plot(
         t_new,
