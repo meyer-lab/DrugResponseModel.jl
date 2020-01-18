@@ -5,14 +5,7 @@ This file fits Hill function to the parameters.
 """ This functions takes in hill parameters for all the concentrations and calculates
 DDE parameters, passes them to residual function and based off of these, optimizes the model
 and estimates hill parameters. """
-function residHill(
-    hillParams::Vector,
-    concentrations::Vector{Float64},
-    g1::Matrix{Float64},
-    g2::Matrix{Float64},
-    g1_0::Vector{Float64},
-    g2_0::Vector{Float64},
-)::Float64
+function residHill(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::Matrix, g1_0::Vector, g2_0::Vector)
     res = Atomic{eltype(hillParams)}(0.0)
     params = getODEparams(hillParams, concentrations)
 
@@ -36,6 +29,14 @@ function residHill(
 
     return res[]
 end
+
+
+""" Gradient of the cost. """
+function residHillG(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::Matrix, g1_0::Vector, g2_0::Vector)
+    # Calculate the continuous parameters with central differencing.
+    # Special strategy for integer parameters.
+end
+
 
 """ Hill optimization function. """
 function optimize_hill(
