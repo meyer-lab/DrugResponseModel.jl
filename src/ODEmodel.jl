@@ -63,7 +63,7 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
         D2 = zeros(nD2)
     end
 
-    v = [ones(nG1) * p[5] * (g1_0 + g2_0) / nG1; ones(nG2) * (1.0 - p[5]) * (g1_0 + g2_0) / nG2; D1; D2]
+    v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
     if nD1 == 0 & nD2 == 0
         for ii = 1:length(G1)
             G1[ii] = sum(v[1:nG1])
