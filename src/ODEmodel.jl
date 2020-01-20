@@ -5,36 +5,23 @@
 """ Make the transition matrix. """
 function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{Float64}
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
-    
-    nG = nG1 + nG2
-    if nD1 == 0 & nD2 == 0
-        A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2])],
-                 -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]])
 
-    elseif nD1 == 0 & nD2 != 0
-        A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]);  -ones(nD2) * p[4]], 
-                 -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2] ; 0.0; ones(nD2-1) * p[4]])
-        A[nG+1, (nG1+1):(nG)] = p[4] * ones(1, nG2)
+    # TODO: Handle making the nD vectors (with empties) here.
 
-    elseif nD1 !=0 & nD2 == 0
-        A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]], 
-                 -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2] ; 0.0; ones(nD1-1) * p[3]])
-        A[nG+1, 1:nG1] = p[3] * ones(1, nG1)
+    A = diagm(
+        0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]; -ones(nD2) * p[4]],
+        -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; 0.0; ones(nD1 - 1) * p[3]; 0.0; ones(nD2 - 1) * p[4]],
+    )
 
-    else 
-        A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]; -ones(nD2) * p[4]], 
-                 -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2] ; 0.0; ones(nD1-1) * p[3] ;0.0 ; ones(nD2-1) * p[4]])
+    A[1, nG1 + nG2] = 2 * p[2]
+    A[nG1 + nG2 + 1, 1:nG1] = p[3] * ones(1, nG1)
+    A[nG1 + nG2 + nD1 + 1, (nG1 + 1):(nG1 + nG2)] = p[4] * ones(1, nG2)
 
-        A[nG+1, 1:nG1] = p[3] * ones(1, nG1)
-        A[nG+nD1+1, (nG1+1):(nG)] = p[4] * ones(1, nG2)
-
-        @assert all(A[1:nG, nG+1:end] .== 0.0)
-        @assert A[nG+nD1+1, nG+nD1] == 0.0
-        @assert all(A[nG+1:nG+nD1, nG+nD1+1:end] .== 0.0)
-    end
-
-    A[1, nG] = 2 * p[2]
     rmul!(A, dt)
+
+    @assert all(A[1:(nG1 + nG2), (nG1 + nG2 + 1):end] .== 0.0)
+    @assert A[nG1 + nG2 + nD1 + 1, nG1 + nG2 + nD1] == 0.0
+    @assert all(A[(nG1 + nG2 + 1):(nG1 + nG2 + nD1), (nG1 + nG2 + nD1 + 1):end] .== 0.0)
 
     A = LinearAlgebra.exp!(A)
 
@@ -46,11 +33,6 @@ end
 function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
     # Some assumptions
     @assert t[1] == 0.0
-
-    A = ODEjac(p, t[2], nG1, nG2, nD1, nD2)
-
-    G1 = Vector{eltype(p)}(undef, length(t))
-    G2 = Vector{eltype(p)}(undef, length(t))
 
     if nD1 == 0
         D1 = []
@@ -64,41 +46,23 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
     end
 
     v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
-    if nD1 == 0 & nD2 == 0
-        for ii = 1:length(G1)
-            G1[ii] = sum(v[1:nG1])
-            G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)])
+    A = ODEjac(p, t[2], nG1, nG2, nD1, nD2)
 
-            v = A * v
-        end
-    elseif nD1 == 0 & nD2 != 0
-        for ii = 1:length(G1)
-            G1[ii] = sum(v[1:nG1]) 
-            G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2 + nD2)])
+    G1 = Vector{eltype(p)}(undef, length(t))
+    G2 = Vector{eltype(p)}(undef, length(t))
 
-            v = A * v
-        end
-    elseif nD1 != 0 & nD2 == 0
-        for ii = 1:length(G1)
-            G1[ii] = sum(v[1:nG1]) + sum(v[(nG1+nG2+1):(nG1+nG2+nD1)])
-            G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) 
+    for ii = 1:length(G1)
+        G1[ii] = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
+        G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
 
-            v = A * v
-        end
-    else
-        for ii = 1:length(G1)
-            G1[ii] = sum(v[1:nG1]) + sum(v[(nG1+nG2+1):(nG1+nG2+nD1)])
-            G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1+nG2+nD1+1):(nG1+nG2+nD1+nD2)])
-
-            v = A * v
-        end
+        v = A * v
     end
+
     return G1, G2
 end
 
 
 """ Calculates the cost function for a given set of parameters. """
-
 function cost(p, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
     t = LinRange(0.0, 95.5, 192)
     G1, G2 = predict(p, g1[1] + g2[1], t, nG1, nG2, nD1, nD2)
