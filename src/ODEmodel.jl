@@ -10,7 +10,7 @@ function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2:
     if nD1 == 0
         D1 = []
     elseif nD1 == 1
-        D1 = p[3]
+        D1 = 0.0
     else
         D1 = [ 0.0; ones(nD1 - 1) * p[3] ]
     end
@@ -18,14 +18,14 @@ function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2:
     if nD2 == 0
         D2 = []
     elseif nD2 == 1
-        D2 = p[4]
+        D2 = 0.0
     else
         D2 = [0.0; ones(nD2 - 1) * p[4] ]
     end
 
     A = diagm(
         0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]; -ones(nD2) * p[4]],
-        -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; D1; D2],
+        -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; D1; D2]
     )
 
     A[1, nG1 + nG2] = 2 * p[2]
@@ -34,10 +34,11 @@ function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2:
 
     rmul!(A, dt)
 
-    @assert all(A[1:(nG1 + nG2), (nG1 + nG2 + 1):end] .== 0.0)
-    @assert A[nG1 + nG2 + nD1 + 1, nG1 + nG2 + nD1] == 0.0
-    @assert all(A[(nG1 + nG2 + 1):(nG1 + nG2 + nD1), (nG1 + nG2 + nD1 + 1):end] .== 0.0)
-
+    if nD1 & nD2 != 0
+        @assert all(A[1:(nG1 + nG2), (nG1 + nG2 + 1):end] .== 0.0)
+        @assert all(A[nG1+nG2+1, (nG1+1):(nG1+nG2)] .==0.0)
+        @assert all(A[nG1+nG2+nD1+1, 1:nG1] .== 0.0)
+    end
     A = LinearAlgebra.exp!(A)
 
     return A
