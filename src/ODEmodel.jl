@@ -76,7 +76,6 @@ end
 
 
 """ Calculates the cost function for a given set of parameters. """
-
 function cost(p, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
     t = LinRange(0.0, 95.5, 192)
     G1, G2 = predict(p, g1[1] + g2[1], t, nG1, nG2, nD1, nD2)
