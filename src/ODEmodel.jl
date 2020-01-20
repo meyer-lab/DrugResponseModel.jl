@@ -9,22 +9,28 @@ function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2:
     # TODO: Handle making the nD vectors (with empties) here.
     if nD1 == 0
         D1 = []
+        diagD1 = []
     elseif nD1 == 1
         D1 = 0.0
+        diagD1 = -ones(nD1) * p[3]
     else
         D1 = [ 0.0; ones(nD1 - 1) * p[3] ]
+        diagD1 = -ones(nD1) * p[3]
     end
 
     if nD2 == 0
         D2 = []
+        diagD2 = []
     elseif nD2 == 1
         D2 = 0.0
+        diagD2 = -ones(nD2) * p[4]
     else
         D2 = [0.0; ones(nD2 - 1) * p[4] ]
+        diagD2 = -ones(nD2) * p[4]
     end
 
     A = diagm(
-        0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]; -ones(nD2) * p[4]],
+        0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); diagD1; diagD2],
         -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; D1; D2]
     )
 
