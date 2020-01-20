@@ -27,14 +27,14 @@ function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2:
 
         A[nG+1, 1:nG1] = p[3] * ones(1, nG1)
         A[nG+nD1+1, (nG1+1):(nG)] = p[4] * ones(1, nG2)
-
-        @assert all(A[1:nG, nG+1:end] .== 0.0)
-        @assert A[nG+nD1+1, nG+nD1] == 0.0
-        @assert all(A[nG+1:nG+nD1, nG+nD1+1:end] .== 0.0)
     end
 
     A[1, nG] = 2 * p[2]
     rmul!(A, dt)
+        
+    @assert all(A[1:(nG1 + nG2), (nG1 + nG2 + 1):end] .== 0.0)
+    @assert A[nG1 + nG2 + nD1 + 1, nG1 + nG2 + nD1] == 0.0
+    @assert all(A[(nG1 + nG2 + 1):(nG1 + nG2 + nD1), (nG1 + nG2 + nD1 + 1):end] .== 0.0)
 
     A = LinearAlgebra.exp!(A)
 
