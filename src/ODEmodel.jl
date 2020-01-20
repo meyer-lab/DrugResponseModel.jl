@@ -47,11 +47,6 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
     # Some assumptions
     @assert t[1] == 0.0
 
-    A = ODEjac(p, t[2], nG1, nG2, nD1, nD2)
-
-    G1 = Vector{eltype(p)}(undef, length(t))
-    G2 = Vector{eltype(p)}(undef, length(t))
-
     if nD1 == 0
         D1 = []
     else
@@ -64,6 +59,10 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
     end
 
     v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
+    A = ODEjac(p, t[2], nG1, nG2, nD1, nD2)
+
+    G1 = Vector{eltype(p)}(undef, length(t))
+    G2 = Vector{eltype(p)}(undef, length(t))
 
     for ii = 1:length(G1)
         G1[ii] = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
