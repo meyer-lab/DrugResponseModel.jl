@@ -5,36 +5,35 @@
 """ Make the transition matrix. """
 function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{Float64}
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
+    
+    nG = nG1 + nG2
     if nD1 == 0 & nD2 == 0
         A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2])],
                  -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]])
-        A[1, end] = 2 * p[2]
 
     elseif nD1 == 0 & nD2 != 0
         A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]);  -ones(nD2) * p[4]], 
                  -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2] ; 0.0; ones(nD2-1) * p[4]])
-        A[1, nG1+nG2] = 2 * p[2]
-        A[nG1+nG2+1, (nG1+1):(nG1+nG2)] = p[4] * ones(1, nG2)
+        A[nG+1, (nG1+1):(nG)] = p[4] * ones(1, nG2)
 
     elseif nD1 !=0 & nD2 == 0
         A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]], 
                  -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2] ; 0.0; ones(nD1-1) * p[3]])
-        A[1, nG1+nG2] = 2 * p[2]
-        A[nG1+nG2+1, 1:nG1] = p[3] * ones(1, nG1)
+        A[nG+1, 1:nG1] = p[3] * ones(1, nG1)
 
     else 
         A = diagm(0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]; -ones(nD2) * p[4]], 
                  -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2] ; 0.0; ones(nD1-1) * p[3] ;0.0 ; ones(nD2-1) * p[4]])
 
-        A[1, nG1+nG2] = 2 * p[2]
-        A[nG1+nG2+1, 1:nG1] = p[3] * ones(1, nG1)
-        A[nG1+nG2+nD1+1, (nG1+1):(nG1+nG2)] = p[4] * ones(1, nG2)
+        A[nG+1, 1:nG1] = p[3] * ones(1, nG1)
+        A[nG+nD1+1, (nG1+1):(nG)] = p[4] * ones(1, nG2)
 
-        @assert all(A[1:nG1+nG2, nG1+nG2+1:end] .== 0.0)
-        @assert A[nG1+nG2+nD1+1, nG1+nG2+nD1] == 0.0
-        @assert all(A[nG1+nG2+1:nG1+nG2+nD1, nG1+nG2+nD1+1:end] .== 0.0)
+        @assert all(A[1:nG, nG+1:end] .== 0.0)
+        @assert A[nG+nD1+1, nG+nD1] == 0.0
+        @assert all(A[nG+1:nG+nD1, nG+nD1+1:end] .== 0.0)
     end
 
+    A[1, nG] = 2 * p[2]
     rmul!(A, dt)
 
     A = LinearAlgebra.exp!(A)
@@ -53,8 +52,19 @@ function predict(p, g1_0::Real, g2_0::Real, t, nG1::Integer, nG2::Integer, nD1, 
     G1 = Vector{eltype(p)}(undef, length(t))
     G2 = Vector{eltype(p)}(undef, length(t))
 
+    if nD1 == 0
+        D1 = []
+    else
+        D1 = zeros(nD1)
+    end
+    if nD2 == 0
+        D2 = []
+    else
+        D2 = zeros(nD2)
+    end
+
+    v = [ones(nG1) * p[5] * (g1_0 + g2_0) / nG1; ones(nG2) * (1.0 - p[5]) * (g1_0 + g2_0) / nG2; D1; D2]
     if nD1 == 0 & nD2 == 0
-        v = [ones(nG1) * p[5] * (g1_0 + g2_0) / nG1; ones(nG2) * (1.0 - p[5]) * (g1_0 + g2_0) / nG2]
         for ii = 1:length(G1)
             G1[ii] = sum(v[1:nG1])
             G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)])
@@ -62,7 +72,6 @@ function predict(p, g1_0::Real, g2_0::Real, t, nG1::Integer, nG2::Integer, nD1, 
             v = A * v
         end
     elseif nD1 == 0 & nD2 != 0
-        v = [ones(nG1) * p[5] * (g1_0 + g2_0) / nG1; ones(nG2) * (1.0 - p[5]) * (g1_0 + g2_0) / nG2; zeros(nD2)]
         for ii = 1:length(G1)
             G1[ii] = sum(v[1:nG1]) 
             G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2 + nD2)])
@@ -70,7 +79,6 @@ function predict(p, g1_0::Real, g2_0::Real, t, nG1::Integer, nG2::Integer, nD1, 
             v = A * v
         end
     elseif nD1 != 0 & nD2 == 0
-        v = [ones(nG1) * p[5] * (g1_0 + g2_0) / nG1; ones(nG2) * (1.0 - p[5]) * (g1_0 + g2_0) / nG2; zeros(nD1)]
         for ii = 1:length(G1)
             G1[ii] = sum(v[1:nG1]) + sum(v[(nG1+nG2+1):(nG1+nG2+nD1)])
             G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) 
@@ -78,7 +86,6 @@ function predict(p, g1_0::Real, g2_0::Real, t, nG1::Integer, nG2::Integer, nD1, 
             v = A * v
         end
     else
-        v = [ones(nG1) * p[5] * (g1_0 + g2_0) / nG1; ones(nG2) * (1.0 - p[5]) * (g1_0 + g2_0) / nG2; zeros(nD1); zeros(nD2)]
         for ii = 1:length(G1)
             G1[ii] = sum(v[1:nG1]) + sum(v[(nG1+nG2+1):(nG1+nG2+nD1)])
             G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1+nG2+nD1+1):(nG1+nG2+nD1+nD2)])
