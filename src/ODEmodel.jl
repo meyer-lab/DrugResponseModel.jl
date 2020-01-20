@@ -44,7 +44,7 @@ end
 
 
 """ Predicts the model given a set of parametrs. """
-function predict(p, g1_0::Real, g2_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
+function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
     # Some assumptions
     @assert t[1] == 0.0
 
@@ -91,17 +91,18 @@ end
 
 
 """ Calculates the cost function for a given set of parameters. """
-function cost(p, g1_0::Real, g2_0::Real, g1, g2, nG1::Int, nG2::Int, nD1::Int, nD2::Int)
-    t = LinRange(0.0, 95.5, 192)
-    G1, G2 = predict(p, g1_0, g2_0, t, nG1, nG2, nD1, nD2)
 
-    return sum((G1 - g1) .^ 2.0 + (G2 - g2) .^ 2.0)
+function cost(p, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
+    t = LinRange(0.0, 95.5, 192)
+    G1, G2 = predict(p, g1[1] + g2[1], t, nG1, nG2, nD1, nD2)
+
+    return norm(G1 - g1) + norm(G2 - g2)
 end
 
 
 """ Fit the ODE model to data. """
-function ODEoptimizer(i::Int, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array)
-    residuals(p) = cost(p, g1_0[i], g2_0[i], g1[:, i], g2[:, i], Int(floor(p[6])), Int(floor(p[7])), Int(floor(p[8])), Int(floor(p[9])))
+function ODEoptimizer(i::Int, g1::Matrix, g2::Matrix)
+    residuals(p) = cost(p, g1[:, i], g2[:, i], Int(floor(p[6])), Int(floor(p[7])), Int(floor(p[8])), Int(floor(p[9])))
     # lower and upper bounds for the parameters
     lower = [0.0, 0.0, 0.0, 0.0, 0.0, 1, 1, 0, 0]
     upper = [3.0, 3.0, 3.0, 3.0, 1.0, 70, 70, 70, 70]
@@ -116,10 +117,10 @@ end
 """ Given estimated parameters for each trial, solve the DDE model plot the predicted curve 
     for number of cells in G1, G2, or total, along with their corresponding real data,
     for a longer time which is 2 times of the original time (~195 hours) """
-function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop, i::Int, title::String, legend::Any, ymax)
+function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, title::String, legend::Any, ymax)
     t = LinRange(0.0, 95.5, 192)
     t_new = LinRange(0.0, 120, 200)
-    G1, G2 = predict(params, g1_0[i], g2_0[i], t_new, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
+    G1, G2 = predict(params, g1[1] + g2[1], t_new, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
 
     plot(
         t_new,
@@ -144,19 +145,19 @@ end
 
 
 """ Plot the data and curves for all concentrations. """
-function ODEplot_all(params_ode, g1_l::Matrix, g2_l::Matrix, g1_0_l::Array, g2_0_l::Array, pop_l, conc::Array{Float64, 1})
+function ODEplot_all(params_ode, g1_l::Matrix, g2_l::Matrix, pop_l, conc::Array{Float64, 1})
     # plotting the fitted curves
-    rl = [ode_plotIt(params_ode[:, i], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, i, string(conc[i], " nM"), false, 80.0) for i = 1:4]
-    r2 = [ode_plotIt(params_ode[:, i], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, i, string(conc[i], " nM"), false, 40.0) for i = 5:7]
-    r8 = ode_plotIt(params_ode[:, 8], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 8, string(conc[8], " nM"), :topleft, 40.0)
+    rl = [ode_plotIt(params_ode[:, i], g1_l, g2_l, pop_l, i, string(conc[i], " nM"), false, 80.0) for i = 1:4]
+    r2 = [ode_plotIt(params_ode[:, i], g1_l, g2_l, pop_l, i, string(conc[i], " nM"), false, 40.0) for i = 5:7]
+    r8 = ode_plotIt(params_ode[:, 8], g1_l, g2_l, pop_l, 8, string(conc[8], " nM"), :topleft, 40.0)
     plot(rl..., r2..., r8, layout = (2, 4))
     plot!(size = (900, 400), margin = 0.4cm, dpi = 200)
 end
 
-function plotPercentage(params::Vector, g1::Matrix, g2::Matrix, g1_0::Array, g2_0::Array, pop, i::Int, title::String, legend::Any, ymax)
+function plotPercentage(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, title::String, legend::Any, ymax)
     t = LinRange(0.0, 95.5, 192)
     t_new = LinRange(0.0, 120, 200)
-    G1, G2 = predict(params, g1_0[i], g2_0[i], t_new, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
+    G1, G2 = predict(params, g1[1] + g2[1], t_new, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
 
     plot(
         t_new,
@@ -186,10 +187,10 @@ function plotPercentage(params::Vector, g1::Matrix, g2::Matrix, g1_0::Array, g2_
     ylims!((0.0, ymax))
 end
 
-function ODEplot_allPerc(params_ode, g1_l::Matrix, g2_l::Matrix, g1_0_l::Array, g2_0_l::Array, pop_l, conc::Array{Float64, 1})
+function ODEplot_allPerc(params_ode, g1_l::Matrix, g2_l::Matrix, pop_l, conc::Array{Float64, 1})
     # plotting the fitted curves
-    rl = [plotPercentage(params_ode[:, i], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, i, string(conc[i], " nM"), false, 110.0) for i = 1:7]
-    r8 = plotPercentage(params_ode[:, 8], g1_l, g2_l, g1_0_l, g2_0_l, pop_l, 8, string(conc[8], " nM"), :topleft, 110.0)
+    rl = [plotPercentage(params_ode[:, i], g1_l, g2_l, pop_l, i, string(conc[i], " nM"), false, 110.0) for i = 1:7]
+    r8 = plotPercentage(params_ode[:, 8], g1_l, g2_l, pop_l, 8, string(conc[8], " nM"), :topleft, 110.0)
     plot(rl..., r8, layout = (2, 4))
     plot!(size = (900, 400), margin = 0.4cm, dpi = 200)
 end
