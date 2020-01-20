@@ -5,34 +5,31 @@
 """ Make the transition matrix. """
 function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{Float64}
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
-
-    # TODO: Handle making the nD vectors (with empties) here.
     if nD1 == 0
-        D1 = []
-        diagD1 = []
+        D1 = Float64[]
+        diagD1 = Float64[]
     elseif nD1 == 1
-        D1 = 0.0
+        D1 = [0.0]
         diagD1 = -ones(nD1) * p[3]
     else
-        D1 = [ 0.0; ones(nD1 - 1) * p[3] ]
+        D1 = [0.0; ones(nD1 - 1) * p[3]]
         diagD1 = -ones(nD1) * p[3]
     end
 
     if nD2 == 0
-        D2 = []
-        diagD2 = []
+        D2 = Float64[]
+        diagD2 = Float64[]
     elseif nD2 == 1
-        D2 = 0.0
+        D2 = [0.0]
         diagD2 = -ones(nD2) * p[4]
     else
-        D2 = [0.0; ones(nD2 - 1) * p[4] ]
+        D2 = [0.0; ones(nD2 - 1) * p[4]]
         diagD2 = -ones(nD2) * p[4]
     end
 
-    A = diagm(
-        0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); diagD1; diagD2],
-        -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; D1; D2]
-    )
+    v1 = [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); diagD1; diagD2]
+    v2 = [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; D1; D2]
+    A = diagm(0 => v1, -1 => v2)
 
     A[1, nG1 + nG2] = 2 * p[2]
     A[nG1 + nG2 + 1, 1:nG1] = p[3] * ones(1, nG1)
@@ -57,12 +54,12 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
     @assert t[1] == 0.0
 
     if nD1 == 0
-        D1 = []
+        D1 = Float64[]
     else
         D1 = zeros(nD1)
     end
     if nD2 == 0
-        D2 = []
+        D2 = Float64[]
     else
         D2 = zeros(nD2)
     end
