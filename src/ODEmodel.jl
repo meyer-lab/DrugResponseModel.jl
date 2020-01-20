@@ -32,8 +32,12 @@ function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2:
     A = diagm(0 => v1, -1 => v2)
 
     A[1, nG1 + nG2] = 2 * p[2]
-    A[nG1 + nG2 + 1, 1:nG1] = p[3] * ones(1, nG1)
-    A[nG1 + nG2 + nD1 + 1, (nG1 + 1):(nG1 + nG2)] = p[4] * ones(1, nG2)
+    if nD1 > 0
+        A[nG1 + nG2 + 1, 1:nG1] = p[3] * ones(1, nG1)
+    end
+    if nD2 > 0
+        A[nG1 + nG2 + nD1 + 1, (nG1 + 1):(nG1 + nG2)] = p[4] * ones(1, nG2)
+    end
 
     rmul!(A, dt)
 
