@@ -10,7 +10,6 @@ function get_data(path_g2::String, path_total::String)
     select!(data, Not(1:2))
     select!(total, Not(1:2))
 
-
     # getting all the 8 trials
     drug = data[1:192, 1:8]
     pop = total[1:192, 1:8]
@@ -37,7 +36,7 @@ function get_data(path_g2::String, path_total::String)
         g2[:, i] = remove_peaks(g2[:, i])
         g1[:, i] = remove_peaks(g1[:, i])
     end
-    return pop, g2, g1, g2_0, g1_0
+    return pop, g2, g1
 end
 
 """ Removes noise peaks from the raw data. """
@@ -75,7 +74,7 @@ function setup_data(drug_name::String)
     conc_l = [Float64(concentration[idx, col]) for col = 2:9]
 
     #------------ import cell data
-    pop_l, g2_l, g1_l, g2_0_l, g1_0_l = get_data(joinpath(basePath, dfname), joinpath(basePath, dfname2))
+    pop_l, g2_l, g1_l = get_data(joinpath(basePath, dfname), joinpath(basePath, dfname2))
 
-    return conc_l, pop_l, g2_l, g1_l, g2_0_l, g1_0_l
+    return conc_l, pop_l, g2_l, g1_l
 end

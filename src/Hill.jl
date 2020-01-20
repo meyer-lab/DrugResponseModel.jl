@@ -5,35 +5,43 @@ This file fits Hill function to the parameters.
 """ This functions takes in hill parameters for all the concentrations and calculates
 DDE parameters, passes them to residual function and based off of these, optimizes the model
 and estimates hill parameters. """
-function residHill(
-    hillParams::Vector,
-    concentrations::Vector{Float64},
-    g1::Matrix{Float64},
-    g2::Matrix{Float64},
-    g1_0::Vector{Float64},
-    g2_0::Vector{Float64},
-)::Float64
+function residHill(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::Matrix)
     res = Atomic{eltype(hillParams)}(0.0)
     params = getODEparams(hillParams, concentrations)
 
     # Solve each concentration separately
     @threads for ii = 1:length(concentrations)
-        atomic_add!(res, cost(params[1:5, ii], g1_0[ii], g2_0[ii], g1[:, ii], g2[:, ii], Int(floor(params[6, ii])), Int(floor(params[7, ii])), Int(floor(params[8, ii])), Int(floor(params[9, ii]))))
+        atomic_add!(
+            res,
+            cost(
+                params[1:5, ii],
+                g1[:, ii],
+                g2[:, ii],
+                Int(floor(params[6, ii])),
+                Int(floor(params[7, ii])),
+                Int(floor(params[8, ii])),
+                Int(floor(params[9, ii])),
+            ),
+        )
     end
 
     return res[]
 end
 
+
+""" Gradient of the cost. """
+function residHillG(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::Matrix)
+    # Calculate the continuous parameters with central differencing.
+    # Special strategy for integer parameters.
+    hillCost(x) = residHill(x, concentrations, g1, g2)
+
+    return Calculus.finite_difference(hillCost, hillParams)
+end
+
+
 """ Hill optimization function. """
-function optimize_hill(
-    conc_l::Array{Float64, 1},
-    g1::Array{Float64, 2},
-    g2::Array{Float64, 2},
-    g1_0::Array{Float64, 1},
-    g2_0::Array{Float64, 1};
-    maxstep = 1E5,
-)
-    hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2, g1_0, g2_0)
+function optimize_hill(conc_l::Vector, g1::Matrix, g2::Matrix; maxstep = 1E5)
+    hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2)
 
     low = [minimum(conc_l), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.45, 2, 10, 0, 0]
     high = [maximum(conc_l), 3.0, 3.0, 10.0, 3.0, 3.0, 1.0, 1.0, 0.55, 60, 180, 50, 50]
@@ -72,34 +80,18 @@ function getODEparams(p::Vector, concentrations::Vector{Float64})
 end
 
 """ To find the sensitivity of the model to a parameter. """
-function sensitivity(
-    params::Vector,
-    paramRange::Vector,
-    conc::Vector{Float64},
-    i::Int,
-    g1_0::Vector{Float64},
-    g2_0::Vector{Float64},
-    g1::Matrix{Float64},
-    g2::Matrix{Float64},
-)
+function sensitivity(params::Vector, paramRange::Vector, conc::Vector, i::Int, g1::Matrix, g2::Matrix)
     result = zeros(length(paramRange))
     for j = 1:length(paramRange)
         temp = copy(params)
         temp[i] = paramRange[j]
-        result[j] = residHill(temp, conc, g1, g2, g1_0, g2_0)
+        result[j] = residHill(temp, conc, g1, g2)
     end
     return result
 end
 
 """ Calculate the sensitivity to all parameters. """
-function allSensitivity(
-    params::Vector,
-    conc_l::Vector{Float64},
-    g1_0::Vector{Float64},
-    g2_0::Vector{Float64},
-    g1::Matrix{Float64},
-    g2::Matrix{Float64},
-)
+function allSensitivity(params::Vector, conc_l::Vector, g1::Matrix, g2::Matrix)
     b = copy(params)
     convRange = 10 .^ (range(-1, stop = 1, length = 101))
     results = zeros(length(convRange), 11)
@@ -107,7 +99,7 @@ function allSensitivity(
 
     for k = 1:11
         paramRanges[:, k] = b[k] .* convRange
-        results[:, k] = sensitivity(b, paramRanges[:, k], conc_l, k, g1_0, g2_0, g1, g2)
+        results[:, k] = sensitivity(b, paramRanges[:, k], conc_l, k, g1, g2)
     end
 
     return results, paramRanges
@@ -140,5 +132,5 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
         yaxis = :log10,
     )
     plot!([realParam], seriestype = "vline", margin = 0.3cm, legend = :false)
-    ylims!((5E3, 1E5))
+    ylims!((1E2, 1E4))
 end
