@@ -7,10 +7,20 @@ function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2:
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
 
     # TODO: Handle making the nD vectors (with empties) here.
+    if nD1 == 0
+        D1 = []
+    else
+        D1 = [ 0.0; ones(nD1 - 1) * p[3] ]
+    end
+    if nD2 == 0
+        D2 = []
+    else
+        D2 = [0.0; ones(nD2 - 1) * p[4] ]
+    end
 
     A = diagm(
         0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]; -ones(nD2) * p[4]],
-        -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; 0.0; ones(nD1 - 1) * p[3]; 0.0; ones(nD2 - 1) * p[4]],
+        -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; D1; D2],
     )
 
     A[1, nG1 + nG2] = 2 * p[2]
