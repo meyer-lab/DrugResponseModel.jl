@@ -5,21 +5,47 @@
 """ Make the transition matrix. """
 function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{Float64}
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
-    A = diagm(
-        0 => [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); -ones(nD1) * p[3]; -ones(nD2) * p[4]],
-        -1 => [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; 0.0; ones(nD1 - 1) * p[3]; 0.0; ones(nD2 - 1) * p[4]],
-    )
+    if nD1 == 0
+        D1 = Float64[]
+        diagD1 = Float64[]
+    elseif nD1 == 1
+        D1 = [0.0]
+        diagD1 = -ones(nD1) * p[3]
+    else
+        D1 = [0.0; ones(nD1 - 1) * p[3]]
+        diagD1 = -ones(nD1) * p[3]
+    end
+
+    if nD2 == 0
+        D2 = Float64[]
+        diagD2 = Float64[]
+    elseif nD2 == 1
+        D2 = [0.0]
+        diagD2 = -ones(nD2) * p[4]
+    else
+        D2 = [0.0; ones(nD2 - 1) * p[4]]
+        diagD2 = -ones(nD2) * p[4]
+    end
+
+    v1 = [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); diagD1; diagD2]
+    v2 = [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; D1; D2]
+    A = diagm(0 => v1, -1 => v2)
 
     A[1, nG1 + nG2] = 2 * p[2]
-    A[nG1 + nG2 + 1, 1:nG1] = p[3] * ones(1, nG1)
-    A[nG1 + nG2 + nD1 + 1, (nG1 + 1):(nG1 + nG2)] = p[4] * ones(1, nG2)
+    if nD1 > 0
+        A[nG1 + nG2 + 1, 1:nG1] = p[3] * ones(1, nG1)
+    end
+    if nD2 > 0
+        A[nG1 + nG2 + nD1 + 1, (nG1 + 1):(nG1 + nG2)] = p[4] * ones(1, nG2)
+    end
 
     rmul!(A, dt)
 
-    @assert all(A[1:(nG1 + nG2), (nG1 + nG2 + 1):end] .== 0.0)
-    @assert A[nG1 + nG2 + nD1 + 1, nG1 + nG2 + nD1] == 0.0
-    @assert all(A[(nG1 + nG2 + 1):(nG1 + nG2 + nD1), (nG1 + nG2 + nD1 + 1):end] .== 0.0)
-
+    if nD1 & nD2 != 0
+        @assert all(A[1:(nG1 + nG2), (nG1 + nG2 + 1):end] .== 0.0)
+        @assert all(A[nG1+nG2+1, (nG1+1):(nG1+nG2)] .==0.0)
+        @assert all(A[nG1+nG2+nD1+1, 1:nG1] .== 0.0)
+    end
     A = LinearAlgebra.exp!(A)
 
     return A
@@ -31,7 +57,18 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
     # Some assumptions
     @assert t[1] == 0.0
 
-    v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; zeros(nD1); zeros(nD2)]
+    if nD1 == 0
+        D1 = Float64[]
+    else
+        D1 = zeros(nD1)
+    end
+    if nD2 == 0
+        D2 = Float64[]
+    else
+        D2 = zeros(nD2)
+    end
+
+    v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
     A = ODEjac(p, t[2], nG1, nG2, nD1, nD2)
 
     G1 = Vector{eltype(p)}(undef, length(t))
@@ -61,7 +98,7 @@ end
 function ODEoptimizer(i::Int, g1::Matrix, g2::Matrix)
     residuals(p) = cost(p, g1[:, i], g2[:, i], Int(floor(p[6])), Int(floor(p[7])), Int(floor(p[8])), Int(floor(p[9])))
     # lower and upper bounds for the parameters
-    lower = [0.0, 0.0, 0.0, 0.0, 0.0, 1, 1, 1, 1]
+    lower = [0.0, 0.0, 0.0, 0.0, 0.0, 1, 1, 0, 0]
     upper = [3.0, 3.0, 3.0, 3.0, 1.0, 70, 70, 70, 70]
     bound = collect(zip(lower, upper))
 
