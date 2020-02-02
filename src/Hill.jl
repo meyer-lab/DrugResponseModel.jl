@@ -134,3 +134,21 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
     plot!([realParam], seriestype = "vline", margin = 0.3cm, legend = :false)
     ylims!((1E2, 1E4))
 end
+
+""" Calculate the gradient of # of cells in each phase w.r.t. a parameter. """
+function combination(params, i, g0)
+    t = LinRange(0.0, 95.5, 192)
+    convRange = 10 .^ (range(-1, stop = 1, length = 101))
+    paramRange = params[i] .* convRange # params is ODE parameters
+    g1 = zeros(length(paramRange))
+    g2 = zeros(length(paramRange))
+
+    for j = 1:length(paramRange)
+        temp = copy(params)
+        temp[i] = paramRange[j]
+        G1, G2 = predict(temp, g0, t, Int(temp[6]), Int(temp[7]), Int(temp[8]), Int(temp[9]))
+        g1[j] = G1[120]
+        g2[j] = G2[120]
+    end
+    return g1, g2, paramRange
+end
