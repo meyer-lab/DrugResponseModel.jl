@@ -152,3 +152,15 @@ function combination(params, i, g0)
     end
     return g1, g2, paramRange
 end
+
+""" Calculate central difference. """
+function central_difference(g1e, g2e, paramRange)
+    @assert length(g1e) == length(g2e) == length(paramRange)
+    der_g1 = zeros(length(paramRange) - 1)
+    der_g2 = zeros(length(paramRange) - 1)
+    for i = 1:length(paramRange) - 1
+        der_g1[i] = (g1e[i+1] - g1e[i])/(paramRange[i+1] - paramRange[i])
+        der_g2[i] = (g2e[i+1] - g2e[i])/(paramRange[i+1] - paramRange[i])
+    end
+    return der_g1, der_g2
+end

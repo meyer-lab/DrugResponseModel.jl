@@ -29,6 +29,7 @@ export setup_data,
     plotUnitSensitivity,
     allSensitivity,
     ODEplot_allPerc,
-    combination
+    combination,
+    central_difference
 
 end # module
