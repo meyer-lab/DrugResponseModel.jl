@@ -135,32 +135,31 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
     ylims!((1E2, 1E4))
 end
 
-""" Calculate the gradient of # of cells in each phase w.r.t. a parameter. """
-function combination(params, i, g0)
+""" Calculate the # of cells in G1 for a set of parameters and T """
+function numG1(params, g0, T)
     t = LinRange(0.0, 95.5, 192)
-    convRange = 10 .^ (range(-1, stop = 1, length = 101))
-    paramRange = params[i] .* convRange # params is ODE parameters
-    g1 = zeros(length(paramRange))
-    g2 = zeros(length(paramRange))
+    temp = copy(params)
+    G1, _ = predict(temp, g0, t, Int(floor(temp[6])), Int(floor(temp[7])), Int(floor(temp[8])), Int(floor(temp[9])))
 
-    for j = 1:length(paramRange)
-        temp = copy(params)
-        temp[i] = paramRange[j]
-        G1, G2 = predict(temp, g0, t, Int(temp[6]), Int(temp[7]), Int(temp[8]), Int(temp[9]))
-        g1[j] = G1[120]
-        g2[j] = G2[120]
-    end
-    return g1, g2, paramRange
+    return G1[T]
 end
 
-""" Calculate central difference. """
-function central_difference(g1e, g2e, paramRange)
-    @assert length(g1e) == length(g2e) == length(paramRange)
-    der_g1 = zeros(length(paramRange) - 1)
-    der_g2 = zeros(length(paramRange) - 1)
-    for i = 1:length(paramRange) - 1
-        der_g1[i] = (g1e[i+1] - g1e[i])/(paramRange[i+1] - paramRange[i])
-        der_g2[i] = (g2e[i+1] - g2e[i])/(paramRange[i+1] - paramRange[i])
-    end
-    return der_g1, der_g2
+""" Calculate the # of cells in G2 for a set of parameters and T """
+function numG2(params, g0, T)
+    t = LinRange(0.0, 95.5, 192)
+    temp = copy(params)
+    _, G2 = predict(temp, g0, t, Int(floor(temp[6])), Int(floor(temp[7])), Int(floor(temp[8])), Int(floor(temp[9])))
+
+    return G2[T]
+end
+
+""" Calculates the gradient with central difference"""
+function diffG1(params, g0, T)
+    difG1(x) = numG1(x, g0, T)
+    return Calculus.finite_difference(difG1, params)
+end
+
+function diffG2(params, g0, T)
+    difG2(x) = numG2(x, g0, T)
+    return Calculus.finite_difference(difG2, params)
 end
