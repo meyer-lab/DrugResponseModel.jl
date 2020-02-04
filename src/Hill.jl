@@ -136,30 +136,17 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
 end
 
 """ Calculate the # of cells in G1 for a set of parameters and T """
-function numG1(params, g0, T)
+function numcells(params, g0, T)
     t = LinRange(0.0, 95.5, 192)
     temp = copy(params)
-    G1, _ = predict(temp, g0, t, Int(floor(temp[6])), Int(floor(temp[7])), Int(floor(temp[8])), Int(floor(temp[9])))
+    G1, G2 = predict(temp, g0, t, Int(floor(temp[6])), Int(floor(temp[7])), Int(floor(temp[8])), Int(floor(temp[9])))
 
-    return G1[T]
+    return G1[T]+G2[T]
 end
 
-""" Calculate the # of cells in G2 for a set of parameters and T """
-function numG2(params, g0, T)
-    t = LinRange(0.0, 95.5, 192)
-    temp = copy(params)
-    _, G2 = predict(temp, g0, t, Int(floor(temp[6])), Int(floor(temp[7])), Int(floor(temp[8])), Int(floor(temp[9])))
-
-    return G2[T]
-end
 
 """ Calculates the gradient with central difference"""
-function diffG1(params, g0, T)
-    difG1(x) = numG1(x, g0, T)
-    return Calculus.finite_difference(difG1, params)
-end
-
-function diffG2(params, g0, T)
-    difG2(x) = numG2(x, g0, T)
-    return Calculus.finite_difference(difG2, params)
+function diffCell(params, g0, T)
+    diffcells(x) = numcells(x, g0, T)
+    return Calculus.finite_difference(diffcells, params)
 end
