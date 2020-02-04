@@ -150,3 +150,17 @@ function diffCell(params, g0, T)
     diffcells(x) = numcells(x, g0, T)
     return Calculus.finite_difference(diffcells, params)
 end
+
+""" Plot the gradient vs concentrations """
+function plotGradient(effects, concentrations, g0, T)
+
+    dif = zeros(4,8)
+    for i =1:8
+        params = effects[:, i]
+        dif[:, i] = diffCell(params, g0, T)[1:4]
+    end
+    plot(concentrations, dif[1,:], label="alpha", lw=2, legend=:bottomright, xlabel="concentration [nM]", ylabel="gradient of #cells wrt param")
+    plot!(concentrations, dif[2,:], label="beta", lw=2)
+    plot!(concentrations, dif[3,:], label="gamma 1", lw=2)
+    plot!(concentrations, dif[4,:], label="gamma 2", lw=2)
+end

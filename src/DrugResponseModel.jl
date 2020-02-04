@@ -29,6 +29,6 @@ export setup_data,
     plotUnitSensitivity,
     allSensitivity,
     ODEplot_allPerc,
-    diffCell
+    plotGradient
 
 end # module
