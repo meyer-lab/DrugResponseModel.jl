@@ -152,14 +152,16 @@ function diffCell(params, g0, T)
 end
 
 """ Plot the gradient vs concentrations """
-function plotGradient(effects, concentrations, g0, T)
+function plotGradient(effects, concentration, g0, T)
 
     dif = zeros(4,8)
     for i =1:8
         params = effects[:, i]
-        dif[:, i] = diffCell(params, g0, T)[1:4]
+        num = numcells(params, g0, T)
+        dif[:, i] = diffCell(params, g0, T)[1:4]/num
     end
-    plot(concentrations, dif[1,:], label="alpha", lw=2, legend=:bottomright, xlabel="concentration [nM]", ylabel="gradient of #cells wrt param")
+    concentrations = log.(concentration)
+    plot(concentrations, dif[1,:], label="alpha", lw=2, legend=:bottomright, xlabel="log concentration [nM]", ylabel="gradient of #cells wrt param")
     plot!(concentrations, dif[2,:], label="beta", lw=2)
     plot!(concentrations, dif[3,:], label="gamma 1", lw=2)
     plot!(concentrations, dif[4,:], label="gamma 2", lw=2)
