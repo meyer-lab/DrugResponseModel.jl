@@ -161,10 +161,10 @@ function plotGradient(effects, concentration, g0, T)
         dif[:, i] = diffCell(params, g0, T)[1:4]/num
     end
     concentrations = log.(concentration)
-    p1 = plot(concentrations, dif[1,:], label="alpha", lw=2, legend=:bottomleft, xlabel="log concentration [nM]", ylabel="gradient of #cells wrt param")
-    plot!(concentrations, dif[2,:], label="beta", lw=2)
-    p2 = plot(concentrations, dif[3,:], label="gamma 1", lw=2, legend=:bottomleft, xlabel="log concentration [nM]", ylabel="gradient of #cells wrt param")
-    plot!(concentrations, dif[4,:], label="gamma 2", lw=2)
+    p1 = plot(concentrations, dif[1,:],  lw=2, label="alpha", xlabel="log concentration [nM]", ylabel="gradient of #cells wrt param")
+    plot!(concentrations, dif[2,:], lw=2, label="beta")
+    p2 = plot(concentrations, dif[3,:], label="gamma1", lw=2, xlabel="log concentration [nM]", ylabel="gradient of #cells wrt param")
+    plot!(concentrations, dif[4,:],  lw=2, label="gamma2")
     plot(p1, p2, layout = (1,2))
-    plot!(size=(500,250), margin=0.4cm, dpi=100)
+    plot!(size=(800,400), margin=0.4cm, dpi=100)
 end
