@@ -135,9 +135,10 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
     ylims!((1E2, 1E4))
 end
 
+
 """ Calculate the # of cells in G1 for a set of parameters and T """
 function numcells(params, g0, T)
-    t = LinRange(0.0, 95.5, 192)
+    t = LinRange(0.0, 95.5, 3)
     temp = copy(params)
     G1, G2 = predict(temp, g0, t, Int(floor(temp[6])), Int(floor(temp[7])), Int(floor(temp[8])), Int(floor(temp[9])))
 
@@ -151,11 +152,11 @@ function diffCell(params, g0, T)
     return Calculus.finite_difference(diffcells, params)
 end
 
+
 """ Plot the gradient vs concentrations """
 function plotGradient(effects, concentration, g0, T)
-
     dif = zeros(4,8)
-    for i =1:8
+    for i = 1:8
         params = effects[:, i]
         num = numcells(params, g0, T)
         dif[:, i] = diffCell(params, g0, T)[1:4]/num
