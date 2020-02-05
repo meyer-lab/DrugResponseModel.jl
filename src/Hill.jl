@@ -148,8 +148,8 @@ end
 """ Calculates the gradient with central difference"""
 function diffCell(params, g0, T)
     diffcells(x) = numcells(x, g0, T)
-    num = numcells(params, g0, T)
-    return Calculus.finite_difference(diffcells, params)/num
+
+    return Calculus.finite_difference(diffcells, params) / diffcells(params)
 end
 
 
