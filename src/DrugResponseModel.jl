@@ -8,6 +8,7 @@ using Measures
 using BlackBoxOptim
 using LinearAlgebra
 using Base.Threads
+using Expokit
 import Calculus
 
 include("importData.jl")

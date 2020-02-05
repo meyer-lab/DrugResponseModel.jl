@@ -84,6 +84,29 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
     return G1, G2
 end
 
+""" Another version for predict function, to calculate the numbers for one time point. """
+function predict2(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
+    # t has to be t=[0.0, T]
+    @assert t[1] == 0.0
+
+    if nD1 == 0
+        D1 = Float64[]
+    else
+        D1 = zeros(nD1)
+    end
+    if nD2 == 0
+        D2 = Float64[]
+    else
+        D2 = zeros(nD2)
+    end
+
+    v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
+    A = ODEjac(p, t[2], nG1, nG2, nD1, nD2)
+    w = expmv(t[2], A, v)
+
+    return w
+end
+
 
 """ Calculates the cost function for a given set of parameters. """
 function cost(p, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
