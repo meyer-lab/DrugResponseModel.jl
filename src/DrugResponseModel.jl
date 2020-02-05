@@ -30,6 +30,7 @@ export setup_data,
     plotUnitSensitivity,
     allSensitivity,
     ODEplot_allPerc,
-    plotGradient
+    plotGradient,
+    predict2
 
 end # module

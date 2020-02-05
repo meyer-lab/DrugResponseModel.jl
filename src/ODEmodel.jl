@@ -104,7 +104,7 @@ function predict2(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
     A = ODEjac(p, t[2], nG1, nG2, nD1, nD2)
     w = expmv(t[2], A, v)
 
-    return w
+    return sum(w)
 end
 
 
