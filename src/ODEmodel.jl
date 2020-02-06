@@ -87,7 +87,7 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1::Integer, nD2:
 end
 
 """ Another version for predict function, to calculate the numbers for one time point. """
-function predict2(p, g_0::Real, t::Real, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integer)
+function predict2(p, g_0::Real, t::Float64, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integer)
     if nD1 == 0
         D1 = Float64[]
     else
@@ -101,7 +101,7 @@ function predict2(p, g_0::Real, t::Real, nG1::Integer, nG2::Integer, nD1::Intege
 
     v0 = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
     A = ODEjac(p, t, nG1, nG2, nD1, nD2, expp=false)
-    v = expv(t, A, v0)
+    v = ExponentialUtilities.expv(t, A, v0)
 
     G1 = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
     G2 = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
