@@ -10,6 +10,7 @@ using LinearAlgebra
 using Base.Threads
 using Expokit
 import Calculus
+import ForwardDiff
 
 include("importData.jl")
 include("ODEmodel.jl")
@@ -31,6 +32,6 @@ export setup_data,
     allSensitivity,
     ODEplot_allPerc,
     plotGradient,
-    predict2
+    predict
 
 end # module

@@ -3,7 +3,7 @@
 """
 
 """ Make the transition matrix. """
-function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{Float64}
+function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int; expp = true)::Matrix{Float64}
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
     if nD1 == 0
         D1 = Float64[]
@@ -39,21 +39,23 @@ function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2:
         A[nG1 + nG2 + nD1 + 1, (nG1 + 1):(nG1 + nG2)] = p[4] * ones(1, nG2)
     end
 
-    rmul!(A, dt)
-
     if nD1 & nD2 != 0
         @assert all(A[1:(nG1 + nG2), (nG1 + nG2 + 1):end] .== 0.0)
         @assert all(A[nG1 + nG2 + 1, (nG1 + 1):(nG1 + nG2)] .== 0.0)
         @assert all(A[nG1 + nG2 + nD1 + 1, 1:nG1] .== 0.0)
     end
-    A = LinearAlgebra.exp!(A)
+
+    if expp
+        rmul!(A, dt)
+        A = LinearAlgebra.exp!(A)
+    end
 
     return A
 end
 
 
 """ Predicts the model given a set of parametrs. """
-function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
+function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integer)
     # Some assumptions
     @assert t[1] == 0.0
 
@@ -85,10 +87,7 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
 end
 
 """ Another version for predict function, to calculate the numbers for one time point. """
-function predict2(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
-    # t has to be t=[0.0, T]
-    @assert t[1] == 0.0
-
+function predict(p, g_0::Real, t::Real, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integer)
     if nD1 == 0
         D1 = Float64[]
     else
@@ -100,11 +99,14 @@ function predict2(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
         D2 = zeros(nD2)
     end
 
-    v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
-    A = ODEjac(p, t[2], nG1, nG2, nD1, nD2)
-    w = expmv(t[2], A, v)
+    v0 = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
+    A = ODEjac(p, t, nG1, nG2, nD1, nD2, expp=false)
+    v = expmv(t, A, v0)
 
-    return sum(w)
+    G1 = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
+    G2 = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
+
+    return G1, G2
 end
 
 
