@@ -141,7 +141,7 @@ function numcells(params, g0, T)
     t = LinRange(0.0, 95.5, 192)
     G1, G2 = predict(params, g0, t, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
 
-    return G1[T]+G2[T]
+    return G1[T] + G2[T]
 end
 
 
@@ -155,15 +155,15 @@ end
 
 """ Plot the gradient vs concentrations """
 function plotGradient(effects, concentration, g0, T)
-    dif = zeros(4,8)
-    for i =1:8
+    dif = zeros(4, 8)
+    for i = 1:8
         dif[:, i] = diffCell(effects[:, i], g0, T)[1:4]
     end
     concentrations = log.(concentration)
-    p1 = plot(concentrations, dif[1,:],  lw=2, label="alpha", xlabel="log concentration [nM]", ylabel="gradient of #cells wrt param")
-    plot!(concentrations, dif[2,:], lw=2, label="beta")
-    p2 = plot(concentrations, dif[3,:], label="gamma1", lw=2, xlabel="log concentration [nM]", ylabel="gradient of #cells wrt param")
-    plot!(concentrations, dif[4,:],  lw=2, label="gamma2")
-    plot(p1, p2, layout = (1,2))
-    plot!(size=(800,400), margin=0.4cm, dpi=100)
+    p1 = plot(concentrations, dif[1, :], lw = 2, label = "alpha", xlabel = "log concentration [nM]", ylabel = "gradient of #cells wrt param")
+    plot!(concentrations, dif[2, :], lw = 2, label = "beta")
+    p2 = plot(concentrations, dif[3, :], label = "gamma1", lw = 2, xlabel = "log concentration [nM]", ylabel = "gradient of #cells wrt param")
+    plot!(concentrations, dif[4, :], lw = 2, label = "gamma2")
+    plot(p1, p2, layout = (1, 2))
+    plot!(size = (800, 400), margin = 0.4cm, dpi = 100)
 end
