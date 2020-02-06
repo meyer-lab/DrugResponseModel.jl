@@ -10,7 +10,6 @@ using LinearAlgebra
 using Base.Threads
 import ExponentialUtilities
 import Calculus
-import ForwardDiff
 
 include("importData.jl")
 include("ODEmodel.jl")

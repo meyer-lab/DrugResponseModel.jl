@@ -148,7 +148,7 @@ end
 function diffCell(params, g0, T)
     diffcells(x) = numcells(x, g0, T)
 
-    return ForwardDiff.gradient(diffcells, params) / diffcells(params)
+    return Calculus.finite_difference(diffcells, params) / diffcells(params)
 end
 
 
