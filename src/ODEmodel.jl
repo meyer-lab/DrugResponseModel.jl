@@ -87,7 +87,7 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1::Integer, nD2:
 end
 
 """ Another version for predict function, to calculate the numbers for one time point. """
-function predict(p, g_0::Real, t::Real, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integer)
+function predict2(p, g_0::Real, t::Real, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integer)
     if nD1 == 0
         D1 = Float64[]
     else

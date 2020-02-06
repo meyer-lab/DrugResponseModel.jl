@@ -138,7 +138,7 @@ end
 
 """ Calculate the # of cells in G1 for a set of parameters and T """
 function numcells(params, g0, t::Real)
-    G1, G2 = predict(params, g0, t, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
+    G1, G2 = predict2(params, g0, t, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
 
     return G1 + G2
 end
