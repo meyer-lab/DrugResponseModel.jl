@@ -8,7 +8,7 @@ using Measures
 using BlackBoxOptim
 using LinearAlgebra
 using Base.Threads
-import ExponentialUtilities
+import Expokit
 import Calculus
 import ForwardDiff
 
