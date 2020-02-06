@@ -3,7 +3,7 @@
 """
 
 """ Make the transition matrix. """
-function ODEjac(p::Vector{Real}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int; expp = true)::Matrix{Real}
+function ODEjac(p::Vector{<:Real}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int; expp = true)::Matrix{<:Real}
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
     if nD1 == 0
         D1 = Float64[]
