@@ -60,7 +60,7 @@ end
 
 """ A function to convert the estimated hill parameters back to ODE parameters. """
 function getODEparams(p::Vector, concentrations::Vector{Float64})
-    effects = Matrix{eltype(p)}(undef, 9, 8)
+    effects = Matrix{eltype(p)}(undef, 9, length(concentrations))
 
     # Scaled drug effect
     xx = 1.0 ./ (1.0 .+ (p[1] ./ concentrations) .^ p[4])
@@ -154,15 +154,15 @@ end
 
 """ Plot the gradient vs concentrations """
 function plotGradient(effects, concentration, g0, T, title)
-    dif = zeros(4, 8)
-    for i = 1:8
+    dif = zeros(4, length(concentration))
+    for i = 1:length(concentration)
         dif[:, i] = diffCell(effects[:, i], g0, T)[1:4]
     end
     concentrations = log.(concentration)
     p1 = plot(concentrations, dif[1, :], lw = 2, label = "alpha", xlabel = "log concentration [nM]", ylabel = "gradient of #cells wrt param", title=title)
-    plot!(concentrations, dif[2, :], lw = 2, label = "beta", ylim=[-50.0, 50.0])
+    plot!(concentrations, dif[2, :], lw = 2, label = "beta")
     p2 = plot(concentrations, dif[3, :], label = "gamma1", lw = 2, xlabel = "log concentration [nM]", ylabel = "gradient of #cells wrt param", title=title)
-    plot!(concentrations, dif[4, :], lw = 2, label = "gamma2", ylim=[-100.0, 100.0])
+    plot!(concentrations, dif[4, :], lw = 2, label = "gamma2")
     plot(p1, p2, layout = (1, 2))
     plot!(size = (800, 400), margin = 0.4cm, dpi = 100)
 #     ylims!((-1E2, 1E2))
