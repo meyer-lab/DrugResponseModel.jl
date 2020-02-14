@@ -25,21 +25,9 @@ def polish(CONTROL):
         trial.append(tmp2)
     return trial
 
-def estimate(CONTROL):
-    trial = polish(CONTROL)
-    # estimate
-    parameters = []
-    for ind, x in enumerate(trial):
-        shape, _, scale = sp.rv_continuous.fit(sp.gamma, x, floc=0)
-        parameters.append([np.around(shape), round(scale, 3)])
-
-    return parameters
-
-def plotDist(Control, drug, cont_pr, parameters, label):
+def plotDist(control, trial, cont_pr, parameters, label):
     titles = ['G1', 'S-G2']
 
-    trial = polish(drug)
-    control = polish(Control)
     plt.figure(figsize=(12,6), dpi=200)
     for ind, x in enumerate(trial):
         plt.subplot(1,2,(ind+1))
@@ -59,19 +47,40 @@ def plotDist(Control, drug, cont_pr, parameters, label):
         plt.ylabel("probability")
         plt.legend()
     
-def pTotal(contP, Drug):
-    shapeG1 = contP[0][0]
-    shapeG2 = contP[1][0]
-    scale_contG1 = contP[1][0]
-    scale_contG2 = contP[1][1]
+def pTotal(Control, Drug):
+    control = polish(Control)
     drug = polish(Drug)
 
-    scale_drugRange1 = np.linspace(0.1*scale_contG1, 10*scale_contG1, 100)
-    scale_drugRange2 = np.linspace(0.1*scale_contG2, 10*scale_contG2, 100)
-    cnt1 = []
-    cnt2 = []
-    for ind, sc in enumerate(scale_drugRange1):
-        cnt1.append(sp.gamma.logpdf(drug[0], a=shapeG1, loc=0, scale=sc).sum())
-        cnt2.append(sp.gamma.logpdf(drug[1], a=shapeG2, loc=0, scale=scale_drugRange2[ind]).sum())
-    drugParams = [[round(shapeG1), scale_drugRange1[np.argmax(cnt1)]], [round(shapeG2), scale_drugRange2[np.argmax(cnt2)]]]
-    return drugParams
+    NCg1 = len(control[0])
+    NCg2 = len(control[1])
+    NDg1 = len(drug[0])
+    NDg2 = len(drug[1])
+    # estimate scale for control in G1 and G2
+    x_lnxCg1 = [x * np.log(x) for x in control[0]]
+    lnxCg1 = [np.log(x) for x in control[0]]
+    x_lnxCg2 = [x * np.log(x) for x in control[1]]
+    lnxCg2 = [np.log(x) for x in control[1]]
+    scaleCg1 = ((1 + 1e-10) / (NCg1 ** 2 + 1e-10)) * (NCg1 * (sum(x_lnxCg1)) - (sum(lnxCg1)) * (sum(control[0])))
+    scaleCg2 = ((1 + 1e-10) / (NCg2 ** 2 + 1e-10)) * (NCg2 * (sum(x_lnxCg2)) - (sum(lnxCg2)) * (sum(control[1])))
+
+    # estimate scale for drug in G1 and G2
+    x_lnxDg1 = [x * np.log(x) for x in drug[0]]
+    lnxDg1 = [np.log(x) for x in drug[0]]
+    x_lnxDg2 = [x * np.log(x) for x in drug[1]]
+    lnxDg2 = [np.log(x) for x in drug[1]]
+    scaleDg1 = ((1 + 1e-10) / (NDg1 ** 2 + 1e-10)) * (NDg1 * (sum(x_lnxDg1)) - (sum(lnxDg1)) * (sum(drug[0])))
+    scaleDg2 = ((1 + 1e-10) / (NDg2 ** 2 + 1e-10)) * (NDg2 * (sum(x_lnxDg2)) - (sum(lnxDg2)) * (sum(drug[1])))
+
+    sh1 = []
+    sh2 = []
+    for k in range(1,100):
+        tmc1 = sp.gamma.logpdf(control[0], a=k, loc=0, scale=scaleCg1).sum()
+        tmc2 = sp.gamma.logpdf(control[1], a=k, loc=0, scale=scaleCg2).sum()
+        tmd1 = sp.gamma.logpdf(drug[0], a=k, loc=0, scale=scaleDg1).sum()
+        tmd2 = sp.gamma.logpdf(drug[1], a=k, loc=0, scale=scaleDg2).sum()
+        sh1.append(tmc1 + tmd1) # g1
+        sh2.append(tmc2 + tmd2) #g2
+        
+    controlParams = [[np.argmax(sh1), scaleCg1], [np.argmax(sh2), scaleCg2]]
+    drugParams = [[np.argmax(sh1), scaleDg1], [np.argmax(sh2), scaleDg2]]
+    return control, drug, controlParams, drugParams
