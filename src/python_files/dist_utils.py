@@ -62,25 +62,21 @@ def pTotal(Control, Drug):
     lnxCg2 = [np.log(x) for x in control[1]]
     scaleCg1 = ((1 + 1e-10) / (NCg1 ** 2 + 1e-10)) * (NCg1 * (sum(x_lnxCg1)) - (sum(lnxCg1)) * (sum(control[0])))
     scaleCg2 = ((1 + 1e-10) / (NCg2 ** 2 + 1e-10)) * (NCg2 * (sum(x_lnxCg2)) - (sum(lnxCg2)) * (sum(control[1])))
-
-    # estimate scale for drug in G1 and G2
-    x_lnxDg1 = [x * np.log(x) for x in drug[0]]
-    lnxDg1 = [np.log(x) for x in drug[0]]
-    x_lnxDg2 = [x * np.log(x) for x in drug[1]]
-    lnxDg2 = [np.log(x) for x in drug[1]]
-    scaleDg1 = ((1 + 1e-10) / (NDg1 ** 2 + 1e-10)) * (NDg1 * (sum(x_lnxDg1)) - (sum(lnxDg1)) * (sum(drug[0])))
-    scaleDg2 = ((1 + 1e-10) / (NDg2 ** 2 + 1e-10)) * (NDg2 * (sum(x_lnxDg2)) - (sum(lnxDg2)) * (sum(drug[1])))
+    xbarCg1 = np.sum(control[0]) / NCg1
+    xbarCg2 = np.sum(control[1]) / NCg2
+    xbarDg1 = np.sum(drug[0]) / NDg1
+    xbarDg2 = np.sum(drug[1]) / NDg2
 
     sh1 = []
     sh2 = []
     for k in range(1,100):
-        tmc1 = sp.gamma.logpdf(control[0], a=k, loc=0, scale=scaleCg1).sum()
-        tmc2 = sp.gamma.logpdf(control[1], a=k, loc=0, scale=scaleCg2).sum()
-        tmd1 = sp.gamma.logpdf(drug[0], a=k, loc=0, scale=scaleDg1).sum()
-        tmd2 = sp.gamma.logpdf(drug[1], a=k, loc=0, scale=scaleDg2).sum()
+        tmc1 = sp.gamma.logpdf(control[0], a=k, loc=0, scale=xbarCg1/k).sum()
+        tmc2 = sp.gamma.logpdf(control[1], a=k, loc=0, scale=xbarCg2/k).sum()
+        tmd1 = sp.gamma.logpdf(drug[0], a=k, loc=0, scale=xbarDg1/k).sum()
+        tmd2 = sp.gamma.logpdf(drug[1], a=k, loc=0, scale=xbarDg2/k).sum()
         sh1.append(tmc1 + tmd1) # g1
         sh2.append(tmc2 + tmd2) #g2
         
-    controlParams = [[np.argmax(sh1), scaleCg1], [np.argmax(sh2), scaleCg2]]
-    drugParams = [[np.argmax(sh1), scaleDg1], [np.argmax(sh2), scaleDg2]]
+    controlParams = [[np.argmax(sh1), xbarCg1/np.argmax(sh1)], [np.argmax(sh2), xbarCg2/np.argmax(sh2)]]
+    drugParams = [[np.argmax(sh1), xbarDg1/np.argmax(sh1)], [np.argmax(sh2), xbarDg2/np.argmax(sh2)]]
     return control, drug, controlParams, drugParams
