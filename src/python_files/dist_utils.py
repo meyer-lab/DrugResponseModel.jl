@@ -51,21 +51,10 @@ def pTotal(Control, Drug):
     control = polish(Control)
     drug = polish(Drug)
 
-    NCg1 = len(control[0])
-    NCg2 = len(control[1])
-    NDg1 = len(drug[0])
-    NDg2 = len(drug[1])
-    # estimate scale for control in G1 and G2
-    x_lnxCg1 = [x * np.log(x) for x in control[0]]
-    lnxCg1 = [np.log(x) for x in control[0]]
-    x_lnxCg2 = [x * np.log(x) for x in control[1]]
-    lnxCg2 = [np.log(x) for x in control[1]]
-    scaleCg1 = ((1 + 1e-10) / (NCg1 ** 2 + 1e-10)) * (NCg1 * (sum(x_lnxCg1)) - (sum(lnxCg1)) * (sum(control[0])))
-    scaleCg2 = ((1 + 1e-10) / (NCg2 ** 2 + 1e-10)) * (NCg2 * (sum(x_lnxCg2)) - (sum(lnxCg2)) * (sum(control[1])))
-    xbarCg1 = np.sum(control[0]) / NCg1
-    xbarCg2 = np.sum(control[1]) / NCg2
-    xbarDg1 = np.sum(drug[0]) / NDg1
-    xbarDg2 = np.sum(drug[1]) / NDg2
+    xbarCg1 = np.sum(control[0]) / len(control[0])
+    xbarCg2 = np.sum(control[1]) / len(control[1])
+    xbarDg1 = np.sum(drug[0]) / len(drug[0])
+    xbarDg2 = np.sum(drug[1]) / len(drug[1])
 
     sh1 = []
     sh2 = []
@@ -75,7 +64,7 @@ def pTotal(Control, Drug):
         tmd1 = sp.gamma.logpdf(drug[0], a=k, loc=0, scale=xbarDg1/k).sum()
         tmd2 = sp.gamma.logpdf(drug[1], a=k, loc=0, scale=xbarDg2/k).sum()
         sh1.append(tmc1 + tmd1) # g1
-        sh2.append(tmc2 + tmd2) #g2
+        sh2.append(tmc2 + tmd2) # g2
         
     controlParams = [[np.argmax(sh1), xbarCg1/np.argmax(sh1)], [np.argmax(sh2), xbarCg2/np.argmax(sh2)]]
     drugParams = [[np.argmax(sh1), xbarDg1/np.argmax(sh1)], [np.argmax(sh2), xbarDg2/np.argmax(sh2)]]
