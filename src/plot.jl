@@ -39,7 +39,7 @@ function plot_parameters(conc_l, parameters)
         color = [:black :gray],
         line = (:dot, 1),
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "alpha",
+        ylabel = "G1 progression rate",
     )
     ylims!(0.0, 1.2 * maximum(parameters[1, :]))
 
@@ -53,7 +53,7 @@ function plot_parameters(conc_l, parameters)
         color = [:black :gray],
         line = (:dot, 1),
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "beta",
+        ylabel = "G2 progression rate",
     )
     ylims!(0.0, 1.2 * maximum(parameters[2, :]))
 
@@ -69,7 +69,7 @@ function plot_parameters(conc_l, parameters)
         color = [:black :gray],
         line = (:dot, 1),
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "gamma1",
+        ylabel = "G1 death rate",
     )
     ylims!(0.0, 1.2 * maxDeath)
 
@@ -83,7 +83,7 @@ function plot_parameters(conc_l, parameters)
         color = [:black :gray],
         line = (:dot, 1),
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "gamma2",
+        ylabel = "G2 death rate",
     )
     ylims!(0.0, 1.2 * maxDeath)
 
