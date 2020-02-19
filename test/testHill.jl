@@ -1,6 +1,6 @@
 @testset "Hill tests" begin
     conc, pop, g2, g1 = setup_data("lapatinib")
-    params = [10.0, 1.0, 1.0, 1.0, 1.0, 1.0, 10.0, 1.0, 1.0, 30, 30, 10, 10]
+    params = [10.0, 1.0, 1.0, 1.0, 1.0, 1.0, 10.0, 1.0, 1.0, 30, 30, 10, 10, 0.01, 0.01]
 
     DrugResponseModel.residHill(params, conc, g1, g2)
     @time DrugResponseModel.residHill(params, conc, g1, g2)
