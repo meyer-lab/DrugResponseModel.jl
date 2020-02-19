@@ -4,107 +4,6 @@
 
 """ Make the transition matrix. """
 function ODEjac(p::Vector{<:Real}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int; expp = true)::Matrix{<:Real}
-    # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
-    if nD1 == 0
-        D1 = Float64[]
-        diagD1 = Float64[]
-    elseif nD1 == 1
-        D1 = [0.0]
-        diagD1 = -ones(nD1) * p[3]
-    else
-        D1 = [0.0; ones(nD1 - 1) * p[3]]
-        diagD1 = -ones(nD1) * p[3]
-    end
-
-    if nD2 == 0
-        D2 = Float64[]
-        diagD2 = Float64[]
-    elseif nD2 == 1
-        D2 = [0.0]
-        diagD2 = -ones(nD2) * p[4]
-    else
-        D2 = [0.0; ones(nD2 - 1) * p[4]]
-        diagD2 = -ones(nD2) * p[4]
-    end
-
-    v1 = [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); diagD1; diagD2]
-    v2 = [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; D1; D2]
-    A = diagm(0 => v1, -1 => v2)
-
-    A[1, nG1 + nG2] = 2 * p[2]
-    if nD1 > 0
-        A[nG1 + nG2 + 1, 1:nG1] = p[3] * ones(1, nG1)
-    end
-    if nD2 > 0
-        A[nG1 + nG2 + nD1 + 1, (nG1 + 1):(nG1 + nG2)] = p[4] * ones(1, nG2)
-    end
-
-    if nD1 & nD2 != 0
-        @assert all(A[1:(nG1 + nG2), (nG1 + nG2 + 1):end] .== 0.0)
-        @assert all(A[nG1 + nG2 + 1, (nG1 + 1):(nG1 + nG2)] .== 0.0)
-        @assert all(A[nG1 + nG2 + nD1 + 1, 1:nG1] .== 0.0)
-    end
-
-    if expp
-        rmul!(A, dt)
-        A = LinearAlgebra.exp!(A)
-    end
-
-    return A
-end
-
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function ODEjac2(p::Vector{<:Real}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int; expp = true)::Matrix{<:Real}
-    # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
-    if nD1 == 0
-        D1 = Float64[]
-        diagD1 = Float64[]
-    elseif nD1 == 1
-        D1 = [0.0]
-        diagD1 = -ones(nD1) * p[3]
-    else
-        D1 = [0.0; ones(nD1 - 1) * p[3]]
-        diagD1 = -ones(nD1) * p[3]
-    end
-
-    if nD2 == 0
-        D2 = Float64[]
-        diagD2 = Float64[]
-    elseif nD2 == 1
-        D2 = [0.0]
-        diagD2 = -ones(nD2) * p[4]
-    else
-        D2 = [0.0; ones(nD2 - 1) * p[4]]
-        diagD2 = -ones(nD2) * p[4]
-    end
-
-    v1 = [-2*ones(nG1) * p[1]; -2*ones(nG2) * p[2]; diagD1; diagD2]
-    v2 = [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; D1; D2]
-    A = diagm(0 => v1, -1 => v2)
-
-    A[1, nG1 + nG2] = 2 * p[2]
-    if nD1 > 0
-        A[nG1 + nG2 + 1, 1:nG1] = p[1] * ones(1, nG1)
-    end
-    if nD2 > 0
-        A[nG1 + nG2 + nD1 + 1, (nG1 + 1):(nG1 + nG2)] = p[2] * ones(1, nG2)
-    end
-
-    if nD1 & nD2 != 0
-        @assert all(A[1:(nG1 + nG2), (nG1 + nG2 + 1):end] .== 0.0)
-        @assert all(A[nG1 + nG2 + 1, (nG1 + 1):(nG1 + nG2)] .== 0.0)
-        @assert all(A[nG1 + nG2 + nD1 + 1, 1:nG1] .== 0.0)
-    end
-
-    if expp
-        rmul!(A, dt)
-        A = LinearAlgebra.exp!(A)
-    end
-
-    return A
-end
-
-function ODEjac3(p::Vector{<:Real}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int; expp = true)::Matrix{<:Real}
     # p = [alpha, beta, gamma1, gamma2, %, nG1, nG2, nD1, nD2, zeta1, zeta2]
     if nD1 == 0
         D1 = Float64[]
@@ -153,7 +52,7 @@ function ODEjac3(p::Vector{<:Real}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2:
 
     return A
 end
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 """ Predicts the model given a set of parametrs. """
 function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integer)
     # Some assumptions
@@ -171,7 +70,7 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1::Integer, nD2:
     end
 
     v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
-    A = ODEjac3(p, t[2], nG1, nG2, nD1, nD2)
+    A = ODEjac(p, t[2], nG1, nG2, nD1, nD2)
 
     G1 = Vector{eltype(p)}(undef, length(t))
     G2 = Vector{eltype(p)}(undef, length(t))
@@ -200,10 +99,14 @@ function predict2(p, g_0::Real, t::Float64, nG1::Int, nG2::Int, nD1::Int, nD2::I
     end
 
     v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
-    A = ODEjac3(p, t, nG1, nG2, nD1, nD2, expp=false)
+    A = ODEjac(p, t, nG1, nG2, nD1, nD2, expp=false)
     v = ExponentialUtilities.expv(t, A, v)
 
-    G1 = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
+    if nD1 == 0
+        G1 = sum(v[1:nG1])
+    else
+        G1 = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
+    end
     G2 = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
 
     return G1, G2

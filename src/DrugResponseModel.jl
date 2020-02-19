@@ -33,6 +33,7 @@ export setup_data,
     plotGradient,
     predict2,
     numcells,
-    ODEjac2
+    ODEjac2,
+    diffCell
 
 end # module
