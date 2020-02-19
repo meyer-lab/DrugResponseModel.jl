@@ -14,7 +14,7 @@ function residHill(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::M
         atomic_add!(
             res,
             cost(
-                params[1:5, ii],
+                params[1:11, ii],
                 g1[:, ii],
                 g2[:, ii],
                 Int(floor(params[6, ii])),
@@ -43,8 +43,8 @@ end
 function optimize_hill(conc_l::Vector, g1::Matrix, g2::Matrix; maxstep = 1E5)
     hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2)
 
-    low = [minimum(conc_l), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.45, 2, 10, 0, 0]
-    high = [maximum(conc_l), 3.0, 3.0, 10.0, 3.0, 3.0, 1.0, 1.0, 0.55, 60, 180, 50, 50]
+    low = [minimum(conc_l), 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 0.0, 0.0, 0.35, 2, 10, 0, 0, 1e-8, 1e-8]
+    high = [maximum(conc_l), 1.0, 10.0, 1.0, 10.0, 1.0, 1.0, 1.0, 0.65, 60, 180, 50, 50, 3.0, 3.0]
 
     results_ode = bboptimize(
         hillCost;
@@ -60,7 +60,7 @@ end
 
 """ A function to convert the estimated hill parameters back to ODE parameters. """
 function getODEparams(p::Vector, concentrations::Vector{Float64})
-    effects = Matrix{eltype(p)}(undef, 9, length(concentrations))
+    effects = Matrix{eltype(p)}(undef, 11, length(concentrations))
 
     # Scaled drug effect
     xx = 1.0 ./ (1.0 .+ (p[1] ./ concentrations) .^ p[4])
@@ -75,6 +75,8 @@ function getODEparams(p::Vector, concentrations::Vector{Float64})
     effects[7, :] .= floor(p[11])
     effects[8, :] .= floor(p[12])
     effects[9, :] .= floor(p[13])
+    effects[10, :] .= p[14]
+    effects[11, :] .= p[15]
 
     return effects
 end
@@ -105,7 +107,7 @@ function allSensitivity(params::Vector, conc_l::Vector, g1::Matrix, g2::Matrix)
     return results, paramRanges
 end
 
-""" Plots the sensitivity for a parameter with a vertical line of the real value of the parameter."""
+""" Plots the sensitivity for a parameter with a vertical line of the real value of the parameter. """
 function plotUnitSensitivity(paramRange, result, realParam, i)
     label = [
         "EC50",
@@ -135,7 +137,6 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
     ylims!((1E2, 1E4))
 end
 
-
 """ Calculate the # of cells in G1 for a set of parameters and T """
 function numcells(params, g0, t::Real)
     G1, G2 = predict2(params, g0, t, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
@@ -143,14 +144,12 @@ function numcells(params, g0, t::Real)
     return G1 + G2
 end
 
-
 """ Calculates the gradient with central difference"""
 function diffCell(params, g0, T)
     diffcells(x) = numcells(x, g0, T)
 
-    return Calculus.finite_difference(diffcells, params) / diffcells(params)
+    return Calculus.finite_difference(diffcells, params)
 end
-
 
 """ Plot the gradient vs concentrations """
 function plotGradient(effects, concentration, g0, T, title)
