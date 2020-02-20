@@ -75,8 +75,8 @@ function getODEparams(p::Vector, concentrations::Vector{Float64})
     effects[7, :] .= floor(p[11])
     effects[8, :] .= floor(p[12])
     effects[9, :] .= floor(p[13])
-    effects[10, :] .= p[14]
-    effects[11, :] .= p[15]
+#     effects[10, :] .= p[14]
+#     effects[11, :] .= p[15]
 
     return effects
 end
@@ -149,7 +149,7 @@ function diffCell(params, g0, T)
     diffcells(x) = numcells(x, g0, T)
     difs = Calculus.finite_difference(diffcells, params)
     # assert all the derivations of death rate are negative.
-    @assert(all(x -> x<=0, difs[3:4]), "failure is due to parameter set: $params")
+    @assert(all(x -> x<=0, difs[3:4]), "positive gradient for death rates due to parameter set: $params")
     return difs
 end
 

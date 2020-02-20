@@ -3,7 +3,54 @@
 """
 
 """ Make the transition matrix. """
-function ODEjac(p::Vector{<:Real}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int; expp = true)::Matrix{<:Real}
+function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int; expp = true)::Matrix{Float64}
+    # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
+    if nD1 == 0
+        D1 = Float64[]
+        diagD1 = Float64[]
+    elseif nD1 == 1
+        D1 = [0.0]
+        diagD1 = -ones(nD1) * p[3]
+    else
+        D1 = [0.0; ones(nD1 - 1) * p[3]]
+        diagD1 = -ones(nD1) * p[3]
+    end
+
+    if nD2 == 0
+        D2 = Float64[]
+        diagD2 = Float64[]
+    elseif nD2 == 1
+        D2 = [0.0]
+        diagD2 = -ones(nD2) * p[4]
+    else
+        D2 = [0.0; ones(nD2 - 1) * p[4]]
+        diagD2 = -ones(nD2) * p[4]
+    end
+
+    v1 = [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); diagD1; diagD2]
+    v2 = [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; D1; D2]
+    A = diagm(0 => v1, -1 => v2)
+
+    A[1, nG1 + nG2] = 2 * p[2]
+    if nD1 > 0
+        A[nG1 + nG2 + 1, 1:nG1] = p[3] * ones(1, nG1)
+    end
+    if nD2 > 0
+        A[nG1 + nG2 + nD1 + 1, (nG1 + 1):(nG1 + nG2)] = p[4] * ones(1, nG2)
+    end
+
+    rmul!(A, dt)
+
+    if nD1 & nD2 != 0
+        @assert all(A[1:(nG1 + nG2), (nG1 + nG2 + 1):end] .== 0.0)
+        @assert all(A[nG1 + nG2 + 1, (nG1 + 1):(nG1 + nG2)] .== 0.0)
+        @assert all(A[nG1 + nG2 + nD1 + 1, 1:nG1] .== 0.0)
+    end
+    A = LinearAlgebra.exp!(A)
+
+    return A
+end
+function ODEjac2(p::Vector{<:Real}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int; expp = true)::Matrix{<:Real}
     # p = [alpha, beta, gamma1, gamma2, %, nG1, nG2, nD1, nD2, zeta1, zeta2]
     if nD1 == 0
         D1 = Float64[]
