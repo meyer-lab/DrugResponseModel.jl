@@ -140,7 +140,7 @@ end
 """ Calculate the # of cells in G1 for a set of parameters and T """
 function numcells(params, g0, t::Real)
     G1, G2 = predict2(params, g0, t, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
-
+    @assert(G1 >= 0 && G2 >= 0, "negative cell number! G1 number is $G1, G2 number is $G2, with this parameter set: $params")
     return G1 + G2
 end
 
@@ -149,7 +149,7 @@ function diffCell(params, g0, T)
     diffcells(x) = numcells(x, g0, T)
     difs = Calculus.finite_difference(diffcells, params)
     # assert all the derivations of death rate are negative.
-    @assert(all(x -> x<=0, difs[3:4]), "failure is due to params: $params")
+    @assert(all(x -> x<=0, difs[3:4]), "failure is due to parameter set: $params")
     return difs
 end
 
