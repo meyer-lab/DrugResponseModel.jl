@@ -39,59 +39,11 @@ function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2:
         A[nG1 + nG2 + nD1 + 1, (nG1 + 1):(nG1 + nG2)] = p[4] * ones(1, nG2)
     end
 
-    rmul!(A, dt)
-
     if nD1 & nD2 != 0
         @assert all(A[1:(nG1 + nG2), (nG1 + nG2 + 1):end] .== 0.0)
         @assert all(A[nG1 + nG2 + 1, (nG1 + 1):(nG1 + nG2)] .== 0.0)
         @assert all(A[nG1 + nG2 + nD1 + 1, 1:nG1] .== 0.0)
     end
-    A = LinearAlgebra.exp!(A)
-
-    return A
-end
-function ODEjac2(p::Vector{<:Real}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int; expp = true)::Matrix{<:Real}
-    # p = [alpha, beta, gamma1, gamma2, %, nG1, nG2, nD1, nD2, zeta1, zeta2]
-    if nD1 == 0
-        D1 = Float64[]
-        diagD1 = Float64[]
-    elseif nD1 == 1
-        D1 = [0.0]
-        diagD1 = -ones(nD1) * p[3]
-    else
-        D1 = [0.0; ones(nD1 - 1) * p[3]]
-        diagD1 = -ones(nD1) * p[3]
-    end
-
-    if nD2 == 0
-        D2 = Float64[]
-        diagD2 = Float64[]
-    elseif nD2 == 1
-        D2 = [0.0]
-        diagD2 = -ones(nD2) * p[4]
-    else
-        D2 = [0.0; ones(nD2 - 1) * p[4]]
-        diagD2 = -ones(nD2) * p[4]
-    end
-
-    v1 = [-ones(nG1) * (p[1] + p[10]); -ones(nG2) * (p[2] + p[11]); diagD1; diagD2]
-    v2 = [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; D1; D2]
-    A = diagm(0 => v1, -1 => v2)
-
-    A[1, nG1 + nG2] = 2 * p[2]
-    if nD1 > 0
-        A[nG1 + nG2 + 1, 1:nG1] = p[10] * ones(1, nG1)
-    end
-    if nD2 > 0
-        A[nG1 + nG2 + nD1 + 1, (nG1 + 1):(nG1 + nG2)] = p[11] * ones(1, nG2)
-    end
-
-    if nD1 & nD2 != 0
-        @assert all(A[1:(nG1 + nG2), (nG1 + nG2 + 1):end] .== 0.0)
-        @assert all(A[nG1 + nG2 + 1, (nG1 + 1):(nG1 + nG2)] .== 0.0)
-        @assert all(A[nG1 + nG2 + nD1 + 1, 1:nG1] .== 0.0)
-    end
-
     if expp
         rmul!(A, dt)
         A = LinearAlgebra.exp!(A)
@@ -122,39 +74,28 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1::Integer, nD2:
     G1 = Vector{eltype(p)}(undef, length(t))
     G2 = Vector{eltype(p)}(undef, length(t))
 
-    for ii = 1:length(G1)
-        G1[ii] = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
-        G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
+    if nD1 == 0 & nD2 != 0
+        for ii = 1:length(G1)
+            G1[ii] = sum(v[1:nG1])
+            G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD2)])
 
-        v = A * v
-    end
+            v = A * v
+        end
+    elseif nD2 == 0 & nD1 != 0
+        for ii = 1:length(G1)
+            G1[ii] = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
+            G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)])
 
-    return G1, G2
-end
-
-""" Another version for predict function, to calculate the numbers for one time point. """
-function predict2(p, g_0::Real, t::Float64, nG1::Int, nG2::Int, nD1::Int, nD2::Int)
-    if nD1 == 0
-        D1 = Float64[]
+            v = A * v
+        end
     else
-        D1 = zeros(nD1)
-    end
-    if nD2 == 0
-        D2 = Float64[]
-    else
-        D2 = zeros(nD2)
-    end
+        for ii = 1:length(G1)
+            G1[ii] = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
+            G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
 
-    v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
-    A = ODEjac(p, t, nG1, nG2, nD1, nD2, expp=false)
-    v = ExponentialUtilities.expv(t, A, v)
-
-    if nD1 == 0
-        G1 = sum(v[1:nG1])
-    else
-        G1 = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
+            v = A * v
+        end
     end
-    G2 = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
 
     return G1, G2
 end
@@ -164,6 +105,8 @@ end
 function cost(p, g1, g2, nG1::Int, nG2::Int, nD1::Int, nD2::Int)
     t = LinRange(0.0, 95.5, 192)
     G1, G2 = predict(p, g1[1] + g2[1], t, nG1, nG2, nD1, nD2)
+    @assert(all(x -> x>=0.0, G1), "num cells is negative in G1: $G1")
+    @assert(all(x -> x>=0.0, G2), "num cells is negative in G2: $G2")
 
     return norm(G1 - g1) + norm(G2 - g2)
 end
@@ -173,8 +116,8 @@ end
 function ODEoptimizer(i::Int, g1::Matrix, g2::Matrix)
     residuals(p) = cost(p, g1[:, i], g2[:, i], Int(floor(p[6])), Int(floor(p[7])), Int(floor(p[8])), Int(floor(p[9])))
     # lower and upper bounds for the parameters
-    lower = [0.0, 0.0, 0.0, 0.0, 0.0, 1, 1, 0, 0, 0.0, 0.0]
-    upper = [3.0, 3.0, 3.0, 3.0, 1.0, 70, 70, 70, 70, 3.0, 3.0]
+    lower = [0.0, 0.0, 0.0, 0.0, 0.0, 1, 1, 0, 0]
+    upper = [3.0, 3.0, 3.0, 3.0, 1.0, 70, 70, 70, 70]
     bound = collect(zip(lower, upper))
 
     # global optimization with black box optimization
@@ -190,6 +133,8 @@ function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, title::
     t = LinRange(0.0, 95.5, 192)
     t_new = LinRange(0.0, 120, 200)
     G1, G2 = predict(params, g1[1] + g2[1], t_new, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
+    @assert(all(x -> x>=0.0, G1), "num cells is negative in G1: $G1")
+    @assert(all(x -> x>=0.0, G2), "num cells is negative in G2: $G2")
 
     plot(
         t_new,
@@ -227,7 +172,8 @@ function plotPercentage(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, tit
     t = LinRange(0.0, 95.5, 192)
     t_new = LinRange(0.0, 120, 200)
     G1, G2 = predict(params, g1[1] + g2[1], t_new, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
-
+    @assert(all(x -> x>=0.0, G1), "num cells is negative in G1: $G1")
+    @assert(all(x -> x>=0.0, G2), "num cells is negative in G2: $G2")
     plot(
         t_new,
         100.0 * G1 ./ (G1 .+ G2),

@@ -14,7 +14,7 @@ function residHill(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::M
         atomic_add!(
             res,
             cost(
-                params[1:11, ii],
+                params[1:9, ii],
                 g1[:, ii],
                 g2[:, ii],
                 Int(floor(params[6, ii])),
@@ -28,7 +28,6 @@ function residHill(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::M
     return res[]
 end
 
-
 """ Gradient of the cost. """
 function residHillG(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::Matrix)
     # Calculate the continuous parameters with central differencing.
@@ -38,13 +37,12 @@ function residHillG(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::
     return Calculus.finite_difference(hillCost, hillParams)
 end
 
-
 """ Hill optimization function. """
 function optimize_hill(conc_l::Vector, g1::Matrix, g2::Matrix; maxstep = 1E5)
     hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2)
 
-    low = [minimum(conc_l), 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 0.0, 0.0, 0.35, 2, 10, 0, 0, 1e-8, 1e-8]
-    high = [maximum(conc_l), 1.0, 10.0, 1.0, 10.0, 1.0, 1.0, 1.0, 0.65, 60, 180, 50, 50, 3.0, 3.0]
+    low = [minimum(conc_l), 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 0.0, 0.0, 0.35, 2, 10, 0, 0]
+    high = [maximum(conc_l), 1.0, 10.0, 1.0, 10.0, 1.0, 1.0, 1.0, 0.65, 60, 180, 50, 50]
 
     results_ode = bboptimize(
         hillCost;
@@ -60,7 +58,7 @@ end
 
 """ A function to convert the estimated hill parameters back to ODE parameters. """
 function getODEparams(p::Vector, concentrations::Vector{Float64})
-    effects = Matrix{eltype(p)}(undef, 11, length(concentrations))
+    effects = Matrix{eltype(p)}(undef, 9, length(concentrations))
 
     # Scaled drug effect
     xx = 1.0 ./ (1.0 .+ (p[1] ./ concentrations) .^ p[4])
@@ -75,8 +73,6 @@ function getODEparams(p::Vector, concentrations::Vector{Float64})
     effects[7, :] .= floor(p[11])
     effects[8, :] .= floor(p[12])
     effects[9, :] .= floor(p[13])
-#     effects[10, :] .= p[14]
-#     effects[11, :] .= p[15]
 
     return effects
 end
@@ -95,7 +91,7 @@ end
 """ Calculate the sensitivity to all parameters. """
 function allSensitivity(params::Vector, conc_l::Vector, g1::Matrix, g2::Matrix)
     b = copy(params)
-    convRange = 10 .^ (range(-1, stop = 1, length = 101))
+    convRange = 10 .^ (range(-0.5, stop = 0.5, length = 101))
     results = zeros(length(convRange), 11)
     paramRanges = zeros(length(convRange), 11)
 
@@ -138,18 +134,19 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
 end
 
 """ Calculate the # of cells in G1 for a set of parameters and T """
-function numcells(params, g0, t::Real)
-    G1, G2 = predict2(params, g0, t, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
-    @assert(G1 >= 0 && G2 >= 0, "negative cell number! G1 number is $G1, G2 number is $G2, with this parameter set: $params")
-    return G1 + G2
+function numcells(params, g0, t::Int)
+    tt = LinRange(0.0, 200, 201)
+    G1, G2 = predict(params, g0, tt, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
+    @assert(all(x->x>=0, G1), "negative cell number! G1 number is $G1 with this parameter set: $params")
+    @assert(all(x->x>=0, G2), "negative cell number! G2 number is $G2 with this parameter set: $params")
+    @assert(0 <= t <= 200, "you have chosen a time point beyond the simulation, please select 0 <= t <= 200")
+    return G1[t] + G2[t]
 end
 
 """ Calculates the gradient with central difference"""
 function diffCell(params, g0, T)
     diffcells(x) = numcells(x, g0, T)
     difs = Calculus.finite_difference(diffcells, params)
-    # assert all the derivations of death rate are negative.
-    @assert(all(x -> x<=0, difs[3:4]), "positive gradient for death rates due to parameter set: $params")
     return difs
 end
 

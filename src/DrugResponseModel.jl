@@ -31,9 +31,8 @@ export setup_data,
     allSensitivity,
     ODEplot_allPerc,
     plotGradient,
-    predict2,
+    predict,
     numcells,
-    ODEjac2,
     diffCell
 
 end # module
