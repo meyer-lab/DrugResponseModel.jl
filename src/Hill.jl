@@ -14,7 +14,7 @@ function residHill(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::M
         atomic_add!(
             res,
             cost(
-                params[1:9, ii],
+                params[1:5, ii],
                 g1[:, ii],
                 g2[:, ii],
                 Int(floor(params[6, ii])),
