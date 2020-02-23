@@ -95,7 +95,7 @@ end
 
 
 """ Fit the ODE model to data. """
-function ODEoptimizer(i::Int, g1::Matrix, g2::Matrix)
+function ODEoptimizer(i::Int, g1::Matrix, g2::Matrix; maxst = 50000)
     residuals(p) = cost(p, g1[:, i], g2[:, i], Int(floor(p[6])), Int(floor(p[7])), Int(floor(p[8])), Int(floor(p[9])))
     # lower and upper bounds for the parameters
     lower = [0.0, 0.0, 0.0, 0.0, 0.0, 1, 1, 0, 0]
@@ -103,7 +103,7 @@ function ODEoptimizer(i::Int, g1::Matrix, g2::Matrix)
     bound = collect(zip(lower, upper))
 
     # global optimization with black box optimization
-    results_ode = bboptimize(residuals; SearchRange = bound, NumDimensions = 9, TraceMode = :silent, MaxSteps = 50000)
+    results_ode = bboptimize(residuals; SearchRange = bound, NumDimensions = 9, TraceMode = :silent, MaxSteps = maxst)
 
     return best_fitness(results_ode), best_candidate(results_ode)
 end
