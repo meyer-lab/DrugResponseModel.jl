@@ -152,7 +152,7 @@ end
 function diffCell(params, g0, T)
     diffcells(x) = numcells(x, g0, T)
 
-    return Calculus.finite_difference(diffcells, params, :forward) / abs(diffcells(params))
+    return Calculus.finite_difference(diffcells, params, :forward) / diffcells(params)
 end
 
 
