@@ -138,8 +138,10 @@ end
 
 """ Calculate the # of cells in G1 for a set of parameters and T """
 function numcells(params, g0, T)
+    @assert(all(params .>= 0.0), "negative params $params")
     t = LinRange(0.0, 200.0, 201)
     G1, G2 = predict(params, g0, t, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
+
     @assert(all(x -> x>=0.0, G1[2:end]), "negative cell number in G1 $G1")
     @assert(all(x -> x>=0.0, G2[2:end]), "negative cell number in G2 $G2")
     return G1[T] + G2[T]
@@ -150,7 +152,7 @@ end
 function diffCell(params, g0, T)
     diffcells(x) = numcells(x, g0, T)
 
-    return Calculus.finite_difference(diffcells, params) / abs(diffcells(params))
+    return Calculus.finite_difference(diffcells, params, :forward) / abs(diffcells(params))
 end
 
 
