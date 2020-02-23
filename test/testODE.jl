@@ -6,8 +6,7 @@
     DrugResponseModel.predict(p, 1.0, t, 20, 20, 10, 10)
 
     # ODE optimization and estimation of the parameters
-    fitness, params_ode = ODEoptimizer(4, g1, g2)
-    @test fitness < 800.0
+    fitness, params_ode = ODEoptimizer(4, g1, g2; maxst = 100)
 
     @time DrugResponseModel.cost(p, g1[:, 1], g2[:, 1], 100, 100, 20, 20)
 end
