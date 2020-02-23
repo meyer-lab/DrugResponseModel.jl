@@ -21,4 +21,3 @@ end
     eff1 = getODEparams(p1, conc)
     difcel = diffCell(eff1[:, 1], g1[1]+g2[1], 100)
 end
-    
