@@ -28,7 +28,7 @@ function residHillAll(hillParams::Array{Float64,1}, concentrations::Array{Float6
     params = getODEparamsAll(hillParams, concentrations)
 
     # Solve for all drugs
-    @threads for j = 1:4
+    for j = 1:4
         @threads for ii = 1:length(concentrations[:, j])
             atomic_add!(
                 res,
