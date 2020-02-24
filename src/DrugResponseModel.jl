@@ -17,6 +17,7 @@ include("plot.jl")
 include("allDrugs.jl")
 
 export setup_data,
+    load,
     ODEoptimizer,
     ode_plotIt,
     plotIt,

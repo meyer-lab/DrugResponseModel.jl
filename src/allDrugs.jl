@@ -34,8 +34,8 @@ function residHillAll(hillParams::Vector, concentrations::Matrix, g1::Matrix, g2
                 res,
                 cost(
                     params[:, ii, j],
-                    g1[:, ii],
-                    g2[:, ii],
+                    g1[:, ii, j],
+                    g2[:, ii, j],
                     Int(floor(params[6, ii, j])),
                     Int(floor(params[7, ii, j])),
                     Int(floor(params[8, ii, j])),
