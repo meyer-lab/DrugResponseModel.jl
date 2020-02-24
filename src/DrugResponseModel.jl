@@ -14,6 +14,7 @@ include("importData.jl")
 include("ODEmodel.jl")
 include("Hill.jl")
 include("plot.jl")
+include("allDrugs.jl")
 
 export setup_data,
     ODEoptimizer,
