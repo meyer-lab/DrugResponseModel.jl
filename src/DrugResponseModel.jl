@@ -31,6 +31,7 @@ export setup_data,
     plotUnitSensitivity,
     allSensitivity,
     ODEplot_allPerc,
-    plotGradient
+    plotGradient,
+    optimize_hillAll
 
 end # module
