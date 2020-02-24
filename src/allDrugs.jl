@@ -17,3 +17,26 @@ function costAll(p, g1, g2, nG1::Int, nG2::Int, nD1::Int, nD2::Int)
 
     return allNorms
 end
+
+function getODEparamsAll(p::Vector, concentrations::Vector{Float64})
+    effects = Matrix{eltype(p)}(undef, 9, 8, 4)
+
+    k = 1
+    # Scaled drug effect
+    for j=1:4
+        xx = 1.0 ./ (1.0 .+ (p[k] ./ concentrations) .^ p[k+1])
+
+        effects[1, :, i] = p[k+2] .+ (p[k+3] - p[k+2]) .* xx
+        effects[2, :, i] = p[k+4] .+ (p[k+5] - p[k+4]) .* xx
+        effects[3, :, i] = p[k+6] .* xx
+        effects[4, :, i] = p[k+7] .* xx
+        effects[5, :, i] .= p[k+8]
+        k+=9
+    end
+    effects[6, :, :] .= floor(p[37]) #nG1
+    effects[7, :, :] .= floor(p[38]) #nG2
+    effects[8, :, :] .= floor(p[39]) #nD1
+    effects[9, :, :] .= floor(p[40]) #nD2
+
+    return effects
+end
