@@ -47,3 +47,22 @@ function residHillAll(hillParams::Vector, concentrations::Matrix, g1::Matrix, g2
 
     return res[]
 end
+
+""" Hill optimization function for all drugs. """
+function optimize_hillAll(concs::Matrix, g1::Matrix, g2::Matrix; maxstep = 1E5)
+    hillCostAll(hillParams) = residHillAll(hillParams, conc_l, g1, g2)
+
+    low = [minimum(concs[:, 1]), 0.01, 1e-9, 1e-9, 1e-9, 1e-9, 0.0, 0.0, 0.45, [minimum(concs[:, 2]), 0.01, 1e-9, 1e-9, 1e-9, 1e-9, 0.0, 0.0, 0.45, [minimum(concs[:, 3]), 0.01, 1e-9, 1e-9, 1e-9, 1e-9, 0.0, 0.0, 0.45, [minimum(concs[:, 4]), 0.01, 1e-9, 1e-9, 1e-9, 1e-9, 0.0, 0.0, 0.45, 2, 10, 0, 0]
+    high = [maximum(concs[:, 1]), 10.0, 3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 0.55, maximum(concs[:, 2]), 10.0, 3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 0.55, maximum(concs[:, 3]), 10.0, 3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 0.55, maximum(concs[:, 4]), 10.0, 3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 0.55, 60, 180, 50, 50]
+
+    results_ode = bboptimize(
+        hillCostAll;
+        SearchRange = collect(zip(low, high)),
+        NumDimensions = length(low),
+        TraceMode = :verbose,
+        TraceInterval = 100,
+        MaxSteps = maxstep,
+    )
+
+    return best_fitness(results_ode), best_candidate(results_ode)
+end
