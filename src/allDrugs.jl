@@ -8,17 +8,17 @@ function getODEparamsAll(p::Array{Float64,1}, concentrations::Array{Float64,2})
     for i=1:4
         xx = 1.0 ./ (1.0 .+ (p[k] ./ concentrations[:, i]) .^ p[k+1])
 
-        effects[1, :, i] = p[k+2] .+ (p[k+3] - p[k+2]) .* xx
-        effects[2, :, i] = p[k+4] .+ (p[k+5] - p[k+4]) .* xx
-        effects[3, :, i] = p[k+6] .* xx
-        effects[4, :, i] = p[k+7] .* xx
-        k+=8
+        effects[1, :, i] = p[25] .+ (p[k+2] - p[25]) .* xx
+        effects[2, :, i] = p[26] .+ (p[k+3] - p[26]) .* xx
+        effects[3, :, i] = p[k+4] .* xx
+        effects[4, :, i] = p[k+5] .* xx
+        k+=6
     end
-    effects[5, :, :] .= p[33]
-    effects[6, :, :] .= floor(p[34]) #nG1
-    effects[7, :, :] .= floor(p[35]) #nG2
-    effects[8, :, :] .= floor(p[36]) #nD1
-    effects[9, :, :] .= floor(p[37]) #nD2
+    effects[5, :, :] .= p[27]
+    effects[6, :, :] .= floor(p[28]) #nG1
+    effects[7, :, :] .= floor(p[29]) #nG2
+    effects[8, :, :] .= floor(p[30]) #nD1
+    effects[9, :, :] .= floor(p[31]) #nD2
 
     return effects
 end
@@ -52,8 +52,8 @@ end
 function optimize_hillAll(concs::Array{Float64,2}, g1::Array{Float64,3}, g2::Array{Float64,3}; maxstep = 1E5)
     hillCostAll(hillParams) = residHillAll(hillParams, concs, g1, g2)
 
-    low = [minimum(concs[:, 1]), 0.01, 1e-9, 1e-9, 1e-9, 1e-9, 0.0, 0.0, minimum(concs[:, 2]), 0.01, 1e-9, 1e-9, 1e-9, 1e-9, 0.0, 0.0, minimum(concs[:, 3]), 0.01, 1e-9, 1e-9, 1e-9, 1e-9, 0.0, 0.0, minimum(concs[:, 4]), 0.01, 1e-9, 1e-9, 1e-9, 1e-9, 0.0, 0.0, 0.45, 2, 10, 0, 0]
-    high = [maximum(concs[:, 1]), 10.0, 3.0, 3.0, 3.0, 3.0, 1.0, 1.0, maximum(concs[:, 2]), 10.0, 3.0, 3.0, 3.0, 3.0, 1.0, 1.0, maximum(concs[:, 3]), 10.0, 3.0, 3.0, 3.0, 3.0, 1.0, 1.0,  maximum(concs[:, 4]), 10.0, 3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 0.55, 60, 180, 50, 50]
+    low = [minimum(concs[:, 1]), 0.01, 1e-9, 1e-9, 0.0, 0.0, minimum(concs[:, 2]), 0.01, 1e-9, 1e-9, 0.0, 0.0, minimum(concs[:, 3]), 0.01, 1e-9, 1e-9, 0.0, 0.0, minimum(concs[:, 4]), 0.01, 1e-9, 1e-9, 0.0, 0.0, 1e-9, 1e-9, 0.45, 2, 10, 0, 0]
+    high = [maximum(concs[:, 1]), 10.0, 3.0, 3.0, 1.0, 1.0, maximum(concs[:, 2]), 10.0, 3.0, 3.0, 1.0, 1.0, maximum(concs[:, 3]), 10.0, 3.0, 3.0, 1.0, 1.0, maximum(concs[:, 4]), 10.0, 3.0, 3.0, 1.0, 1.0, 3.0, 3.0, 0.55, 60, 180, 50, 50]
 
     results_ode = bboptimize(
         hillCostAll;
