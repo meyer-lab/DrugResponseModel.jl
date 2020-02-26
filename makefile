@@ -1,5 +1,5 @@
 
-all: lapatinib.html doxorubicin.html gemcitabine.html paclitaxel.html
+all: lapatinib.html doxorubicin.html gemcitabine.html paclitaxel.html allDrugs.html
 
 venv: venv/bin/activate
 

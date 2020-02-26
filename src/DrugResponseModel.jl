@@ -14,8 +14,10 @@ include("importData.jl")
 include("ODEmodel.jl")
 include("Hill.jl")
 include("plot.jl")
+include("allDrugs.jl")
 
 export setup_data,
+    load,
     ODEoptimizer,
     ode_plotIt,
     plotIt,
@@ -29,8 +31,8 @@ export setup_data,
     plotUnitSensitivity,
     allSensitivity,
     ODEplot_allPerc,
-    numcells,
-    diffCell,
-    plotGradient
+    plotGradient,
+    getODEparamsAll,
+    optimize_hillAll
 
 end # module
