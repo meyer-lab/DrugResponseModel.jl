@@ -80,23 +80,23 @@ function setup_data(drug_name::String)
 end
 
 function load()
-    concl, popl, g2l, g1l = setup_data("lapatinib");
-    concd, popd, g2d, g1d = setup_data("doxorubicin");
-    concg, popg, g2g, g1g = setup_data("gemcitabine");
-    concp, popp, g2p, g1p = setup_data("paclitaxel");
-    concentrations = hcat(concl, concd, concg, concp);
-    
-    populations = [popl, popd, popg, popp];
-    g1s = zeros(192, 8, 4);
-    g2s = zeros(192, 8, 4);
-    g1s[:, :, 1] = g1l;
-    g1s[:, :, 2] = g1d;
-    g1s[:, :, 3] = g1g;
-    g1s[:, :, 4] = g1p;
-    g2s[:, :, 1] = g2l;
-    g2s[:, :, 2] = g2d;
-    g2s[:, :, 3] = g2g;
-    g2s[:, :, 4] = g2p;
-    
+    concl, popl, g2l, g1l = setup_data("lapatinib")
+    concd, popd, g2d, g1d = setup_data("doxorubicin")
+    concg, popg, g2g, g1g = setup_data("gemcitabine")
+    concp, popp, g2p, g1p = setup_data("paclitaxel")
+    concentrations = hcat(concl, concd, concg, concp)
+
+    populations = [popl, popd, popg, popp]
+    g1s = zeros(192, 8, 4)
+    g2s = zeros(192, 8, 4)
+    g1s[:, :, 1] = g1l
+    g1s[:, :, 2] = g1d
+    g1s[:, :, 3] = g1g
+    g1s[:, :, 4] = g1p
+    g2s[:, :, 1] = g2l
+    g2s[:, :, 2] = g2d
+    g2s[:, :, 3] = g2g
+    g2s[:, :, 4] = g2p
+
     return concentrations, populations, g1s, g2s
 end
