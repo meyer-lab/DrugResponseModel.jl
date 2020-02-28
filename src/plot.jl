@@ -16,8 +16,7 @@ function correlationPlot(g1::Matrix, g2::Matrix, labels::Array, xlabel::String, 
             color = [:gray],
             line = :dot,
             marker = (:dot, 1.5),
-        )
-        for i = 1:8
+        ) for i = 1:8
     ]
     plot(pl..., legend = :false, layout = (2, 4), fmt = :png)
     plot!(size = (1200, 600), margin = 0.4cm, dpi = 150)
