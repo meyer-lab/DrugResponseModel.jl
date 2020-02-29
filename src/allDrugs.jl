@@ -1,6 +1,6 @@
 """ In this file we fit all the drugs att once. """
 
-function getODEparamsAll(p::Array{Float64,1}, concentrations::Array{Float64,2})
+function getODEparamsAll(p::LArray{Float64,1}, concentrations::Array{Float64,2})
     effects = zeros(9, 8, 4)
 
     k = 1
@@ -14,11 +14,11 @@ function getODEparamsAll(p::Array{Float64,1}, concentrations::Array{Float64,2})
         effects[4, :, i] = p[k+5] .* xx
         k+=6
     end
-    effects[5, :, :] .= p[27] #percentage in G1
-    effects[6, :, :] .= floor(p[28]) #nG1
-    effects[7, :, :] .= floor(p[29]) #nG2
-    effects[8, :, :] .= floor(p[30]) #nD1
-    effects[9, :, :] .= floor(p[31]) #nD2
+    effects[5, :, :] .= p.percG1
+    effects[6, :, :] .= floor(p.nG1)
+    effects[7, :, :] .= floor(p.nG2)
+    effects[8, :, :] .= floor(p.nD1)
+    effects[9, :, :] .= floor(p.nD2)
 
     return effects
 end
