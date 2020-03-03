@@ -34,6 +34,9 @@ export setup_data,
     plotGradient,
     getODEparamsAll,
     optimize_hillAll,
-    BlissCombination
+    BlissCombination,
+    fullCombinationParam,
+    combinplot_all,
+    plotEffectsCombin
 
 end # module
