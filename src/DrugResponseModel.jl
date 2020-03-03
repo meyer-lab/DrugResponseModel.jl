@@ -33,6 +33,7 @@ export setup_data,
     ODEplot_allPerc,
     plotGradient,
     getODEparamsAll,
-    optimize_hillAll
+    optimize_hillAll,
+    BlissCombination
 
 end # module
