@@ -32,11 +32,12 @@ export setup_data,
     allSensitivity,
     ODEplot_allPerc,
     plotGradient,
+    numcells,
     getODEparamsAll,
     optimize_hillAll,
     BlissCombination,
     fullCombinationParam,
-    combinplot_all,
-    plotEffectsCombin
+    plotEffectsCombin,
+    plotNumcells
 
 end # module

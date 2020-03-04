@@ -164,9 +164,10 @@ function BlissCombination(p1::Matrix{Float64}, p2::Matrix{Float64})
 end
 
 """ To output the full ODE params for plotting the cell number. """
-function fullCombinationParam(combined, origFullParam)
+function fullCombinationParam(origP1, origP2, origFullParam)
+    """ Here we assume the base is origP1, and we just want to get the params of EC50 from origP2. """
     fullparam = zeros(9,8,8)
-
+    combined = BlissCombination(origP1, origP2)
     fullparam[5:9, :, :] .= origFullParam[5:9, 1, 1]
     for i=1:4
         fullparam[i, :, :] .= combined[:, :, i]
@@ -174,44 +175,64 @@ function fullCombinationParam(combined, origFullParam)
     return fullparam
 end
 
-function plotCombinODE(params, g0, title, ymax)
-    t = LinRange(0.0, 120, 200)
-    G1, G2 = predict(params, g0, t, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
+##############################
+### Plotting functions ... ###
+##############################
+# """ Function to plot unit of the time-series data for combined drugs. """
+# function plotCombinODE(params, g0, title, ymax)
+#     t = LinRange(0.0, 120, 200)
+#     G1, G2 = predict(params, g0, t, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
 
-    plot(t,
-        G1,
-        label = "G1 est",
-        xlabel = "time [hours]",
-        ylabel = "# of cells",
-        xguidefontsize = 8,
-        yguidefontsize = 8,
-        lw = 2.0,
-        alpha = 0.6,
-        color = :green,
-    )
-    plot!(t, G2, label = "G2 est", legend = :topleft, legendfontsize = 4, fg_legend = :transparent, lw = 2.0, alpha = 0.6, color = :sienna)
-    plot!(t, G1 .+ G2, label = "total est", dpi = 150, lw = 2.0, alpha = 0.6, color = :hotpink)
-    plot!(annotation = [(60, ymax, text(title, 8))])
-    ylims!((0.0, ymax))
-end
+#     plot(t,
+#         G1,
+#         label = "G1 est",
+#         xlabel = "time [hours]",
+#         ylabel = "# of cells",
+#         xguidefontsize = 8,
+#         yguidefontsize = 8,
+#         lw = 2.0,
+#         alpha = 0.6,
+#         color = :green,
+#     )
+#     plot!(t, G2, label = "G2 est", legend = :topleft, legendfontsize = 4, fg_legend = :transparent, lw = 2.0, alpha = 0.6, color = :sienna)
+#     plot!(t, G1 .+ G2, label = "total est", dpi = 150, lw = 2.0, alpha = 0.6, color = :hotpink)
+#     plot!(annotation = [(60, ymax, text(title, 8))])
+#     ylims!((0.0, ymax))
+# end
 
-function combinplot_all(params_ode, g0, conc::Array{Float64, 1})
-    # plotting the fitted curves
-    rl = [plotCombinODE(params_ode[:, i], g0, string(conc[i], " nM"), 80.0) for i = 1:4]
-    r2 = [plotCombinODE(params_ode[:, i], g0, string(conc[i], " nM"), 40.0) for i = 5:7]
-    r8 = plotCombinODE(params_ode[:, 8], g0, string(conc[8], " nM"), 40.0)
-    plot(rl..., r2..., r8, layout = (2, 4))
-    plot!(size = (900, 400), margin = 0.4cm, dpi = 200)
-end
+# """ Plot the times-series data for all of drug B concentrations combined with EC50 of drug B concentration. """
+# function combinplot_all(params_ode, g0, conc::Array{Float64, 1})
+#     # plotting the fitted curves
+#     rl = [plotCombinODE(params_ode[:, i], g0, string(conc[i], " nM"), 80.0) for i = 1:4]
+#     r2 = [plotCombinODE(params_ode[:, i], g0, string(conc[i], " nM"), 40.0) for i = 5:7]
+#     r8 = plotCombinODE(params_ode[:, 8], g0, string(conc[8], " nM"), 40.0)
+#     plot(rl..., r2..., r8, layout = (2, 4))
+#     plot!(size = (900, 400), margin = 0.4cm, dpi = 200)
+# end
 
+""" Function unit to plot drug effects before and after combination. """
 function plotunitCombin(conc, gemc, titles, combin)
     concs = log.(conc)
-    plot(concs, gemc, ylabel=titles, label = "taxol alone", legendfontsize = 7, lw = 3, fg_legend = :transparent)
-    plot!(concs, combin, label = "taxol w/ 5nM gemc.", lw=3) 
+    plot(concs, gemc, ylabel=titles, label = "taxol alone", legend=:left, legendfontsize = 7, lw = 3, fg_legend = :transparent, shape=:circle, color=:purple)
+    plot!(concs, combin, label = "taxol w/ 5nM gemc.", lw=3, shape=:circle, color=:green) 
 end
+
+""" Function to plot all of the drug effects before and after drug combination. """
 function plotEffectsCombin(concs, gemc, combin)
     titles = ["G1 prog. rate", "G2 prog. rate", "G1 death rate", "G2 death rate"]
     pl = [plotunitCombin(concs[:, 4], gemc[i, :], titles[i], combin[:, 4, i]) for i = 1:4]
     plot(pl..., layout = (2,2))
     plot!(size = (800, 500), margin = 0.4cm, dpi=150)
+end
+
+function plotNumcells(drugB, combination, concDrugB, g0)
+    numscomb = zeros(8)
+    nums = zeros(8)
+    for n =1:8
+        numscomb[n] = numcells(combination[:, n], g0, 96)
+        nums[n] = numcells(drugB[:, n], g0, 96)
+    end
+    plot(log.(concDrugB), numscomb, label = "pac + gemc", legendfontsize = 7, lw = 3, fg_legend = :transparent, shape=:circle, color=:purple)
+    plot!(log.(concDrugB), nums, label="pac", lw=3, xlabel="log drug concentration", ylabel="cell #", shape=:circle, color=:green)
+    plot!(dpi=150)
 end
