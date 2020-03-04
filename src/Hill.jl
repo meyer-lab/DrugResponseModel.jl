@@ -60,7 +60,7 @@ end
 
 """ A function to convert the estimated hill parameters back to ODE parameters. """
 function getODEparams(p::Vector, concentrations::Vector{Float64})
-    effects = Matrix{eltype(p)}(undef, 9, 8)
+    effects = Matrix{eltype(p)}(undef, 9, length(concentrations))
 
     # Scaled drug effect
     xx = 1.0 ./ (1.0 .+ (p[1] ./ concentrations) .^ p[4])
