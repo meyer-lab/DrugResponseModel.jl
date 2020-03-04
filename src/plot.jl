@@ -25,7 +25,6 @@ function correlationPlot(g1::Matrix, g2::Matrix, labels::Array, xlabel::String, 
 end
 
 function plot_parameters(conc_l, parameters)
-    #     new_conc = append!([0.5], conc_l[2:end])
     conc = log.(conc_l)
     p1 = plot(
         conc,

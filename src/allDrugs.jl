@@ -1,7 +1,7 @@
 """ In this file we fit all the drugs att once. """
 
 function getODEparamsAll(p::Array{Float64, 1}, concentrations::Array{Float64, 2})
-    effects = effects = zeros(9, 8, 4)
+    effects = zeros(9, length(concentrations[:, 1]), 4)
 
     k = 1
     # Scaled drug effect
@@ -52,6 +52,8 @@ end
 function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxstep = 1E5)
     hillCostAll(hillParams) = residHillAll(hillParams, concs, g1, g2)
 
+    # The parameters used here in order:
+     #(:Lap_EC50, :Lap_steepness, :Lap_maxG1ProgRate, :Lap_maxG2ProgRate, :Lap_maxDeathG1Rate, :Lap_maxDeathG2Rate, :Dox_EC50, :Dox_steepness, :Dox_maxG1ProgRate, :Dox_maxG2ProgRate, :Dox_maxDeathG1Rate, :Dox_maxDeathG2Rate, :Gem_EC50, :Gem_steepness, :Gem_maxG1ProgRate, :Gem_maxG2ProgRate, :Gem_maxDeathG1Rate, :Gem_maxDeathG2Rate, :Tax_EC50, :Tax_steepness, :Tax_maxG1ProgRate, :Tax_maxG2ProgRate, :Tax_maxDeathG1Rate, :Tax_maxDeathG2Rate, :G1ProgRateControl, :G2ProgRateControl, :percG1, :nG1, :nG2, :nD1, :nD2)
     low = [
         minimum(concs[:, 1]),
         0.01,
@@ -137,7 +139,7 @@ function ParamForBliss(p)
     """ To calculate Bliss independence drug effect
     we assume delays are constant, death rates are additive,
     and will keep the alpha and beta intact."""
-    par = zeros(4,8)
+    par = zeros(4,50)
     par[1,:] = p[1,:] # alpha stays the same
     par[2,:] = p[2,:] # beta stays the same
     par[3,:] = p[3,:] # death rate in G1
@@ -153,9 +155,9 @@ function BlissCombination(p1::Matrix{Float64}, p2::Matrix{Float64})
     param1 = ParamForBliss(p1)
     param2 = ParamForBliss(p2)
     """ For 8x8 combination of drug concentrations for G1 progression rate, G2 progression rate, and death rates in G1 and G2, respectively. """
-    combined = zeros(8,8,4)
-    for j in 1:8
-        for k in 1:8
+    combined = zeros(50,50,4)
+    for j in 1:50
+        for k in 1:50
             combined[j,k,1:2] .= param1[1:2,j] .+ param2[1:2,k] .- param1[1:2,j] .* param2[1:2,k]
             combined[j,k,3:4] .= param1[3:4,j] .+ param2[3:4,k]
             end
@@ -166,7 +168,7 @@ end
 """ To output the full ODE params for plotting the cell number. """
 function fullCombinationParam(origP1, origP2, origFullParam)
     """ Here we assume the base is origP1, and we just want to get the params of EC50 from origP2. """
-    fullparam = zeros(9,8,8)
+    fullparam = zeros(9,50,50)
     combined = BlissCombination(origP1, origP2)
     fullparam[5:9, :, :] .= origFullParam[5:9, 1, 1]
     for i=1:4
@@ -175,45 +177,10 @@ function fullCombinationParam(origP1, origP2, origFullParam)
     return fullparam
 end
 
-##############################
-### Plotting functions ... ###
-##############################
-# """ Function to plot unit of the time-series data for combined drugs. """
-# function plotCombinODE(params, g0, title, ymax)
-#     t = LinRange(0.0, 120, 200)
-#     G1, G2 = predict(params, g0, t, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
-
-#     plot(t,
-#         G1,
-#         label = "G1 est",
-#         xlabel = "time [hours]",
-#         ylabel = "# of cells",
-#         xguidefontsize = 8,
-#         yguidefontsize = 8,
-#         lw = 2.0,
-#         alpha = 0.6,
-#         color = :green,
-#     )
-#     plot!(t, G2, label = "G2 est", legend = :topleft, legendfontsize = 4, fg_legend = :transparent, lw = 2.0, alpha = 0.6, color = :sienna)
-#     plot!(t, G1 .+ G2, label = "total est", dpi = 150, lw = 2.0, alpha = 0.6, color = :hotpink)
-#     plot!(annotation = [(60, ymax, text(title, 8))])
-#     ylims!((0.0, ymax))
-# end
-
-# """ Plot the times-series data for all of drug B concentrations combined with EC50 of drug B concentration. """
-# function combinplot_all(params_ode, g0, conc::Array{Float64, 1})
-#     # plotting the fitted curves
-#     rl = [plotCombinODE(params_ode[:, i], g0, string(conc[i], " nM"), 80.0) for i = 1:4]
-#     r2 = [plotCombinODE(params_ode[:, i], g0, string(conc[i], " nM"), 40.0) for i = 5:7]
-#     r8 = plotCombinODE(params_ode[:, 8], g0, string(conc[8], " nM"), 40.0)
-#     plot(rl..., r2..., r8, layout = (2, 4))
-#     plot!(size = (900, 400), margin = 0.4cm, dpi = 200)
-# end
-
 """ Function unit to plot drug effects before and after combination. """
 function plotunitCombin(conc, gemc, titles, combin)
     concs = log.(conc)
-    plot(concs, gemc, ylabel=titles, label = "taxol alone", legend=:left, legendfontsize = 7, lw = 3, fg_legend = :transparent, shape=:circle, color=:purple)
+    plot(concs, gemc, ylabel=titles, label = "taxol alone", legendfontsize = 7, lw = 3, fg_legend = :transparent, shape=:circle, color=:purple)
     plot!(concs, combin, label = "taxol w/ 5nM gemc.", lw=3, shape=:circle, color=:green) 
 end
 
@@ -226,9 +193,9 @@ function plotEffectsCombin(concs, gemc, combin)
 end
 
 function plotNumcells(drugB, combination, concDrugB, g0)
-    numscomb = zeros(8)
-    nums = zeros(8)
-    for n =1:8
+    numscomb = zeros(50)
+    nums = zeros(50)
+    for n =1:50
         numscomb[n] = numcells(combination[:, n], g0, 96)
         nums[n] = numcells(drugB[:, n], g0, 96)
     end
