@@ -161,7 +161,6 @@ function BlissCombination(p1::Matrix{Float64}, p2::Matrix{Float64}, n::Int)
             combined[j,k,3:4] .= -(param1[3:4,j] .+ param2[3:4,k])
             end
         end
-    end
     return combined
 end
 
