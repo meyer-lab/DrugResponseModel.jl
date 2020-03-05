@@ -38,6 +38,7 @@ export setup_data,
     BlissCombination,
     fullCombinationParam,
     plotEffectsCombin,
-    plotNumcells
+    plotNumcells,
+    combin2drugs
 
 end # module

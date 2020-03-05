@@ -202,3 +202,22 @@ function plotNumcells(drugB, combination, concDrugB, g0, n)
     plot!(log.(concDrugB), nums, label="pac", lw=3, xlabel="log drug concentration", ylabel="cell #", shape=:circle, color=:green)
     plot!(dpi=150)
 end
+
+""" Plotting cell# versus concentration for2 drugs """
+function combin2drugs(d1, d2, concd1, concd2, named1, named2, effs, g0)  
+    combin = fullCombinationParam(d1, d2, effs,8);
+    n=8;
+
+    numscomb = zeros(8,8)
+    nums = zeros(n)
+    for j =1:n
+        nums[j] = numcells(d1[:, j], g0, 96)
+        for m=1:8
+            numscomb[j,m] = numcells(combin[:, j, m], g0, 96)
+        end
+    end
+    plot(log.(concd1), nums, label=string(named1), lw=3, xlabel="log drug concentration", ylabel="cell #", shape=:circle, color=:green)
+    for k = 2:8
+        plot!(log.(concd1), numscomb[:, k], label = string(named1, " +", Int(concd2[k,1]), "nM ", named2), legendfontsize = 7, lw = 3, fg_legend = :transparent, shape=:circle, color=:purple, alpha = (1-0.1*k))
+    end
+end
