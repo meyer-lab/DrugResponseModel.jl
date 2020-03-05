@@ -161,6 +161,7 @@ function BlissCombination(p1::Matrix{Float64}, p2::Matrix{Float64}, n::Int)
             combined[j,k,3:4] .= -(param1[3:4,j] .+ param2[3:4,k])
             end
         end
+    end
     return combined
 end
 
@@ -170,7 +171,7 @@ function fullCombinationParam(origP1, origP2, origFullParam,n)
     combined = BlissCombination(origP1, origP2,n)
     fullparam = zeros(9,n,n)
     fullparam[5:9, :, :] .= origFullParam[5:9, 1, 1]
-    for i=1:4
+    for i = 1:4
         fullparam[i, :, :] .= combined[:, :, i]
     end
     return fullparam
@@ -187,8 +188,8 @@ end
 function plotEffectsCombin(concs, gemc, combin)
     titles = ["G1 prog. rate", "G2 prog. rate", "G1 death rate", "G2 death rate"]
     pl = [plotunitCombin(concs[:, 4], gemc[i, :], titles[i], combin[:, 4, i]) for i = 1:4]
-    plot(pl..., layout = (2,2))
-    plot!(size = (800, 500), margin = 0.4cm, dpi=150)
+    plot(pl..., layout = (2, 2))
+    plot!(size = (800, 500), margin = 0.4cm, dpi = 150)
 end
 
 function plotNumcells(drugB, combination, concDrugB, g0, n)
