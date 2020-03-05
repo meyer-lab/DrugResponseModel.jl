@@ -103,7 +103,7 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
         maximum(concs[:, 3]),
         10.0,
         3.0,
-        3.0,
+        1.0,
         1.0,
         1.0,
         maximum(concs[:, 4]),
@@ -135,41 +135,40 @@ end
 
 
 """ Combination functions. """
-function ParamForBliss(p)
+function ParamForBliss(p,n)
     """ To calculate Bliss independence drug effect
     we assume delays are constant, death rates are additive,
     and will keep the alpha and beta intact."""
-    par = zeros(4,50)
-    par[1,:] = p[1,:] # alpha stays the same
-    par[2,:] = p[2,:] # beta stays the same
-    par[3,:] = p[3,:] # death rate in G1
-    par[4,:] = p[4,:] # death rate in G2
-    @assert(all(par .>= 0.0), " the drug effects <= 0")
+    par = zeros(4,n)
+    par[1,:] = p[1,1] .- p[1,:] # alpha stays the same
+    par[2,:] = p[2,1] .- p[2,:] # beta stays the same
+    par[3,:] = p[3,1] .- p[3,:] # death rate in G1
+    par[4,:] = p[4,1] .- p[4,:] # death rate in G2
     return par
 end
 
-function BlissCombination(p1::Matrix{Float64}, p2::Matrix{Float64})
+function BlissCombination(p1::Matrix{Float64}, p2::Matrix{Float64}, n::Int)
     """ A function to calculate Bliss independence for drug combination assuming
     the two drugs hit different pathways and they effect independently. """
 
-    param1 = ParamForBliss(p1)
-    param2 = ParamForBliss(p2)
+    param1 = ParamForBliss(p1,n)
+    param2 = ParamForBliss(p2,n)
     """ For 8x8 combination of drug concentrations for G1 progression rate, G2 progression rate, and death rates in G1 and G2, respectively. """
-    combined = zeros(50,50,4)
-    for j in 1:50
-        for k in 1:50
-            combined[j,k,1:2] .= param1[1:2,j] .+ param2[1:2,k] .- param1[1:2,j] .* param2[1:2,k]
-            combined[j,k,3:4] .= param1[3:4,j] .+ param2[3:4,k]
+    combined = zeros(n,n,4)
+    for j in 1:n
+        for k in 1:n
+            combined[j,k,1:2] .= -(param1[1:2,j] .+ param2[1:2,k] .- param1[1:2,j] .* param2[1:2,k]) .+ p1[1:2,1,1]
+            combined[j,k,3:4] .= -(param1[3:4,j] .+ param2[3:4,k])
             end
         end
     return combined
 end
 
 """ To output the full ODE params for plotting the cell number. """
-function fullCombinationParam(origP1, origP2, origFullParam)
+function fullCombinationParam(origP1, origP2, origFullParam,n)
     """ Here we assume the base is origP1, and we just want to get the params of EC50 from origP2. """
-    fullparam = zeros(9,50,50)
-    combined = BlissCombination(origP1, origP2)
+    combined = BlissCombination(origP1, origP2,n)
+    fullparam = zeros(9,n,n)
     fullparam[5:9, :, :] .= origFullParam[5:9, 1, 1]
     for i=1:4
         fullparam[i, :, :] .= combined[:, :, i]
@@ -192,12 +191,12 @@ function plotEffectsCombin(concs, gemc, combin)
     plot!(size = (800, 500), margin = 0.4cm, dpi=150)
 end
 
-function plotNumcells(drugB, combination, concDrugB, g0)
-    numscomb = zeros(50)
-    nums = zeros(50)
-    for n =1:50
-        numscomb[n] = numcells(combination[:, n], g0, 96)
-        nums[n] = numcells(drugB[:, n], g0, 96)
+function plotNumcells(drugB, combination, concDrugB, g0, n)
+    numscomb = zeros(n)
+    nums = zeros(n)
+    for j =1:n
+        numscomb[j] = numcells(combination[:, j], g0, 96)
+        nums[j] = numcells(drugB[:, j], g0, 96)
     end
     plot(log.(concDrugB), numscomb, label = "pac + gemc", legendfontsize = 7, lw = 3, fg_legend = :transparent, shape=:circle, color=:purple)
     plot!(log.(concDrugB), nums, label="pac", lw=3, xlabel="log drug concentration", ylabel="cell #", shape=:circle, color=:green)
