@@ -216,7 +216,7 @@ function combin2drugs(d1::Array{Float64, 2}, d2::Array{Float64, 2}, concd1::Arra
             numscomb[j,m] = numcells(combin[:, j, m], g0, 96)
         end
     end
-    p = plot(log.(concd1), nums, label=string(named1), lw=3, xlabel="log drug concentration", ylabel="cell #", shape=:circle, color=:green)
+    p = plot(log.(concd1), nums, label=string(named1), lw=3, xlabel="log drug concentration", ylabel="cell # at t = 96 hrs", shape=:circle, color=:green)
     for k = 2:8
         plot!(log.(concd1), numscomb[:, k], label = string(named1, " +", concd2[k,1], "nM ", named2), legendfontsize = 7, lw = 3, fg_legend =:transparent, shape=:circle, color=:purple, alpha = (1-0.1*k), show=true)
     end
