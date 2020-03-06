@@ -133,9 +133,8 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
     return best_fitness(results_ode), best_candidate(results_ode)
 end
 
-
 """ Combination functions. """
-function ParamForBliss(p,n)
+function ParamForBliss(p::Matrix{Float64},n::Int)
     """ To calculate Bliss independence drug effect
     we assume delays are constant, death rates are additive,
     and will keep the alpha and beta intact."""
@@ -147,7 +146,7 @@ function ParamForBliss(p,n)
     return par
 end
 
-function BlissCombination(p1::Matrix{Float64}, p2::Matrix{Float64}, n::Int)
+function BlissCombination(p1::Array{Float64, 2}, p2::Array{Float64, 2}, n::Int)
     """ A function to calculate Bliss independence for drug combination assuming
     the two drugs hit different pathways and they effect independently. """
 
@@ -166,7 +165,7 @@ function BlissCombination(p1::Matrix{Float64}, p2::Matrix{Float64}, n::Int)
 end
 
 """ To output the full ODE params for plotting the cell number. """
-function fullCombinationParam(origP1, origP2, origFullParam,n)
+function fullCombinationParam(origP1::Array{Float64, 2}, origP2::Array{Float64, 2}, origFullParam::Array{Float64, 3}, n::Int)
     """ Here we assume the base is origP1, and we just want to get the params of EC50 from origP2. """
     combined = BlissCombination(origP1, origP2,n)
     fullparam = zeros(9,n,n)
@@ -178,21 +177,21 @@ function fullCombinationParam(origP1, origP2, origFullParam,n)
 end
 
 """ Function unit to plot drug effects before and after combination. """
-function plotunitCombin(conc, gemc, titles, combin)
+function plotunitCombin(conc::Array{Float64, 1}, gemc::Array{Float64, 1}, titles, combin::Array{Float64, 1})
     concs = log.(conc)
     plot(concs, gemc, ylabel=titles, label = "taxol alone", legendfontsize = 7, lw = 3, fg_legend = :transparent, shape=:circle, color=:purple)
     plot!(concs, combin, label = "taxol w/ 5nM gemc.", lw=3, shape=:circle, color=:green) 
 end
 
 """ Function to plot all of the drug effects before and after drug combination. """
-function plotEffectsCombin(concs, gemc, combin)
+function plotEffectsCombin(concs::Array{Float64, 2}, gemc::Array{Float64, 2}, combin::Array{Float64, 3})
     titles = ["G1 prog. rate", "G2 prog. rate", "G1 death rate", "G2 death rate"]
     pl = [plotunitCombin(concs[:, 4], gemc[i, :], titles[i], combin[:, 4, i]) for i = 1:4]
     plot(pl..., layout = (2, 2))
     plot!(size = (800, 500), margin = 0.4cm, dpi = 150)
 end
 
-function plotNumcells(drugB, combination, concDrugB, g0, n)
+function plotNumcells(drugB::Matrix{Float64}, combination::Matrix{Float64}, concDrugB::Matrix{Float64}, g0::Float64, n::Int)
     numscomb = zeros(n)
     nums = zeros(n)
     for j =1:n
@@ -205,7 +204,7 @@ function plotNumcells(drugB, combination, concDrugB, g0, n)
 end
 
 """ Plotting cell# versus concentration for2 drugs """
-function combin2drugs(d1, d2, concd1, concd2, named1, named2, effs, g0)  
+function combin2drugs(d1::Array{Float64, 2}, d2::Array{Float64, 2}, concd1::Array{Float64, 1}, concd2::Array{Float64, 1}, named1::String, named2::String, effs::Array{Float64, 3}, g0::Float64)  
     combin = fullCombinationParam(d1, d2, effs,8);
     n=8;
 
@@ -217,8 +216,9 @@ function combin2drugs(d1, d2, concd1, concd2, named1, named2, effs, g0)
             numscomb[j,m] = numcells(combin[:, j, m], g0, 96)
         end
     end
-    plot(log.(concd1), nums, label=string(named1), lw=3, xlabel="log drug concentration", ylabel="cell #", shape=:circle, color=:green)
+    p = plot(log.(concd1), nums, label=string(named1), lw=3, xlabel="log drug concentration", ylabel="cell #", shape=:circle, color=:green)
     for k = 2:8
-        plot!(log.(concd1), numscomb[:, k], label = string(named1, " +", concd2[k,1], "nM ", named2), legendfontsize = 7, lw = 3, fg_legend = :transparent, shape=:circle, color=:purple, alpha = (1-0.1*k))
+        plot!(log.(concd1), numscomb[:, k], label = string(named1, " +", concd2[k,1], "nM ", named2), legendfontsize = 7, lw = 3, fg_legend =:transparent, shape=:circle, color=:purple, alpha = (1-0.1*k), show=true)
     end
+    p
 end
