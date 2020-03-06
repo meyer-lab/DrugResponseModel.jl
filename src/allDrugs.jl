@@ -218,6 +218,6 @@ function combin2drugs(d1, d2, concd1, concd2, named1, named2, effs, g0)
     end
     plot(log.(concd1), nums, label=string(named1), lw=3, xlabel="log drug concentration", ylabel="cell #", shape=:circle, color=:green)
     for k = 2:8
-        plot!(log.(concd1), numscomb[:, k], label = string(named1, " +", Int(concd2[k,1]), "nM ", named2), legendfontsize = 7, lw = 3, fg_legend = :transparent, shape=:circle, color=:purple, alpha = (1-0.1*k))
+        plot!(log.(concd1), numscomb[:, k], label = string(named1, " +", concd2[k,1], "nM ", named2), legendfontsize = 7, lw = 3, fg_legend = :transparent, shape=:circle, color=:purple, alpha = (1-0.1*k))
     end
 end
