@@ -191,7 +191,7 @@ function plotEffectsCombin(concs::Array{Float64, 2}, gemc::Array{Float64, 2}, co
     plot!(size = (800, 500), margin = 0.4cm, dpi = 150)
 end
 
-function plotNumcells(drugB::Matrix{Float64}, combination::Matrix{Float64}, concDrugB::Matrix{Float64}, g0::Float64, n::Int)
+function plotNumcells(drugB::Array{Float64, 2}, combination::Array{Float64, 2}, concDrugB::Array{Float64, 1}, g0::Float64, n::Int)
     numscomb = zeros(n)
     nums = zeros(n)
     for j =1:n
