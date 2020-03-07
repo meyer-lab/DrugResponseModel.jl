@@ -53,7 +53,7 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
     hillCostAll(hillParams) = residHillAll(hillParams, concs, g1, g2)
 
     # The parameters used here in order:
-     #(:Lap_EC50, :Lap_steepness, :Lap_maxG1ProgRate, :Lap_maxG2ProgRate, :Lap_maxDeathG1Rate, :Lap_maxDeathG2Rate, :Dox_EC50, :Dox_steepness, :Dox_maxG1ProgRate, :Dox_maxG2ProgRate, :Dox_maxDeathG1Rate, :Dox_maxDeathG2Rate, :Gem_EC50, :Gem_steepness, :Gem_maxG1ProgRate, :Gem_maxG2ProgRate, :Gem_maxDeathG1Rate, :Gem_maxDeathG2Rate, :Tax_EC50, :Tax_steepness, :Tax_maxG1ProgRate, :Tax_maxG2ProgRate, :Tax_maxDeathG1Rate, :Tax_maxDeathG2Rate, :G1ProgRateControl, :G2ProgRateControl, :percG1, :nG1, :nG2, :nD1, :nD2)
+    #(:Lap_EC50, :Lap_steepness, :Lap_maxG1ProgRate, :Lap_maxG2ProgRate, :Lap_maxDeathG1Rate, :Lap_maxDeathG2Rate, :Dox_EC50, :Dox_steepness, :Dox_maxG1ProgRate, :Dox_maxG2ProgRate, :Dox_maxDeathG1Rate, :Dox_maxDeathG2Rate, :Gem_EC50, :Gem_steepness, :Gem_maxG1ProgRate, :Gem_maxG2ProgRate, :Gem_maxDeathG1Rate, :Gem_maxDeathG2Rate, :Tax_EC50, :Tax_steepness, :Tax_maxG1ProgRate, :Tax_maxG2ProgRate, :Tax_maxDeathG1Rate, :Tax_maxDeathG2Rate, :G1ProgRateControl, :G2ProgRateControl, :percG1, :nG1, :nG2, :nD1, :nD2)
     low = [
         minimum(concs[:, 1]),
         0.01,
@@ -134,15 +134,15 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
 end
 
 """ Combination functions. """
-function ParamForBliss(p::Matrix{Float64},n::Int)
+function ParamForBliss(p::Matrix{Float64}, n::Int)
     """ To calculate Bliss independence drug effect
     we assume delays are constant, death rates are additive,
     and will keep the alpha and beta intact."""
-    par = zeros(4,n)
-    par[1,:] = p[1,1] .- p[1,:] # alpha stays the same
-    par[2,:] = p[2,1] .- p[2,:] # beta stays the same
-    par[3,:] = p[3,1] .- p[3,:] # death rate in G1
-    par[4,:] = p[4,1] .- p[4,:] # death rate in G2
+    par = zeros(4, n)
+    par[1, :] = p[1, 1] .- p[1, :] # alpha stays the same
+    par[2, :] = p[2, 1] .- p[2, :] # beta stays the same
+    par[3, :] = p[3, 1] .- p[3, :] # death rate in G1
+    par[4, :] = p[4, 1] .- p[4, :] # death rate in G2
     return par
 end
 
@@ -150,16 +150,16 @@ function BlissCombination(p1::Array{Float64, 2}, p2::Array{Float64, 2}, n::Int)
     """ A function to calculate Bliss independence for drug combination assuming
     the two drugs hit different pathways and they effect independently. """
 
-    param1 = ParamForBliss(p1,n)
-    param2 = ParamForBliss(p2,n)
+    param1 = ParamForBliss(p1, n)
+    param2 = ParamForBliss(p2, n)
     """ For 8x8 combination of drug concentrations for G1 progression rate, G2 progression rate, and death rates in G1 and G2, respectively. """
-    combined = zeros(n,n,4)
-    for j in 1:n
-        for k in 1:n
-            combined[j,k,1:2] .= -(param1[1:2,j] .+ param2[1:2,k] .- param1[1:2,j] .* param2[1:2,k]) .+ p1[1:2,1,1]
-            combined[j,k,3:4] .= -(param1[3:4,j] .+ param2[3:4,k])
-            end
+    combined = zeros(n, n, 4)
+    for j = 1:n
+        for k = 1:n
+            combined[j, k, 1:2] .= -(param1[1:2, j] .+ param2[1:2, k] .- param1[1:2, j] .* param2[1:2, k]) .+ p1[1:2, 1, 1]
+            combined[j, k, 3:4] .= -(param1[3:4, j] .+ param2[3:4, k])
         end
+    end
     @assert(all(combined .>= 0.0))
     return combined
 end
@@ -167,8 +167,8 @@ end
 """ To output the full ODE params for plotting the cell number. """
 function fullCombinationParam(origP1::Array{Float64, 2}, origP2::Array{Float64, 2}, origFullParam::Array{Float64, 3}, n::Int)
     """ Here we assume the base is origP1, and we just want to get the params of EC50 from origP2. """
-    combined = BlissCombination(origP1, origP2,n)
-    fullparam = zeros(9,n,n)
+    combined = BlissCombination(origP1, origP2, n)
+    fullparam = zeros(9, n, n)
     fullparam[5:9, :, :] .= origFullParam[5:9, 1, 1]
     for i = 1:4
         fullparam[i, :, :] .= combined[:, :, i]
@@ -179,8 +179,8 @@ end
 """ Function unit to plot drug effects before and after combination. """
 function plotunitCombin(conc::Array{Float64, 1}, gemc::Array{Float64, 1}, titles, combin::Array{Float64, 1})
     concs = log.(conc)
-    plot(concs, gemc, ylabel=titles, label = "taxol alone", legendfontsize = 7, lw = 3, fg_legend = :transparent, shape=:circle, color=:purple)
-    plot!(concs, combin, label = "taxol w/ 5nM gemc.", lw=3, shape=:circle, color=:green) 
+    plot(concs, gemc, ylabel = titles, label = "taxol alone", legendfontsize = 7, lw = 3, fg_legend = :transparent, shape = :circle, color = :purple)
+    plot!(concs, combin, label = "taxol w/ 5nM gemc.", lw = 3, shape = :circle, color = :green)
 end
 
 """ Function to plot all of the drug effects before and after drug combination. """
@@ -194,31 +194,60 @@ end
 function plotNumcells(drugB::Array{Float64, 2}, combination::Array{Float64, 2}, concDrugB::Array{Float64, 1}, g0::Float64, n::Int)
     numscomb = zeros(n)
     nums = zeros(n)
-    for j =1:n
+    for j = 1:n
         numscomb[j] = numcells(combination[:, j], g0, 96)
         nums[j] = numcells(drugB[:, j], g0, 96)
     end
-    plot(log.(concDrugB), numscomb, label = "pac + gemc", legendfontsize = 7, lw = 3, fg_legend = :transparent, shape=:circle, color=:purple)
-    plot!(log.(concDrugB), nums, label="pac", lw=3, xlabel="log drug concentration", ylabel="cell #", shape=:circle, color=:green)
-    plot!(dpi=150)
+    plot(log.(concDrugB), numscomb, label = "pac + gemc", legendfontsize = 7, lw = 3, fg_legend = :transparent, shape = :circle, color = :purple)
+    plot!(log.(concDrugB), nums, label = "pac", lw = 3, xlabel = "log drug concentration", ylabel = "cell #", shape = :circle, color = :green)
+    plot!(dpi = 150)
 end
 
 """ Plotting cell# versus concentration for2 drugs """
-function combin2drugs(d1::Array{Float64, 2}, d2::Array{Float64, 2}, concd1::Array{Float64, 1}, concd2::Array{Float64, 1}, named1::String, named2::String, effs::Array{Float64, 3}, g0::Float64)  
-    combin = fullCombinationParam(d1, d2, effs,8);
-    n=8;
+function combin2drugs(
+    d1::Array{Float64, 2},
+    d2::Array{Float64, 2},
+    concd1::Array{Float64, 1},
+    concd2::Array{Float64, 1},
+    named1::String,
+    named2::String,
+    effs::Array{Float64, 3},
+    g0::Float64,
+)
+    combin = fullCombinationParam(d1, d2, effs, 8)
+    n = 8
 
-    numscomb = zeros(8,8)
+    numscomb = zeros(8, 8)
     nums = zeros(n)
-    for j =1:n
+    for j = 1:n
         nums[j] = numcells(d1[:, j], g0, 96)
-        for m=1:8
-            numscomb[j,m] = numcells(combin[:, j, m], g0, 96)
+        for m = 1:8
+            numscomb[j, m] = numcells(combin[:, j, m], g0, 96)
         end
     end
-    p = plot(log.(concd1), nums, label=string(named1), lw=3, xlabel="log drug concentration", ylabel="cell # at t = 96 hrs", shape=:circle, color=:green)
+    p = plot(
+        log.(concd1),
+        nums,
+        label = string(named1),
+        lw = 3,
+        xlabel = "log drug concentration",
+        ylabel = "cell # at t = 96 hrs",
+        shape = :circle,
+        color = :green,
+    )
     for k = 2:8
-        plot!(log.(concd1), numscomb[:, k], label = string(named1, " +", concd2[k,1], "nM ", named2), legendfontsize = 7, lw = 3, fg_legend =:transparent, shape=:circle, color=:purple, alpha = (1-0.1*k), show=true)
+        plot!(
+            log.(concd1),
+            numscomb[:, k],
+            label = string(named1, " +", concd2[k, 1], "nM ", named2),
+            legendfontsize = 7,
+            lw = 3,
+            fg_legend = :transparent,
+            shape = :circle,
+            color = :purple,
+            alpha = (1 - 0.1 * k),
+            show = true,
+        )
     end
     p
 end
