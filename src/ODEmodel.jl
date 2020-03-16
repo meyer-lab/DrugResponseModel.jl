@@ -87,7 +87,7 @@ end
 
 """ Calculates the cost function for a given set of parameters. """
 function cost(p, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
-    t = LinRange(0.0, 95.5, 192)
+    t = LinRange(0.0, 0.5*length(g1), length(g1))
     G1, G2 = predict(p, g1[1] + g2[1], t, nG1, nG2, nD1, nD2)
 
     return norm(G1 - g1) + norm(G2 - g2)
@@ -112,7 +112,7 @@ end
     for number of cells in G1, G2, or total, along with their corresponding real data,
     for a longer time which is 2 times of the original time (~195 hours) """
 function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, title::String, legend::Any, ymax)
-    t = LinRange(0.0, 95.5, 192)
+    t = LinRange(0.0, 0.5*length(g1[:, 1]), length(g1[:, 1]))
     t_new = LinRange(0.0, 120, 200)
     G1, G2 = predict(params, g1[1] + g2[1], t_new, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
 
@@ -149,7 +149,7 @@ function ODEplot_all(params_ode, g1_l::Matrix, g2_l::Matrix, pop_l, conc::Array{
 end
 
 function plotPercentage(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, title::String, legend::Any, ymax)
-    t = LinRange(0.0, 95.5, 192)
+    t = LinRange(0.0, 0.5*length(g1[:, 1]), length(g1[:, 1]))
     t_new = LinRange(0.0, 120, 200)
     G1, G2 = predict(params, g1[1] + g2[1], t_new, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
 

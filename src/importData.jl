@@ -1,7 +1,7 @@
 """
         Imports data works for both ODE and DDE model
 """
-function get_data(path_g2::String, path_total::String)
+function get_data(path_g2::String, path_total::String; max=144)
     # Import data all the trials for each drug
     data = CSV.read(path_g2)
     total = CSV.read(path_total)
@@ -11,8 +11,8 @@ function get_data(path_g2::String, path_total::String)
     select!(total, Not(1:2))
 
     # getting all the 8 trials
-    drug = data[1:192, 1:8]
-    pop = total[1:192, 1:8]
+    drug = data[1:max, 1:8]
+    pop = total[1:max, 1:8]
 
     # rescaling the experimental data assuming we have 20 initial cells for each trial
     g1 = zeros(size(drug, 1), 8)
@@ -79,7 +79,7 @@ function setup_data(drug_name::String)
     return conc_l, pop_l, g2_l, g1_l
 end
 
-function load()
+function load(max)
     concl, popl, g2l, g1l = setup_data("lapatinib")
     concd, popd, g2d, g1d = setup_data("doxorubicin")
     concg, popg, g2g, g1g = setup_data("gemcitabine")
@@ -87,8 +87,8 @@ function load()
     concentrations = hcat(concl, concd, concg, concp)
 
     populations = [popl, popd, popg, popp]
-    g1s = zeros(192, 8, 4)
-    g2s = zeros(192, 8, 4)
+    g1s = zeros(max, 8, 4)
+    g2s = zeros(max, 8, 4)
     g1s[:, :, 1] = g1l
     g1s[:, :, 2] = g1d
     g1s[:, :, 3] = g1g
