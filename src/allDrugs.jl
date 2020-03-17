@@ -256,17 +256,17 @@ function blissCellNum(g1s, g2s; n=8)
     num = zeros(n,4)
     T=144
     for i=1:4
-        num[:, i] = (g1s[T,1,i] .+ g2s[T,1,i]) .- (g1s[T,:,i] + g2s[T,:,i])
+        num[:, i] = 1.0 .- ((g1s[T,:,i] + g2s[T,:,i]) ./ (g1s[T,1,i] .+ g2s[T,1,i]))
     end
     combined = zeros(n, n, 6)
     for j = 1:n
         # it goes column by column
-        combined[j,:,1] = -(num[:,1] .+ num[j,2] .- (num[:,1] .* num[j,2])) .+ (g1s[T,1,1] .+ g2s[T,1,1]) # lap w/ dox
-        combined[j,:,2] = -(num[:,1] .+ num[j,3] .- (num[:,1] .* num[j,3])) .+ (g1s[T,1,1] .+ g2s[T,1,1]) # lap w/ gem
-        combined[j,:,3] = -(num[:,1] .+ num[j,4] .- (num[:,1] .* num[j,4])) .+ (g1s[T,1,1] .+ g2s[T,1,1]) # lap w/ pac
-        combined[j,:,4] = -(num[:,2] .+ num[j,3] .- (num[:,2] .* num[j,3])) .+ (g1s[T,1,2] .+ g2s[T,1,2]) # dox w/ gem
-        combined[j,:,5] = -(num[:,2] .+ num[j,4] .- (num[:,2] .* num[j,4])) .+ (g1s[T,1,2] .+ g2s[T,1,2]) # dox w/ pac
-        combined[j,:,6] = -(num[:,3] .+ num[j,4] .- (num[:,3] .* num[j,4])) .+ (g1s[T,1,3] .+ g2s[T,1,3]) # gem w/ pac
+        combined[j,:,1] = -(num[:,1] .+ num[j,2] .- (num[:,1] .* num[j,2]) .- 1.0) .* (g1s[T,1,2] .+ g2s[T,1,2])# lap w/ dox
+        combined[j,:,2] = -(num[:,1] .+ num[j,3] .- (num[:,1] .* num[j,3]) .- 1.0) .* (g1s[T,1,3] .+ g2s[T,1,3]) # lap w/ gem
+        combined[j,:,3] = -(num[:,1] .+ num[j,4] .- (num[:,1] .* num[j,4]) .- 1.0) .* (g1s[T,1,4] .+ g2s[T,1,4]) # lap w/ pac
+        combined[j,:,4] = -(num[:,2] .+ num[j,3] .- (num[:,2] .* num[j,3]) .- 1.0) .* (g1s[T,1,2] .+ g2s[T,1,2]) # dox w/ gem
+        combined[j,:,5] = -(num[:,2] .+ num[j,4] .- (num[:,2] .* num[j,4]) .- 1.0) .* (g1s[T,1,2] .+ g2s[T,1,2]) # dox w/ pac
+        combined[j,:,6] = -(num[:,3] .+ num[j,4] .- (num[:,3] .* num[j,4]) .- 1.0) .* (g1s[T,1,3] .+ g2s[T,1,3]) # gem w/ pac
     end
     @assert(all(combined .>= 0.0))
     return combined
