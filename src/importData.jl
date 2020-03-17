@@ -1,7 +1,7 @@
 """
         Imports data works for both ODE and DDE model
 """
-function get_data(path_g2::String, path_total::String; max=144)
+function get_data(path_g2::String, path_total::String; max = 144)
     # Import data all the trials for each drug
     data = CSV.read(path_g2)
     total = CSV.read(path_total)
