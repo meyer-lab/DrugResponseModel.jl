@@ -40,6 +40,7 @@ export setup_data,
     plotEffectsCombin,
     plotNumcells,
     combin2drugs,
-    blissCellNum
+    blissCellNum,
+    helperPlot
 
 end # module

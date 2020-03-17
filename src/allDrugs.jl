@@ -203,28 +203,7 @@ function plotNumcells(drugB::Array{Float64, 2}, combination::Array{Float64, 2}, 
     plot!(dpi = 150)
 end
 
-""" Plotting cell# versus concentration for2 drugs """
-function combin2drugs(
-    d1::Array{Float64, 2},
-    d2::Array{Float64, 2},
-    concd1::Array{Float64, 1},
-    concd2::Array{Float64, 1},
-    named1::String,
-    named2::String,
-    effs::Array{Float64, 3},
-    g0::Float64,
-)
-    combin = fullCombinationParam(d1, d2, effs, 8)
-    n = 8
-
-    numscomb = zeros(8, 8)
-    nums = zeros(n)
-    for j = 1:n
-        nums[j] = numcells(d1[:, j], g0, 96)
-        for m = 1:8
-            numscomb[j, m] = numcells(combin[:, j, m], g0, 96)
-        end
-    end
+function helperPlot(concd1, named1, concd2, named2, nums, numscomb)
     p = plot(
         log.(concd1),
         nums,
@@ -251,6 +230,30 @@ function combin2drugs(
     end
     p
 end
+""" Plotting cell# versus concentration for2 drugs """
+function combin2drugs(
+    d1::Array{Float64, 2},
+    d2::Array{Float64, 2},
+    concd1::Array{Float64, 1},
+    concd2::Array{Float64, 1},
+    named1::String,
+    named2::String,
+    effs::Array{Float64, 3},
+    g0::Float64,
+)
+    combin = fullCombinationParam(d1, d2, effs, 8)
+    n = 8
+
+    numscomb = zeros(8, 8)
+    nums = zeros(n)
+    for j = 1:n
+        nums[j] = numcells(d1[:, j], g0, 96)
+        for m = 1:8
+            numscomb[j, m] = numcells(combin[:, j, m], g0, 96)
+        end
+    end
+    helperPlot(concd1, named1, concd2, named2, nums, numscomb)
+end
 
 function blissCellNum(g1s, g2s; n=8)
     num = zeros(n,4)
@@ -260,10 +263,9 @@ function blissCellNum(g1s, g2s; n=8)
     end
     combined = zeros(n, n, 6)
     for j = 1:n
-        # it goes column by column
-        combined[j,:,1] = -(num[:,1] .+ num[j,2] .- (num[:,1] .* num[j,2]) .- 1.0) .* (g1s[T,1,2] .+ g2s[T,1,2])# lap w/ dox
-        combined[j,:,2] = -(num[:,1] .+ num[j,3] .- (num[:,1] .* num[j,3]) .- 1.0) .* (g1s[T,1,3] .+ g2s[T,1,3]) # lap w/ gem
-        combined[j,:,3] = -(num[:,1] .+ num[j,4] .- (num[:,1] .* num[j,4]) .- 1.0) .* (g1s[T,1,4] .+ g2s[T,1,4]) # lap w/ pac
+        combined[j,:,1] = -(num[:,1] .+ num[j,2] .- (num[:,1] .* num[j,2]) .- 1.0) .* (g1s[T,1,1] .+ g2s[T,1,1])# lap w/ dox
+        combined[j,:,2] = -(num[:,1] .+ num[j,3] .- (num[:,1] .* num[j,3]) .- 1.0) .* (g1s[T,1,1] .+ g2s[T,1,1]) # lap w/ gem
+        combined[j,:,3] = -(num[:,1] .+ num[j,4] .- (num[:,1] .* num[j,4]) .- 1.0) .* (g1s[T,1,1] .+ g2s[T,1,1]) # lap w/ pac
         combined[j,:,4] = -(num[:,2] .+ num[j,3] .- (num[:,2] .* num[j,3]) .- 1.0) .* (g1s[T,1,2] .+ g2s[T,1,2]) # dox w/ gem
         combined[j,:,5] = -(num[:,2] .+ num[j,4] .- (num[:,2] .* num[j,4]) .- 1.0) .* (g1s[T,1,2] .+ g2s[T,1,2]) # dox w/ pac
         combined[j,:,6] = -(num[:,3] .+ num[j,4] .- (num[:,3] .* num[j,4]) .- 1.0) .* (g1s[T,1,3] .+ g2s[T,1,3]) # gem w/ pac
