@@ -14,7 +14,7 @@ function getODEparamsAll(p::Array{Float64, 1}, concentrations::Array{Float64, 2}
         effects[4, :, i] = p[k + 5] .* xx
         k += 6
     end
-    effects[5, :, :] .= p[27]
+    effects[5, :, :] .= p[27] #percentage in G1
     effects[6, :, :] .= floor(p[28]) #nG1
     effects[7, :, :] .= floor(p[29]) #nG2
     effects[8, :, :] .= floor(p[30]) #nD1
@@ -193,20 +193,18 @@ end
 
 function plotNumcells(drugB::Array{Float64, 2}, combination::Array{Float64, 2}, concDrugB::Array{Float64, 1}, g0::Float64, n::Int)
     numscomb = zeros(n)
-    nums = zeros(n)
     for j = 1:n
         numscomb[j] = numcells(combination[:, j], g0, 96)
-        nums[j] = numcells(drugB[:, j], g0, 96)
     end
-    plot(log.(concDrugB), numscomb, label = "pac + gemc", legendfontsize = 7, lw = 3, fg_legend = :transparent, shape = :circle, color = :purple)
-    plot!(log.(concDrugB), nums, label = "pac", lw = 3, xlabel = "log drug concentration", ylabel = "cell #", shape = :circle, color = :green)
+    plot(log.(concDrugB), numscomb[1], label = "pac + gemc", legendfontsize = 7, lw = 3, fg_legend = :transparent, shape = :circle, color = :purple)
+    plot!(log.(concDrugB), numscomb[2:end], label = "pac", lw = 3, xlabel = "log drug concentration", ylabel = "cell #", shape = :circle, color = :green)
     plot!(dpi = 150)
 end
 
-function helperPlot(concd1, named1, concd2, named2, nums, numscomb)
+function helperPlot(concd1, named1, concd2, named2, numscomb)
     p = plot(
         log.(concd1),
-        nums,
+        numscomb[:, 1],
         label = string(named1),
         lw = 3,
         xlabel = "log drug concentration",
@@ -241,34 +239,34 @@ function combin2drugs(
     effs::Array{Float64, 3},
     g0::Float64,
 )
-    combin = fullCombinationParam(d1, d2, effs, 8)
     n = 8
+    combin = fullCombinationParam(d1, d2, effs, n)
 
-    numscomb = zeros(8, 8)
-    nums = zeros(n)
+    numscomb = zeros(n, n)
     for j = 1:n
-        nums[j] = numcells(d1[:, j], g0, 96)
-        for m = 1:8
+        for m = 1:n
             numscomb[j, m] = numcells(combin[:, j, m], g0, 96)
         end
     end
-    helperPlot(concd1, named1, concd2, named2, nums, numscomb)
+    helperPlot(concd1, named1, concd2, named2, numscomb)
 end
 
-function blissCellNum(g1s, g2s; n=8)
+function blissCellNum(g1s, g2s; T=96, n=8)
     num = zeros(n,4)
-    T=144
+    # for no specific reason, I chose lapatinib's control trial to be the base case for converting.
+    base = g1s[T,1,1] + g2s[T,1,1]
     for i=1:4
-        num[:, i] = 1.0 .- ((g1s[T,:,i] + g2s[T,:,i]) ./ (g1s[T,1,i] .+ g2s[T,1,i]))
+        # num is a 8 x 4 matrix, holding cell numbers for 4 drugs, in 8 concenntration, for a specific time point.
+        num[:, i] = 1.0 .- ((g1s[T,:,i] + g2s[T,:,i]) ./ base)
     end
     combined = zeros(n, n, 6)
     for j = 1:n
-        combined[j,:,1] = -(num[:,1] .+ num[j,2] .- (num[:,1] .* num[j,2]) .- 1.0) .* (g1s[T,1,1] .+ g2s[T,1,1])# lap w/ dox
-        combined[j,:,2] = -(num[:,1] .+ num[j,3] .- (num[:,1] .* num[j,3]) .- 1.0) .* (g1s[T,1,1] .+ g2s[T,1,1]) # lap w/ gem
-        combined[j,:,3] = -(num[:,1] .+ num[j,4] .- (num[:,1] .* num[j,4]) .- 1.0) .* (g1s[T,1,1] .+ g2s[T,1,1]) # lap w/ pac
-        combined[j,:,4] = -(num[:,2] .+ num[j,3] .- (num[:,2] .* num[j,3]) .- 1.0) .* (g1s[T,1,2] .+ g2s[T,1,2]) # dox w/ gem
-        combined[j,:,5] = -(num[:,2] .+ num[j,4] .- (num[:,2] .* num[j,4]) .- 1.0) .* (g1s[T,1,2] .+ g2s[T,1,2]) # dox w/ pac
-        combined[j,:,6] = -(num[:,3] .+ num[j,4] .- (num[:,3] .* num[j,4]) .- 1.0) .* (g1s[T,1,3] .+ g2s[T,1,3]) # gem w/ pac
+        combined[j,:,1] = -(num[:,1] .+ num[j,2] .- (num[:,1] .* num[j,2]) .- 1.0) .* base # lap w/ dox
+        combined[j,:,2] = -(num[:,1] .+ num[j,3] .- (num[:,1] .* num[j,3]) .- 1.0) .* base # lap w/ gem
+        combined[j,:,3] = -(num[:,1] .+ num[j,4] .- (num[:,1] .* num[j,4]) .- 1.0) .* base # lap w/ pac
+        combined[j,:,4] = -(num[:,2] .+ num[j,3] .- (num[:,2] .* num[j,3]) .- 1.0) .* base # dox w/ gem
+        combined[j,:,5] = -(num[:,2] .+ num[j,4] .- (num[:,2] .* num[j,4]) .- 1.0) .* base # dox w/ pac
+        combined[j,:,6] = -(num[:,3] .+ num[j,4] .- (num[:,3] .* num[j,4]) .- 1.0) .* base # gem w/ pac
     end
     @assert(all(combined .>= 0.0))
     return combined
