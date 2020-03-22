@@ -141,15 +141,31 @@ end
 
 """ temporal combination of two drugs.
 Here we want to plot a simulation, with first 48 hours being treated with lapatinib, and another 48 hours with gem. """
-function temporal_combination(params1, params2, g1, g2)
+function temporal_combination(params1, params2, g0, title)
     t1 = LinRange(0.0, 48.0, 96)
     t2 = LinRange(48.5, 95.5, 96)
 
-    g1L, g2L = predict(params1, g1[1] + g2[1], t1, Int(floor(params1[6])), Int(floor(params1[7])), Int(floor(params1[8])), Int(floor(params1[9])))
+    g1L, g2L = predict(params1, g0, t1, Int(floor(params1[6])), Int(floor(params1[7])), Int(floor(params1[8])), Int(floor(params1[9])))
     g1G, g2G = predict(params2, g1L[end] + g2L[end], t2, Int(floor(params2[6])), Int(floor(params2[7])), Int(floor(params2[8])), Int(floor(params2[9])))
     allG1s = vcat(g1L, g1G)
     allG2s = vcat(g2L, g2G)
     allT = vcat(t1, t2)
-    plot(allT, allG1s)
-    plot!(allT, allG2s)
+
+    plot(
+        allT,
+        allG1s,
+        label = "G1",
+        xlabel = "time [hours]",
+        ylabel = "# of cells",
+        xguidefontsize = 8,
+        yguidefontsize = 8,
+        lw = 4.0,
+        alpha = 0.6,
+        color = :green,
+        legendfontsize = 8
+    )
+    plot!(allT, allG2s, label = "G2", legendfontsize = 8, fg_legend = :transparent, lw = 4.0, alpha = 0.6, color = :sienna)
+    plot!(allT, allG1s .+ allG2s, label = "total", lw = 4.0, legendfontsize = 8, alpha = 0.6, color = :hotpink)
+    plot!(annotation = [(40, 60, text(title, 8))])
+    ylims!((0.0, 60))
 end
