@@ -193,11 +193,13 @@ end
 
 function plotNumcells(drugB::Array{Float64, 2}, combination::Array{Float64, 2}, concDrugB::Array{Float64, 1}, g0::Float64, n::Int)
     numscomb = zeros(n)
+    nums = zeros(n)
     for j = 1:n
         numscomb[j] = numcells(combination[:, j], g0, 96)
+        nums[j] = numcells(drugB[:, j], g0, 96)
     end
-    plot(log.(concDrugB), numscomb[1], label = "pac + gemc", legendfontsize = 7, lw = 3, fg_legend = :transparent, shape = :circle, color = :purple)
-    plot!(log.(concDrugB), numscomb[2:end], label = "pac", lw = 3, xlabel = "log drug concentration", ylabel = "cell #", shape = :circle, color = :green)
+    plot(log.(concDrugB), numscomb, label = "pac + gemc", legendfontsize = 7, lw = 3, fg_legend = :transparent, shape = :circle, color = :purple)
+    plot!(log.(concDrugB), nums, label = "pac", lw = 3, xlabel = "log drug concentration", ylabel = "cell #", shape = :circle, color = :green)
     plot!(dpi = 150)
 end
 
