@@ -14,7 +14,7 @@ function getODEparamsAll(p::Array{Float64, 1}, concentrations::Array{Float64, 2}
         effects[4, :, i] = p[k + 5] .* xx
         k += 6
     end
-    effects[5, :, :] .= p[27]
+    effects[5, :, :] .= p[27] #percentage in G1
     effects[6, :, :] .= floor(p[28]) #nG1
     effects[7, :, :] .= floor(p[29]) #nG2
     effects[8, :, :] .= floor(p[30]) #nD1
@@ -203,31 +203,10 @@ function plotNumcells(drugB::Array{Float64, 2}, combination::Array{Float64, 2}, 
     plot!(dpi = 150)
 end
 
-""" Plotting cell# versus concentration for2 drugs """
-function combin2drugs(
-    d1::Array{Float64, 2},
-    d2::Array{Float64, 2},
-    concd1::Array{Float64, 1},
-    concd2::Array{Float64, 1},
-    named1::String,
-    named2::String,
-    effs::Array{Float64, 3},
-    g0::Float64,
-)
-    combin = fullCombinationParam(d1, d2, effs, 8)
-    n = 8
-
-    numscomb = zeros(8, 8)
-    nums = zeros(n)
-    for j = 1:n
-        nums[j] = numcells(d1[:, j], g0, 96)
-        for m = 1:8
-            numscomb[j, m] = numcells(combin[:, j, m], g0, 96)
-        end
-    end
+function helperPlot(concd1, named1, concd2, named2, numscomb)
     p = plot(
         log.(concd1),
-        nums,
+        numscomb[:, 1],
         label = string(named1),
         lw = 3,
         xlabel = "log drug concentration",
@@ -250,4 +229,47 @@ function combin2drugs(
         )
     end
     p
+end
+""" Plotting cell# versus concentration for2 drugs """
+function combin2drugs(
+    d1::Array{Float64, 2},
+    d2::Array{Float64, 2},
+    concd1::Array{Float64, 1},
+    concd2::Array{Float64, 1},
+    named1::String,
+    named2::String,
+    effs::Array{Float64, 3},
+    g0::Float64,
+)
+    n = 8
+    combin = fullCombinationParam(d1, d2, effs, n)
+
+    numscomb = zeros(n, n)
+    for j = 1:n
+        for m = 1:n
+            numscomb[j, m] = numcells(combin[:, j, m], g0, 96)
+        end
+    end
+    helperPlot(concd1, named1, concd2, named2, numscomb)
+end
+
+function blissCellNum(g1s, g2s; T=96, n=8)
+    num = zeros(n,4)
+    # for no specific reason, I chose lapatinib's control trial to be the base case for converting.
+    base = g1s[T,1,1] + g2s[T,1,1]
+    for i=1:4
+        # num is a 8 x 4 matrix, holding cell numbers for 4 drugs, in 8 concenntration, for a specific time point.
+        num[:, i] = 1.0 .- ((g1s[T,:,i] + g2s[T,:,i]) ./ base)
+    end
+    combined = zeros(n, n, 6)
+    for j = 1:n
+        combined[j,:,1] = -(num[:,1] .+ num[j,2] .- (num[:,1] .* num[j,2]) .- 1.0) .* base # lap w/ dox
+        combined[j,:,2] = -(num[:,1] .+ num[j,3] .- (num[:,1] .* num[j,3]) .- 1.0) .* base # lap w/ gem
+        combined[j,:,3] = -(num[:,1] .+ num[j,4] .- (num[:,1] .* num[j,4]) .- 1.0) .* base # lap w/ pac
+        combined[j,:,4] = -(num[:,2] .+ num[j,3] .- (num[:,2] .* num[j,3]) .- 1.0) .* base # dox w/ gem
+        combined[j,:,5] = -(num[:,2] .+ num[j,4] .- (num[:,2] .* num[j,4]) .- 1.0) .* base # dox w/ pac
+        combined[j,:,6] = -(num[:,3] .+ num[j,4] .- (num[:,3] .* num[j,4]) .- 1.0) .* base # gem w/ pac
+    end
+    @assert(all(combined .>= 0.0))
+    return combined
 end

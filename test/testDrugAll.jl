@@ -1,5 +1,5 @@
 @testset "Fit All drug at once tests" begin
-    concs, populations, g1s, g2s = load(144)
+    concs, populations, g1s, g2s = load(192)
     p = [
         0.5 * maximum(concs[:, 1]),
         1.0,
