@@ -50,7 +50,7 @@ end
 
 
 """ Predicts the model given a set of parametrs. """
-function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
+function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, retVec = false)
     if nD1 == 0
         D1 = Float64[]
     else
@@ -86,7 +86,11 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
         end
     end
 
-    return G1, G2
+    if retVec
+        return G1, G2, v
+    else
+        return G1, G2
+    end
 end
 
 
