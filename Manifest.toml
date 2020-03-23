@@ -126,6 +126,12 @@ git-tree-sha1 = "39756d6038ba28cc4228a40ab0d92bb2f7015ee8"
 uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
 version = "0.23.1"
 
+[[ExponentialUtilities]]
+deps = ["LinearAlgebra", "Printf", "SparseArrays"]
+git-tree-sha1 = "1672dedeacaab85345fd359ad56dde8fb5d48a45"
+uuid = "d4d017d3-3776-5f7e-afef-a10c40355c18"
+version = "1.6.0"
+
 [[FFMPEG]]
 deps = ["FFMPEG_jll"]
 git-tree-sha1 = "c82bef6fc01e30d500f588cd01d29bdd44f1924e"
