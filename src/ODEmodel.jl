@@ -53,7 +53,7 @@ end
 
 
 """ Predicts the model given a set of parametrs. """
-function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
+function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, retVec = false)
     # Some assumptions
     @assert t[1] == 0.0
 
@@ -81,7 +81,11 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
         v = A * v
     end
 
-    return G1, G2
+    if retVec
+        return G1, G2, v
+    else
+        return G1, G2
+    end
 end
 
 
