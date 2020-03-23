@@ -3,7 +3,7 @@
 """
 
 """ Make the transition matrix. """
-function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{Float64}
+function ODEjac(p::Vector{Float64}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{Float64}
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
     if nD1 == 0
         D1 = Float64[]
@@ -39,14 +39,11 @@ function ODEjac(p::Vector{Float64}, dt::Real, nG1::Int, nG2::Int, nD1::Int, nD2:
         A[nG1 + nG2 + nD1 + 1, (nG1 + 1):(nG1 + nG2)] = p[4] * ones(1, nG2)
     end
 
-    rmul!(A, dt)
-
     if nD1 & nD2 != 0
         @assert all(A[1:(nG1 + nG2), (nG1 + nG2 + 1):end] .== 0.0)
         @assert all(A[nG1 + nG2 + 1, (nG1 + 1):(nG1 + nG2)] .== 0.0)
         @assert all(A[nG1 + nG2 + nD1 + 1, 1:nG1] .== 0.0)
     end
-    A = LinearAlgebra.exp!(A)
 
     return A
 end
@@ -54,9 +51,6 @@ end
 
 """ Predicts the model given a set of parametrs. """
 function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
-    # Some assumptions
-    @assert t[1] == 0.0
-
     if nD1 == 0
         D1 = Float64[]
     else
@@ -69,16 +63,27 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
     end
 
     v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
-    A = ODEjac(p, t[2], nG1, nG2, nD1, nD2)
+    A = ODEjac(p, nG1, nG2, nD1, nD2)
 
-    G1 = Vector{eltype(p)}(undef, length(t))
-    G2 = Vector{eltype(p)}(undef, length(t))
+    if t isa Real
+        v = ExponentialUtilities.expv(t, A, v)
+        G1 = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
+        G2 = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
+    else
+        # Some assumptions
+        @assert t[1] == 0.0
+        rmul!(A, t[2])
+        A = LinearAlgebra.exp!(A)
 
-    for ii = 1:length(G1)
-        G1[ii] = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
-        G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
+        G1 = Vector{eltype(p)}(undef, length(t))
+        G2 = Vector{eltype(p)}(undef, length(t))
 
-        v = A * v
+        for ii = 1:length(G1)
+            G1[ii] = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
+            G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
+
+            v = A * v
+        end
     end
 
     return G1, G2
