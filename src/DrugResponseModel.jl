@@ -8,6 +8,7 @@ using Measures
 using BlackBoxOptim
 using LinearAlgebra
 using Base.Threads
+using ExponentialUtilities
 import Calculus
 
 include("importData.jl")
@@ -42,6 +43,9 @@ export setup_data,
     combin2drugs,
     blissCellNum,
     helperPlot,
-    temporal_combination
+    temporal_combination,
+    predict2,
+    ODEjac,
+    predict
 
 end # module

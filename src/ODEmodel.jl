@@ -55,7 +55,7 @@ end
 """ Predicts the model given a set of parametrs. """
 function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
     # Some assumptions
-#     @assert t[1] == 0.0
+    @assert t[1] == 0.0
 
     if nD1 == 0
         D1 = Float64[]
@@ -69,7 +69,7 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
     end
 
     v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
-    A = ODEjac(p, 0.5, nG1, nG2, nD1, nD2)
+    A = ODEjac(p, t[2], nG1, nG2, nD1, nD2)
 
     G1 = Vector{eltype(p)}(undef, length(t))
     G2 = Vector{eltype(p)}(undef, length(t))
@@ -77,13 +77,31 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2)
     for ii = 1:length(G1)
         G1[ii] = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
         G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
-
         v = A * v
     end
-
     return G1, G2
 end
 
+""" A version of predict function that takes a single time-point and returns the full
+    species vector using Krylov solving method. """
+function predict2(p, g0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, i::Int)
+
+    if nD1 == 0
+        D1 = Float64[]
+    else
+        D1 = zeros(nD1)
+    end
+    if nD2 == 0
+        D2 = Float64[]
+    else
+        D2 = zeros(nD2)
+    end
+
+    dt = t[2] - t[1]
+    v = [ones(nG1) * p[5] * g0 / nG1; ones(nG2) * (1.0 - p[5]) * g0 / nG2; D1; D2]
+    A = ODEjac(p, dt, nG1, nG2, nD1, nD2)
+    return vector
+end
 
 """ Calculates the cost function for a given set of parameters. """
 function cost(p, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
@@ -92,7 +110,6 @@ function cost(p, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
 
     return norm(G1 - g1) + norm(G2 - g2)
 end
-
 
 """ Fit the ODE model to data. """
 function ODEoptimizer(i::Int, g1::Matrix, g2::Matrix; maxst = 50000)
@@ -136,7 +153,6 @@ function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, title::
     plot!(annotation = [(60, ymax, text(title, 8))])
     ylims!((0.0, ymax))
 end
-
 
 """ Plot the data and curves for all concentrations. """
 function ODEplot_all(params_ode, g1_l::Matrix, g2_l::Matrix, pop_l, conc::Array{Float64, 1})
