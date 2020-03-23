@@ -100,7 +100,7 @@ function predict2(p, g0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, i::Int)
     dt = t[2] - t[1]
     v = [ones(nG1) * p[5] * g0 / nG1; ones(nG2) * (1.0 - p[5]) * g0 / nG2; D1; D2]
     A = ODEjac(p, dt, nG1, nG2, nD1, nD2)
-    return vector
+    return A * v
 end
 
 """ Calculates the cost function for a given set of parameters. """
