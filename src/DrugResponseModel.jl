@@ -15,7 +15,6 @@ include("ODEmodel.jl")
 include("Hill.jl")
 include("plot.jl")
 include("allDrugs.jl")
-include("combination.jl")
 
 export setup_data,
     load,
