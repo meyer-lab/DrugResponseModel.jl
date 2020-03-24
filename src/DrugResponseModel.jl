@@ -8,8 +8,8 @@ using Measures
 using BlackBoxOptim
 using LinearAlgebra
 using Base.Threads
-using ExponentialUtilities
-using Calculus
+import ExponentialUtilities
+import Calculus
 
 include("importData.jl")
 include("ODEmodel.jl")
