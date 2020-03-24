@@ -44,5 +44,6 @@ export setup_data,
     blissCellNum,
     helperPlot,
     temporal_combination
+    plotTemporalCombin
 
 end # module
