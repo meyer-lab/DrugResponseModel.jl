@@ -50,7 +50,7 @@ end
 
 
 """ Predicts the model given a set of parametrs. """
-function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, retVec = false)
+function predict(p, g_0, t, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integer)
     if nD1 == 0
         D1 = Float64[]
     else
@@ -62,11 +62,17 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, retVec =
         D2 = zeros(nD2)
     end
 
-    v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
+    if g_0 isa Real
+        v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
+    else
+        v = g_0
+    end
+
     A = ODEjac(p, nG1, nG2, nD1, nD2)
 
     if t isa Real
         v = ExponentialUtilities.expv(t, A, v)
+
         G1 = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
         G2 = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
     else
@@ -86,11 +92,7 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, retVec =
         end
     end
 
-    if retVec
-        return G1, G2, v
-    else
-        return G1, G2
-    end
+    return G1, G2, v
 end
 
 
