@@ -76,7 +76,7 @@ function predict(p, g_0::Union{Real, Vector{Real}}, t::Union{Real, LinRange{Real
         G1 = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
         G2 = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
 
-        return G1, G2, newV
+        return G1, G2, v
     else
         # Some assumptions
         @assert t[1] == 0.0
