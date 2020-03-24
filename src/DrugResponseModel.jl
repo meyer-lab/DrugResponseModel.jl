@@ -42,6 +42,7 @@ export setup_data,
     plotNumcells,
     combin2drugs,
     blissCellNum,
-    helperPlot
+    helperPlot,
+    temporal_combination
 
 end # module
