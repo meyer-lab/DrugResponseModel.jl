@@ -79,8 +79,8 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, retVec =
         G2 = Vector{eltype(p)}(undef, length(t))
 
         for ii = 1:length(G1)
-            G1[ii] = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
-            G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
+            G1[ii] = sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
+            G2[ii] = sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
 
             v = A * v
         end
