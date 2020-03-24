@@ -303,9 +303,9 @@ end
 
 """ Function to plot temporal combinations of two drugs. """
 function plotTemporalCombin(params1, params2, g1s, g2s, pop, concl, concg, i, j)
-    # This is right now specificly for lapatinib and gemcitabine
+    # This is right now specificly for lapatinib and doxorubicin
     # ith concentration of lapatinib
-    # jth concentration of gemcitabine
+    # jth concentration of doxorubicin
     G1_1, G2_1 = temporal_combination(params1, params2, g1s[1,1,1]+g2s[1,1,1])
     G1_2, G2_2 = temporal_combination(params2, params1, g1s[1,1,1]+g2s[1,1,1])
     p1 = ode_plotIt(params1, g1s[:, :, 1], g2s[:, :, 1], pop[1], i, string(concl[i]," nM lap."), false, 70.0)
