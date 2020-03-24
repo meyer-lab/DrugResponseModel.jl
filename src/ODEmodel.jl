@@ -50,7 +50,7 @@ end
 
 
 """ Predicts the model given a set of parametrs. """
-function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, vec = nothing)
+function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, vec)
     if nD1 == 0
         D1 = Float64[]
     else
@@ -72,8 +72,10 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, vec = no
     else
         # Some assumptions
         @assert t[1] == 0.0
-        if v == nothing
+        if vec == nothing
             v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
+        else
+            v = vec
         end
         rmul!(A, t[2])
         A = LinearAlgebra.exp!(A)
