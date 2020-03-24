@@ -50,7 +50,7 @@ end
 
 
 """ Predicts the model given a set of parametrs. """
-function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, vec)
+function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, vec = nothing)
     if nD1 == 0
         D1 = Float64[]
     else
@@ -72,7 +72,9 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, vec)
     else
         # Some assumptions
         @assert t[1] == 0.0
-        v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
+        if v == nothing
+            v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
+        end
         rmul!(A, t[2])
         A = LinearAlgebra.exp!(A)
 
@@ -93,7 +95,7 @@ end
 """ Calculates the cost function for a given set of parameters. """
 function cost(p, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
     t = LinRange(0.0, 0.5 * length(g1), length(g1))
-    G1, G2 = predict(p, g1[1] + g2[1], t, nG1, nG2, nD1, nD2)
+    G1, G2 = predict(p, g1[1] + g2[1], t, nG1, nG2, nD1, nD2, nothing)
 
     return norm(G1 - g1) + norm(G2 - g2)
 end
