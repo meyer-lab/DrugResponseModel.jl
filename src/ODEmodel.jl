@@ -50,7 +50,7 @@ end
 
 
 """ Predicts the model given a set of parametrs. """
-function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, vec = nothing)
+function predict(p, g_0::Union{Real, Vector{Real}}, t::Union{Real, LinRange{Real}}, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integer)
     if nD1 == 0
         D1 = Float64[]
     else
@@ -62,10 +62,10 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, vec = no
         D2 = zeros(nD2)
     end
 
-    if vec isa Nothing
+    if g_0 isa Real
         v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
     else
-        v = vec
+        v = g_0
     end
 
     A = ODEjac(p, nG1, nG2, nD1, nD2)
