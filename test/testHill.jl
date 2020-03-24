@@ -6,7 +6,7 @@
     @time DrugResponseModel.residHill(params, conc, g1, g2)
     @profile DrugResponseModel.residHill(params, conc, g1, g2)
 
-    Profile.print(noisefloor = 5.0)
+    Profile.print(noisefloor = 2.0)
 
     outt = DrugResponseModel.residHillG(params, conc, g1, g2)
 

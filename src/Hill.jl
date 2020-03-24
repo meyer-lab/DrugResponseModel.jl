@@ -6,26 +6,24 @@ This file fits Hill function to the parameters.
 DDE parameters, passes them to residual function and based off of these, optimizes the model
 and estimates hill parameters. """
 function residHill(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::Matrix)
-    res = Atomic{eltype(hillParams)}(0.0)
+    res = 0.0
     params = getODEparams(hillParams, concentrations)
 
     # Solve each concentration separately
-    @threads for ii = 1:length(concentrations)
-        atomic_add!(
-            res,
-            cost(
-                params[1:5, ii],
-                g1[:, ii],
-                g2[:, ii],
-                Int(floor(params[6, ii])),
-                Int(floor(params[7, ii])),
-                Int(floor(params[8, ii])),
-                Int(floor(params[9, ii])),
-            ),
+    for ii = 1:length(concentrations)
+        resTemp = cost(params[1:5, ii],
+            g1[:, ii],
+            g2[:, ii],
+            Int(floor(params[6, ii])),
+            Int(floor(params[7, ii])),
+            Int(floor(params[8, ii])),
+            Int(floor(params[9, ii])),
         )
+
+        res += resTemp
     end
 
-    return res[]
+    return res
 end
 
 
@@ -168,5 +166,4 @@ function plotGradient(effects, concentration, g0, T)
     p2 = plot(concentrations, dif[3, :], label = "gamma1", lw = 2, xlabel = "log concentration [nM]", ylabel = "gradient of #cells wrt param")
     plot!(concentrations, dif[4, :], lw = 2, label = "gamma2")
     plot(p1, p2, layout = (1, 2))
-    plot!(size = (800, 400), margin = 0.4cm, dpi = 100)
 end
