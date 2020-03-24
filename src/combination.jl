@@ -1,5 +1,4 @@
 """ This file contains all the functions related to Bliss and temporal combinations. """
-""" Combination functions. """
 function ParamForBliss(p::Matrix{Float64}, n::Int)
     """ To calculate Bliss independence drug effect
     we assume delays are constant, death rates are additive,
