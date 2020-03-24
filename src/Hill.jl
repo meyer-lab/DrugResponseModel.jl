@@ -168,5 +168,4 @@ function plotGradient(effects, concentration, g0, T)
     p2 = plot(concentrations, dif[3, :], label = "gamma1", lw = 2, xlabel = "log concentration [nM]", ylabel = "gradient of #cells wrt param")
     plot!(concentrations, dif[4, :], lw = 2, label = "gamma2")
     plot(p1, p2, layout = (1, 2))
-    plot!(size = (800, 400), margin = 0.4cm, dpi = 100)
 end

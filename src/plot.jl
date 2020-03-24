@@ -3,6 +3,8 @@ gr()
         This file contains a function to plot the parameters against the  drug concentrations, in a 2x2 subplot.
 """
 
+default(size=(900, 400), margin = 0.4cm, legendfontsize = 7, fmt = :svg)
+
 #-------------------------- plot for the G1 G2 correlation ---------------------------#
 function correlationPlot(g1::Matrix, g2::Matrix, labels::Array, xlabel::String, ylabel::String, ymax::Int)
     pl = [
@@ -18,8 +20,7 @@ function correlationPlot(g1::Matrix, g2::Matrix, labels::Array, xlabel::String, 
             marker = (:dot, 1.5),
         ) for i = 1:8
     ]
-    plot(pl..., legend = :false, layout = (2, 4), fmt = :png)
-    plot!(size = (1200, 600), margin = 0.4cm, dpi = 150)
+    plot(pl..., legend = :false, layout = (2, 4))
     ylims!((0, ymax))
     xlims!((0, ymax))
 end
@@ -85,5 +86,4 @@ function plot_parameters(conc_l, parameters)
     ylims!(0.0, 1.2 * maxDeath)
 
     plot(p1, p2, p3, p4)
-    plot!(size = (600, 400), margin = 0.4cm, dpi = 150)
 end

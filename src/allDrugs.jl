@@ -179,7 +179,7 @@ end
 """ Function unit to plot drug effects before and after combination. """
 function plotunitCombin(conc::Array{Float64, 1}, gemc::Array{Float64, 1}, titles, combin::Array{Float64, 1})
     concs = log.(conc)
-    plot(concs, gemc, ylabel = titles, label = "taxol alone", legendfontsize = 7, lw = 3, fg_legend = :transparent, shape = :circle, color = :purple)
+    plot(concs, gemc, ylabel = titles, label = "taxol alone", lw = 3, fg_legend = :transparent, shape = :circle, color = :purple)
     plot!(concs, combin, label = "taxol w/ 5nM gemc.", lw = 3, shape = :circle, color = :green)
 end
 
@@ -188,7 +188,6 @@ function plotEffectsCombin(concs::Array{Float64, 2}, gemc::Array{Float64, 2}, co
     titles = ["G1 prog. rate", "G2 prog. rate", "G1 death rate", "G2 death rate"]
     pl = [plotunitCombin(concs[:, 4], gemc[i, :], titles[i], combin[:, 4, i]) for i = 1:4]
     plot(pl..., layout = (2, 2))
-    plot!(size = (800, 500), margin = 0.4cm, dpi = 150)
 end
 
 function plotNumcells(drugB::Array{Float64, 2}, combination::Array{Float64, 2}, concDrugB::Array{Float64, 1}, g0::Float64, n::Int)
@@ -198,9 +197,8 @@ function plotNumcells(drugB::Array{Float64, 2}, combination::Array{Float64, 2}, 
         numscomb[j] = numcells(combination[:, j], g0, 96)
         nums[j] = numcells(drugB[:, j], g0, 96)
     end
-    plot(log.(concDrugB), numscomb, label = "pac + gemc", legendfontsize = 7, lw = 3, fg_legend = :transparent, shape = :circle, color = :purple)
+    plot(log.(concDrugB), numscomb, label = "pac + gemc", lw = 3, fg_legend = :transparent, shape = :circle, color = :purple)
     plot!(log.(concDrugB), nums, label = "pac", lw = 3, xlabel = "log drug concentration", ylabel = "cell #", shape = :circle, color = :green)
-    plot!(dpi = 150)
 end
 
 function helperPlot(concd1, named1, concd2, named2, numscomb)
@@ -219,7 +217,6 @@ function helperPlot(concd1, named1, concd2, named2, numscomb)
             log.(concd1),
             numscomb[:, k],
             label = string(named1, " +", concd2[k, 1], "nM ", named2),
-            legendfontsize = 7,
             lw = 3,
             fg_legend = :transparent,
             shape = :circle,
