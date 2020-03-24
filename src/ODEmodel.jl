@@ -62,21 +62,24 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, vec = no
         D2 = zeros(nD2)
     end
 
+    if vec isa Nothing
+        v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
+    else
+        v = vec
+    end
+
     A = ODEjac(p, nG1, nG2, nD1, nD2)
 
     if t isa Real
+        v = ExponentialUtilities.expv(t, A, v)
+
         G1 = sum(vec[1:nG1]) + sum(vec[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
         G2 = sum(vec[(nG1 + 1):(nG1 + nG2)]) + sum(vec[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
-        newV = expv(t, A, vec)
+
         return G1, G2, newV
     else
         # Some assumptions
         @assert t[1] == 0.0
-        if vec == nothing
-            v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
-        else
-            v = vec
-        end
         rmul!(A, t[2])
         A = LinearAlgebra.exp!(A)
 
@@ -89,6 +92,7 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, vec = no
 
             v = A * v
         end
+
         return G1, G2, v
     end
 end
@@ -97,7 +101,7 @@ end
 """ Calculates the cost function for a given set of parameters. """
 function cost(p, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
     t = LinRange(0.0, 0.5 * length(g1), length(g1))
-    G1, G2 = predict(p, g1[1] + g2[1], t, nG1, nG2, nD1, nD2, nothing)
+    G1, G2 = predict(p, g1[1] + g2[1], t, nG1, nG2, nD1, nD2)
 
     return norm(G1 - g1) + norm(G2 - g2)
 end
