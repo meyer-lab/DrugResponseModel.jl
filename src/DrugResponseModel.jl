@@ -8,8 +8,8 @@ using Measures
 using BlackBoxOptim
 using LinearAlgebra
 using Base.Threads
-import ExponentialUtilities
-import Calculus
+using ExponentialUtilities
+using Calculus
 
 include("importData.jl")
 include("ODEmodel.jl")
@@ -42,6 +42,7 @@ export setup_data,
     plotNumcells,
     combin2drugs,
     blissCellNum,
-    helperPlot
+    helperPlot,
+    temporal_combination
 
 end # module

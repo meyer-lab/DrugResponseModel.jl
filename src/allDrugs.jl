@@ -273,3 +273,19 @@ function blissCellNum(g1s, g2s; T = 96, n = 8)
     @assert(all(combined .>= 0.0))
     return combined
 end
+
+""" Function for calculating temporal combination of two drugs. """
+function temporal_combination(params1, params2, g0)
+    t1 = LinRange(0.0, 47.5, 96)
+    t2 = LinRange(48.0, 95.5, 96)
+    g1G = g2G = zeros(length(t2))
+    g1L, g2L, vecL = predict(params1, g0, t1, Int(floor(params1[6])), Int(floor(params1[7])), Int(floor(params1[8])), Int(floor(params1[9])), 0.01*ones(100), false)
+    g1G[1], g2G[1], v = predict(params2, g0, t2[1], Int(floor(params2[6])), Int(floor(params2[7])), Int(floor(params2[8])), Int(floor(params2[9])), vecL, true)
+    for j=2:length(t2)
+        g1G[j], g2G[j], vState = predict(params2, g0, t2[j], Int(floor(params2[6])), Int(floor(params2[7])), Int(floor(params2[8])), Int(floor(params2[9])), v, true)
+        v = vState
+    end
+    G1 = vcat(g1L, g1G)
+    G2 = vcat(g2L, g2G)
+    return G1, G2
+end

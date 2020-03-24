@@ -50,7 +50,7 @@ end
 
 
 """ Predicts the model given a set of parametrs. """
-function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, retVec = false)
+function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, vec, retVec = false)
     if nD1 == 0
         D1 = Float64[]
     else
@@ -62,13 +62,12 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, retVec =
         D2 = zeros(nD2)
     end
 
-    v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
     A = ODEjac(p, nG1, nG2, nD1, nD2)
 
     if t isa Real
-        v = ExponentialUtilities.expv(t, A, v)
-        G1 = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
-        G2 = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
+        G1 = sum(vec[1:nG1]) + sum(vec[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
+        G2 = sum(vec[(nG1 + 1):(nG1 + nG2)]) + sum(vec[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
+        vec2 = expv(t, A, vec)
     else
         # Some assumptions
         @assert t[1] == 0.0
@@ -78,6 +77,7 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, retVec =
         G1 = Vector{eltype(p)}(undef, length(t))
         G2 = Vector{eltype(p)}(undef, length(t))
 
+        v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
         for ii = 1:length(G1)
             G1[ii] = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
             G2[ii] = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
@@ -87,9 +87,9 @@ function predict(p, g_0::Real, t, nG1::Integer, nG2::Integer, nD1, nD2, retVec =
     end
 
     if retVec
-        return G1, G2, v
+        return G1, G2, vec2
     else
-        return G1, G2
+        return G1, G2, v
     end
 end
 
