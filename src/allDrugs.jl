@@ -302,15 +302,15 @@ function helperPlotCombin(G1, G2, g0, title::String, legend::Any, ymax)
 end
 
 """ Function to plot temporal combinations of two drugs. """
-function plotTemporalCombin(params1, params2, g1s, g2s, pop, concl, concg)
+function plotTemporalCombin(params1, params2, g1s, g2s, pop, concl, concg, i, j)
     # This is right now specificly for lapatinib and gemcitabine
-    i = 6 # 6th concentration of lapatinib
-    j = 5 # 6th concentration of gemcitabine
+    # ith concentration of lapatinib
+    # jth concentration of gemcitabine
     G1_1, G2_1 = temporal_combination(params1, params2, g1s[1,1,1]+g2s[1,1,1])
     G1_2, G2_2 = temporal_combination(params2, params1, g1s[1,1,1]+g2s[1,1,1])
     p1 = ode_plotIt(params1, g1s[:, :, 1], g2s[:, :, 1], pop[1], i, string(concl[i]," nM lap."), false, 70.0)
-    p2 = ode_plotIt(params2, g1s[:, :, 3], g2s[:, :, 3], pop[3], j, string(concg[j]," nM Gemc."), true, 70.0)
-    p3 = helperPlotCombin(G1_1, G2_1, g1s[1,1,1]+g2s[1,1,1], string(concl[i], " nM Lap+ ", concg[j], "nM Gemc"), false, 70.0) # first lapatinib, then gemcitabine
-    p4 = helperPlotCombin(G1_2, G2_2, g1s[1,1,1]+g2s[1,1,1], string(concg[j], " nM Lap+ ", concl[i], "nM Gemc"), false, 70.0) # first gemcitabine then lapatinib
+    p2 = ode_plotIt(params2, g1s[:, :, 2], g2s[:, :, 2], pop[2], j, string(concg[j]," nM dox."), true, 70.0)
+    p3 = helperPlotCombin(G1_1, G2_1, g1s[1,1,1]+g2s[1,1,1], string(concl[i], " nM Lap+ ", concg[j], "nM dox"), false, 70.0) # first lapatinib, then gemcitabine
+    p4 = helperPlotCombin(G1_2, G2_2, g1s[1,1,1]+g2s[1,1,1], string(concg[j], " nM dox+ ", concl[i], "nM lap"), false, 70.0) # first gemcitabine then lapatinib
     plot(p1, p2, p3, p4, layout=(2,2))
 end
