@@ -5,3 +5,4 @@ deps/deps.jl
 .ipynb_checkpoints
 __pycache__/
 *.sublime-workspace
+venv
