@@ -1,8 +1,6 @@
 """ 
         This file contains a function to plot the parameters against the  drug concentrations, in a 2x2 subplot.
 """
-ENV["GKSwstype"] = "100"
-gr()
 
 default(size = (900, 400), margin = 0.4cm, legendfontsize = 7, fmt = :pdf)
 

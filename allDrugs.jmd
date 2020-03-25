@@ -17,7 +17,7 @@ g0 = g1s[1,1,1]+g2s[1,1,1];
 pp = [42.8209, 0.89888, 0.00689597, 2.77885, 0.0195601, 0.0558532, 182.449, 1.01496, 0.695658, 0.0968922, 0.32105, 0.681382, 77.7469, 1.0493, 0.54269, 0.993221, 0.0642375, 0.338315, 3.82941, 5.09853, 1.74034, 0.765544, 0.807928, 0.362256, 1.95095, 1.75848, 0.517349, 42.6188, 54.8984, 44.7089, 11.7881];
 ```
 
-To see a smoother curve, we have divided the concentration range into 50 time points--instead of 8.
+To see a smoother curve, we have divided the concentration range into 50 time points instead of 8.
 
 ```julia
 moreConcs = zeros(50,4)
@@ -41,10 +41,13 @@ gemc = effs[:,:,3];
 pac = effs[:,:,4];
 ```
 
-The following calculates the Bliss combination of the given two drugs. First, they are written in the fractional unit by subtracting them from the control condition effect (which is the same for all of the drugs), with the following formulation. Then we convert the values back to original unit.\
-x = drugA effect \
-y = drugB effect \
-Bliss = x + y - (x.y) \
+The following calculates the Bliss combination of the given two drugs. First, they are written in the fractional unit by subtracting them from the control condition effect (which is the same for all of the drugs), with the following formulation. Then we convert the values back to original unit.
+
+x = drugA effect
+y = drugB effect
+
+Bliss = x + y - (x.y)
+
 Then, we plot the concentration versus the effect alone, and when we have combination with the amount of the drugB equal to their EC50. 
 In the following, we have paclitaxel alone, and when it is combined with 5 nM of gemcitabine.
 
