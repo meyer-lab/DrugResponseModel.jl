@@ -27,3 +27,6 @@ pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], ps[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
 ```
+weave("notebookPlots.jmd",
+      out_path=:pwd,
+      doctype = "md2html")
