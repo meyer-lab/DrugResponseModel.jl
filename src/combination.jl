@@ -180,3 +180,4 @@ function plotTemporalCombin(params1, params2, g1s, g2s, pop, concl, concg, i, j,
     p3 = helperPlotCombin(G1_1, G2_1, g1s[1,1,1]+g2s[1,1,1], string(concl[i], " nM ", named1, "+", concg[j], "nM ", named2), false, 70.0) # first lapatinib, then gemcitabine
     p4 = helperPlotCombin(G1_2, G2_2, g1s[1,1,1]+g2s[1,1,1], string(concg[j], " nM ", named2, "+", concl[i], "nM ", named1), false, 70.0) # first gemcitabine then lapatinib
     plot(p1, p2, p3, p4, layout=(2,2))
+end
