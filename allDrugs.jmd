@@ -1,0 +1,129 @@
+
+```julia
+using DrugResponseModel
+using Plots
+
+concs, populations, g1s, g2s = load(192);
+g0 = g1s[1,1,1]+g2s[1,1,1];
+```
+
+```julia
+# fitness, pp = optimize_hillAll(concs, g1s, g2s; maxstep=5E4)
+# parameters for 95.5 hours
+# pp = [50.2552, 0.866725, 2.41775e-5, 1.96785, 0.0185627, 0.0447356, 108.176, 1.16593, 1.3052, 2.86005e-5, 0.348876, 0.438606, 14.4648, 2.15448, 1.42977, 2.99996, 0.0216477, 0.196135, 4.03273, 3.93278, 1.86825e-5, 0.867674, 0.430368, 0.241053, 1.68177, 1.17228, 0.508321, 34.5786, 37.9849, 20.7341, 9.11408];
+# parameters for 48 hours
+# pp = [26.2886, 1.66257, 0.00420596, 1.72685, 0.000269988, 0.0381786, 90.4055, 1.78875, 0.00281889, 0.00554305, 0.106428, 0.587973, 61.9056, 0.99193, 0.353436, 0.960822, 0.010234, 0.243887, 3.95979, 5.33563, 0.821778, 0.233281, 0.994036, 0.484493, 2.22629, 1.51153, 0.549618, 54.5237, 47.917, 46.5612, 16.4902];
+# parameters for 72 hours
+pp = [42.8209, 0.89888, 0.00689597, 2.77885, 0.0195601, 0.0558532, 182.449, 1.01496, 0.695658, 0.0968922, 0.32105, 0.681382, 77.7469, 1.0493, 0.54269, 0.993221, 0.0642375, 0.338315, 3.82941, 5.09853, 1.74034, 0.765544, 0.807928, 0.362256, 1.95095, 1.75848, 0.517349, 42.6188, 54.8984, 44.7089, 11.7881];
+```
+
+To see a smoother curve, we have divided the concentration range into 50 time points instead of 8.
+
+```julia
+moreConcs = zeros(50,4)
+for i=1:4
+    moreConcs[:, i] = range(minimum(concs[:, i]),stop=maximum(concs[:, i]),length=50)
+end
+ps = copy(pp)
+moreeffs = getODEparamsAll(ps, moreConcs);
+morelapat = moreeffs[:,:,1];
+moredox = moreeffs[:,:,2];
+moregemc = moreeffs[:,:,3];
+morepac = moreeffs[:,:,4];
+```
+
+```julia
+effs = getODEparamsAll(pp, concs)
+# each of the following are 9x8 matrices
+lapat = effs[:,:,1];
+dox = effs[:,:,2];
+gemc = effs[:,:,3];
+pac = effs[:,:,4];
+```
+
+The following calculates the Bliss combination of the given two drugs. First, they are written in the fractional unit by subtracting them from the control condition effect (which is the same for all of the drugs), with the following formulation. Then we convert the values back to original unit.
+
+x = drugA effect
+y = drugB effect
+
+Bliss = x + y - (x.y)
+
+Then, we plot the concentration versus the effect alone, and when we have combination with the amount of the drugB equal to their EC50. 
+In the following, we have paclitaxel alone, and when it is combined with 5 nM of gemcitabine.
+
+```julia
+combin = BlissCombination(morepac, moregemc,50)
+plotEffectsCombin(moreConcs, moregemc, combin)
+```
+
+The following shows the number of cells over concentration with paclitaxel alone, and with 5 nM of gemcitabine, at t = 96 hrs.
+
+```julia
+combinedparams = fullCombinationParam(morepac, moregemc, moreeffs,50)
+combination = combinedparams[:, :, 5]
+plotNumcells(morepac, combination, moreConcs[:,4], g0,50)
+```
+
+### Lapatinib
+
+```julia
+ODEplot_all(lapat, g1s[:, :, 1], g2s[:, :, 1], populations[1], concs[:, 1])
+```
+
+```julia
+plot_parameters(moreConcs[:, 1], morelapat)
+```
+
+```julia
+g0 = g1s[1,1,1] + g2s[1,1,1]
+T = 170
+plotGradient(lapat, concs[:, 1], g0, T)
+```
+
+### Doxorubicin
+
+```julia
+ODEplot_all(dox, g1s[:, :, 2], g2s[:, :, 2], populations[2], concs[:, 2])
+```
+
+```julia
+plot_parameters(moreConcs[:, 2], moredox)
+```
+
+```julia
+g0 = g1s[1, 1, 2] + g2s[1,1,2]
+
+plotGradient(dox, concs[:, 2], g0, T)
+```
+
+### Gemcitabine
+
+```julia
+ODEplot_all(gemc, g1s[:, :, 3], g2s[:, :, 3], populations[3], concs[:, 3])
+```
+
+```julia
+plot_parameters(moreConcs[:, 3], moregemc)
+```
+
+```julia
+g0 = g1s[1, 1, 3] + g2s[1,1,3]
+
+plotGradient(gemc, concs[:, 3], g0, T)
+```
+
+### Paclitaxel
+
+```julia
+ODEplot_all(pac, g1s[:, :, 4], g2s[:, :, 4], populations[4], concs[:, 4])
+```
+
+```julia
+plot_parameters(moreConcs[:, 4], morepac)
+```
+
+```julia
+g0 = g1s[1, 1, 4] + g2s[1,1,4]
+
+plotGradient(pac, concs[:, 4], g0, T)
+```

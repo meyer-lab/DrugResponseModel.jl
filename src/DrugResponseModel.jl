@@ -1,8 +1,9 @@
 
 module DrugResponseModel
 
+ENV["GKSwstype"]="100"
+
 using CSV
-using DataFrames
 using Plots
 using Measures
 using BlackBoxOptim
