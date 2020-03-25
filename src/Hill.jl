@@ -1,5 +1,5 @@
 """
-This file fits Hill function to the parameters.
+This file fits Hill function to the parameters
 """
 
 """ This functions takes in hill parameters for all the concentrations and calculates

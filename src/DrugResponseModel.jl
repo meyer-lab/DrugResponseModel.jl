@@ -16,6 +16,7 @@ include("ODEmodel.jl")
 include("Hill.jl")
 include("plot.jl")
 include("allDrugs.jl")
+include("combination.jl")
 
 export setup_data,
     load,
@@ -43,6 +44,7 @@ export setup_data,
     combin2drugs,
     blissCellNum,
     helperPlot,
-    temporal_combination
+    temporal_combination,
+    plotTemporalCombin
 
 end # module
