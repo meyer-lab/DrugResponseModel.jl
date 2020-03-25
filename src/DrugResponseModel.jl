@@ -2,7 +2,6 @@
 module DrugResponseModel
 
 using CSV
-using DataFrames
 using Plots
 using Measures
 using BlackBoxOptim

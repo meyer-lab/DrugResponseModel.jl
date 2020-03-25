@@ -7,8 +7,8 @@ function get_data(path_g2::String, path_total::String; max = 192)
     total = CSV.read(path_total)
 
     # delete the extra index column
-    select!(data, Not(1:2))
-    select!(total, Not(1:2))
+    data = data[:, 3:10]
+    total = total[:, 3:10]
 
     # getting all the 8 trials
     drug = data[1:max, 1:8]
