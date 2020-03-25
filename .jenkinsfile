@@ -14,7 +14,7 @@ pipeline {
     }
     stage ('Build') {
       steps {
-        sh 'make -j 8 all'
+        sh 'make all'
         archiveArtifacts artifacts: '*.html, *.pdf', onlyIfSuccessful: true
       }
     }
