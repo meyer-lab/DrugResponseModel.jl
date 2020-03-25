@@ -4,11 +4,9 @@ title: To generate plots for the 4 drugs, separately.
 
 ### Lapatinib
 
-```
-import Pkg;
-Pkg.instantiate()
+```julia
 using DrugResponseModel
-
+using Plots
 
 # import data from the path
 conc_l, pop, g2, g1 = setup_data("lapatinib")
@@ -21,23 +19,23 @@ g0 = g1[1] + g2[1]
 T = 170
 ```
 #### Plotting the gradient
-```
+```julia
 plotGradient(effects, conc_l, g0, T)
 ```
 #### Plotting the time-series simulations compared to the actual data.
-```
+```julia
 ODEplot_all(effects, g1, g2, pop, conc_l)
 ```
 #### Plot the percentage
-```
+```julia
 ODEplot_allPerc(effects, g1, g2, pop, conc_l)
 ```
 #### Plot the parameters over concentration; these are known as the drug effects
-```
+```julia
 plot_parameters(conc_l, effects)
 ```
 #### Sensitivity analysis:
-```
+```julia
 result, paramRanges = allSensitivity(ps, conc_l, g1, g2)
 
 pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], ps[i], i) for i=1:11]
@@ -47,7 +45,7 @@ plot!(size=(1200, 800))
 
 
 ### Doxorubicin
-```
+```julia
 conc_l, pop, g2, g1 = setup_data("doxorubicin")
 
 # costt, ps = optimize_hill(conc_l, g1, g2, maxstep = 4E4)
@@ -58,23 +56,23 @@ g0 = g1[1] + g2[1]
 T = 170
 ```
 #### Plotting the gradient
-```
+```julia
 plotGradient(effects, conc_l, g0, T)
 ```
 #### Plotting the time-series simulations compared to the actual data.
-```
+```julia
 ODEplot_all(effects, g1, g2, pop, conc_l)
 ```
 #### Plot the percentage
-```
+```julia
 ODEplot_allPerc(effects, g1, g2, pop, conc_l)
 ```
 #### Plot the parameters over concentration; these are known as the drug effects
-```
+```julia
 plot_parameters(conc_l, effects)
 ```
 #### Sensitivity analysis:
-```
+```julia
 result, paramRanges = allSensitivity(ps, conc_l, g1, g2)
 
 pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], ps[i], i) for i=1:11]
@@ -84,7 +82,7 @@ plot!(size=(1200, 800))
 
 
 ### Gemcitabine
-```
+```julia
 conc_l, pop, g2, g1 = setup_data("gemcitabine")
 
 # costt, ps = optimize_hill(conc_l, g1, g2, maxstep = 4E4)
@@ -95,23 +93,23 @@ g0 = g1[1] + g2[1]
 T = 170
 ```
 #### Plotting the gradient
-```
+```julia
 plotGradient(effects, conc_l, g0, T)
 ```
 #### Plotting the time-series simulations compared to the actual data.
-```
+```julia
 ODEplot_all(effects, g1, g2, pop, conc_l)
 ```
 #### Plot the percentage
-```
+```julia
 ODEplot_allPerc(effects, g1, g2, pop, conc_l)
 ```
 #### Plot the parameters over concentration; these are known as the drug effects
-```
+```julia
 plot_parameters(conc_l, effects)
 ```
 #### Sensitivity analysis:
-```
+```julia
 result, paramRanges = allSensitivity(ps, conc_l, g1, g2)
 
 pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], ps[i], i) for i=1:11]
@@ -120,7 +118,7 @@ plot!(size=(1200, 800))
 ```
 
 ### Paclitaxel
-```
+```julia
 conc_l, pop, g2, g1 = setup_data("paclitaxel")
 
 # costt, ps = optimize_hill(conc_l, g1, g2, maxstep = 4E4)
@@ -132,33 +130,26 @@ T = 170
 ```
 
 #### Plotting the gradient
-```
+```julia
 plotGradient(effects, conc_l, g0, T)
 ```
 #### Plotting the time-series simulations compared to the actual data.
-```
+```julia
 ODEplot_all(effects, g1, g2, pop, conc_l)
 ```
 #### Plot the percentage
-```
+```julia
 ODEplot_allPerc(effects, g1, g2, pop, conc_l)
 ```
 #### Plot the parameters over concentration; these are known as the drug effects
-```
+```julia
 plot_parameters(conc_l, effects)
 ```
 #### Sensitivity analysis:
-```
+```julia
 result, paramRanges = allSensitivity(ps, conc_l, g1, g2)
 
 pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], ps[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
-```
-
-```{julia; echo=false; skip="notebook"}
-tmp = joinpath(DrugresponseModel.jl,src,notebookPlots.jmd)
-dir = jointpath(DrugResponseModel.jl)
-args[:doctype] = "html"
-weave(tmp,doctype = "md2html",out_path=dir,args=args; fig_ext=".svg")
 ```
