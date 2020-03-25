@@ -1,5 +1,5 @@
 
-all: allDrugs.html combination.html
+all: allDrugs.html combination.html notebookPlots.html
 
 venv: venv/bin/activate
 
