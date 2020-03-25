@@ -10,6 +10,7 @@ using LinearAlgebra
 using Base.Threads
 import ExponentialUtilities
 import Calculus
+using Weave
 
 include("importData.jl")
 include("ODEmodel.jl")

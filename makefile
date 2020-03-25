@@ -1,5 +1,8 @@
 
-all: lapatinib.html doxorubicin.html gemcitabine.html paclitaxel.html allDrugs.html combination.html
+all: allDrugs.html combination.html
+weave("notebookPlots.jmd",
+      out_path=:pwd,
+      doctype = "md2html")
 
 venv: venv/bin/activate
 
