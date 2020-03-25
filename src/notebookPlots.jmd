@@ -157,7 +157,8 @@ plot!(size=(1200, 800))
 ```
 
 ```{julia; echo=false; skip="notebook"}
-weave("notebookPlots.jmd",
-      out_path=:pwd,
-      doctype = "md2html")
+tmp = joinpath(DrugresponseModel.jl,src,notebookPlots.jmd)
+dir = jointpath(DrugResponseModel.jl)
+args[:doctype] = "html"
+weave(tmp,doctype = "md2html",out_path=dir,args=args; fig_ext=".svg")
 ```
