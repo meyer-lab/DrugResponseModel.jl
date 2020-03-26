@@ -66,7 +66,7 @@ function plotNumcells(drugB::Array{Float64, 2}, combination::Array{Float64, 2}, 
     plot!(log.(concDrugB), nums, label = "pac", lw = 3, xlabel = "log drug concentration", ylabel = "cell #", shape = :circle, color = :green)
 end
 
-function helperPlot(concd1, named1, concd2, named2, numscomb, legend, title)
+function helperPlot(concd1, named1, concd2, named2, numscomb, legend, title, ymin, ymax)
     p = plot(
         log.(concd1),
         numscomb[:, 1],
@@ -92,6 +92,7 @@ function helperPlot(concd1, named1, concd2, named2, numscomb, legend, title)
             show = true,
         )
     end
+    ylims!((ymin, ymax))
     p
 end
 
@@ -117,9 +118,9 @@ function combin2drugs(
         end
     end
     diff = numscomb - blissNum
-    p1 = helperPlot(concd1, named1, concd2, named2, numscomb, true, "")
-    p2 = helperPlot(concd1, named1, concd2, named2, blissNum, false, "")
-    p3 = helperPlot(concd1, named1, concd2, named2, diff, false, "Cell # difference")
+    p1 = helperPlot(concd1, named1, concd2, named2, numscomb, true, "", 0.0, 45.0)
+    p2 = helperPlot(concd1, named1, concd2, named2, blissNum, false, "", 0.0, 45.0)
+    p3 = helperPlot(concd1, named1, concd2, named2, diff, false, "Cell # difference", -12.0, 12.0)
     plot(p1, p2, p3, layout = (1,3), size = (1300, 400))
 end
 
