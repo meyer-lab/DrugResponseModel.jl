@@ -1,7 +1,7 @@
 
 module DrugResponseModel
 
-ENV["GKSwstype"]="100"
+ENV["GKSwstype"] = "100"
 
 using CSV
 using Plots
