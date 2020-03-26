@@ -31,15 +31,17 @@ GP = cellnum[:,:,6]; # gem and pac
 
 #### temporal combination
 
-```julia
-params1 = lapat[:,5]
-params2 = gemc[:,5]
-concl = concs[:,1]
-concg = concs[:,3];
-```
+As we realized using the *find_IC50* function, the IC50 of the drugs are 100, 10, 10, 2 nM for Lapatinib, doxorubicin, gemcitabine, and taxol.
+Here we plot the time-combination of the drugs, in their IC50 concentration.
 
 ```julia
-plotTemporalCombin(params1, params2, g1s, g2s, populations, concl, concg)
+p1 = plotTemporalCombin(lapat[:,6], dox[:,3], g1s, g2s, populations, concs[:,1], concs[:,2], false, 6, 3, "lap.", "dox.", 1, 2)
+p2 = plotTemporalCombin(lapat[:,6], gemc[:,6], g1s, g2s, populations, concs[:,1], concs[:,3], false, 6, 6, "lap.", "gemc.", 1, 3)
+p3 = plotTemporalCombin(lapat[:,6], pac[:,4], g1s, g2s, populations, concs[:,1], concs[:,4], false, 6, 4, "lap.", "taxol.", 1, 4)
+p4 = plotTemporalCombin(dox[:,3], gemc[:,6], g1s, g2s, populations, concs[:,2], concs[:,3], false, 3, 6, "dox.", "gemc.", 2, 3)
+p5 = plotTemporalCombin(dox[:,3], pac[:,4], g1s, g2s, populations, concs[:,2], concs[:,4], false, 3, 4, "dox.", "taxol", 2, 4)
+p6 = plotTemporalCombin(gemc[:,6], pac[:,4], g1s, g2s, populations, concs[:,3], concs[:,4], true, 6, 4, "gemc.", "taxol.", 3, 4)
+plot(p1,p2,p3,p4,p5,p6 size=(1400, 1000))
 ```
 
 ### doxorubicin and lapatinib
