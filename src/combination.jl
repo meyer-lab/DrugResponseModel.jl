@@ -105,7 +105,7 @@ function combin2drugs(
     named1::String,
     named2::String,
     effs::Array{Float64, 3},
-    blissNum::Array{Float64, 2},
+    blissNum,
     g0::Float64,
 )
     n=8
