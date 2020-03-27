@@ -173,24 +173,24 @@ function plotTemporalCombin(params1, params2, g1s, g2s, pop, concl, concg, legen
     # This is right now specificly for lapatinib and doxorubicin
     # ith concentration of lapatinib
     # jth concentration of doxorubicin
-    G1_1, G2_1 = temporal_combination(params1, params2, g1s[1,1,1]+g2s[1,1,1])
-    G1_2, G2_2 = temporal_combination(params2, params1, g1s[1,1,1]+g2s[1,1,1])
-    p1 = ode_plotIt(params1, g1s[:, :, k1], g2s[:, :, k1], pop[k1], i, string(concl[i]," nM ", named1), false, 70.0)
-    p2 = ode_plotIt(params2, g1s[:, :, k2], g2s[:, :, k2], pop[k2], j, string(concg[j]," nM ", named2), false, 70.0)
-    p3 = helperPlotCombin(G1_1, G2_1, g1s[1,1,1]+g2s[1,1,1], string(concl[i], " nM ", named1, "+", concg[j], "nM ", named2), legend, 70.0) # first lapatinib, then gemcitabine
-    p4 = helperPlotCombin(G1_2, G2_2, g1s[1,1,1]+g2s[1,1,1], string(concg[j], " nM ", named2, "+", concl[i], "nM ", named1), false, 70.0) # first gemcitabine then lapatinib
-    plot(p1, p2, p3, p4, layout=(2,2))
+    G1_1, G2_1 = temporal_combination(params1, params2, g1s[1, 1, 1] + g2s[1, 1, 1])
+    G1_2, G2_2 = temporal_combination(params2, params1, g1s[1, 1, 1] + g2s[1, 1, 1])
+    p1 = ode_plotIt(params1, g1s[:, :, k1], g2s[:, :, k1], pop[k1], i, string(concl[i], " nM ", named1), false, 70.0)
+    p2 = ode_plotIt(params2, g1s[:, :, k2], g2s[:, :, k2], pop[k2], j, string(concg[j], " nM ", named2), false, 70.0)
+    p3 = helperPlotCombin(G1_1, G2_1, g1s[1, 1, 1] + g2s[1, 1, 1], string(concl[i], " nM ", named1, "+", concg[j], "nM ", named2), legend, 70.0) # first lapatinib, then gemcitabine
+    p4 = helperPlotCombin(G1_2, G2_2, g1s[1, 1, 1] + g2s[1, 1, 1], string(concg[j], " nM ", named2, "+", concl[i], "nM ", named1), false, 70.0) # first gemcitabine then lapatinib
+    plot(p1, p2, p3, p4, layout = (2, 2))
 end
 
 """ To find IC50 for each drug, separately."""
 function find_IC50(population)
-    lap = Array(population[1][192,:])
-    dox = Array(population[2][192,:])
-    gem = Array(population[3][192,:])
-    tax = Array(population[4][192,:])
-    IC50_lap = argmin(abs.(0.5*lap[1] .- lap)) #6
-    IC50_dox = argmin(abs.(0.5*dox[1] .- dox)) #3
-    IC50_gem = argmin(abs.(0.5*gem[1] .- gem)) #6
-    IC50_tax = argmin(abs.(0.5*tax[1] .- tax)) #4
-    return(IC50_lap, IC50_dox, IC50_gem, IC50_tax)
+    lap = Array(population[1][192, :])
+    dox = Array(population[2][192, :])
+    gem = Array(population[3][192, :])
+    tax = Array(population[4][192, :])
+    IC50_lap = argmin(abs.(0.5 * lap[1] .- lap)) #6
+    IC50_dox = argmin(abs.(0.5 * dox[1] .- dox)) #3
+    IC50_gem = argmin(abs.(0.5 * gem[1] .- gem)) #6
+    IC50_tax = argmin(abs.(0.5 * tax[1] .- tax)) #4
+    return (IC50_lap, IC50_dox, IC50_gem, IC50_tax)
 end
