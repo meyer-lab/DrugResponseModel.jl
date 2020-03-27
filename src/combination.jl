@@ -66,7 +66,7 @@ function plotNumcells(drugB::Array{Float64, 2}, combination::Array{Float64, 2}, 
     plot!(log.(concDrugB), nums, label = "pac", lw = 3, xlabel = "log drug concentration", ylabel = "cell #", shape = :circle, color = :green)
 end
 
-function helperPlot(concd1, named1, concd2, named2, numscomb)
+function helperPlot(concd1, named1, concd2, named2, numscomb, legend, title, ymin, ymax)
     p = plot(
         log.(concd1),
         numscomb[:, 1],
@@ -76,6 +76,7 @@ function helperPlot(concd1, named1, concd2, named2, numscomb)
         ylabel = "cell # at t = 96 hrs",
         shape = :circle,
         color = :green,
+        title = title
     )
     for k = 2:8
         plot!(
@@ -87,11 +88,14 @@ function helperPlot(concd1, named1, concd2, named2, numscomb)
             shape = :circle,
             color = :purple,
             alpha = (1 - 0.1 * k),
+            legend = legend,
             show = true,
         )
     end
+    ylims!((ymin, ymax))
     p
 end
+
 """ Plotting cell# versus concentration for2 drugs """
 function combin2drugs(
     d1::Array{Float64, 2},
@@ -101,9 +105,10 @@ function combin2drugs(
     named1::String,
     named2::String,
     effs::Array{Float64, 3},
+    blissNum::Array{Float64, 2},
     g0::Float64,
 )
-    n = 8
+    n=8
     combin = fullCombinationParam(d1, d2, effs, n)
 
     numscomb = zeros(n, n)
@@ -112,8 +117,13 @@ function combin2drugs(
             numscomb[j, m] = numcells(combin[:, j, m], g0, 96)
         end
     end
-    helperPlot(concd1, named1, concd2, named2, numscomb)
+    diff = numscomb - blissNum
+    p1 = helperPlot(concd1, named1, concd2, named2, numscomb, true, "", 0.0, 45.0)
+    p2 = helperPlot(concd1, named1, concd2, named2, blissNum, false, "", 0.0, 45.0)
+    p3 = helperPlot(concd1, named1, concd2, named2, diff, false, "Cell # difference", -12.0, 12.0)
+    plot(p1, p2, p3, layout = (1,3), size = (1300, 400))
 end
+
 
 """ In this function, we apply the Bliss synergy to the cell numbers. 
 This is to compare the traditional way of representing the combination effect, compare to the way we do in our model."""
