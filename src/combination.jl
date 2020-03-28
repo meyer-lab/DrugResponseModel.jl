@@ -76,7 +76,7 @@ function helperPlot(concd1, named1, concd2, named2, numscomb, legend, title, ymi
         ylabel = "cell # at t = 96 hrs",
         shape = :circle,
         color = :green,
-        title = title
+        title = title,
     )
     for k = 2:8
         plot!(
@@ -108,7 +108,7 @@ function combin2drugs(
     blissNum,
     g0::Float64,
 )
-    n=8
+    n = 8
     combin = fullCombinationParam(d1, d2, effs, n)
 
     numscomb = zeros(n, n)
@@ -121,7 +121,7 @@ function combin2drugs(
     p1 = helperPlot(concd1, named1, concd2, named2, numscomb, true, "", 0.0, 45.0)
     p2 = helperPlot(concd1, named1, concd2, named2, blissNum, false, "", 0.0, 45.0)
     p3 = helperPlot(concd1, named1, concd2, named2, diff, false, "Cell # difference", -12.0, 12.0)
-    plot(p1, p2, p3, layout = (1,3), size = (1300, 400))
+    plot(p1, p2, p3, layout = (1, 3), size = (1300, 400))
 end
 
 
