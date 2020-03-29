@@ -2,7 +2,7 @@
         This file contains a function to plot the parameters against the  drug concentrations, in a 2x2 subplot.
 """
 
-default(size = (900, 400), margin = 0.4cm, legendfontsize = 7, fmt = :pdf)
+default(size = (900, 400), margin = 0.6cm, legendfontsize = 7, fmt = :pdf)
 
 #-------------------------- plot for the G1 G2 correlation ---------------------------#
 function correlationPlot(g1::Matrix, g2::Matrix, labels::Array, xlabel::String, ylabel::String, ymax::Int)
