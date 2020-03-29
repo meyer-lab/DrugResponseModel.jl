@@ -1,5 +1,5 @@
 
-```julia
+```julia; echo=false
 using DrugResponseModel
 using Plots
 
@@ -7,7 +7,7 @@ concs, populations, g1s, g2s = load(192);
 g0 = g1s[1,1,1]+g2s[1,1,1];
 ```
 
-```julia
+```julia; echo=false
 # fitness, pp = optimize_hillAll(concs, g1s, g2s; maxstep=5E4)
 # parameters for 95.5 hours
 pp = [50.2552, 0.866725, 2.41775e-5, 1.96785, 0.0185627, 0.0447356, 108.176, 1.16593, 1.3052, 2.86005e-5, 0.348876, 0.438606, 14.4648, 2.15448, 1.42977, 2.99996, 0.0216477, 0.196135, 4.03273, 3.93278, 1.86825e-5, 0.867674, 0.430368, 0.241053, 1.68177, 1.17228, 0.508321, 34.5786, 37.9849, 20.7341, 9.11408];
@@ -19,7 +19,7 @@ pp = [50.2552, 0.866725, 2.41775e-5, 1.96785, 0.0185627, 0.0447356, 108.176, 1.1
 
 To see a smoother curve, we have divided the concentration range into 50 time points instead of 8.
 
-```julia
+```julia; echo=false
 moreConcs = zeros(50,4)
 for i=1:4
     moreConcs[:, i] = range(minimum(concs[:, i]),stop=maximum(concs[:, i]),length=50)
@@ -32,7 +32,7 @@ moregemc = moreeffs[:,:,3];
 morepac = moreeffs[:,:,4];
 ```
 
-```julia
+```julia; echo=false
 effs = getODEparamsAll(pp, concs)
 # each of the following are 9x8 matrices
 lapat = effs[:,:,1];
@@ -51,14 +51,14 @@ Bliss = x + y - (x.y)
 Then, we plot the concentration versus the effect alone, and when we have combination with the amount of the drugB equal to their EC50. 
 In the following, we have paclitaxel alone, and when it is combined with 5 nM of gemcitabine.
 
-```julia
+```julia; echo=false
 combin = BlissCombination(morepac, moregemc,50)
 plotEffectsCombin(moreConcs, moregemc, combin)
 ```
 
 The following shows the number of cells over concentration with paclitaxel alone, and with 5 nM of gemcitabine, at t = 96 hrs.
 
-```julia
+```julia; echo=false
 combinedparams = fullCombinationParam(morepac, moregemc, moreeffs,50)
 combination = combinedparams[:, :, 5]
 plotNumcells(morepac, combination, moreConcs[:,4], g0,50)
@@ -66,15 +66,15 @@ plotNumcells(morepac, combination, moreConcs[:,4], g0,50)
 
 ### Lapatinib
 
-```julia
+```julia; echo=false
 ODEplot_all(lapat, g1s[:, :, 1], g2s[:, :, 1], populations[1], concs[:, 1])
 ```
 
-```julia
+```julia; echo=false
 plot_parameters(moreConcs[:, 1], morelapat)
 ```
 
-```julia
+```julia; echo=false
 g0 = g1s[1,1,1] + g2s[1,1,1]
 T = 170
 plotGradient(lapat, concs[:, 1], g0, T)
@@ -82,15 +82,15 @@ plotGradient(lapat, concs[:, 1], g0, T)
 
 ### Doxorubicin
 
-```julia
+```julia; echo=false
 ODEplot_all(dox, g1s[:, :, 2], g2s[:, :, 2], populations[2], concs[:, 2])
 ```
 
-```julia
+```julia; echo=false
 plot_parameters(moreConcs[:, 2], moredox)
 ```
 
-```julia
+```julia; echo=false
 g0 = g1s[1, 1, 2] + g2s[1,1,2]
 
 plotGradient(dox, concs[:, 2], g0, T)
@@ -98,15 +98,15 @@ plotGradient(dox, concs[:, 2], g0, T)
 
 ### Gemcitabine
 
-```julia
+```julia; echo=false
 ODEplot_all(gemc, g1s[:, :, 3], g2s[:, :, 3], populations[3], concs[:, 3])
 ```
 
-```julia
+```julia; echo=false
 plot_parameters(moreConcs[:, 3], moregemc)
 ```
 
-```julia
+```julia; echo=false
 g0 = g1s[1, 1, 3] + g2s[1,1,3]
 
 plotGradient(gemc, concs[:, 3], g0, T)
@@ -114,15 +114,15 @@ plotGradient(gemc, concs[:, 3], g0, T)
 
 ### Paclitaxel
 
-```julia
+```julia; echo=false
 ODEplot_all(pac, g1s[:, :, 4], g2s[:, :, 4], populations[4], concs[:, 4])
 ```
 
-```julia
+```julia; echo=false
 plot_parameters(moreConcs[:, 4], morepac)
 ```
 
-```julia
+```julia; echo=false
 g0 = g1s[1, 1, 4] + g2s[1,1,4]
 
 plotGradient(pac, concs[:, 4], g0, T)
