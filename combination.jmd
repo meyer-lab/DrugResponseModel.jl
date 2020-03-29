@@ -1,5 +1,5 @@
 
-```julia
+```julia; echo=false
 using DrugResponseModel
 using Plots
 
@@ -13,7 +13,7 @@ pp = [50.2552, 0.866725, 2.41775e-5, 1.96785, 0.0185627, 0.0447356, 108.176, 1.1
 
 each of the following are 9x8 matrices, all the parameters for all of the concentrations for each of the drugs.
 
-```julia
+```julia; echo=false
 effs = getODEparamsAll(pp, concs)
 lapat = effs[:,:,1];
 dox = effs[:,:,2];
@@ -34,7 +34,7 @@ GP = cellnum[:,:,6]; # gem and pac
 As we realized using the find_IC50 function, the IC50 of the drugs are 100, 10, 10, 2 nM for Lapatinib, doxorubicin, gemcitabine, and taxol.
 Here we plot the time-combination of the drugs, in their IC50 concentration.
 
-```julia
+```julia; echo=false
 p1 = plotTemporalCombin(lapat[:,6], dox[:,3], g1s, g2s, populations, concs[:,1], concs[:,2], false, 6, 3, "lap.", "dox.", 1, 2)
 p2 = plotTemporalCombin(lapat[:,6], gemc[:,6], g1s, g2s, populations, concs[:,1], concs[:,3], false, 6, 6, "lap.", "gemc.", 1, 3)
 p3 = plotTemporalCombin(lapat[:,6], pac[:,4], g1s, g2s, populations, concs[:,1], concs[:,4], false, 6, 4, "lap.", "taxol.", 1, 4)
@@ -48,72 +48,72 @@ plot(p1,p2,p3,p4,p5,p6, size=(1400, 1000))
 
 The following, plots the number of cells over concentrations, at t = 96 hours. The green line is the one with a single drug over its range of concentrations, and the purple lines show the combination of this drug (for example doxorubicin in the following) and different concentrations of the second drug (in the following case, lapatinib). 
 
-```julia
+```julia; echo=false
 combin2drugs(dox, lapat, concs[:, 2], concs[:,1], "dox", "lap", effs, LD, g0)
 ```
 
 ### doxorubicin and paclitaxel
 
-```julia
+```julia; echo=false
 combin2drugs(dox, pac, concs[:, 2], concs[:,4], "dox", "pac", effs, DP', g0)
 ```
 
 ### doxorubicin and gemcitabine
 
-```julia
+```julia; echo=false
 combin2drugs(dox, gemc, concs[:, 2], concs[:,3], "dox", "gem", effs, DG', g0)
 ```
 
 ### paclitaxel and gemcitabine
 
-```julia
+```julia; echo=false
 combin2drugs(pac, gemc, concs[:, 4], concs[:,3], "pac", "gem", effs, GP, g0)
 ```
 
 ### paclitaxel and dox 
 
-```julia
+```julia; echo=false
 combin2drugs(pac, dox, concs[:, 4], concs[:,2], "pac", "dox", effs, DP, g0)
 ```
 
 ### paclitaxel and lapatinib
 
-```julia
+```julia; echo=false
 combin2drugs(pac, lapat, concs[:, 4], concs[:,1], "pac", "lap", effs, LP, g0)
 ```
 
 ### lapatinib and dox
 
-```julia
+```julia; echo=false
 combin2drugs(lapat, dox, concs[:, 1], concs[:,2], "lap", "dox", effs, LD', g0)
 ```
 
 ### lapatinib and gemcitabine
 
-```julia
+```julia; echo=false
 combin2drugs(lapat, gemc, concs[:, 1], concs[:,3], "lap", "gem", effs, LG', g0)
 ```
 
 ### lapatinib and paclitaxel
 
-```julia
+```julia; echo=false
 combin2drugs(lapat, pac, concs[:, 1], concs[:,4], "lap", "pac", effs, LP', g0)
 ```
 
 ### gemcitabine and dox
 
-```julia
+```julia; echo=false
 combin2drugs(gemc, dox, concs[:, 3], concs[:,2], "gemc", "dox", effs, DG, g0)
 ```
 
 ### gemcitabine and paclitaxel
 
-```julia
+```julia; echo=false
 combin2drugs(gemc, pac, concs[:, 3], concs[:,4], "gemc", "pac", effs, GP', g0)
 ```
 
 ### gemcitabine and lapatinib
 
-```julia
+```julia; echo=false
 combin2drugs(gemc, lapat, concs[:, 3], concs[:,1], "gem", "lap", effs, LG, g0)
 ```
