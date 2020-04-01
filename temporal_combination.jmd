@@ -18,7 +18,7 @@ pac = effs[:,:,4];
 As we realized using the data, the IC50 of the drugs are 100, 10, 10, 2 nM for Lapatinib, doxorubicin, gemcitabine, and taxol, respectively.
 Here we plot the time-combination of the drugs, in their IC50 concentration.
 
-This plot on the top row, shows time-series simulation and data for individual drugs in their IC50 concentration for 120 hours. Top left is the simulation and data for lapatinib, 100nM; on the right we have doxorubicin, 10 nM. On the bottom left, we have simulations for when we have treated the cells with 100 nM of lapatinib for the first 60 hours, and then treating them with 10 nM of doxorubicin for another 60 hours -- as you see, I have drawn dashed line at the time that the drug is changed. On the bottom right, we first treat the cells with 10 nM of doxorubicin for 60 hours, and then we switch the drug to lapatinib for another 60 hours.
+This plot on the top row, shows time-series simulation and data for individual drugs in their IC50 concentration for 120 hours. Top left is the simulation and data for lapatinib, 100nM; on the right we have doxorubicin, 10 nM. On the bottom left, we have simulations for when we have treated the cells with 100 nM of lapatinib for the first 60 hours, and then treating them with 10 nM of doxorubicin for another 60 hours, as you see, I have drawn dashed line at the time that the drug is changed. On the bottom right, we first treat the cells with 10 nM of doxorubicin for 60 hours, and then we switch the drug to lapatinib for another 60 hours.
 
 Lapatinib and Doxorubicin
 

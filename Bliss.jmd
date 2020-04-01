@@ -36,7 +36,7 @@ Each of the plot sets includes 3 figures; all the figures shown cell number vers
 
 Here we are combining doxorubicin and lapatinib. The base drug is doxorubicin, which increases in the x-axis. The green line is the one showing cell number for the base drug (here doxorubicin) over its range of concentrations, and the purple lines show the combination of this drug (doxorubicin) and different concentrations of the second drug (lapatinib).
 The left plot is calculating the cell number after applying the Bliss combination for transition and death rates, i.e., we find the combined drug effect, and with that we solve the ODE model, and find the cell number changes over time.
-The middle one shows calculating cell number while applying the Bliss synergy on the cell number values -- instead of drug effect parameters, and directly finding the cell numbers for each combination.
+The middle one shows calculating cell number while applying the Bliss synergy on the cell number values, instead of drug effect parameters, and directly finding the cell numbers for each combination.
 The right plot is just the subtraction of the left plot from the middle plot. It shows how different these two approaches of combination are. The same interpretation goes for all the following plots.
 
 ```julia; echo=false
