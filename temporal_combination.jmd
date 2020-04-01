@@ -18,14 +18,6 @@ lapat = effs[:,:,1];
 dox = effs[:,:,2];
 gemc = effs[:,:,3];
 pac = effs[:,:,4];
-
-cellnum=blissCellNum(g1s, g2s)
-LD = cellnum[:,:,1]; # lap and dox
-LG = cellnum[:,:,2]; # lap anf gem
-LP = cellnum[:,:,3]; # lap and pac
-DG = cellnum[:,:,4]; # dox and gem
-DP = cellnum[:,:,5]; # dox and pac
-GP = cellnum[:,:,6]; # gem and pac
 ```
 
 ### temporal combination

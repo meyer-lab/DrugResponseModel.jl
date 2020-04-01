@@ -1,4 +1,27 @@
-This file contains Bliss combination
+This file contains Bliss combination.
+
+
+```julia; echo=false
+using DrugResponseModel
+using Plots
+
+concs, populations, g1s, g2s = load(192);
+g0 = g1s[1,1,1]+g2s[1,1,1];
+```
+
+```julia; echo=false
+pp = [50.2552, 0.866725, 2.41775e-5, 1.96785, 0.0185627, 0.0447356, 108.176, 1.16593, 1.3052, 2.86005e-5, 0.348876, 0.438606, 14.4648, 2.15448, 1.42977, 2.99996, 0.0216477, 0.196135, 4.03273, 3.93278, 1.86825e-5, 0.867674, 0.430368, 0.241053, 1.68177, 1.17228, 0.508321, 34.5786, 37.9849, 20.7341, 9.11408];
+```
+
+```julia; echo=false
+cellnum=blissCellNum(g1s, g2s)
+LD = cellnum[:,:,1]; # lap and dox
+LG = cellnum[:,:,2]; # lap anf gem
+LP = cellnum[:,:,3]; # lap and pac
+DG = cellnum[:,:,4]; # dox and gem
+DP = cellnum[:,:,5]; # dox and pac
+GP = cellnum[:,:,6]; # gem and pac
+```
 ## Bliss Combination
 
 The following includes plots for the simulation of drug combination at once at t = 96 hours.
