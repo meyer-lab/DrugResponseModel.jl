@@ -1,4 +1,5 @@
 
+This file contains all the drugs, separately.
 ```julia; echo=false
 using DrugResponseModel
 using Plots
@@ -14,33 +15,33 @@ g0 = g1[1] + g2[1]
 T = 170
 ```
 
-### Lapatinib
+## Lapatinib
 
-#### Plotting the gradient
+### Plotting the gradient
 
 ```julia; echo=false
 plotGradient(effects, conc_l, g0, T)
 ```
 
-#### Plotting the time-series simulations compared to the actual data.
+### Plotting the time-series simulations compared to the actual data.
 
 ```julia; echo=false
 ODEplot_all(effects, g1, g2, pop, conc_l)
 ```
 
-#### Plot the percentage
+### Plot the percentage
 
 ```julia; echo=false
 ODEplot_allPerc(effects, g1, g2, pop, conc_l)
 ```
 
-#### Plot the parameters over concentration; these are known as the drug effects
+### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
 plot_parameters(conc_l, effects)
 ```
 
-#### Sensitivity analysis:
+### Sensitivity analysis:
 
 ```julia; echo=false
 result, paramRanges = allSensitivity(ps, conc_l, g1, g2)
@@ -49,7 +50,7 @@ plot(pl...)
 plot!(size=(1200, 800))
 ```
 
-### Doxorubicin
+## Doxorubicin
 
 ```julia; echo=false
 conc_l, pop, g2, g1 = setup_data("doxorubicin")
@@ -59,31 +60,31 @@ effects = getODEparams(ps, conc_l)
 g0 = g1[1] + g2[1]
 ```
 
-#### Plotting the gradient
+### Plotting the gradient
 
 ```julia; echo=false
 plotGradient(effects, conc_l, g0, T)
 ```
 
-#### Plotting the time-series simulations compared to the actual data.
+### Plotting the time-series simulations compared to the actual data.
 
 ```julia; echo=false
 ODEplot_all(effects, g1, g2, pop, conc_l)
 ```
 
-#### Plot the percentage
+### Plot the percentage
 
 ```julia; echo=false
 ODEplot_allPerc(effects, g1, g2, pop, conc_l)
 ```
 
-#### Plot the parameters over concentration; these are known as the drug effects
+### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
 plot_parameters(conc_l, effects)
 ```
 
-#### Sensitivity analysis:
+### Sensitivity analysis:
 
 ```julia; echo=false
 result, paramRanges = allSensitivity(ps, conc_l, g1, g2)
@@ -92,7 +93,7 @@ plot(pl...)
 plot!(size=(1200, 800))
 ```
 
-### Gemcitabine
+## Gemcitabine
 
 ```julia; echo=false
 conc_l, pop, g2, g1 = setup_data("gemcitabine")
@@ -102,31 +103,31 @@ effects = getODEparams(ps, conc_l)
 g0 = g1[1] + g2[1]
 ```
 
-#### Plotting the gradient
+### Plotting the gradient
 
 ```julia; echo=false
 plotGradient(effects, conc_l, g0, T)
 ```
 
-#### Plotting the time-series simulations compared to the actual data.
+### Plotting the time-series simulations compared to the actual data.
 
 ```julia; echo=false
 ODEplot_all(effects, g1, g2, pop, conc_l)
 ```
 
-#### Plot the percentage
+### Plot the percentage
 
 ```julia; echo=false
 ODEplot_allPerc(effects, g1, g2, pop, conc_l)
 ```
 
-#### Plot the parameters over concentration; these are known as the drug effects
+### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
 plot_parameters(conc_l, effects)
 ```
 
-#### Sensitivity analysis:
+### Sensitivity analysis:
 
 ```julia; echo=false
 result, paramRanges = allSensitivity(ps, conc_l, g1, g2)
@@ -135,7 +136,7 @@ plot(pl...)
 plot!(size=(1200, 800))
 ```
 
-### Paclitaxel
+## Paclitaxel
 
 ```julia; echo=false
 conc_l, pop, g2, g1 = setup_data("paclitaxel")
@@ -145,31 +146,31 @@ effects = getODEparams(ps, conc_l)
 g0 = g1[1] + g2[1]
 ```
 
-#### Plotting the gradient
+### Plotting the gradient
 
 ```julia; echo=false
 plotGradient(effects, conc_l, g0, T)
 ```
 
-#### Plotting the time-series simulations compared to the actual data.
+### Plotting the time-series simulations compared to the actual data.
 
 ```julia; echo=false
 ODEplot_all(effects, g1, g2, pop, conc_l)
 ```
 
-#### Plot the percentage
+### Plot the percentage
 
 ```julia; echo=false
 ODEplot_allPerc(effects, g1, g2, pop, conc_l)
 ```
 
-#### Plot the parameters over concentration; these are known as the drug effects
+### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
 plot_parameters(conc_l, effects)
 ```
 
-#### Sensitivity analysis:
+### Sensitivity analysis:
 
 ```julia; echo=false
 result, paramRanges = allSensitivity(ps, conc_l, g1, g2)
