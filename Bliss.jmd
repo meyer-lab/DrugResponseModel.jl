@@ -15,67 +15,67 @@ The right plot is just the subtraction of the left plot from the middle plot. It
 combin2drugs(dox, lapat, concs[:, 2], concs[:,1], "dox", "lap", effs, LD, g0)
 ```
 
-### doxorubicin and paclitaxel
+doxorubicin and paclitaxel
 
 ```julia; echo=false
 combin2drugs(dox, pac, concs[:, 2], concs[:,4], "dox", "pac", effs, DP', g0)
 ```
 
-### doxorubicin and gemcitabine
+doxorubicin and gemcitabine
 
 ```julia; echo=false
 combin2drugs(dox, gemc, concs[:, 2], concs[:,3], "dox", "gem", effs, DG', g0)
 ```
 
-### paclitaxel and gemcitabine
+paclitaxel and gemcitabine
 
 ```julia; echo=false
 combin2drugs(pac, gemc, concs[:, 4], concs[:,3], "pac", "gem", effs, GP, g0)
 ```
 
-### paclitaxel and dox 
+paclitaxel and dox 
 
 ```julia; echo=false
 combin2drugs(pac, dox, concs[:, 4], concs[:,2], "pac", "dox", effs, DP, g0)
 ```
 
-### paclitaxel and lapatinib
+paclitaxel and lapatinib
 
 ```julia; echo=false
 combin2drugs(pac, lapat, concs[:, 4], concs[:,1], "pac", "lap", effs, LP, g0)
 ```
 
-### lapatinib and dox
+lapatinib and dox
 
 ```julia; echo=false
 combin2drugs(lapat, dox, concs[:, 1], concs[:,2], "lap", "dox", effs, LD', g0)
 ```
 
-### lapatinib and gemcitabine
+lapatinib and gemcitabine
 
 ```julia; echo=false
 combin2drugs(lapat, gemc, concs[:, 1], concs[:,3], "lap", "gem", effs, LG', g0)
 ```
 
-### lapatinib and paclitaxel
+lapatinib and paclitaxel
 
 ```julia; echo=false
 combin2drugs(lapat, pac, concs[:, 1], concs[:,4], "lap", "pac", effs, LP', g0)
 ```
 
-### gemcitabine and dox
+gemcitabine and dox
 
 ```julia; echo=false
 combin2drugs(gemc, dox, concs[:, 3], concs[:,2], "gemc", "dox", effs, DG, g0)
 ```
 
-### gemcitabine and paclitaxel
+gemcitabine and paclitaxel
 
 ```julia; echo=false
 combin2drugs(gemc, pac, concs[:, 3], concs[:,4], "gemc", "pac", effs, GP', g0)
 ```
 
-### gemcitabine and lapatinib
+gemcitabine and lapatinib
 
 ```julia; echo=false
 combin2drugs(gemc, lapat, concs[:, 3], concs[:,1], "gem", "lap", effs, LG, g0)
