@@ -9,7 +9,7 @@ pp = [50.2552, 0.866725, 2.41775e-5, 1.96785, 0.0185627, 0.0447356, 108.176, 1.1
 # params for 72 hours
 # pp = [42.8209, 0.89888, 0.00689597, 2.77885, 0.0195601, 0.0558532, 182.449, 1.01496, 0.695658, 0.0968922, 0.32105, 0.681382, 77.7469, 1.0493, 0.54269, 0.993221, 0.0642375, 0.338315, 3.82941, 5.09853, 1.74034, 0.765544, 0.807928, 0.362256, 1.95095, 1.75848, 0.517349, 42.6188, 54.8984, 44.7089, 11.7881];
 ```
-# Results and analysis for combination of drugs.
+## Results and analysis for combination of drugs.
 
 ```julia; echo=false
 # each of the following are 9x8 matrices, all the parameters for all of the concentrations for each of the drugs.
@@ -28,7 +28,7 @@ DP = cellnum[:,:,5]; # dox and pac
 GP = cellnum[:,:,6]; # gem and pac
 ```
 
-## temporal combination
+### temporal combination
 
 As we realized using the data, the IC50 of the drugs are 100, 10, 10, 2 nM for Lapatinib, doxorubicin, gemcitabine, and taxol, respectively.
 Here we plot the time-combination of the drugs, in their IC50 concentration.
@@ -69,7 +69,7 @@ Here, we have the same style for lapatinib and gemcitabine in their IC50 concent
 plotTemporalCombin(gemc[:,6], pac[:,4], g1s, g2s, populations, concs[:,3], concs[:,4], true, 6, 4, "gemc.", "taxol.", 3, 4)
 ```
 
-As long as my interpretation of these plots, I guess in some cases, the combination does improve the results -- if the result is considered lesser total cell number at the end of the experiment. Also, in some cases, the order of the drug used, matters; no significantly at least in the time range we are looking at. One step I think would worth trying, is using another dose of the same drug at t = 60 hours, instead of chaning the drug and see what happens. Somehow, intensifying one drug.
+### As long as my interpretation of these plots, I guess in some cases, the combination does improve the results -- if the result is considered lesser total cell number at the end of the experiment. Also, in some cases, the order of the drug used, matters; no significantly at least in the time range we are looking at. One step I think would worth trying, is using another dose of the same drug at t = 60 hours, instead of chaning the drug and see what happens. Somehow, intensifying one drug.
 
 ## Bliss Combination
 
