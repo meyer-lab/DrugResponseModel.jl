@@ -1,9 +1,13 @@
+
 ```julia; echo=false
 using DrugResponseModel
 using Plots
 
 concs, populations, g1s, g2s = load(192);
 g0 = g1s[1,1,1]+g2s[1,1,1];
+```
+
+```julia; echo=false
 # params for 96 hours
 pp = [50.2552, 0.866725, 2.41775e-5, 1.96785, 0.0185627, 0.0447356, 108.176, 1.16593, 1.3052, 2.86005e-5, 0.348876, 0.438606, 14.4648, 2.15448, 1.42977, 2.99996, 0.0216477, 0.196135, 4.03273, 3.93278, 1.86825e-5, 0.867674, 0.430368, 0.241053, 1.68177, 1.17228, 0.508321, 34.5786, 37.9849, 20.7341, 9.11408];
 # params for 72 hours
@@ -39,37 +43,37 @@ This plot on the top row, shows time-series simulation and data for individual d
 plotTemporalCombin(lapat[:,6], dox[:,3], g1s, g2s, populations, concs[:,1], concs[:,2], true, 6, 3, "lap.", "dox.", 1, 2)
 ```
 
-Here, we have the same style for lapatinib and gemcitabine in their IC50 concentration.
+#### Here, we have the same style for lapatinib and gemcitabine in their IC50 concentration.
 
 ```julia; echo=false
 plotTemporalCombin(lapat[:,6], gemc[:,6], g1s, g2s, populations, concs[:,1], concs[:,3], true, 6, 6, "lap.", "gemc.", 1, 3)
 ```
 
-Here, we have the same style for lapatinib and paclitaxel in their IC50 concentration.
+#### Here, we have the same style for lapatinib and paclitaxel in their IC50 concentration.
 
 ```julia; echo=false
 plotTemporalCombin(lapat[:,6], pac[:,4], g1s, g2s, populations, concs[:,1], concs[:,4], true, 6, 4, "lap.", "taxol.", 1, 4)
 ```
 
-Here, we have the same style for doxorubicin and gemcitabine in their IC50 concentration.
+#### Here, we have the same style for doxorubicin and gemcitabine in their IC50 concentration.
 
 ```julia; echo=false
 plotTemporalCombin(dox[:,3], gemc[:,6], g1s, g2s, populations, concs[:,2], concs[:,3], true, 3, 6, "dox.", "gemc.", 2, 3)
 ```
 
-Here, we have the same style for lapatinib and gemcitabine in their IC50 concentration.
+#### Here, we have the same style for lapatinib and gemcitabine in their IC50 concentration.
 
 ```julia; echo=false
 plotTemporalCombin(dox[:,3], pac[:,4], g1s, g2s, populations, concs[:,2], concs[:,4], true, 3, 4, "dox.", "taxol", 2, 4)
 ```
 
-Here, we have the same style for lapatinib and gemcitabine in their IC50 concentration.
+#### Here, we have the same style for lapatinib and gemcitabine in their IC50 concentration.
 
 ```julia; echo=false
 plotTemporalCombin(gemc[:,6], pac[:,4], g1s, g2s, populations, concs[:,3], concs[:,4], true, 6, 4, "gemc.", "taxol.", 3, 4)
 ```
 
-### As long as my interpretation of these plots, I guess in some cases, the combination does improve the results -- if the result is considered lesser total cell number at the end of the experiment. Also, in some cases, the order of the drug used, matters; no significantly at least in the time range we are looking at. One step I think would worth trying, is using another dose of the same drug at t = 60 hours, instead of chaning the drug and see what happens. Somehow, intensifying one drug.
+In some cases, the combination does improve the results -- if the result is considered lesser total cell number at the end of the experiment. Also, in some cases, the order of the drug used, matters; no significantly at least in the time range we are looking at. One step I think would worth trying, is using another dose of the same drug at t = 60 hours, instead of chaning the drug and see what happens. Somehow, intensifying one drug.
 
 ## Bliss Combination
 
