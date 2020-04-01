@@ -1,4 +1,6 @@
 
+The following inculdes combining the drugs in terms of treating cells successively with different drugs after a specific amount of time, and also, Bliss combination for cell number and the drug effects.
+
 ```julia; echo=false
 using DrugResponseModel
 using Plots
@@ -13,7 +15,6 @@ pp = [50.2552, 0.866725, 2.41775e-5, 1.96785, 0.0185627, 0.0447356, 108.176, 1.1
 # params for 72 hours
 # pp = [42.8209, 0.89888, 0.00689597, 2.77885, 0.0195601, 0.0558532, 182.449, 1.01496, 0.695658, 0.0968922, 0.32105, 0.681382, 77.7469, 1.0493, 0.54269, 0.993221, 0.0642375, 0.338315, 3.82941, 5.09853, 1.74034, 0.765544, 0.807928, 0.362256, 1.95095, 1.75848, 0.517349, 42.6188, 54.8984, 44.7089, 11.7881];
 ```
-## Results and analysis for combination of drugs.
 
 ```julia; echo=false
 # each of the following are 9x8 matrices, all the parameters for all of the concentrations for each of the drugs.
@@ -39,38 +40,39 @@ Here we plot the time-combination of the drugs, in their IC50 concentration.
 
 This plot on the top row, shows time-series simulation and data for individual drugs in their IC50 concentration for 120 hours. Top left is the simulation and data for lapatinib, 100nM; on the right we have doxorubicin, 10 nM. On the bottom left, we have simulations for when we have treated the cells with 100 nM of lapatinib for the first 60 hours, and then treating them with 10 nM of doxorubicin for another 60 hours -- as you see, I have drawn dashed line at the time that the drug is changed. On the bottom right, we first treat the cells with 10 nM of doxorubicin for 60 hours, and then we switch the drug to lapatinib for another 60 hours.
 
+### Lapatinib and Doxorubicin
 ```julia; echo=false
 plotTemporalCombin(lapat[:,6], dox[:,3], g1s, g2s, populations, concs[:,1], concs[:,2], true, 6, 3, "lap.", "dox.", 1, 2)
 ```
 
-#### Here, we have the same style for lapatinib and gemcitabine in their IC50 concentration.
+### Lapatinib and Gemcitabine.
 
 ```julia; echo=false
 plotTemporalCombin(lapat[:,6], gemc[:,6], g1s, g2s, populations, concs[:,1], concs[:,3], true, 6, 6, "lap.", "gemc.", 1, 3)
 ```
 
-#### Here, we have the same style for lapatinib and paclitaxel in their IC50 concentration.
+### Lapatinib and Paclitaxel
 
 ```julia; echo=false
 plotTemporalCombin(lapat[:,6], pac[:,4], g1s, g2s, populations, concs[:,1], concs[:,4], true, 6, 4, "lap.", "taxol.", 1, 4)
 ```
 
-#### Here, we have the same style for doxorubicin and gemcitabine in their IC50 concentration.
+### Doxorubicin and Gemcitabine
 
 ```julia; echo=false
 plotTemporalCombin(dox[:,3], gemc[:,6], g1s, g2s, populations, concs[:,2], concs[:,3], true, 3, 6, "dox.", "gemc.", 2, 3)
 ```
 
-#### Here, we have the same style for lapatinib and gemcitabine in their IC50 concentration.
+### Doxorubicin and Paclitaxel
 
 ```julia; echo=false
 plotTemporalCombin(dox[:,3], pac[:,4], g1s, g2s, populations, concs[:,2], concs[:,4], true, 3, 4, "dox.", "taxol", 2, 4)
 ```
 
-#### Here, we have the same style for lapatinib and gemcitabine in their IC50 concentration.
+### Gemcitabine and Paclitaxel
 
 ```julia; echo=false
-plotTemporalCombin(gemc[:,6], pac[:,4], g1s, g2s, populations, concs[:,3], concs[:,4], true, 6, 4, "gemc.", "taxol.", 3, 4)
+plotTemporalCombin(gemc[:,6], pac[:,4], g1s, g2s, populations, concs[:,3], concs[:,4], true, 6, 4, "gemc.", "taxol", 3, 4)
 ```
 
 In some cases, the combination does improve the results -- if the result is considered lesser total cell number at the end of the experiment. Also, in some cases, the order of the drug used, matters; no significantly at least in the time range we are looking at. One step I think would worth trying, is using another dose of the same drug at t = 60 hours, instead of chaning the drug and see what happens. Somehow, intensifying one drug.
