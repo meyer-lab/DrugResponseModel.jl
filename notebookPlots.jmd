@@ -1,7 +1,3 @@
----
-title: To generate plots for the 4 drugs, separately.
----
-
 ### Lapatinib
 
 ```julia; echo=false
@@ -18,23 +14,32 @@ effects = getODEparams(ps, conc_l)
 g0 = g1[1] + g2[1]
 T = 170
 ```
+
 #### Plotting the gradient
+
 ```julia; echo=false
 plotGradient(effects, conc_l, g0, T)
 ```
+
 #### Plotting the time-series simulations compared to the actual data.
+
 ```julia; echo=false
 ODEplot_all(effects, g1, g2, pop, conc_l)
 ```
+
 #### Plot the percentage
+
 ```julia; echo=false
 ODEplot_allPerc(effects, g1, g2, pop, conc_l)
 ```
+
 #### Plot the parameters over concentration; these are known as the drug effects
 ```julia; echo=false
 plot_parameters(conc_l, effects)
 ```
+
 #### Sensitivity analysis:
+
 ```julia; echo=false
 result, paramRanges = allSensitivity(ps, conc_l, g1, g2)
 
@@ -45,6 +50,7 @@ plot!(size=(1200, 800))
 
 
 ### Doxorubicin
+
 ```julia; echo=false
 conc_l, pop, g2, g1 = setup_data("doxorubicin")
 
@@ -53,8 +59,8 @@ ps = [134.546, 0.100021, 0.0385798, 0.814924, 2.93535, 0.229024, 0.0875672, 0.16
 effects = getODEparams(ps, conc_l)
 
 g0 = g1[1] + g2[1]
-T = 170
 ```
+
 #### Plotting the gradient
 ```julia; echo=false
 plotGradient(effects, conc_l, g0, T)
@@ -82,6 +88,7 @@ plot!(size=(1200, 800))
 
 
 ### Gemcitabine
+
 ```julia; echo=false
 conc_l, pop, g2, g1 = setup_data("gemcitabine")
 
@@ -90,25 +97,34 @@ ps = [10.8326, 1.00369, 1.03549, 2.19808, 0.444854, 1.17305, 0.00923942, 0.12281
 effects = getODEparams(ps, conc_l)
 
 g0 = g1[1] + g2[1]
-T = 170
 ```
+
 #### Plotting the gradient
+
 ```julia; echo=false
 plotGradient(effects, conc_l, g0, T)
 ```
+
 #### Plotting the time-series simulations compared to the actual data.
+
 ```julia; echo=false
 ODEplot_all(effects, g1, g2, pop, conc_l)
 ```
+
 #### Plot the percentage
+
 ```julia; echo=false
 ODEplot_allPerc(effects, g1, g2, pop, conc_l)
 ```
+
 #### Plot the parameters over concentration; these are known as the drug effects
+
 ```julia; echo=false
 plot_parameters(conc_l, effects)
 ```
+
 #### Sensitivity analysis:
+
 ```julia; echo=false
 result, paramRanges = allSensitivity(ps, conc_l, g1, g2)
 
@@ -118,6 +134,7 @@ plot!(size=(1200, 800))
 ```
 
 ### Paclitaxel
+
 ```julia; echo=false
 conc_l, pop, g2, g1 = setup_data("paclitaxel")
 
@@ -126,26 +143,34 @@ ps = [3.62825, 2.43233, 0.521699, 2.58588, 2.34811, 0.818595, 0.0894338, 0.04821
 effects = getODEparams(ps, conc_l)
 
 g0 = g1[1] + g2[1]
-T = 170
 ```
 
 #### Plotting the gradient
+
 ```julia; echo=false
 plotGradient(effects, conc_l, g0, T)
 ```
+
 #### Plotting the time-series simulations compared to the actual data.
+
 ```julia; echo=false
 ODEplot_all(effects, g1, g2, pop, conc_l)
 ```
+
 #### Plot the percentage
+
 ```julia; echo=false
 ODEplot_allPerc(effects, g1, g2, pop, conc_l)
 ```
+
 #### Plot the parameters over concentration; these are known as the drug effects
+
 ```julia; echo=false
 plot_parameters(conc_l, effects)
 ```
+
 #### Sensitivity analysis:
+
 ```julia; echo=false
 result, paramRanges = allSensitivity(ps, conc_l, g1, g2)
 
