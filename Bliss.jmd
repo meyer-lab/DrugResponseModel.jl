@@ -14,6 +14,11 @@ pp = [50.2552, 0.866725, 2.41775e-5, 1.96785, 0.0185627, 0.0447356, 108.176, 1.1
 ```
 
 ```julia; echo=false
+effs = getODEparamsAll(pp, concs)
+lapat = effs[:,:,1];
+dox = effs[:,:,2];
+gemc = effs[:,:,3];
+pac = effs[:,:,4];
 cellnum=blissCellNum(g1s, g2s)
 LD = cellnum[:,:,1]; # lap and dox
 LG = cellnum[:,:,2]; # lap anf gem
