@@ -1,0 +1,82 @@
+This file contains Bliss combination
+## Bliss Combination
+
+The following includes plots for the simulation of drug combination at once at t = 96 hours.
+Each of the plot sets includes 3 figures; all the figures shown cell number versus drug1 concentration, and as in the legend is shown, the lighter the color gets, it mean the base drug is combined with higher does of the secondry drug.
+
+### doxorubicin and lapatinib
+
+Here we are combining doxorubicin and lapatinib. The base drug is doxorubicin, which increases in the x-axis. The green line is the one showing cell number for the base drug (here doxorubicin) over its range of concentrations, and the purple lines show the combination of this drug (doxorubicin) and different concentrations of the second drug (lapatinib).
+The left plot is calculating the cell number after applying the Bliss combination for transition and death rates, i.e., we find the combined drug effect, and with that we solve the ODE model, and find the cell number changes over time.
+The middle one shows calculating cell number while applying the Bliss synergy on the cell number values -- instead of drug effect parameters, and directly finding the cell numbers for each combination.
+The right plot is just the subtraction of the left plot from the middle plot. It shows how different these two approaches of combination are. The same interpretation goes for all the following plots.
+
+```julia; echo=false
+combin2drugs(dox, lapat, concs[:, 2], concs[:,1], "dox", "lap", effs, LD, g0)
+```
+
+### doxorubicin and paclitaxel
+
+```julia; echo=false
+combin2drugs(dox, pac, concs[:, 2], concs[:,4], "dox", "pac", effs, DP', g0)
+```
+
+### doxorubicin and gemcitabine
+
+```julia; echo=false
+combin2drugs(dox, gemc, concs[:, 2], concs[:,3], "dox", "gem", effs, DG', g0)
+```
+
+### paclitaxel and gemcitabine
+
+```julia; echo=false
+combin2drugs(pac, gemc, concs[:, 4], concs[:,3], "pac", "gem", effs, GP, g0)
+```
+
+### paclitaxel and dox 
+
+```julia; echo=false
+combin2drugs(pac, dox, concs[:, 4], concs[:,2], "pac", "dox", effs, DP, g0)
+```
+
+### paclitaxel and lapatinib
+
+```julia; echo=false
+combin2drugs(pac, lapat, concs[:, 4], concs[:,1], "pac", "lap", effs, LP, g0)
+```
+
+### lapatinib and dox
+
+```julia; echo=false
+combin2drugs(lapat, dox, concs[:, 1], concs[:,2], "lap", "dox", effs, LD', g0)
+```
+
+### lapatinib and gemcitabine
+
+```julia; echo=false
+combin2drugs(lapat, gemc, concs[:, 1], concs[:,3], "lap", "gem", effs, LG', g0)
+```
+
+### lapatinib and paclitaxel
+
+```julia; echo=false
+combin2drugs(lapat, pac, concs[:, 1], concs[:,4], "lap", "pac", effs, LP', g0)
+```
+
+### gemcitabine and dox
+
+```julia; echo=false
+combin2drugs(gemc, dox, concs[:, 3], concs[:,2], "gemc", "dox", effs, DG, g0)
+```
+
+### gemcitabine and paclitaxel
+
+```julia; echo=false
+combin2drugs(gemc, pac, concs[:, 3], concs[:,4], "gemc", "pac", effs, GP', g0)
+```
+
+### gemcitabine and lapatinib
+
+```julia; echo=false
+combin2drugs(gemc, lapat, concs[:, 3], concs[:,1], "gem", "lap", effs, LG, g0)
+```

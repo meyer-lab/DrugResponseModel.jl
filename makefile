@@ -1,5 +1,5 @@
 
-all: allDrugs.pdf combination.pdf notebookPlots.pdf
+all: allDrugs.pdf Bliss.pdf notebookPlots.pdf temporal_combination.pdf
 
 venv: venv/bin/activate
 
