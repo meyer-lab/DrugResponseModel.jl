@@ -56,4 +56,4 @@ Gemcitabine and Paclitaxel
 plotTemporalCombin(gemc[:,6], pac[:,4], g1s, g2s, populations, concs[:,3], concs[:,4], true, 6, 4, "gemc.", "taxol", 3, 4)
 ```
 
-In some cases, the combination does improve the results -- if the result is considered lesser total cell number at the end of the experiment. Also, in some cases, the order of the drug used, matters; no significantly at least in the time range we are looking at. One step I think would worth trying, is using another dose of the same drug at t = 60 hours, instead of chaning the drug and see what happens. Somehow, intensifying one drug.
+In some cases, the combination does improve the results; if the result is considered lesser total cell number at the end of the experiment. Also, in some cases, the order of the drug used, matters; no significantly at least in the time range we are looking at. One step I think would worth trying, is using another dose of the same drug at t = 60 hours, instead of chaning the drug and see what happens. Somehow, intensifying one drug.

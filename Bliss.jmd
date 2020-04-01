@@ -61,7 +61,7 @@ paclitaxel and gemcitabine
 combin2drugs(pac, gemc, concs[:, 4], concs[:,3], "pac", "gem", effs, GP, g0)
 ```
 
-paclitaxel and dox 
+paclitaxel and doxorubicin
 
 ```julia; echo=false
 combin2drugs(pac, dox, concs[:, 4], concs[:,2], "pac", "dox", effs, DP, g0)
@@ -73,7 +73,7 @@ paclitaxel and lapatinib
 combin2drugs(pac, lapat, concs[:, 4], concs[:,1], "pac", "lap", effs, LP, g0)
 ```
 
-lapatinib and dox
+lapatinib and doxorubicin
 
 ```julia; echo=false
 combin2drugs(lapat, dox, concs[:, 1], concs[:,2], "lap", "dox", effs, LD', g0)
@@ -91,7 +91,7 @@ lapatinib and paclitaxel
 combin2drugs(lapat, pac, concs[:, 1], concs[:,4], "lap", "pac", effs, LP', g0)
 ```
 
-gemcitabine and dox
+gemcitabine and doxorubicin
 
 ```julia; echo=false
 combin2drugs(gemc, dox, concs[:, 3], concs[:,2], "gemc", "dox", effs, DG, g0)
