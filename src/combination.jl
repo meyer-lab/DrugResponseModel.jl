@@ -173,7 +173,7 @@ function helperPlotCombin(G1, G2, g0, title::String, legend::Any, ymax)
         color = :green,
     )
     plot!(t_new, G2, label = "G2 est", legend = legend, legendfontsize = 4, fg_legend = :transparent, lw = 2.0, alpha = 0.6, color = :sienna)
-    plot!(t_new, G1 .+ G2, label = "total est", dpi = 150, lw = 2.0, alpha = 0.6, color = :hotpink)
+    plot!(t_new, G1 .+ G2, label = "total est", lw = 2.0, alpha = 0.6, color = :hotpink)
     plot!(annotation = [(60, ymax, text(title, 8))])
     ylims!((0.0, ymax))
 end

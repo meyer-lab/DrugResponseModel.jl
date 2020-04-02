@@ -1,4 +1,4 @@
-
+All drugs simulated at once.
 ```julia; echo=false
 using DrugResponseModel
 using Plots
