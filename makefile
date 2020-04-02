@@ -1,5 +1,5 @@
 
-all: allDrugs.pdf combination.pdf notebookPlots.pdf
+all: allDrugs.pdf Bliss.pdf notebookPlots.pdf temporal_combination.pdf
 
 venv: venv/bin/activate
 
@@ -10,7 +10,7 @@ venv/bin/activate:
 	touch venv/bin/activate
 
 %.pdf: %.jmd venv
-	julia -e 'using Pkg; Pkg.activate("."); ENV["GKSwstype"]="100"; using Weave; weave("$<", doctype = "md2pdf")'
+	julia -e 'using Pkg; Pkg.activate("."); Pkg.instantiate(); ENV["GKSwstype"]="100"; using Weave; weave("$<", doctype = "md2pdf")'
 
 coverage.cob: venv
 	julia -e 'using Pkg; using Coverage; Pkg.activate("."); Pkg.test("DrugResponseModel"; coverage=true); coverage = process_folder(); LCOV.writefile("coverage-lcov.info", coverage)'
