@@ -49,14 +49,16 @@ function ODEjac(p::Vector{T}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{T}
 end
 
 
+function domainDef(u, p, t)
+    return any(x -> x < -1.0e-9, u)
+end
+
+
 """ Predicts the model given a set of parametrs. """
 function predict(p::Vector{T}, g_0, t) where T
     @assert length(p) == 9
     # Convert parameters to phase numbers
-    nG1 = Int(floor(p[6]))
-    nG2 = Int(floor(p[7]))
-    nD1 = Int(floor(p[8]))
-    nD2 = Int(floor(p[9]))
+    nPs = Int.(floor.(p[6:9]))
 
     if g_0 isa Real
         if nD1 == 0
@@ -71,29 +73,22 @@ function predict(p::Vector{T}, g_0, t) where T
             D2 = zeros(nD2)
         end
 
-        v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
-    else
-        v = g_0
+        g_0 = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
     end
 
-    A = ODEjac(p, nG1, nG2, nD1, nD2)
+    A = ODEjac(p, nPs[1], nPs[2], nPs[3], nPs[4])
 
-    # Some assumptions
-    @assert t[1] == 0.0
-    rmul!(A, t[2])
-    A = LinearAlgebra.exp!(A)
+    prob = ODEProblem((du, u, p, t) -> mul!(du, A, u), g_0, maximum(t))
+    vOut = solve(prob, Tsit5(), saveat=t).u
 
-    G1 = Vector{eltype(p)}(undef, length(t))
-    G2 = Vector{eltype(p)}(undef, length(t))
+    println(size(vOut))
 
-    for ii = 1:length(G1)
-        G1[ii] = sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
-        G2[ii] = sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
+    @views G1 = sum(vOut[1:nG1, :], dims = 1) + sum(vOut[(nG1 + nG2 + 1):(nG1 + nG2 + nD1), :], dims = 1)
+    @views G2 = sum(vOut[(nG1 + 1):(nG1 + nG2)], dims = 1) + sum(vOut[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)], dims = 1)
 
-        v = A * v
-    end
+    println(size(G1))
 
-    return G1, G2, v
+    return abs.(G1), abs.(G2), vec(vOut[:, end])
 end
 
 
