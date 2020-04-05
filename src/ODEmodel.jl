@@ -49,6 +49,11 @@ function ODEjac(p::Vector{Float64}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Mat
 end
 
 
+function domainDef(u, p, t)
+    return any(x -> x < -1.0e-9, u)
+end
+
+
 """ Predicts the model given a set of parametrs. """
 function predict(p, g_0, t, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integer)
     if nD1 == 0
@@ -68,31 +73,26 @@ function predict(p, g_0, t, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integ
         v = g_0
     end
 
-    A = ODEjac(p, nG1, nG2, nD1, nD2)
+    ii = 1
+    G1 = Vector{eltype(p)}(undef, length(t))
+    G2 = Vector{eltype(p)}(undef, length(t))
 
-    if t isa Real
-        v = ExponentialUtilities.expv(t, A, v)
-
-        G1 = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
-        G2 = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
-    else
-        # Some assumptions
-        @assert t[1] == 0.0
-        rmul!(A, t[2])
-        A = LinearAlgebra.exp!(A)
-
-        G1 = Vector{eltype(p)}(undef, length(t))
-        G2 = Vector{eltype(p)}(undef, length(t))
-
-        for ii = 1:length(G1)
-            G1[ii] = sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
-            G2[ii] = sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
-
-            v = A * v
-        end
+    function save_callback(u, t, int)
+        G1[ii] = sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
+        G2[ii] = sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
+        ii += 1
+        return nothing
     end
 
-    return G1, G2, v
+    cb = FunctionCallingCallback(save_callback; funcat=collect(t))
+
+    A = ODEjac(p, nG1, nG2, nD1, nD2)
+
+    func = (du, u, p, t) -> du .= A * u
+    prob = ODEProblem(func, v, maximum(t))
+    vOut = solve(prob, Tsit5(), callback=cb, saveat=maximum(t)).u
+
+    return abs.(G1), abs.(G2), vec(vOut)
 end
 
 

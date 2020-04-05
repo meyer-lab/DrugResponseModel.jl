@@ -9,8 +9,9 @@ using Measures
 using BlackBoxOptim
 using LinearAlgebra
 using Base.Threads
-import ExponentialUtilities
 import Calculus
+using OrdinaryDiffEq
+using DiffEqCallbacks
 
 include("importData.jl")
 include("ODEmodel.jl")
