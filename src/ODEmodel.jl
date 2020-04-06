@@ -40,9 +40,9 @@ function ODEjac(p::Vector{T}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{T}
     end
 
     if nD1 & nD2 != 0
-        @assert all(A[1:(nG1 + nG2), (nG1 + nG2 + 1):end] .== 0.0)
-        @assert all(A[nG1 + nG2 + 1, (nG1 + 1):(nG1 + nG2)] .== 0.0)
-        @assert all(A[nG1 + nG2 + nD1 + 1, 1:nG1] .== 0.0)
+        @assert all(iszero, @view A[1:(nG1 + nG2), (nG1 + nG2 + 1):end])
+        @assert all(iszero, @view A[nG1 + nG2 + 1, (nG1 + 1):(nG1 + nG2)])
+        @assert all(iszero, @view A[nG1 + nG2 + nD1 + 1, 1:nG1])
     end
 
     return A
