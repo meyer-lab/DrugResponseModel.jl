@@ -28,16 +28,6 @@ function residHill(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::M
 end
 
 
-""" Gradient of the cost. """
-function residHillG(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::Matrix)
-    # Calculate the continuous parameters with central differencing.
-    # Special strategy for integer parameters.
-    hillCost(x) = residHill(x, concentrations, g1, g2)
-
-    return Calculus.finite_difference(hillCost, hillParams)
-end
-
-
 """ Hill optimization function. """
 function optimize_hill(conc_l::Vector, g1::Matrix, g2::Matrix; maxstep = 1E5)
     hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2)
@@ -147,19 +137,13 @@ function numcells(params, g0, T)
 end
 
 
-""" Calculates the gradient with central difference"""
-function diffCell(params, g0, T)
-    diffcells(x) = numcells(x, g0, T)
-
-    return Calculus.finite_difference(diffcells, params, :forward) / diffcells(params)
-end
-
-
 """ Plot the gradient vs concentrations """
 function plotGradient(effects, concentration, g0, T)
+    diffcells(x) = numcells(x, g0, T)
+
     dif = zeros(4, 8)
     for i = 1:8
-        dif[:, i] = diffCell(effects[:, i], g0, T)[1:4]
+        dif[:, i] = (ForwardDiff.gradient(diffcells, effects[:, i]) / diffcells(effects[:, i]))[1:4]
     end
     concentrations = log.(concentration)
     p1 = plot(concentrations, dif[1, :], lw = 2, label = "alpha", xlabel = "log concentration [nM]", ylabel = "gradient of #cells wrt param")

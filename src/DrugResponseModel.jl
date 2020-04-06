@@ -9,7 +9,7 @@ using Measures
 using BlackBoxOptim
 using LinearAlgebra
 using Base.Threads
-import Calculus
+import ForwardDiff
 using OrdinaryDiffEq
 using DiffEqCallbacks
 
