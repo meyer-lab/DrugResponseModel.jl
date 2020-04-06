@@ -49,13 +49,8 @@ function ODEjac(p::Vector{Float64}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Mat
 end
 
 
-function domainDef(u, p, t)
-    return any(x -> x < -1.0e-9, u)
-end
-
-
 """ Predicts the model given a set of parametrs. """
-function predict(p, g_0, t, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integer)
+function predict(p, g_0, t, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integer; G1data=nothing, G2data=nothing)
     if nD1 == 0
         D1 = Float64[]
     else
@@ -74,12 +69,21 @@ function predict(p, g_0, t, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integ
     end
 
     ii = 1
-    G1 = Vector{eltype(p)}(undef, length(t))
-    G2 = Vector{eltype(p)}(undef, length(t))
+    if G1data isa Nothing
+        G1 = Vector{eltype(p)}(undef, length(t))
+        G2 = Vector{eltype(p)}(undef, length(t))
+    else
+        cost = 0.0
+    end
 
     function save_callback(u, t, int)
-        G1[ii] = sum(view(u, 1:nG1)) + sum(view(u, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
-        G2[ii] = sum(view(u, (nG1 + 1):(nG1 + nG2))) + sum(view(u, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
+        if G1data isa Nothing
+            G1[ii] = sum(view(u, 1:nG1)) + sum(view(u, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
+            G2[ii] = sum(view(u, (nG1 + 1):(nG1 + nG2))) + sum(view(u, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
+        else
+            cost += norm(sum(view(u, 1:nG1)) + sum(view(u, (nG1 + nG2 + 1):(nG1 + nG2 + nD1))) - G1data[ii])
+            cost += norm(sum(view(u, (nG1 + 1):(nG1 + nG2))) + sum(view(u, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2))) - G2data[ii])
+        end
         ii += 1
         return nothing
     end
@@ -92,16 +96,18 @@ function predict(p, g_0, t, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integ
     prob = ODEProblem(func, v, maximum(t))
     vOut = solve(prob, Tsit5(), callback=cb, saveat=maximum(t)).u
 
-    return abs.(G1), abs.(G2), vec(vOut)
+    if G1data isa Nothing
+        return abs.(G1), abs.(G2), vec(vOut)
+    else
+        return cost
+    end
 end
 
 
 """ Calculates the cost function for a given set of parameters. """
 function cost(p, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
     t = LinRange(0.0, 0.5 * length(g1), length(g1))
-    G1, G2 = predict(p, g1[1] + g2[1], t, nG1, nG2, nD1, nD2)
-
-    return norm(G1 - g1) + norm(G2 - g2)
+    return predict(p, g1[1] + g2[1], t, nG1, nG2, nD1, nD2; G1data=g1, G2data=g2)
 end
 
 
