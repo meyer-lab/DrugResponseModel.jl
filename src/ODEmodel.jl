@@ -78,8 +78,8 @@ function predict(p, g_0, t, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integ
     G2 = Vector{eltype(p)}(undef, length(t))
 
     function save_callback(u, t, int)
-        G1[ii] = sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
-        G2[ii] = sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
+        G1[ii] = sum(view(u, 1:nG1)) + sum(view(u, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
+        G2[ii] = sum(view(u, (nG1 + 1):(nG1 + nG2))) + sum(view(u, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
         ii += 1
         return nothing
     end
@@ -88,7 +88,7 @@ function predict(p, g_0, t, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integ
 
     A = ODEjac(p, nG1, nG2, nD1, nD2)
 
-    func = (du, u, p, t) -> du .= A * u
+    func = (du, u, p, t) -> mul!(du, A, u)
     prob = ODEProblem(func, v, maximum(t))
     vOut = solve(prob, Tsit5(), callback=cb, saveat=maximum(t)).u
 
