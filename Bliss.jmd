@@ -32,79 +32,116 @@ GP = cellnum[:,:,6]; # gem and pac
 The following includes plots for the simulation of drug combination at once at t = 96 hours.
 Each of the plot sets includes 3 figures; all the figures shown cell number versus drug1 concentration, and as in the legend is shown, the lighter the color gets, it mean the base drug is combined with higher does of the secondry drug.
 
-### doxorubicin and lapatinib
+...................................................................................
+
+### doxorubicin and lapatinib:
 
 Here we are combining doxorubicin and lapatinib. The base drug is doxorubicin, which increases in the x-axis. The green line is the one showing cell number for the base drug (here doxorubicin) over its range of concentrations, and the purple lines show the combination of this drug (doxorubicin) and different concentrations of the second drug (lapatinib).
 The left plot is calculating the cell number after applying the Bliss combination for transition and death rates, i.e., we find the combined drug effect, and with that we solve the ODE model, and find the cell number changes over time.
 The middle one shows calculating cell number while applying the Bliss synergy on the cell number values, instead of drug effect parameters, and directly finding the cell numbers for each combination.
-The right plot is just the subtraction of the left plot from the middle plot. It shows how different these two approaches of combination are. The same interpretation goes for all the following plots.
+The right plot is just the subtraction of the left plot from the middle plot. It shows how different these two approaches of combination are. The higher difference means that our model predicts a higher effect than simple Bliss. The same interpretation goes for all the following plots.
 
 ```julia; echo=false
 combin2drugs(dox, lapat, concs[:, 2], concs[:,1], "dox", "lap", effs, LD, g0)
 ```
 
-doxorubicin and paclitaxel
+...................................................................................
+
+doxorubicin and paclitaxel:
+In high concentrations of both drugs, our model suggests higher effect rather than simple Bliss.
 
 ```julia; echo=false
 combin2drugs(dox, pac, concs[:, 2], concs[:,4], "dox", "pac", effs, DP', g0)
 ```
 
-doxorubicin and gemcitabine
+...................................................................................
+
+doxorubicin and gemcitabine:
+In low concentrations both predict similarly, but in high concentrations of both drugs, our model shows lesser effect than simple Bliss.
 
 ```julia; echo=false
 combin2drugs(dox, gemc, concs[:, 2], concs[:,3], "dox", "gem", effs, DG', g0)
 ```
 
-paclitaxel and gemcitabine
+...................................................................................
+
+paclitaxel and gemcitabine:
+These two look quite similarly.
 
 ```julia; echo=false
 combin2drugs(pac, gemc, concs[:, 4], concs[:,3], "pac", "gem", effs, GP, g0)
 ```
 
-paclitaxel and doxorubicin
+...................................................................................
+
+paclitaxel and doxorubicin:
+Our model predicts lower potency in high concentrations than simple Bliss.
 
 ```julia; echo=false
 combin2drugs(pac, dox, concs[:, 4], concs[:,2], "pac", "dox", effs, DP, g0)
 ```
 
-paclitaxel and lapatinib
+...................................................................................
+
+paclitaxel and lapatinib:
+Both do similarly.
 
 ```julia; echo=false
 combin2drugs(pac, lapat, concs[:, 4], concs[:,1], "pac", "lap", effs, LP, g0)
 ```
 
-lapatinib and doxorubicin
+...................................................................................
+
+lapatinib and doxorubicin:
+Here simple Bliss shows the combination has a more effective influence than our model.
 
 ```julia; echo=false
 combin2drugs(lapat, dox, concs[:, 1], concs[:,2], "lap", "dox", effs, LD', g0)
 ```
 
-lapatinib and gemcitabine
+...................................................................................
+
+lapatinib and gemcitabine:
+Here simple Bliss shows the combination has a more effective influence than our model.
 
 ```julia; echo=false
 combin2drugs(lapat, gemc, concs[:, 1], concs[:,3], "lap", "gem", effs, LG', g0)
 ```
 
-lapatinib and paclitaxel
+...................................................................................
+
+lapatinib and paclitaxel:
+Here in the simple Bliss, the combinational effects is not monotonically decreasing, as opposed to our model, but they are similar.
 
 ```julia; echo=false
 combin2drugs(lapat, pac, concs[:, 1], concs[:,4], "lap", "pac", effs, LP', g0)
 ```
 
-gemcitabine and doxorubicin
+...................................................................................
+
+gemcitabine and doxorubicin:
+The two combination approaches look similar. In low concentrations our model shows more effect than simple Bliss.
 
 ```julia; echo=false
 combin2drugs(gemc, dox, concs[:, 3], concs[:,2], "gemc", "dox", effs, DG, g0)
 ```
 
-gemcitabine and paclitaxel
+...................................................................................
+
+gemcitabine and paclitaxel:
+The simple Bliss doesn't show a monotonic decrease of cell number, although they look similar.
 
 ```julia; echo=false
 combin2drugs(gemc, pac, concs[:, 3], concs[:,4], "gemc", "pac", effs, GP', g0)
 ```
 
-gemcitabine and lapatinib
+...................................................................................
+
+gemcitabine and lapatinib:
+In high concentrations our model shows increasing the concentration of lapatinib is non-effective, but simple Bliss shows a slight difference. Although we don't see a monotonic decrease in simple Bliss. Both show a small effect compared to other combinations.
 
 ```julia; echo=false
 combin2drugs(gemc, lapat, concs[:, 3], concs[:,1], "gem", "lap", effs, LG, g0)
 ```
+
+Generally, it looks like 1. combination of paclitaxel and gemcitabine, 2. paclitaxel and doxorubicin look most effective among all. From all the combinations, it seems in lower concentrations of both drugs, our model shows greater effect than simple Bliss, however, for highest concentrations, is it the other way round or they do very similarly.
