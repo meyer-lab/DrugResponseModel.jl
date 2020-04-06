@@ -49,11 +49,6 @@ function ODEjac(p::Vector{T}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{T}
 end
 
 
-function domainDef(u, p, t)
-    return any(x -> x < -1.0e-9, u)
-end
-
-
 """ Predicts the model given a set of parametrs. """
 function predict(p::Vector{T}, g_0, t) where T
     @assert length(p) == 9
