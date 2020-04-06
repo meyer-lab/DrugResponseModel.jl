@@ -80,12 +80,6 @@ git-tree-sha1 = "8fe77a5478781d59a9ba17f0ac47dda2be5f8ae7"
 uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 version = "0.6.1"
 
-[[Calculus]]
-deps = ["LinearAlgebra"]
-git-tree-sha1 = "f641eb0a4f00c343bbc32346e1217b86f3ce9dad"
-uuid = "49dc2e85-a5d0-5ad3-a950-438e2897f1b9"
-version = "0.5.1"
-
 [[CategoricalArrays]]
 deps = ["Compat", "DataAPI", "Future", "JSON", "Missings", "Printf", "Reexport", "Statistics", "Unicode"]
 git-tree-sha1 = "23d7324164c89638c18f6d7f90d972fa9c4fa9fb"
@@ -588,6 +582,7 @@ uuid = "995b91a9-d308-5afd-9ec6-746e21dbc043"
 version = "0.6.5"
 
 [[Plots]]
+<<<<<<< HEAD
 deps = ["Base64", "Contour", "Dates", "FFMPEG", "FixedPointNumbers", "GR", "GeometryTypes", "JSON", "LinearAlgebra", "Measures", "NaNMath", "Pkg", "PlotThemes", "PlotUtils", "Printf", "REPL", "Random", "RecipesBase", "RecipesPipeline", "Reexport", "Requires", "Showoff", "SparseArrays", "Statistics", "StatsBase", "UUIDs"]
 git-tree-sha1 = "0dc2e86bb0dda71379a5122d32103b594b551dc9"
 uuid = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
@@ -598,6 +593,12 @@ deps = ["Intervals", "LinearAlgebra", "RecipesBase"]
 git-tree-sha1 = "a88e0eddef9202b651f4b60b37b59ca67bb49516"
 uuid = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
 version = "0.7.0"
+=======
+deps = ["Base64", "Contour", "Dates", "FFMPEG", "FixedPointNumbers", "GR", "GeometryTypes", "JSON", "LinearAlgebra", "Measures", "NaNMath", "Pkg", "PlotThemes", "PlotUtils", "Printf", "REPL", "Random", "RecipesBase", "Reexport", "Requires", "Showoff", "SparseArrays", "Statistics", "StatsBase", "UUIDs"]
+git-tree-sha1 = "04981635ff75eb705d3edf8854ae06b2de7116e1"
+uuid = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+version = "1.0.2"
+>>>>>>> ce7f155... Cleanup.
 
 [[PooledArrays]]
 deps = ["DataAPI"]
@@ -649,6 +650,7 @@ uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 git-tree-sha1 = "d352369b00094cadb43d694333b051b3d55abaf2"
 uuid = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
 version = "1.0.0"
+<<<<<<< HEAD
 
 [[RecipesPipeline]]
 deps = ["Dates", "PlotUtils", "RecipesBase"]
@@ -661,6 +663,14 @@ deps = ["ArrayInterface", "LinearAlgebra", "RecipesBase", "Requires", "StaticArr
 git-tree-sha1 = "48a8ce7a8cb156231de0477372dcaa6ada1472ef"
 uuid = "731186ca-8d62-57ce-b412-fbd966d074cd"
 version = "2.3.1"
+=======
+
+[[RecursiveArrayTools]]
+deps = ["ArrayInterface", "RecipesBase", "Requires", "StaticArrays", "Statistics", "ZygoteRules"]
+git-tree-sha1 = "01af091d2e62b907f6bb65ea2e7c12208131cf17"
+uuid = "731186ca-8d62-57ce-b412-fbd966d074cd"
+version = "2.2.0"
+>>>>>>> ce7f155... Cleanup.
 
 [[RecursiveFactorization]]
 deps = ["LinearAlgebra"]
@@ -735,9 +745,15 @@ uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[SparseDiffTools]]
 deps = ["Adapt", "ArrayInterface", "Compat", "DataStructures", "FiniteDiff", "ForwardDiff", "InteractiveUtils", "LightGraphs", "LinearAlgebra", "Requires", "SparseArrays", "VertexSafeGraphs"]
+<<<<<<< HEAD
 git-tree-sha1 = "132c55cf302f1faf1d0d1c8205453764066cb018"
 uuid = "47a9eef4-7e08-11e9-0b38-333d64bd3804"
 version = "1.6.0"
+=======
+git-tree-sha1 = "0ec9d7294a581faa2afa2d48c0eff185456d5e78"
+uuid = "47a9eef4-7e08-11e9-0b38-333d64bd3804"
+version = "1.5.0"
+>>>>>>> ce7f155... Cleanup.
 
 [[SpatialIndexing]]
 deps = ["Printf", "Random", "Test"]
@@ -763,9 +779,9 @@ uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [[StatsBase]]
 deps = ["DataAPI", "DataStructures", "LinearAlgebra", "Missings", "Printf", "Random", "SortingAlgorithms", "SparseArrays", "Statistics"]
-git-tree-sha1 = "a6102b1f364befdb05746f386b67c6b7e3262c45"
+git-tree-sha1 = "19bfcb46245f69ff4013b3df3b977a289852c3a1"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
-version = "0.33.0"
+version = "0.32.2"
 
 [[StatsFuns]]
 deps = ["Rmath", "SpecialFunctions"]

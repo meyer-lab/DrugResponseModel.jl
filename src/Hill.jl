@@ -114,38 +114,3 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
     plot!([realParam], seriestype = "vline", margin = 0.3cm, legend = :false)
     ylims!((1E2, 1E4))
 end
-
-
-""" Calculate the # of cells in G1 for a set of parameters and T """
-function numcells(params, g0, T)
-    @assert(all(params .>= 0.0), "negative params $params")
-    t = LinRange(0.0, 95.5, 192)
-    G1, G2 = predict(params, g0, t)
-
-    @assert(all(G1[2:end] .>= 0.0), "negative cell number in G1 $G1")
-    @assert(all(G2[2:end] .>= 0.0), "negative cell number in G2 $G2")
-    return G1[T] + G2[T]
-end
-
-
-""" Calculates the gradient with central difference"""
-function diffCell(params, g0, T)
-    diffcells(x) = numcells(x, g0, T)
-
-    return Calculus.finite_difference(diffcells, params, :forward) / diffcells(params)
-end
-
-
-""" Plot the gradient vs concentrations """
-function plotGradient(effects, concentration, g0, T)
-    dif = zeros(4, 8)
-    for i = 1:8
-        dif[:, i] = diffCell(effects[:, i], g0, T)[1:4]
-    end
-    concentrations = log.(concentration)
-    p1 = plot(concentrations, dif[1, :], lw = 2, label = "alpha", xlabel = "log concentration [nM]", ylabel = "gradient of #cells wrt param")
-    plot!(concentrations, dif[2, :], lw = 2, label = "beta")
-    p2 = plot(concentrations, dif[3, :], label = "gamma1", lw = 2, xlabel = "log concentration [nM]", ylabel = "gradient of #cells wrt param")
-    plot!(concentrations, dif[4, :], lw = 2, label = "gamma2")
-    plot(p1, p2, layout = (1, 2))
-end
