@@ -3,11 +3,11 @@
 """
 
 """ Make the transition matrix. """
-function ODEjac(p::Vector{Float64}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{Float64}
+function ODEjac(p::Vector{T}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{T} where T
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
     if nD1 == 0
-        D1 = Float64[]
-        diagD1 = Float64[]
+        D1 = T[]
+        diagD1 = T[]
     elseif nD1 == 1
         D1 = [0.0]
         diagD1 = -ones(nD1) * p[3]
@@ -17,8 +17,8 @@ function ODEjac(p::Vector{Float64}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Mat
     end
 
     if nD2 == 0
-        D2 = Float64[]
-        diagD2 = Float64[]
+        D2 = T[]
+        diagD2 = T[]
     elseif nD2 == 1
         D2 = [0.0]
         diagD2 = -ones(nD2) * p[4]
