@@ -99,7 +99,7 @@ plotTemporalCombin(gemc[:,IC50_gem], palb[:,IC50_pal], g1s, g2s, populations, co
 Paclitaxel and Palbociclib
 
 ```julia; echo=false
-plotTemporalCombin(pac[:,IC50_pac], palb[:,IC50_pal], g1s, g2s, populations, concs[:,4], concs[:,5], true, IC5_tax, IC50_pal, "taxol", "palb", 4, 5)
+plotTemporalCombin(pac[:,IC50_tax], palb[:,IC50_pal], g1s, g2s, populations, concs[:,4], concs[:,5], true, IC5_tax, IC50_pal, "taxol", "palb", 4, 5)
 ```
 
 In some cases, the combination does improve the results; if the result is considered lesser total cell number at the end of the experiment. It looks like all the differences are pretty small. We may benefit from changing the duration of time we treat the cells with different drugs; i.e., 30 hours drugA, then 90 hours drugB, or some such.

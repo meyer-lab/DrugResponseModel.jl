@@ -154,16 +154,17 @@ end
 
 """ Function for calculating temporal combination of two drugs. """
 function temporal_combination(params1, params2, g0)
-    t1 = LinRange(0.0, 60.0, 100)
+    t1 = LinRange(0.0, 20.0, 40)
+    t2 = LinRange(0.0, 80.0, 160)
 
     g1L, g2L, vecL = predict(params1, g0, t1, Int(floor(params1[6])), Int(floor(params1[7])), Int(floor(params1[8])), Int(floor(params1[9])))
-    g1G, g2G, _ = predict(params2, vec(vecL), t1, Int(floor(params2[6])), Int(floor(params2[7])), Int(floor(params2[8])), Int(floor(params2[9])))
+    g1G, g2G, _ = predict(params2, vec(vecL), t2, Int(floor(params2[6])), Int(floor(params2[7])), Int(floor(params2[8])), Int(floor(params2[9])))
 
     return vcat(g1L, g1G), vcat(g2L, g2G)
 end
 
 function helperPlotCombin(G1, G2, g0, title::String, legend::Any, ymax)
-    t_new = LinRange(0.0, 120, 200)
+    t_new = LinRange(0.0, 100, 200)
     plot(
         t_new,
         G1,
