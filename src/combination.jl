@@ -120,7 +120,7 @@ function combin2drugs(
     diff = numscomb ./ blissNum
     p1 = helperPlot(concd1, named1, concd2, named2, numscomb, true, "", 0.0, 45.0)
     p2 = helperPlot(concd1, named1, concd2, named2, blissNum, false, "", 0.0, 45.0)
-    p3 = helperPlot(concd1, named1, concd2, named2, diff, false, "cell#left / cell#middle ")
+    p3 = helperPlot(concd1, named1, concd2, named2, diff, false, "cell#left / cell#middle ", -3.0, 3.0)
     plot(p1, p2, p3, layout = (1, 3), size = (1300, 400))
 end
 
