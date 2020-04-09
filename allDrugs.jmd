@@ -10,18 +10,14 @@ g0 = g1s[1,1,1]+g2s[1,1,1];
 ```julia; echo=false
 # fitness, pp = optimize_hillAll(concs, g1s, g2s; maxstep=5E4)
 # parameters for 95.5 hours
-pp = [50.2552, 0.866725, 2.41775e-5, 1.96785, 0.0185627, 0.0447356, 108.176, 1.16593, 1.3052, 2.86005e-5, 0.348876, 0.438606, 14.4648, 2.15448, 1.42977, 2.99996, 0.0216477, 0.196135, 4.03273, 3.93278, 1.86825e-5, 0.867674, 0.430368, 0.241053, 1.68177, 1.17228, 0.508321, 34.5786, 37.9849, 20.7341, 9.11408];
-# parameters for 48 hours
-# pp = [26.2886, 1.66257, 0.00420596, 1.72685, 0.000269988, 0.0381786, 90.4055, 1.78875, 0.00281889, 0.00554305, 0.106428, 0.587973, 61.9056, 0.99193, 0.353436, 0.960822, 0.010234, 0.243887, 3.95979, 5.33563, 0.821778, 0.233281, 0.994036, 0.484493, 2.22629, 1.51153, 0.549618, 54.5237, 47.917, 46.5612, 16.4902];
-# parameters for 72 hours
-# pp = [42.8209, 0.89888, 0.00689597, 2.77885, 0.0195601, 0.0558532, 182.449, 1.01496, 0.695658, 0.0968922, 0.32105, 0.681382, 77.7469, 1.0493, 0.54269, 0.993221, 0.0642375, 0.338315, 3.82941, 5.09853, 1.74034, 0.765544, 0.807928, 0.362256, 1.95095, 1.75848, 0.517349, 42.6188, 54.8984, 44.7089, 11.7881];
+pp = [198.616, 1.04429, 0.0386625, 2.11079, 0.172845, 0.194753, 125.853, 1.28641, 2.67474, 0.0194261, 0.57024, 0.690045, 16.9456, 2.29013, 1.85685, 0.990835, 0.0339845, 0.243558, 4.31167, 4.2881, 0.743701, 0.45077, 0.72208, 0.36916, 85.2162, 0.818204, 0.063744, 0.999612, 0.0541879, 0.0775908, 2.53385, 0.492065, 0.511441, 52.5239, 16.4035, 33.3496, 13.6045];
 ```
 
 To see a smoother curve, we have divided the concentration range into 50 time points instead of 8.
 
 ```julia; echo=false
-moreConcs = zeros(50,4)
-for i=1:4
+moreConcs = zeros(50,5)
+for i=1:5
     moreConcs[:, i] = range(minimum(concs[:, i]),stop=maximum(concs[:, i]),length=50)
 end
 ps = copy(pp)
@@ -30,6 +26,7 @@ morelapat = moreeffs[:,:,1];
 moredox = moreeffs[:,:,2];
 moregemc = moreeffs[:,:,3];
 morepac = moreeffs[:,:,4];
+morepal = moreeffs[:,:,5];
 ```
 
 ```julia; echo=false
@@ -39,6 +36,7 @@ lapat = effs[:,:,1];
 dox = effs[:,:,2];
 gemc = effs[:,:,3];
 pac = effs[:,:,4];
+pal = effs[:,:,5];
 ```
 
 The following calculates the Bliss combination of the given two drugs. First, they are written in the fractional unit by subtracting them from the control condition effect (which is the same for all of the drugs), with the following formulation. Then we convert the values back to original unit.
@@ -126,4 +124,18 @@ plot_parameters(moreConcs[:, 4], morepac)
 g0 = g1s[1, 1, 4] + g2s[1,1,4]
 
 plotGradient(pac, concs[:, 4], g0, T)
+```
+
+### Palbociclib
+
+```julia; echo=false
+ODEplot_all(pal, g1s[:, :, 5], g2s[:, :, 5], populations[5], concs[:, 5])
+```
+
+```julia; echo=false
+plot_parameters(moreConcs[:, 5], morepal)
+```
+
+```julia; echo=false
+plotGradient(pal, concs[:, 5], g0, T)
 ```

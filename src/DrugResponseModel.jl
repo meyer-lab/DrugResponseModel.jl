@@ -45,6 +45,7 @@ export setup_data,
     combin2drugs,
     blissCellNum,
     temporal_combination,
-    plotTemporalCombin
+    plotTemporalCombin,
+    find_IC50
 
 end # module

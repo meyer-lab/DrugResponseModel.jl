@@ -65,6 +65,8 @@ function setup_data(drug_name::String)
         dfname, dfname2, idx = "gem.csv", "gem_pop.csv", 3
     elseif drug_name == "paclitaxel"
         dfname, dfname2, idx = "taxol1.csv", "taxol1_pop.csv", 4
+    elseif drug_name == "palbociclib"
+        dfname, dfname2, idx = "palb.csv", "palb_pop.csv", 1 # because the concentrations for palbo is exactly the same as lapatinib.
     else
         error("The drug is not amongst the data, please check the drug_name.")
     end
@@ -84,19 +86,22 @@ function load(max)
     concd, popd, g2d, g1d = setup_data("doxorubicin")
     concg, popg, g2g, g1g = setup_data("gemcitabine")
     concp, popp, g2p, g1p = setup_data("paclitaxel")
-    concentrations = hcat(concl, concd, concg, concp)
+    concpal, poppal, g2pal, g1pal = setup_data("palbociclib")
+    concentrations = hcat(concl, concd, concg, concp, concpal)
 
-    populations = [popl, popd, popg, popp]
-    g1s = zeros(max, 8, 4)
-    g2s = zeros(max, 8, 4)
+    populations = [popl, popd, popg, popp, poppal]
+    g1s = zeros(max, 8, 5)
+    g2s = zeros(max, 8, 5)
     g1s[:, :, 1] = g1l
     g1s[:, :, 2] = g1d
     g1s[:, :, 3] = g1g
     g1s[:, :, 4] = g1p
+    g1s[:, :, 5] = g1pal
     g2s[:, :, 1] = g2l
     g2s[:, :, 2] = g2d
     g2s[:, :, 3] = g2g
     g2s[:, :, 4] = g2p
+    g2s[:, :, 5] = g2pal
 
     return concentrations, populations, g1s, g2s
 end

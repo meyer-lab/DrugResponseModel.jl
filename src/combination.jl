@@ -117,10 +117,10 @@ function combin2drugs(
             numscomb[j, m] = numcells(combin[:, j, m], g0, 96)
         end
     end
-    diff = numscomb - blissNum
+    diff = numscomb ./ blissNum
     p1 = helperPlot(concd1, named1, concd2, named2, numscomb, true, "", 0.0, 45.0)
     p2 = helperPlot(concd1, named1, concd2, named2, blissNum, false, "", 0.0, 45.0)
-    p3 = helperPlot(concd1, named1, concd2, named2, diff, false, "Cell # difference", -12.0, 12.0)
+    p3 = helperPlot(concd1, named1, concd2, named2, diff, false, "Cell # difference", -5.0, 5.0)
     plot(p1, p2, p3, layout = (1, 3), size = (1300, 400))
 end
 
@@ -128,21 +128,25 @@ end
 """ In this function, we apply the Bliss synergy to the cell numbers. 
 This is to compare the traditional way of representing the combination effect, compare to the way we do in our model."""
 function blissCellNum(g1s, g2s; T = 96, n = 8)
-    num = zeros(n, 4)
+    num = zeros(n, 5)
     # for no specific reason, I chose lapatinib's control trial to be the base case for converting.
     base = g1s[T, 1, 1] + g2s[T, 1, 1]
-    for i = 1:4
+    for i = 1:5
         # num is a 8 x 4 matrix, holding cell numbers for 4 drugs, in 8 concenntration, for a specific time point.
         num[:, i] = 1.0 .- ((g1s[T, :, i] + g2s[T, :, i]) ./ base)
     end
-    combined = zeros(n, n, 6)
+    combined = zeros(n, n, 10)
     for j = 1:n
         combined[j, :, 1] = -(num[:, 1] .+ num[j, 2] .- (num[:, 1] .* num[j, 2]) .- 1.0) .* base # lap w/ dox
         combined[j, :, 2] = -(num[:, 1] .+ num[j, 3] .- (num[:, 1] .* num[j, 3]) .- 1.0) .* base # lap w/ gem
         combined[j, :, 3] = -(num[:, 1] .+ num[j, 4] .- (num[:, 1] .* num[j, 4]) .- 1.0) .* base # lap w/ pac
-        combined[j, :, 4] = -(num[:, 2] .+ num[j, 3] .- (num[:, 2] .* num[j, 3]) .- 1.0) .* base # dox w/ gem
-        combined[j, :, 5] = -(num[:, 2] .+ num[j, 4] .- (num[:, 2] .* num[j, 4]) .- 1.0) .* base # dox w/ pac
-        combined[j, :, 6] = -(num[:, 3] .+ num[j, 4] .- (num[:, 3] .* num[j, 4]) .- 1.0) .* base # gem w/ pac
+        combined[j, :, 4] = -(num[:, 1] .+ num[j, 5] .- (num[:, 1] .* num[j, 5]) .- 1.0) .* base # lap w/ palb
+        combined[j, :, 5] = -(num[:, 2] .+ num[j, 3] .- (num[:, 2] .* num[j, 3]) .- 1.0) .* base # dox w/ gem
+        combined[j, :, 6] = -(num[:, 2] .+ num[j, 4] .- (num[:, 2] .* num[j, 4]) .- 1.0) .* base # dox w/ pac
+        combined[j, :, 7] = -(num[:, 2] .+ num[j, 5] .- (num[:, 2] .* num[j, 5]) .- 1.0) .* base # dox w/ palb
+        combined[j, :, 8] = -(num[:, 3] .+ num[j, 4] .- (num[:, 3] .* num[j, 4]) .- 1.0) .* base # gem w/ pac
+        combined[j, :, 9] = -(num[:, 3] .+ num[j, 5] .- (num[:, 3] .* num[j, 5]) .- 1.0) .* base # gem w/ palb
+        combined[j, :, 10] = -(num[:, 4] .+ num[j, 5] .- (num[:, 4] .* num[j, 5]) .- 1.0) .* base # pac w/ palb
     end
     @assert(all(combined .>= 0.0))
     return combined
@@ -150,16 +154,17 @@ end
 
 """ Function for calculating temporal combination of two drugs. """
 function temporal_combination(params1, params2, g0)
-    t1 = LinRange(0.0, 60.0, 100)
+    t1 = LinRange(0.0, 40.0, 80)
+    t2 = LinRange(0.0, 160.0, 320)
 
     g1L, g2L, vecL = predict(params1, g0, t1, Int(floor(params1[6])), Int(floor(params1[7])), Int(floor(params1[8])), Int(floor(params1[9])))
-    g1G, g2G, _ = predict(params2, vec(vecL), t1, Int(floor(params2[6])), Int(floor(params2[7])), Int(floor(params2[8])), Int(floor(params2[9])))
+    g1G, g2G, _ = predict(params2, vec(vecL), t2, Int(floor(params2[6])), Int(floor(params2[7])), Int(floor(params2[8])), Int(floor(params2[9])))
 
     return vcat(g1L, g1G), vcat(g2L, g2G)
 end
 
 function helperPlotCombin(G1, G2, g0, title::String, legend::Any, ymax)
-    t_new = LinRange(0.0, 120, 200)
+    t_new = LinRange(0.0, 200, 400)
     plot(
         t_new,
         G1,
@@ -198,9 +203,11 @@ function find_IC50(population)
     dox = Array(population[2][192, :])
     gem = Array(population[3][192, :])
     tax = Array(population[4][192, :])
+    pal = Array(population[5][192, :])
     IC50_lap = argmin(abs.(0.5 * lap[1] .- lap)) #6
     IC50_dox = argmin(abs.(0.5 * dox[1] .- dox)) #3
     IC50_gem = argmin(abs.(0.5 * gem[1] .- gem)) #6
     IC50_tax = argmin(abs.(0.5 * tax[1] .- tax)) #4
-    return (IC50_lap, IC50_dox, IC50_gem, IC50_tax)
+    IC50_pal = argmin(abs.(0.5 * pal[1] .- pal)) #5
+    return (IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal)
 end
