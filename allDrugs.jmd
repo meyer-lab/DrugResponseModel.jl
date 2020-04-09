@@ -16,8 +16,8 @@ pp = [198.616, 1.04429, 0.0386625, 2.11079, 0.172845, 0.194753, 125.853, 1.28641
 To see a smoother curve, we have divided the concentration range into 50 time points instead of 8.
 
 ```julia; echo=false
-moreConcs = zeros(50,4)
-for i=1:4
+moreConcs = zeros(50,5)
+for i=1:5
     moreConcs[:, i] = range(minimum(concs[:, i]),stop=maximum(concs[:, i]),length=50)
 end
 ps = copy(pp)
@@ -26,6 +26,7 @@ morelapat = moreeffs[:,:,1];
 moredox = moreeffs[:,:,2];
 moregemc = moreeffs[:,:,3];
 morepac = moreeffs[:,:,4];
+morepal = moreeffs[:,:,5];
 ```
 
 ```julia; echo=false
@@ -35,6 +36,7 @@ lapat = effs[:,:,1];
 dox = effs[:,:,2];
 gemc = effs[:,:,3];
 pac = effs[:,:,4];
+pal = effs[:,:,5];
 ```
 
 The following calculates the Bliss combination of the given two drugs. First, they are written in the fractional unit by subtracting them from the control condition effect (which is the same for all of the drugs), with the following formulation. Then we convert the values back to original unit.
@@ -122,4 +124,18 @@ plot_parameters(moreConcs[:, 4], morepac)
 g0 = g1s[1, 1, 4] + g2s[1,1,4]
 
 plotGradient(pac, concs[:, 4], g0, T)
+```
+
+### Palbociclib
+
+```julia; echo=false
+ODEplot_all(pal, g1s[:, :, 5], g2s[:, :, 5], populations[5], concs[:, 5])
+```
+
+```julia; echo=false
+plot_parameters(moreConcs[:, 5], morepal)
+```
+
+```julia; echo=false
+plotGradient(pal, concs[:, 5], g0, T)
 ```
