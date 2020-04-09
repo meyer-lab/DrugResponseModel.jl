@@ -128,21 +128,25 @@ end
 """ In this function, we apply the Bliss synergy to the cell numbers. 
 This is to compare the traditional way of representing the combination effect, compare to the way we do in our model."""
 function blissCellNum(g1s, g2s; T = 96, n = 8)
-    num = zeros(n, 4)
+    num = zeros(n, 5)
     # for no specific reason, I chose lapatinib's control trial to be the base case for converting.
     base = g1s[T, 1, 1] + g2s[T, 1, 1]
-    for i = 1:4
+    for i = 1:5
         # num is a 8 x 4 matrix, holding cell numbers for 4 drugs, in 8 concenntration, for a specific time point.
         num[:, i] = 1.0 .- ((g1s[T, :, i] + g2s[T, :, i]) ./ base)
     end
-    combined = zeros(n, n, 6)
+    combined = zeros(n, n, 10)
     for j = 1:n
         combined[j, :, 1] = -(num[:, 1] .+ num[j, 2] .- (num[:, 1] .* num[j, 2]) .- 1.0) .* base # lap w/ dox
         combined[j, :, 2] = -(num[:, 1] .+ num[j, 3] .- (num[:, 1] .* num[j, 3]) .- 1.0) .* base # lap w/ gem
         combined[j, :, 3] = -(num[:, 1] .+ num[j, 4] .- (num[:, 1] .* num[j, 4]) .- 1.0) .* base # lap w/ pac
-        combined[j, :, 4] = -(num[:, 2] .+ num[j, 3] .- (num[:, 2] .* num[j, 3]) .- 1.0) .* base # dox w/ gem
-        combined[j, :, 5] = -(num[:, 2] .+ num[j, 4] .- (num[:, 2] .* num[j, 4]) .- 1.0) .* base # dox w/ pac
-        combined[j, :, 6] = -(num[:, 3] .+ num[j, 4] .- (num[:, 3] .* num[j, 4]) .- 1.0) .* base # gem w/ pac
+        combined[j, :, 4] = -(num[:, 1] .+ num[j, 5] .- (num[:, 1] .* num[j, 5]) .- 1.0) .* base # lap w/ palb
+        combined[j, :, 5] = -(num[:, 2] .+ num[j, 3] .- (num[:, 2] .* num[j, 3]) .- 1.0) .* base # dox w/ gem
+        combined[j, :, 6] = -(num[:, 2] .+ num[j, 4] .- (num[:, 2] .* num[j, 4]) .- 1.0) .* base # dox w/ pac
+        combined[j, :, 7] = -(num[:, 2] .+ num[j, 5] .- (num[:, 2] .* num[j, 5]) .- 1.0) .* base # dox w/ palb
+        combined[j, :, 8] = -(num[:, 3] .+ num[j, 4] .- (num[:, 3] .* num[j, 4]) .- 1.0) .* base # gem w/ pac
+        combined[j, :, 9] = -(num[:, 3] .+ num[j, 5] .- (num[:, 3] .* num[j, 5]) .- 1.0) .* base # gem w/ palb
+        combined[j, :, 10] = -(num[:, 4] .+ num[j, 5] .- (num[:, 4] .* num[j, 5]) .- 1.0) .* base # pac w/ palb
     end
     @assert(all(combined .>= 0.0))
     return combined
