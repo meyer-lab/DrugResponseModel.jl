@@ -198,9 +198,11 @@ function find_IC50(population)
     dox = Array(population[2][192, :])
     gem = Array(population[3][192, :])
     tax = Array(population[4][192, :])
+    pal = Array(population[5][192, :])
     IC50_lap = argmin(abs.(0.5 * lap[1] .- lap)) #6
     IC50_dox = argmin(abs.(0.5 * dox[1] .- dox)) #3
     IC50_gem = argmin(abs.(0.5 * gem[1] .- gem)) #6
     IC50_tax = argmin(abs.(0.5 * tax[1] .- tax)) #4
-    return (IC50_lap, IC50_dox, IC50_gem, IC50_tax)
+    IC50_pal = argmin(abs.(0.5 * pal[1] .- pal)) #5
+    return (IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal)
 end
