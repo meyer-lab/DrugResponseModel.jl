@@ -117,7 +117,7 @@ function combin2drugs(
             numscomb[j, m] = numcells(combin[:, j, m], g0, 96)
         end
     end
-    diff = numscomb - blissNum
+    diff = numscomb ./ blissNum
     p1 = helperPlot(concd1, named1, concd2, named2, numscomb, true, "", 0.0, 45.0)
     p2 = helperPlot(concd1, named1, concd2, named2, blissNum, false, "", 0.0, 45.0)
     p3 = helperPlot(concd1, named1, concd2, named2, diff, false, "Cell # difference", -12.0, 12.0)
@@ -154,8 +154,8 @@ end
 
 """ Function for calculating temporal combination of two drugs. """
 function temporal_combination(params1, params2, g0)
-    t1 = LinRange(0.0, 20.0, 40)
-    t2 = LinRange(0.0, 80.0, 160)
+    t1 = LinRange(0.0, 40.0, 80)
+    t2 = LinRange(0.0, 160.0, 320)
 
     g1L, g2L, vecL = predict(params1, g0, t1, Int(floor(params1[6])), Int(floor(params1[7])), Int(floor(params1[8])), Int(floor(params1[9])))
     g1G, g2G, _ = predict(params2, vec(vecL), t2, Int(floor(params2[6])), Int(floor(params2[7])), Int(floor(params2[8])), Int(floor(params2[9])))
@@ -164,7 +164,7 @@ function temporal_combination(params1, params2, g0)
 end
 
 function helperPlotCombin(G1, G2, g0, title::String, legend::Any, ymax)
-    t_new = LinRange(0.0, 100, 200)
+    t_new = LinRange(0.0, 200, 400)
     plot(
         t_new,
         G1,
