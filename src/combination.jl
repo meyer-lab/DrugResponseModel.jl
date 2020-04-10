@@ -120,7 +120,7 @@ function combin2drugs(
     diff = numscomb ./ blissNum
     p1 = helperPlot(concd1, named1, concd2, named2, numscomb, true, "", 0.0, 45.0)
     p2 = helperPlot(concd1, named1, concd2, named2, blissNum, false, "", 0.0, 45.0)
-    p3 = helperPlot(concd1, named1, concd2, named2, diff, false, "Cell # difference", -5.0, 5.0)
+    p3 = helperPlot(concd1, named1, concd2, named2, diff, false, "", -1.0, 3.5)
     plot(p1, p2, p3, layout = (1, 3), size = (1300, 400))
 end
 
@@ -154,8 +154,8 @@ end
 
 """ Function for calculating temporal combination of two drugs. """
 function temporal_combination(params1, params2, g0)
-    t1 = LinRange(0.0, 40.0, 80)
-    t2 = LinRange(0.0, 160.0, 320)
+    t1 = LinRange(0.0, 160.0, 320)
+    t2 = LinRange(0.0, 40.0, 80)
 
     g1L, g2L, vecL = predict(params1, g0, t1, Int(floor(params1[6])), Int(floor(params1[7])), Int(floor(params1[8])), Int(floor(params1[9])))
     g1G, g2G, _ = predict(params2, vec(vecL), t2, Int(floor(params2[6])), Int(floor(params2[7])), Int(floor(params2[8])), Int(floor(params2[9])))
@@ -179,7 +179,7 @@ function helperPlotCombin(G1, G2, g0, title::String, legend::Any, ymax)
     )
     plot!(t_new, G2, label = "G2 est", legend = legend, legendfontsize = 4, fg_legend = :transparent, lw = 2.0, alpha = 0.6, color = :sienna)
     plot!(t_new, G1 .+ G2, label = "total est", lw = 2.0, alpha = 0.6, color = :hotpink)
-    plot!(annotation = [(60, ymax, text(title, 8))])
+    plot!(annotation = [(100, ymax, text(title, 8))])
     ylims!((0.0, ymax))
 end
 
