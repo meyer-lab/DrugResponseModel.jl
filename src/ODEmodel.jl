@@ -58,18 +58,18 @@ function predict(p, g_0, t)
     nD1 = Int(floor(p[8]))
     nD2 = Int(floor(p[9]))
 
-    if nD1 == 0
-        D1 = Float64[]
-    else
-        D1 = zeros(nD1)
-    end
-    if nD2 == 0
-        D2 = Float64[]
-    else
-        D2 = zeros(nD2)
-    end
-
     if g_0 isa Real
+        if nD1 == 0
+            D1 = Float64[]
+        else
+            D1 = zeros(nD1)
+        end
+        if nD2 == 0
+            D2 = Float64[]
+        else
+            D2 = zeros(nD2)
+        end
+
         v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
     else
         v = g_0
@@ -77,26 +77,19 @@ function predict(p, g_0, t)
 
     A = ODEjac(p, nG1, nG2, nD1, nD2)
 
-    if t isa Real
-        v = ExponentialUtilities.expv(t, A, v)
+    # Some assumptions
+    @assert t[1] == 0.0
+    rmul!(A, t[2])
+    A = LinearAlgebra.exp!(A)
 
-        G1 = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
-        G2 = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
-    else
-        # Some assumptions
-        @assert t[1] == 0.0
-        rmul!(A, t[2])
-        A = LinearAlgebra.exp!(A)
+    G1 = Vector{eltype(p)}(undef, length(t))
+    G2 = Vector{eltype(p)}(undef, length(t))
 
-        G1 = Vector{eltype(p)}(undef, length(t))
-        G2 = Vector{eltype(p)}(undef, length(t))
+    for ii = 1:length(G1)
+        G1[ii] = sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
+        G2[ii] = sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
 
-        for ii = 1:length(G1)
-            G1[ii] = sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
-            G2[ii] = sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
-
-            v = A * v
-        end
+        v = A * v
     end
 
     return G1, G2, v
@@ -111,20 +104,6 @@ function cost(p, g1, g2)
     return norm(G1 - g1) + norm(G2 - g2)
 end
 
-
-""" Fit the ODE model to data. """
-function ODEoptimizer(i::Int, g1::Matrix, g2::Matrix; maxst = 50000)
-    residuals(p) = cost(p, g1[:, i], g2[:, i])
-    # lower and upper bounds for the parameters
-    lower = [0.0, 0.0, 0.0, 0.0, 0.0, 1, 1, 0, 0]
-    upper = [3.0, 3.0, 3.0, 3.0, 1.0, 70, 70, 70, 70]
-    bound = collect(zip(lower, upper))
-
-    # global optimization with black box optimization
-    results_ode = bboptimize(residuals; SearchRange = bound, NumDimensions = 9, TraceMode = :silent, MaxSteps = maxst)
-
-    return best_fitness(results_ode), best_candidate(results_ode)
-end
 
 """ Given estimated parameters for each trial, solve the DDE model plot the predicted curve 
     for number of cells in G1, G2, or total, along with their corresponding real data,
