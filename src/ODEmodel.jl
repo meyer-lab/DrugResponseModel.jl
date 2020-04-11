@@ -50,19 +50,27 @@ end
 
 
 """ Predicts the model given a set of parametrs. """
-function predict(p, g_0, t, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integer)
-    if nD1 == 0
-        D1 = Float64[]
-    else
-        D1 = zeros(nD1)
-    end
-    if nD2 == 0
-        D2 = Float64[]
-    else
-        D2 = zeros(nD2)
-    end
+function predict(p, g_0, t)
+    @assert length(p) == 9
+    # Convert parameters to phase numbers
+    nG1 = Int(floor(p[6]))
+    nG2 = Int(floor(p[7]))
+    nD1 = Int(floor(p[8]))
+    nD2 = Int(floor(p[9]))
 
     if g_0 isa Real
+        if nD1 == 0
+            D1 = Float64[]
+        else
+            D1 = zeros(nD1)
+        end
+
+        if nD2 == 0
+            D2 = Float64[]
+        else
+            D2 = zeros(nD2)
+        end
+
         v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
     else
         v = g_0
@@ -70,26 +78,19 @@ function predict(p, g_0, t, nG1::Integer, nG2::Integer, nD1::Integer, nD2::Integ
 
     A = ODEjac(p, nG1, nG2, nD1, nD2)
 
-    if t isa Real
-        v = ExponentialUtilities.expv(t, A, v)
+    # Some assumptions
+    @assert t[1] == 0.0
+    rmul!(A, t[2])
+    A = LinearAlgebra.exp!(A)
 
-        G1 = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
-        G2 = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
-    else
-        # Some assumptions
-        @assert t[1] == 0.0
-        rmul!(A, t[2])
-        A = LinearAlgebra.exp!(A)
+    G1 = Vector{eltype(p)}(undef, length(t))
+    G2 = Vector{eltype(p)}(undef, length(t))
 
-        G1 = Vector{eltype(p)}(undef, length(t))
-        G2 = Vector{eltype(p)}(undef, length(t))
+    for ii = 1:length(G1)
+        G1[ii] = sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
+        G2[ii] = sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
 
-        for ii = 1:length(G1)
-            G1[ii] = sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
-            G2[ii] = sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
-
-            v = A * v
-        end
+        v = A * v
     end
 
     return G1, G2, v
@@ -97,27 +98,13 @@ end
 
 
 """ Calculates the cost function for a given set of parameters. """
-function cost(p, g1, g2, nG1::Int, nG2::Int, nD1, nD2)
+function cost(p, g1, g2)
     t = LinRange(0.0, 0.5 * length(g1), length(g1))
-    G1, G2 = predict(p, g1[1] + g2[1], t, nG1, nG2, nD1, nD2)
+    G1, G2 = predict(p, g1[1] + g2[1], t)
 
     return norm(G1 - g1) + norm(G2 - g2)
 end
 
-
-""" Fit the ODE model to data. """
-function ODEoptimizer(i::Int, g1::Matrix, g2::Matrix; maxst = 50000)
-    residuals(p) = cost(p, g1[:, i], g2[:, i], Int(floor(p[6])), Int(floor(p[7])), Int(floor(p[8])), Int(floor(p[9])))
-    # lower and upper bounds for the parameters
-    lower = [0.0, 0.0, 0.0, 0.0, 0.0, 1, 1, 0, 0]
-    upper = [3.0, 3.0, 3.0, 3.0, 1.0, 70, 70, 70, 70]
-    bound = collect(zip(lower, upper))
-
-    # global optimization with black box optimization
-    results_ode = bboptimize(residuals; SearchRange = bound, NumDimensions = 9, TraceMode = :silent, MaxSteps = maxst)
-
-    return best_fitness(results_ode), best_candidate(results_ode)
-end
 
 """ Given estimated parameters for each trial, solve the DDE model plot the predicted curve 
     for number of cells in G1, G2, or total, along with their corresponding real data,
@@ -161,7 +148,7 @@ end
 function plotPercentage(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, title::String, legend::Any, ymax)
     t = LinRange(0.0, 0.5 * length(g1[:, 1]), length(g1[:, 1]))
     t_new = LinRange(0.0, 120, 200)
-    G1, G2 = predict(params, g1[1] + g2[1], t_new, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
+    G1, G2 = predict(params, g1[1] + g2[1], t_new)
 
     plot(
         t_new,
