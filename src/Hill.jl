@@ -12,13 +12,9 @@ function residHill(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::M
     # Solve each concentration separately
     for ii = 1:length(concentrations)
         resTemp = cost(
-            params[1:5, ii],
+            params[1:9, ii],
             g1[:, ii],
             g2[:, ii],
-            Int(floor(params[6, ii])),
-            Int(floor(params[7, ii])),
-            Int(floor(params[8, ii])),
-            Int(floor(params[9, ii])),
         )
 
         res += resTemp
@@ -139,7 +135,7 @@ end
 function numcells(params, g0, T)
     @assert(all(params .>= 0.0), "negative params $params")
     t = LinRange(0.0, 95.5, 192)
-    G1, G2 = predict(params, g0, t, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
+    G1, G2 = predict(params, g0, t)
 
     @assert(all(G1[2:end] .>= 0.0), "negative cell number in G1 $G1")
     @assert(all(G2[2:end] .>= 0.0), "negative cell number in G2 $G2")
