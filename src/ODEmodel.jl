@@ -64,6 +64,7 @@ function predict(p, g_0, t)
         else
             D1 = zeros(nD1)
         end
+
         if nD2 == 0
             D2 = Float64[]
         else
