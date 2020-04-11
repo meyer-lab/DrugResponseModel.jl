@@ -179,3 +179,45 @@ pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], ps[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
 ```
+## Palbociclib
+
+```julia; echo=false
+conc_l, pop, g2, g1 = setup_data("palbociclib")
+# costt, ps = optimize_hill(conc_l, g1, g2, maxstep = 4E4)
+ps = [39.8303, 0.754318, 0.243148, 0.840258, 0.294116, 0.645192, 0.0178644, 0.0515018, 0.547365, 16.831, 10.2171, 49.4393, 2.87593]
+effects = getODEparams(ps, conc_l)
+g0 = g1[1] + g2[1]
+```
+
+### Plotting the gradient
+
+```julia; echo=false
+plotGradient(effects, conc_l, g0, T)
+```
+
+### Plotting the time-series simulations compared to the actual data.
+
+```julia; echo=false
+ODEplot_all(effects, g1, g2, pop, conc_l)
+```
+
+### Plot the percentage
+
+```julia; echo=false
+ODEplot_allPerc(effects, g1, g2, pop, conc_l)
+```
+
+### Plot the parameters over concentration; these are known as the drug effects
+
+```julia; echo=false
+plot_parameters(conc_l, effects)
+```
+
+### Sensitivity analysis:
+
+```julia; echo=false
+result, paramRanges = allSensitivity(ps, conc_l, g1, g2)
+pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], ps[i], i) for i=1:11]
+plot(pl...)
+plot!(size=(1200, 800))
+```

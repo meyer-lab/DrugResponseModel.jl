@@ -1,24 +1,24 @@
 """ In this file we fit all the drugs att once. """
 
 function getODEparamsAll(p::Array{Float64, 1}, concentrations::Array{Float64, 2})
-    effects = zeros(9, length(concentrations[:, 1]), 4)
+    effects = zeros(9, length(concentrations[:, 1]), 5)
 
     k = 1
     # Scaled drug effect
-    for i = 1:4
+    for i = 1:5
         xx = 1.0 ./ (1.0 .+ (p[k] ./ concentrations[:, i]) .^ p[k + 1])
 
-        effects[1, :, i] = p[25] .+ (p[k + 2] - p[25]) .* xx
-        effects[2, :, i] = p[26] .+ (p[k + 3] - p[26]) .* xx
+        effects[1, :, i] = p[31] .+ (p[k + 2] - p[31]) .* xx
+        effects[2, :, i] = p[32] .+ (p[k + 3] - p[32]) .* xx
         effects[3, :, i] = p[k + 4] .* xx
         effects[4, :, i] = p[k + 5] .* xx
         k += 6
     end
-    effects[5, :, :] .= p[27] #percentage in G1
-    effects[6, :, :] .= floor(p[28]) #nG1
-    effects[7, :, :] .= floor(p[29]) #nG2
-    effects[8, :, :] .= floor(p[30]) #nD1
-    effects[9, :, :] .= floor(p[31]) #nD2
+    effects[5, :, :] .= p[33] #percentage in G1
+    effects[6, :, :] .= floor(p[34]) #nG1
+    effects[7, :, :] .= floor(p[35]) #nG2
+    effects[8, :, :] .= floor(p[36]) #nD1
+    effects[9, :, :] .= floor(p[37]) #nD2
 
     return effects
 end
@@ -28,7 +28,7 @@ function residHillAll(hillParams::Array{Float64, 1}, concentrations::Array{Float
     params = getODEparamsAll(hillParams, concentrations)
 
     # Solve for all drugs
-    for j = 1:4
+    for j = 1:5
         @threads for ii = 1:length(concentrations[:, j])
             atomic_add!(
                 res,
@@ -53,7 +53,7 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
     hillCostAll(hillParams) = residHillAll(hillParams, concs, g1, g2)
 
     # The parameters used here in order:
-    #(:Lap_EC50, :Lap_steepness, :Lap_maxG1ProgRate, :Lap_maxG2ProgRate, :Lap_maxDeathG1Rate, :Lap_maxDeathG2Rate, :Dox_EC50, :Dox_steepness, :Dox_maxG1ProgRate, :Dox_maxG2ProgRate, :Dox_maxDeathG1Rate, :Dox_maxDeathG2Rate, :Gem_EC50, :Gem_steepness, :Gem_maxG1ProgRate, :Gem_maxG2ProgRate, :Gem_maxDeathG1Rate, :Gem_maxDeathG2Rate, :Tax_EC50, :Tax_steepness, :Tax_maxG1ProgRate, :Tax_maxG2ProgRate, :Tax_maxDeathG1Rate, :Tax_maxDeathG2Rate, :G1ProgRateControl, :G2ProgRateControl, :percG1, :nG1, :nG2, :nD1, :nD2)
+    #(:Lap_EC50, :Lap_steepness, :Lap_maxG1ProgRate, :Lap_maxG2ProgRate, :Lap_maxDeathG1Rate, :Lap_maxDeathG2Rate, :Dox_EC50, :Dox_steepness, :Dox_maxG1ProgRate, :Dox_maxG2ProgRate, :Dox_maxDeathG1Rate, :Dox_maxDeathG2Rate, :Gem_EC50, :Gem_steepness, :Gem_maxG1ProgRate, :Gem_maxG2ProgRate, :Gem_maxDeathG1Rate, :Gem_maxDeathG2Rate, :Tax_EC50, :Tax_steepness, :Tax_maxG1ProgRate, :Tax_maxG2ProgRate, :Tax_maxDeathG1Rate, :Tax_maxDeathG2Rate, :pal_EC50, :pal_steepness, :pal_maxG1ProgRate, :pal_maxG2ProgRate, :pal_maxDeathG1Rate, :pal_maxDeathG2Rate, :G1ProgRateControl, :G2ProgRateControl, :percG1, :nG1, :nG2, :nD1, :nD2)
     low = [
         minimum(concs[:, 1]),
         0.01,
@@ -74,6 +74,12 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
         0.0,
         0.0,
         minimum(concs[:, 4]),
+        0.01,
+        1e-9,
+        1e-9,
+        0.0,
+        0.0,
+        minimum(concs[:, 5]),
         0.01,
         1e-9,
         1e-9,
@@ -110,6 +116,12 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
         10.0,
         3.0,
         3.0,
+        1.0,
+        1.0,
+        maximum(concs[:, 5]),
+        10.0,
+        3.0,
+        1.0,
         1.0,
         1.0,
         3.0,

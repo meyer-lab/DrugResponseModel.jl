@@ -10,7 +10,7 @@ g0 = g1s[1,1,1]+g2s[1,1,1];
 ```
 
 ```julia; echo=false
-pp = [50.2552, 0.866725, 2.41775e-5, 1.96785, 0.0185627, 0.0447356, 108.176, 1.16593, 1.3052, 2.86005e-5, 0.348876, 0.438606, 14.4648, 2.15448, 1.42977, 2.99996, 0.0216477, 0.196135, 4.03273, 3.93278, 1.86825e-5, 0.867674, 0.430368, 0.241053, 1.68177, 1.17228, 0.508321, 34.5786, 37.9849, 20.7341, 9.11408];
+pp = [198.616, 1.04429, 0.0386625, 2.11079, 0.172845, 0.194753, 125.853, 1.28641, 2.67474, 0.0194261, 0.57024, 0.690045, 16.9456, 2.29013, 1.85685, 0.990835, 0.0339845, 0.243558, 4.31167, 4.2881, 0.743701, 0.45077, 0.72208, 0.36916, 85.2162, 0.818204, 0.063744, 0.999612, 0.0541879, 0.0775908, 2.53385, 0.492065, 0.511441, 52.5239, 16.4035, 33.3496, 13.6045];
 ```
 
 ```julia; echo=false
@@ -19,20 +19,59 @@ lapat = effs[:,:,1];
 dox = effs[:,:,2];
 gemc = effs[:,:,3];
 pac = effs[:,:,4];
+pal = effs[:,:,5];
 cellnum=blissCellNum(g1s, g2s)
 LD = cellnum[:,:,1]; # lap and dox
 LG = cellnum[:,:,2]; # lap anf gem
 LP = cellnum[:,:,3]; # lap and pac
-DG = cellnum[:,:,4]; # dox and gem
-DP = cellnum[:,:,5]; # dox and pac
-GP = cellnum[:,:,6]; # gem and pac
+LPA = cellnum[:,:,4]; # lap and palb
+DG = cellnum[:,:,5]; # dox and gem
+DP = cellnum[:,:,6]; # dox and pac
+DPA = cellnum[:,:,7]; # dox and palb
+GP = cellnum[:,:,8]; # gem and pac
+GPA = cellnum[:,:,9]; # gem and palb
+PPA = cellnum[:,:,10]; # pac and palb
+
 ```
 ## Bliss Combination
 
 The following includes plots for the simulation of drug combination at once at t = 96 hours.
 Each of the plot sets includes 3 figures; all the figures shown cell number versus drug1 concentration, and as in the legend is shown, the lighter the color gets, it mean the base drug is combined with higher does of the secondry drug.
 
-...................................................................................
+......................................................................................................
+
+lapatinib and doxorubicin:
+Here simple Bliss shows the combination has a more effective influence than our model.
+
+```julia; echo=false
+combin2drugs(lapat, dox, concs[:, 1], concs[:,2], "lap", "dox", effs, LD', g0)
+```
+
+......................................................................................................
+
+lapatinib and gemcitabine:
+Here simple Bliss shows the combination has a more effective influence than our model.
+
+```julia; echo=false
+combin2drugs(lapat, gemc, concs[:, 1], concs[:,3], "lap", "gem", effs, LG', g0)
+```
+
+.....................................................................................................
+
+lapatinib and paclitaxel:
+Here in the simple Bliss, the combinational effects is not monotonically decreasing, as opposed to our model, but they are similar.
+
+```julia; echo=false
+combin2drugs(lapat, pac, concs[:, 1], concs[:,4], "lap", "pac", effs, LP', g0)
+```
+
+....................................................................................................
+
+lapatinib and palbociclib:
+
+```julia; echo=false
+combin2drugs(lapat, pal, concs[:, 1], concs[:,5], "lap", "palb", effs, LPA', g0)
+```
 
 ### doxorubicin and lapatinib:
 
@@ -45,16 +84,7 @@ The right plot is just the subtraction of the left plot from the middle plot. It
 combin2drugs(dox, lapat, concs[:, 2], concs[:,1], "dox", "lap", effs, LD, g0)
 ```
 
-...................................................................................
-
-doxorubicin and paclitaxel:
-In high concentrations of both drugs, our model suggests higher effect rather than simple Bliss.
-
-```julia; echo=false
-combin2drugs(dox, pac, concs[:, 2], concs[:,4], "dox", "pac", effs, DP', g0)
-```
-
-...................................................................................
+.................................................................................................
 
 doxorubicin and gemcitabine:
 In low concentrations both predict similarly, but in high concentrations of both drugs, our model shows lesser effect than simple Bliss.
@@ -63,61 +93,33 @@ In low concentrations both predict similarly, but in high concentrations of both
 combin2drugs(dox, gemc, concs[:, 2], concs[:,3], "dox", "gem", effs, DG', g0)
 ```
 
-...................................................................................
+..................................................................................................
 
-paclitaxel and gemcitabine:
-These two look quite similarly.
-
-```julia; echo=false
-combin2drugs(pac, gemc, concs[:, 4], concs[:,3], "pac", "gem", effs, GP, g0)
-```
-
-...................................................................................
-
-paclitaxel and doxorubicin:
-Our model predicts lower potency in high concentrations than simple Bliss.
+doxorubicin and paclitaxel:
+In high concentrations of both drugs, our model suggests higher effect rather than simple Bliss.
 
 ```julia; echo=false
-combin2drugs(pac, dox, concs[:, 4], concs[:,2], "pac", "dox", effs, DP, g0)
+combin2drugs(dox, pac, concs[:, 2], concs[:,4], "dox", "pac", effs, DP', g0)
 ```
 
-...................................................................................
+..................................................................................................
 
-paclitaxel and lapatinib:
-Both do similarly.
+doxorubicin and palbociclib:
 
 ```julia; echo=false
-combin2drugs(pac, lapat, concs[:, 4], concs[:,1], "pac", "lap", effs, LP, g0)
+combin2drugs(dox, pal, concs[:, 2], concs[:,5], "dox", "palb", effs, DPA', g0)
 ```
 
-...................................................................................
+..................................................................................................
 
-lapatinib and doxorubicin:
-Here simple Bliss shows the combination has a more effective influence than our model.
+gemcitabine and lapatinib:
+In high concentrations our model shows increasing the concentration of lapatinib is non-effective, but simple Bliss shows a slight difference. Although we don't see a monotonic decrease in simple Bliss. Both show a small effect compared to other combinations.
 
 ```julia; echo=false
-combin2drugs(lapat, dox, concs[:, 1], concs[:,2], "lap", "dox", effs, LD', g0)
+combin2drugs(gemc, lapat, concs[:, 3], concs[:,1], "gem", "lap", effs, LG, g0)
 ```
 
-...................................................................................
-
-lapatinib and gemcitabine:
-Here simple Bliss shows the combination has a more effective influence than our model.
-
-```julia; echo=false
-combin2drugs(lapat, gemc, concs[:, 1], concs[:,3], "lap", "gem", effs, LG', g0)
-```
-
-...................................................................................
-
-lapatinib and paclitaxel:
-Here in the simple Bliss, the combinational effects is not monotonically decreasing, as opposed to our model, but they are similar.
-
-```julia; echo=false
-combin2drugs(lapat, pac, concs[:, 1], concs[:,4], "lap", "pac", effs, LP', g0)
-```
-
-...................................................................................
+...................................................................................................
 
 gemcitabine and doxorubicin:
 The two combination approaches look similar. In low concentrations our model shows more effect than simple Bliss.
@@ -126,7 +128,7 @@ The two combination approaches look similar. In low concentrations our model sho
 combin2drugs(gemc, dox, concs[:, 3], concs[:,2], "gemc", "dox", effs, DG, g0)
 ```
 
-...................................................................................
+...................................................................................................
 
 gemcitabine and paclitaxel:
 The simple Bliss doesn't show a monotonic decrease of cell number, although they look similar.
@@ -135,13 +137,79 @@ The simple Bliss doesn't show a monotonic decrease of cell number, although they
 combin2drugs(gemc, pac, concs[:, 3], concs[:,4], "gemc", "pac", effs, GP', g0)
 ```
 
-...................................................................................
+...................................................................................................
 
-gemcitabine and lapatinib:
-In high concentrations our model shows increasing the concentration of lapatinib is non-effective, but simple Bliss shows a slight difference. Although we don't see a monotonic decrease in simple Bliss. Both show a small effect compared to other combinations.
+gemcitabine and palbociclib:
 
 ```julia; echo=false
-combin2drugs(gemc, lapat, concs[:, 3], concs[:,1], "gem", "lap", effs, LG, g0)
+combin2drugs(gemc, pal, concs[:, 3], concs[:,5], "gemc", "palb", effs, GPA', g0)
+```
+
+......................................................................................................
+
+paclitaxel and lapatinib:
+Both do similarly.
+
+```julia; echo=false
+combin2drugs(pac, lapat, concs[:, 4], concs[:,1], "pac", "lap", effs, LP, g0)
+```
+
+......................................................................................................
+
+paclitaxel and doxorubicin:
+Our model predicts lower potency in high concentrations than simple Bliss.
+
+```julia; echo=false
+combin2drugs(pac, dox, concs[:, 4], concs[:,2], "pac", "dox", effs, DP, g0)
+```
+
+......................................................................................................
+
+paclitaxel and gemcitabine:
+These two look quite similarly.
+
+```julia; echo=false
+combin2drugs(pac, gemc, concs[:, 4], concs[:,3], "pac", "gem", effs, GP, g0)
+```
+
+......................................................................................................
+
+paclitaxel and palbociclib:
+
+```julia; echo=false
+combin2drugs(pac, pal, concs[:, 4], concs[:,5], "pac", "palb", effs, GPA, g0)
+```
+
+......................................................................................................
+
+palbociclib and lapatinib:
+
+```julia; echo=false
+combin2drugs(pal, lapat, concs[:, 5], concs[:,1], "palb", "pac", effs, LPA, g0)
+```
+
+......................................................................................................
+
+palbociclib and doxorubicin:
+
+```julia; echo=false
+combin2drugs(pal, dox, concs[:, 5], concs[:,2], "pal", "dox", effs, DPA, g0)
+```
+
+......................................................................................................
+
+palbociclib and gemcitabine:
+
+```julia; echo=false
+combin2drugs(pal, gemc, concs[:, 5], concs[:,3], "pal", "gem", effs, GPA, g0)
+```
+
+......................................................................................................
+
+palbociclib and doxorubicin:
+
+```julia; echo=false
+combin2drugs(pal, pac, concs[:, 5], concs[:,4], "pal", "pac", effs, PPA, g0)
 ```
 
 Generally, it looks like 1. combination of paclitaxel and gemcitabine, 2. paclitaxel and doxorubicin look most effective among all. From all the combinations, it seems in lower concentrations of both drugs, our model shows greater effect than simple Bliss, however, for highest concentrations, is it the other way round or they do very similarly.

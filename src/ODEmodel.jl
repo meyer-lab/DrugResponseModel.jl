@@ -130,7 +130,7 @@ end
     for a longer time which is 2 times of the original time (~195 hours) """
 function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, title::String, legend::Any, ymax)
     t = LinRange(0.0, 0.5 * length(g1[:, 1]), length(g1[:, 1]))
-    t_new = LinRange(0.0, 120, 200)
+    t_new = LinRange(0.0, 200, 400)
     G1, G2 = predict(params, g1[1] + g2[1], t_new, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
 
     plot(
@@ -150,7 +150,7 @@ function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, title::
     plot!(t, g2[:, i], label = "G2", markersize = 1.0, color = :darkorange)
     plot!(t_new, G1 .+ G2, label = "total est", lw = 2.0, alpha = 0.6, color = :hotpink)
     plot!(t, pop[!, i], label = "total", markersize = 1.0, color = :indigo)
-    plot!(annotation = [(60, ymax, text(title, 8))])
+    plot!(annotation = [(100, ymax, text(title, 8))])
     ylims!((0.0, ymax))
 end
 
