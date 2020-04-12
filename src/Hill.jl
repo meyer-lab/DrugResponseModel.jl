@@ -11,15 +11,7 @@ function residHill(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::M
 
     # Solve each concentration separately
     for ii = 1:length(concentrations)
-        resTemp = cost(
-            params[1:5, ii],
-            g1[:, ii],
-            g2[:, ii],
-            Int(floor(params[6, ii])),
-            Int(floor(params[7, ii])),
-            Int(floor(params[8, ii])),
-            Int(floor(params[9, ii])),
-        )
+        resTemp = cost(params[1:9, ii], g1[:, ii], g2[:, ii])
 
         res += resTemp
     end
@@ -27,35 +19,6 @@ function residHill(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::M
     return res
 end
 
-
-""" Gradient of the cost. """
-function residHillG(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::Matrix)
-    # Calculate the continuous parameters with central differencing.
-    # Special strategy for integer parameters.
-    hillCost(x) = residHill(x, concentrations, g1, g2)
-
-    return Calculus.finite_difference(hillCost, hillParams)
-end
-
-
-""" Hill optimization function. """
-function optimize_hill(conc_l::Vector, g1::Matrix, g2::Matrix; maxstep = 1E5)
-    hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2)
-
-    low = [minimum(conc_l), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.45, 2, 10, 0, 0]
-    high = [maximum(conc_l), 3.0, 3.0, 10.0, 3.0, 3.0, 1.0, 1.0, 0.55, 60, 180, 50, 50]
-
-    results_ode = bboptimize(
-        hillCost;
-        SearchRange = collect(zip(low, high)),
-        NumDimensions = length(low),
-        TraceMode = :verbose,
-        TraceInterval = 100,
-        MaxSteps = maxstep,
-    )
-
-    return best_fitness(results_ode), best_candidate(results_ode)
-end
 
 """ A function to convert the estimated hill parameters back to ODE parameters. """
 function getODEparams(p::Vector, concentrations::Vector{Float64})
@@ -139,7 +102,7 @@ end
 function numcells(params, g0, T)
     @assert(all(params .>= 0.0), "negative params $params")
     t = LinRange(0.0, 95.5, 192)
-    G1, G2 = predict(params, g0, t, Int(floor(params[6])), Int(floor(params[7])), Int(floor(params[8])), Int(floor(params[9])))
+    G1, G2 = predict(params, g0, t)
 
     @assert(all(G1[2:end] .>= 0.0), "negative cell number in G1 $G1")
     @assert(all(G2[2:end] .>= 0.0), "negative cell number in G2 $G2")
