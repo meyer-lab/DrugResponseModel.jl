@@ -30,14 +30,7 @@ function residHillAll(hillParams::Array{Float64, 1}, concentrations::Array{Float
     # Solve for all drugs
     for j = 1:5
         @threads for ii = 1:length(concentrations[:, j])
-            atomic_add!(
-                res,
-                cost(
-                    params[:, ii, j],
-                    g1[:, ii, j],
-                    g2[:, ii, j],
-                ),
-            )
+            atomic_add!(res, cost(params[:, ii, j], g1[:, ii, j], g2[:, ii, j]))
         end
     end
 
@@ -51,25 +44,28 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
     # The parameters used here in order:
     #(:Lap_EC50, :Lap_steepness, :Lap_maxG1ProgRate, :Lap_maxG2ProgRate, :Lap_maxDeathG1Rate, :Lap_maxDeathG2Rate, :Dox_EC50, :Dox_steepness, :Dox_maxG1ProgRate, :Dox_maxG2ProgRate, :Dox_maxDeathG1Rate, :Dox_maxDeathG2Rate, :Gem_EC50, :Gem_steepness, :Gem_maxG1ProgRate, :Gem_maxG2ProgRate, :Gem_maxDeathG1Rate, :Gem_maxDeathG2Rate, :Tax_EC50, :Tax_steepness, :Tax_maxG1ProgRate, :Tax_maxG2ProgRate, :Tax_maxDeathG1Rate, :Tax_maxDeathG2Rate, :pal_EC50, :pal_steepness, :pal_maxG1ProgRate, :pal_maxG2ProgRate, :pal_maxDeathG1Rate, :pal_maxDeathG2Rate, :G1ProgRateControl, :G2ProgRateControl, :percG1, :nG1, :nG2, :nD1, :nD2)
     lowPiece = [0.01, 1e-9, 1e-9, 0.0, 0.0]
-    low = vcat(minimum(concs[:, 1]),
+    low = vcat(
+        minimum(concs[:, 1]),
         lowPiece,
         minimum(concs[:, 2]),
         lowPiece,
         minimum(concs[:, 3]),
-        lowPiece, 
+        lowPiece,
         minimum(concs[:, 4]),
-        lowPiece, 
+        lowPiece,
         minimum(concs[:, 5]),
-        lowPiece, 
+        lowPiece,
         1e-9,
         1e-9,
         0.45,
         2,
         10,
         0,
-        0)
+        0,
+    )
     highPiece = [10.0, 3.0, 3.0, 1.0, 1.0]
-    high = vcat(maximum(concs[:, 1]),
+    high = vcat(
+        maximum(concs[:, 1]),
         highPiece,
         maximum(concs[:, 2]),
         highPiece,
@@ -85,7 +81,8 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
         60,
         180,
         50,
-        50)
+        50,
+    )
 
     results_ode = bboptimize(
         hillCostAll;

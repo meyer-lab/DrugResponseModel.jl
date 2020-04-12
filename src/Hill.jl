@@ -11,11 +11,7 @@ function residHill(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::M
 
     # Solve each concentration separately
     for ii = 1:length(concentrations)
-        resTemp = cost(
-            params[1:9, ii],
-            g1[:, ii],
-            g2[:, ii],
-        )
+        resTemp = cost(params[1:9, ii], g1[:, ii], g2[:, ii])
 
         res += resTemp
     end
