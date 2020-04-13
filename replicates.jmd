@@ -1,0 +1,55 @@
+Simulation and representation of the three replicates.
+```julia; echo=false
+using DrugResponseModel
+using Plots, Statistics
+
+concs, populations1, g1s1, g2s1 = load(189, 1);
+concs, populations2, g1s2, g2s2 = load(189, 2);
+concs, populations3, g1s3, g2s3 = load(189, 3);
+g0 = g1s1[1,1,1]+g2s1[1,1,1];
+
+rep1=[90.9248, 1.48422, 0.00661532, 1.71463, 0.0943887, 0.164418, 154.086, 1.25904, 1.75057, 0.148631, 0.677933, 0.842491, 45.9975, 1.24945, 1.42869, 0.850929, 0.074729, 0.303376, 3.75107, 3.25687, 0.0566983, 0.396961, 0.504343, 0.31175, 62.7498, 0.899323, 0.0525792, 0.982985, 0.0650932, 0.0844782, 1.65301, 0.635682, 0.548366, 41.6286, 21.131, 28.0472, 12.6173];
+
+rep2 = [72.937, 1.53724, 0.00173999, 2.99428, 0.0732837, 0.0582242, 254.771, 0.863756, 1.21468, 0.372904, 0.417088, 0.674065, 15.0792, 2.21905, 0.848571, 0.975291, 0.0389797, 0.164864, 4.08181, 3.48259, 0.00349849, 2.11756, 0.368401, 0.250554, 84.485, 0.8291, 0.00061522, 0.997957, 0.0333503, 0.0206233, 1.87943, 2.7344, 0.496809, 37.4133, 76.4657, 16.6754, 9.54095];
+
+rep3 = [249.026, 1.17626, 0.0176696, 1.92378, 0.258723, 0.250514, 72.4444, 1.60382, 1.50521, 0.00402118, 0.536743, 0.617426, 16.4157, 2.51094, 1.4205, 0.996903, 0.0347672, 0.294616, 3.49883, 8.51743, 0.00206601, 0.00949895, 0.535062, 0.400266, 93.5789, 0.895288, 0.0906962, 0.86687, 0.0549037, 0.0859144, 1.66043, 0.359569, 0.527514, 36.7245, 12.3667, 37.4321, 16.9129];
+
+meang1, meang2, stdg1, stdg2 = find_mean_std_gs(g1s1, g1s2, g1s3, g2s1, g2s2, g2s3);
+
+function plot1(meang1, meang2, stdg1, stdg2)
+    time = LinRange(0.0, 95.0, 189)
+    plot(time, meang1, ribbon = stdg1, label="G1")
+    plot!(time, meang2, ribbon = stdg2, label="G2")
+end
+```
+
+The following shows the mean and std of the lapatinib data for the three replicates. To change it and view simulation for other drugs we only need to change j. j=2 doxorubicin, j=3 gemcitabine, j=4 paclitaxel, and j=5 palbociclib.
+
+```julia
+j=1 # lapatinib
+pl = [plot1(meang1[:, i, j], meang2[:, i, j], stdg1[:,i,j], stdg2[:, i, j]) for i=1:8]
+plot(pl..., size=(1000,700))
+```
+
+The following shows the estimated progression and death rates with mean and std for the three replicates. We fit the model to the three replicates, separately and estimate the parameters. For the three replicates, we will have 3 sets of estimated parameters. Here is the mean and std for these three sets. (lapatinib here.)
+
+```julia; echo=false
+avgs, stds = avgRepsParams(rep1, rep2, rep3, concs)
+h=1 # lapatinib
+
+lapat = avgs[:,:,h]; lapatstd=stds[:,:,h]
+plot_parameters(concs[:, h], lapat, lapatstd)
+```
+
+The solid line shows the mean of the three simulations, meaning, after obtaining the three sets of the parameters, we calculate the time-series simulation and find the cell number for each time-point, for the three replicates, separately and calculate the mean of the three sets. The ribbon is the bounds of std of the original data. This shows that even if the model for individual replicates, deviates a little, but on-average it doesn't deviate the standard deviation. So it is reliable. (here again for lapatinib)
+
+
+```julia; echo=false
+meanG1, meanG2, stdG1, stdG2 = find_mean_std_simul(rep1, rep2, rep3, concs, g0);
+j=1
+# mean (the line) is simulation; the std (ribbon) is the data
+pl = [plot1(meanG1[:, i, j], meanG2[:, i, j], stdg1[:,i,j], stdg2[:, i, j]) for i=1:8]
+plot(pl..., size=(1000,700))
+```
+
+

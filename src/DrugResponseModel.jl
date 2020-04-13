@@ -9,6 +9,7 @@ using Measures
 using BlackBoxOptim
 using LinearAlgebra
 using Base.Threads
+using Statistics
 import Calculus
 
 include("importData.jl")
@@ -44,6 +45,9 @@ export setup_data,
     blissCellNum,
     temporal_combination,
     plotTemporalCombin,
-    find_IC50
+    find_IC50,
+    avgRepsParams,
+    find_mean_std_gs,
+    find_mean_std_simul
 
 end # module
