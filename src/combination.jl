@@ -199,11 +199,11 @@ end
 
 """ To find IC50 for each drug, separately."""
 function find_IC50(population)
-    lap = Array(population[1][192, :])
-    dox = Array(population[2][192, :])
-    gem = Array(population[3][192, :])
-    tax = Array(population[4][192, :])
-    pal = Array(population[5][192, :])
+    lap = Array(population[1][189, :])
+    dox = Array(population[2][189, :])
+    gem = Array(population[3][189, :])
+    tax = Array(population[4][189, :])
+    pal = Array(population[5][189, :])
     IC50_lap = argmin(abs.(0.5 * lap[1] .- lap)) #6
     IC50_dox = argmin(abs.(0.5 * dox[1] .- dox)) #3
     IC50_gem = argmin(abs.(0.5 * gem[1] .- gem)) #6
