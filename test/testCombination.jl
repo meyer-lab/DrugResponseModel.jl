@@ -1,5 +1,5 @@
 @testset "Combination tests" begin
-    concs, populations, g1s, g2s = load(192)
+    concs, populations, g1s, g2s = load(189, 1)
     g0 = g1s[1, 1, 1] + g2s[1, 1, 1]
     p = [
         198.616,

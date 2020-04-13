@@ -1,14 +1,14 @@
 """
         Imports data works for both ODE and DDE model
 """
-function get_data(path_g2::String, path_total::String; max = 192)
+function get_data(path_g2::String, path_total::String; max = 189)
     # Import data all the trials for each drug
     data = CSV.read(path_g2)
     total = CSV.read(path_total)
 
     # delete the extra index column
-    data = data[:, 3:10]
-    total = total[:, 3:10]
+    data = data[:, 2:9]
+    total = total[:, 2:9]
 
     # getting all the 8 trials
     drug = data[1:max, 1:8]
@@ -57,18 +57,19 @@ end
 function setup_data(drug_name::String)
     basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data")
 
-    if drug_name == "lapatinib"
-        dfname, dfname2, idx = "lap.csv", "lap_pop.csv", 1
-    elseif drug_name == "doxorubicin"
-        dfname, dfname2, idx = "dox.csv", "dox_pop.csv", 2
-    elseif drug_name == "gemcitabine"
-        dfname, dfname2, idx = "gem.csv", "gem_pop.csv", 3
-    elseif drug_name == "paclitaxel"
-        dfname, dfname2, idx = "taxol1.csv", "taxol1_pop.csv", 4
-    elseif drug_name == "palbociclib"
-        dfname, dfname2, idx = "palb.csv", "palb_pop.csv", 1 # because the concentrations for palbo is exactly the same as lapatinib.
-    else
-        error("The drug is not amongst the data, please check the drug_name.")
+    dfname = string(drug_name, ".csv")
+    dfname2 = string(drug_name, "_pop.csv")
+    
+    if occursin("Lapatinib", drug_name)
+        idx = 1
+    elseif occursin("Doxorubicin", drug_name)
+        idx = 2
+    elseif occursin("Gemcitabine", drug_name)
+        idx = 3
+    elseif occursin("Paclitaxel", drug_name)
+        idx = 4
+    elseif occursin("Palbociclib", drug_name)
+        idx = 1
     end
 
     #----------- import concentrations
@@ -81,12 +82,13 @@ function setup_data(drug_name::String)
     return conc_l, pop_l, g2_l, g1_l
 end
 
-function load(max)
-    concl, popl, g2l, g1l = setup_data("lapatinib")
-    concd, popd, g2d, g1d = setup_data("doxorubicin")
-    concg, popg, g2g, g1g = setup_data("gemcitabine")
-    concp, popp, g2p, g1p = setup_data("paclitaxel")
-    concpal, poppal, g2pal, g1pal = setup_data("palbociclib")
+function load(max, i)
+    # i is the replicate number
+    concl, popl, g2l, g1l = setup_data(string("Lapatinib", i))
+    concd, popd, g2d, g1d = setup_data(string("Doxorubicin", i))
+    concg, popg, g2g, g1g = setup_data(string("Gemcitabine", i))
+    concp, popp, g2p, g1p = setup_data(string("Paclitaxel", i))
+    concpal, poppal, g2pal, g1pal = setup_data(string("Palbociclib", i))
     concentrations = hcat(concl, concd, concg, concp, concpal)
 
     populations = [popl, popd, popg, popp, poppal]

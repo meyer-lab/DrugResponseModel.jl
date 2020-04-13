@@ -1,5 +1,5 @@
 @testset "ODE tests" begin
-    _, pop, g2, g1 = setup_data("lapatinib")
+    _, pop, g2, g1 = setup_data("Lapatinib1")
 
     t = range(0.0; stop = 95.5, length = 192)
     p = [1.0, 1.1, 0.2, 0.3, 0.5, 20, 20, 10, 10]
