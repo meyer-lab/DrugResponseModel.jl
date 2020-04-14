@@ -28,12 +28,10 @@ function residHillAll(hillParams::Array{Float64, 1}, concentrations::Array{Float
 
     # Solve for all drugs
     t = 1
-    for j = 1:5
+    @threads for j = 1:5
         hill = [hillParams[t], hillParams[31], hillParams[t+2], hillParams[t+1], hillParams[32], hillParams[t+3], hillParams[t+4], hillParams[t+5], hillParams[33], hillParams[34], hillParams[35], hillParams[36], hillParams[37]]
         t += 6
-        @threads for ii = 1:length(concentrations[:, j])
-            atomic_add!(res, residHill(hill, conc_l, g1, g2))
-        end
+        atomic_add!(res, residHill(hill, concentrations[:, j], g1[:, :, j], g2[:, :, j]))
     end
 
     return res[]
