@@ -6,8 +6,8 @@ function ParamForBliss(p::Matrix{Float64}, n::Int)
     par = zeros(4, n)
     par[1, :] = p[1, 1] .- p[1, :] # alpha stays the same
     par[2, :] = p[2, 1] .- p[2, :] # beta stays the same
-    par[3, :] =  p[3, :] # death rate in G1
-    par[4, :] =  p[4, :] # death rate in G2
+    par[3, :] = p[3, :] # death rate in G1
+    par[4, :] = p[4, :] # death rate in G2
     return par
 end
 

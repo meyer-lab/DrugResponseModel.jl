@@ -56,8 +56,8 @@ Then, we plot the concentration versus the effect alone, and when we have combin
 In the following, we have paclitaxel alone, and when it is combined with 5 nM of gemcitabine.
 
 ```julia; echo=false
-combin = BlissCombination(morepac, moregemc,50)
-plotEffectsCombin(moreConcs, moregemc, combin)
+# combin = BlissCombination(morepac, moregemc,50)
+# plotEffectsCombin(moreConcs, moregemc, combin)
 ```
 
 The following shows the number of cells over concentration with paclitaxel alone, and with 5 nM of gemcitabine, at t = 96 hrs.
