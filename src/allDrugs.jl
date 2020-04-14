@@ -25,13 +25,14 @@ end
 
 function residHillAll(hillParams::Array{Float64, 1}, concentrations::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3})
     res = Atomic{eltype(hillParams)}(0.0)
-    
-    params = getODEparamsAll(hillParams, concentrations)
 
     # Solve for all drugs
+    t = 1
     for j = 1:5
+        hill = [hillParams[t], hillParams[31], hillParams[t+2], hillParams[t+1], hillParams[32], hillParams[t+3], hillParams[t+4], hillParams[t+5], hillParams[33], hillParams[34], hillParams[35], hillParams[36], hillParams[37]]
+        t += 6
         @threads for ii = 1:length(concentrations[:, j])
-            atomic_add!(res, cost(params[:, ii, j], g1[:, ii, j], g2[:, ii, j]))
+            atomic_add!(res, residHill(hill, conc_l, g1, g2))
         end
     end
 
