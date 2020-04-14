@@ -48,6 +48,7 @@ export setup_data,
     find_IC50,
     avgRepsParams,
     find_mean_std_gs,
+    predict,
     find_mean_std_simul
 
 end # module

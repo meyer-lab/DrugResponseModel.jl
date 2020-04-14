@@ -69,12 +69,12 @@ end
 
 function plot2(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3, stdg1, stdg2)
     time = LinRange(0.0, 95.0, 189)
-    plot(time, G1_1, ribbon = stdg1, label="G1", color = "punch")
-    plot!(time, G1_2, label="", color = "punch")
-    lot!(time, G1_3, label="", color = "punch")
-    plot!(time, G2_1, ribbon = stdg2, label="G2", color = "pickle")
-    plot!(time, G2_2, label="", color = "pickle")
-    plot!(time, G2_3, label="", color = "pickle")
+    plot(time, G1_1, ribbon = stdg1, label="G1", color = "rust")
+    plot!(time, G1_2, label="", color = "rust")
+    lot!(time, G1_3, label="", color = "rust")
+    plot!(time, G2_1, ribbon = stdg2, label="G2", color = "skyblue")
+    plot!(time, G2_2, label="", color = "skyblue")
+    plot!(time, G2_3, label="", color = "skyblue")
 end
 # mean (the line) is simulation; the std (ribbon) is the data
 pl = [plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], stdg1[:,i,j], stdg2[:, i, j]) for i=1:8]
