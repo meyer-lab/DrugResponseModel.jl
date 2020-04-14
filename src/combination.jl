@@ -6,8 +6,8 @@ function ParamForBliss(p::Matrix{Float64}, n::Int)
     par = zeros(4, n)
     par[1, :] = p[1, 1] .- p[1, :] # alpha stays the same
     par[2, :] = p[2, 1] .- p[2, :] # beta stays the same
-    par[3, :] = p[3, 1] .- p[3, :] # death rate in G1
-    par[4, :] = p[4, 1] .- p[4, :] # death rate in G2
+    par[3, :] =  p[3, :] # death rate in G1
+    par[4, :] =  p[4, :] # death rate in G2
     return par
 end
 
@@ -22,7 +22,7 @@ function BlissCombination(p1::Array{Float64, 2}, p2::Array{Float64, 2}, n::Int)
     for j = 1:n
         for k = 1:n
             combined[j, k, 1:2] .= -(param1[1:2, j] .+ param2[1:2, k] .- param1[1:2, j] .* param2[1:2, k]) .+ p1[1:2, 1, 1]
-            combined[j, k, 3:4] .= -(param1[3:4, j] .+ param2[3:4, k]) .+ p1[3:4, 1, 1]
+            combined[j, k, 3:4] .= param1[3:4, j] .+ param2[3:4, k]
         end
     end
     @assert(all(combined .>= 0.0))
