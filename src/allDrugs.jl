@@ -25,6 +25,7 @@ end
 
 function residHillAll(hillParams::Array{Float64, 1}, concentrations::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3})
     res = Atomic{eltype(hillParams)}(0.0)
+    
     params = getODEparamsAll(hillParams, concentrations)
 
     # Solve for all drugs
