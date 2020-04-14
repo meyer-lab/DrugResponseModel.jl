@@ -59,7 +59,7 @@ function setup_data(drug_name::String)
 
     dfname = string(drug_name, ".csv")
     dfname2 = string(drug_name, "_pop.csv")
-    
+
     if occursin("Lapatinib", drug_name)
         idx = 1
     elseif occursin("Doxorubicin", drug_name)
