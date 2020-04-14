@@ -47,7 +47,7 @@ The solid line shows the mean of the three simulations, meaning, after obtaining
 ```julia; echo=false
 # meanG1, meanG2, stdG1, stdG2 = find_mean_std_simul(rep1, rep2, rep3, concs, g0);
 j=1
-time = LinRange(0.0, 95.0, 189)
+t = LinRange(0.0, 95.0, 189)
 p1 = getODEparamsAll(rep1, concs) 
 p2 = getODEparamsAll(rep2, concs)
 p3 = getODEparamsAll(rep3, concs)
