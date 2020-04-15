@@ -130,7 +130,7 @@ function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, title::
     plot!(t_new, G2, label = "G2 est", legend = legend, legendfontsize = 4, fg_legend = :transparent, lw = 2.0, alpha = 0.6, color = :sienna)
     plot!(t, g2[:, i], label = "G2", markersize = 1.0, color = :darkorange)
     plot!(t_new, G1 .+ G2, label = "total est", lw = 2.0, alpha = 0.6, color = :hotpink)
-    plot!(t, pop[!, i], label = "total", markersize = 1.0, color = :indigo)
+    plot!(t, pop[:, i], label = "total", markersize = 1.0, color = :indigo)
     plot!(annotation = [(100, ymax, text(title, 8))])
     ylims!((0.0, ymax))
 end
@@ -162,7 +162,7 @@ function plotPercentage(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, tit
         alpha = 0.6,
         color = :green,
     )
-    plot!(t, 100.0 * g1[:, i] ./ pop[!, i], label = "G1", markersize = 1.0, color = :darkgreen)
+    plot!(t, 100.0 * g1[:, i] ./ pop[:, i], label = "G1", markersize = 1.0, color = :darkgreen)
     plot!(
         t_new,
         100.0 * G2 ./ (G1 .+ G2),
@@ -174,7 +174,7 @@ function plotPercentage(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, tit
         alpha = 0.6,
         color = :sienna,
     )
-    plot!(t, 100.0 * g2[:, i] ./ pop[!, i], label = "G2", markersize = 1.0, color = :darkorange)
+    plot!(t, 100.0 * g2[:, i] ./ pop[:, i], label = "G2", markersize = 1.0, color = :darkorange)
     ylims!((0.0, ymax))
 end
 

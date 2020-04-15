@@ -11,6 +11,7 @@ using LinearAlgebra
 using Base.Threads
 using Statistics
 import Calculus
+using DSP: conv
 
 include("importData.jl")
 include("ODEmodel.jl")
@@ -49,6 +50,7 @@ export setup_data,
     avgRepsParams,
     find_mean_std_gs,
     predict,
-    find_mean_std_simul
+    find_mean_std_simul,
+    savitzky_golay_filter
 
 end # module
