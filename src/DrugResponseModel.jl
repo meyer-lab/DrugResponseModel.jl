@@ -11,6 +11,7 @@ using LinearAlgebra
 using Base.Threads
 using Statistics
 import Calculus
+using DSP
 
 include("importData.jl")
 include("ODEmodel.jl")
@@ -18,6 +19,7 @@ include("Hill.jl")
 include("plot.jl")
 include("allDrugs.jl")
 include("combination.jl")
+include("SavitzkyGolay.jl")
 
 export setup_data,
     load,
@@ -49,6 +51,7 @@ export setup_data,
     avgRepsParams,
     find_mean_std_gs,
     predict,
-    find_mean_std_simul
+    find_mean_std_simul,
+    savitzky_golay_filter
 
 end # module
