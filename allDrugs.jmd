@@ -56,8 +56,8 @@ Then, we plot the concentration versus the effect alone, and when we have combin
 In the following, we have paclitaxel alone, and when it is combined with 5 nM of gemcitabine.
 
 ```julia; echo=false
-combin = BlissCombination(morepac, moregemc,50)
-plotEffectsCombin(moreConcs, moregemc, combin)
+# combin = BlissCombination(morepac, moregemc,50)
+# plotEffectsCombin(moreConcs, moregemc, combin)
 ```
 
 The following shows the number of cells over concentration with paclitaxel alone, and with 5 nM of gemcitabine, at t = 96 hrs.
@@ -75,7 +75,8 @@ ODEplot_all(lapat, g1s[:, :, 1], g2s[:, :, 1], populations[1], concs[:, 1])
 ```
 
 ```julia; echo=false
-plot_parameters(moreConcs[:, 1], morelapat)
+std = zeros(4,8)
+plot_parameters(moreConcs[:, 1], morelapat, std)
 ```
 
 ```julia; echo=false
@@ -91,7 +92,7 @@ ODEplot_all(dox, g1s[:, :, 2], g2s[:, :, 2], populations[2], concs[:, 2])
 ```
 
 ```julia; echo=false
-plot_parameters(moreConcs[:, 2], moredox)
+plot_parameters(moreConcs[:, 2], moredox, std)
 ```
 
 ```julia; echo=false
@@ -107,7 +108,7 @@ ODEplot_all(gemc, g1s[:, :, 3], g2s[:, :, 3], populations[3], concs[:, 3])
 ```
 
 ```julia; echo=false
-plot_parameters(moreConcs[:, 3], moregemc)
+plot_parameters(moreConcs[:, 3], moregemc, std)
 ```
 
 ```julia; echo=false
@@ -123,7 +124,7 @@ ODEplot_all(pac, g1s[:, :, 4], g2s[:, :, 4], populations[4], concs[:, 4])
 ```
 
 ```julia; echo=false
-plot_parameters(moreConcs[:, 4], morepac)
+plot_parameters(moreConcs[:, 4], morepac, std)
 ```
 
 ```julia; echo=false
@@ -139,7 +140,7 @@ ODEplot_all(pal, g1s[:, :, 5], g2s[:, :, 5], populations[5], concs[:, 5])
 ```
 
 ```julia; echo=false
-plot_parameters(moreConcs[:, 5], morepal)
+plot_parameters(moreConcs[:, 5], morepal, std)
 ```
 
 ```julia; echo=false
