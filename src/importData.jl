@@ -33,11 +33,11 @@ function get_data(path_g2::String, path_total::String; max = 189)
     # removing the peaks
     for i = 1:8
         pop[:, i] = remove_peaks(pop[:, i])
-        pop[:, i] = savitzky_golay_filter(pop[:, i], 20, 3)
+        pop[:, i] = savitzky_golay_filter(pop[:, i], 21, 3)
         g2[:, i] = remove_peaks(g2[:, i])
-        g2[:, i] = savitzky_golay_filter(g2[:, i], 20, 3)
+        g2[:, i] = savitzky_golay_filter(g2[:, i], 21, 3)
         g1[:, i] = remove_peaks(g1[:, i])
-        g1[:, i] = savitzky_golay_filter(g1[:, i], 20, 3)
+        g1[:, i] = savitzky_golay_filter(g1[:, i], 21, 3)
     end
     return pop, g2, g1
 end
