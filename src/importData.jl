@@ -33,28 +33,11 @@ function get_data(path_g2::String, path_total::String; max = 189)
     end
     # removing the peaks
     for i = 1:8
-#         pop[:, i] = remove_peaks(pop[:, i])
-        pop[:, i] = savitzky_golay_filter(population[:, i], 31, 3)
-#         g2[:, i] = remove_peaks(g2[:, i])
+        population[:, i] = savitzky_golay_filter(population[:, i], 41, 3)
         g2[:, i] = savitzky_golay_filter(g2[:, i], 41, 3)
-#         g1[:, i] = remove_peaks(g1[:, i])
         g1[:, i] = savitzky_golay_filter(g1[:, i], 41, 3)
     end
     return population, g2, g1
-end
-
-""" Removes noise peaks from the raw data. """
-function remove_peaks(data)
-    data = copy(data)
-
-    for i = 1:(length(data) - 3)
-        if (abs(data[i + 2] - data[i + 1]) > 20 * abs(data[i + 3] - data[i + 2])) &&
-           (abs(data[i + 1] - data[i]) > 20 * abs(data[i + 3] - data[i + 2]))
-            data[i + 1] = (data[i] + data[i + 2]) / 2
-        end
-    end
-
-    return data
 end
 
 """ This function takes in the drug name which is a string and must be among this list: ["lapatinib", "doxorubicin", "paclitaxel", "gemcitabine"]. It returns the cnocentrations, population, cell, and initial cell number for that drug."""
