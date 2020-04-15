@@ -11,7 +11,7 @@ using LinearAlgebra
 using Base.Threads
 using Statistics
 import Calculus
-using DSP
+using DSP: conv
 
 include("importData.jl")
 include("ODEmodel.jl")
@@ -19,7 +19,6 @@ include("Hill.jl")
 include("plot.jl")
 include("allDrugs.jl")
 include("combination.jl")
-include("SavitzkyGolay.jl")
 
 export setup_data,
     load,
