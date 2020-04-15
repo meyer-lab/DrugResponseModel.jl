@@ -71,7 +71,7 @@ plotNumcells(morepac, combination, moreConcs[:,4], g0,50)
 ### Lapatinib
 
 ```julia; echo=false
-ODEplot_all(lapat, g1s[:, :, 1], g2s[:, :, 1], populations[1], concs[:, 1])
+ODEplot_all(lapat, g1s[:, :, 1], g2s[:, :, 1], populations[:, :, 1], concs[:, 1])
 ```
 
 ```julia; echo=false
@@ -88,7 +88,7 @@ plotGradient(lapat, concs[:, 1], g0, T)
 ### Doxorubicin
 
 ```julia; echo=false
-ODEplot_all(dox, g1s[:, :, 2], g2s[:, :, 2], populations[2], concs[:, 2])
+ODEplot_all(dox, g1s[:, :, 2], g2s[:, :, 2], populations[:, :, 2], concs[:, 2])
 ```
 
 ```julia; echo=false
@@ -104,7 +104,7 @@ plotGradient(dox, concs[:, 2], g0, T)
 ### Gemcitabine
 
 ```julia; echo=false
-ODEplot_all(gemc, g1s[:, :, 3], g2s[:, :, 3], populations[3], concs[:, 3])
+ODEplot_all(gemc, g1s[:, :, 3], g2s[:, :, 3], populations[:, :, 3], concs[:, 3])
 ```
 
 ```julia; echo=false
@@ -120,7 +120,7 @@ plotGradient(gemc, concs[:, 3], g0, T)
 ### Paclitaxel
 
 ```julia; echo=false
-ODEplot_all(pac, g1s[:, :, 4], g2s[:, :, 4], populations[4], concs[:, 4])
+ODEplot_all(pac, g1s[:, :, 4], g2s[:, :, 4], populations[:, :, 4], concs[:, 4])
 ```
 
 ```julia; echo=false
@@ -136,7 +136,7 @@ plotGradient(pac, concs[:, 4], g0, T)
 ### Palbociclib
 
 ```julia; echo=false
-ODEplot_all(pal, g1s[:, :, 5], g2s[:, :, 5], populations[5], concs[:, 5])
+ODEplot_all(pal, g1s[:, :, 5], g2s[:, :, 5], populations[:, :, 5], concs[:, 5])
 ```
 
 ```julia; echo=false

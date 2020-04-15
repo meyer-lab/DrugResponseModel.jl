@@ -162,7 +162,7 @@ function plotPercentage(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, tit
         alpha = 0.6,
         color = :green,
     )
-    plot!(t, 100.0 * g1[:, i] ./ pop[!, i], label = "G1", markersize = 1.0, color = :darkgreen)
+    plot!(t, 100.0 * g1[:, i] ./ pop[:, i], label = "G1", markersize = 1.0, color = :darkgreen)
     plot!(
         t_new,
         100.0 * G2 ./ (G1 .+ G2),
@@ -174,7 +174,7 @@ function plotPercentage(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, tit
         alpha = 0.6,
         color = :sienna,
     )
-    plot!(t, 100.0 * g2[:, i] ./ pop[!, i], label = "G2", markersize = 1.0, color = :darkorange)
+    plot!(t, 100.0 * g2[:, i] ./ pop[:, i], label = "G2", markersize = 1.0, color = :darkorange)
     ylims!((0.0, ymax))
 end
 

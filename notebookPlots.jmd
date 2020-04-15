@@ -39,7 +39,8 @@ ODEplot_allPerc(effects, g1, g2, pop, conc_l)
 ### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
-plot_parameters(conc_l, effects)
+std = zeros(4,8)
+plot_parameters(conc_l, effects, std)
 ```
 
 ### Sensitivity analysis:
@@ -82,7 +83,7 @@ ODEplot_allPerc(effects, g1, g2, pop, conc_l)
 ### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
-plot_parameters(conc_l, effects)
+plot_parameters(conc_l, effects, std)
 ```
 
 ### Sensitivity analysis:
@@ -125,7 +126,7 @@ ODEplot_allPerc(effects, g1, g2, pop, conc_l)
 ### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
-plot_parameters(conc_l, effects)
+plot_parameters(conc_l, effects, std)
 ```
 
 ### Sensitivity analysis:
@@ -168,7 +169,7 @@ ODEplot_allPerc(effects, g1, g2, pop, conc_l)
 ### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
-plot_parameters(conc_l, effects)
+plot_parameters(conc_l, effects, std)
 ```
 
 ### Sensitivity analysis:
@@ -210,7 +211,7 @@ ODEplot_allPerc(effects, g1, g2, pop, conc_l)
 ### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
-plot_parameters(conc_l, effects)
+plot_parameters(conc_l, effects, std)
 ```
 
 ### Sensitivity analysis:
