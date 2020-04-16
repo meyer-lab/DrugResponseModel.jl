@@ -33,13 +33,6 @@ plot(pl..., size=(1000,700))
 
 The following shows the estimated progression and death rates with mean and std for the three replicates. We fit the model to the three replicates, separately and estimate the parameters. For the three replicates, we will have 3 sets of estimated parameters. Here is the mean and std for these three sets. (lapatinib here.)
 
-```julia; echo=false
-avgs, stds = avgRepsParams(rep1, rep2, rep3, concs)
-h=1 # lapatinib
-
-lapat = avgs[:,:,h]; lapatstd=stds[:,:,h]
-plot_parameters(concs[:, h], lapat, lapatstd)
-```
 
 The solid lines show the three simulations, meaning, after obtaining the three sets of the parameters, we calculate the time-series simulation and find the cell number for each time-point, for the three replicates, separately. The ribbon is the bounds of std of the original data. This shows that even if the model for individual replicates, deviates a little, but on-average it doesn't deviate the standard deviation. So it is reliable. (here again for lapatinib)
 
@@ -82,12 +75,27 @@ pl = [plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, 
 plot(pl..., size=(1000,700))
 ```
 
+```julia; echo=false
+avgs, stds = avgRepsParams(rep1, rep2, rep3, concs)
+h=1 # lapatinib
+
+lapat = avgs[:,:,h]; lapatstd=stds[:,:,h]
+plot_parameters(concs[:, h], lapat, lapatstd)
+```
+
 ## Doxorubicin
 
 ```julia; echo=false
 j=2
 pl = [plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], stdg1[:,i,j], stdg2[:, i, j]) for i=1:8]
 plot(pl..., size=(1000,700))
+```
+
+```julia; echo=false
+h=2
+
+lapat = avgs[:,:,h]; lapatstd=stds[:,:,h]
+plot_parameters(concs[:, h], lapat, lapatstd)
 ```
 
 ## Gemcitabine
@@ -98,6 +106,13 @@ pl = [plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, 
 plot(pl..., size=(1000,700))
 ```
 
+```julia; echo=false
+h=3
+
+lapat = avgs[:,:,h]; lapatstd=stds[:,:,h]
+plot_parameters(concs[:, h], lapat, lapatstd)
+```
+
 ## Paclitaxel
 
 ```julia; echo=false
@@ -106,10 +121,24 @@ pl = [plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, 
 plot(pl..., size=(1000,700))
 ```
 
+```julia; echo=false
+h=4
+
+lapat = avgs[:,:,h]; lapatstd=stds[:,:,h]
+plot_parameters(concs[:, h], lapat, lapatstd)
+```
+
 ## Palbociclib
 
 ```julia; echo=false
 j=5
 pl = [plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], stdg1[:,i,j], stdg2[:, i, j]) for i=1:8]
 plot(pl..., size=(1000,700))
+```
+
+```julia; echo=false
+h=5
+
+lapat = avgs[:,:,h]; lapatstd=stds[:,:,h]
+plot_parameters(concs[:, h], lapat, lapatstd)
 ```
