@@ -90,12 +90,26 @@ pl = [plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, 
 plot(pl..., size=(1000,700))
 ```
 
+```julia; echo=false
+h=2
+
+lapat = avgs[:,:,h]; lapatstd=stds[:,:,h]
+plot_parameters(concs[:, h], lapat, lapatstd)
+```
+
 ## Gemcitabine
 
 ```julia; echo=false
 j=3
 pl = [plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], stdg1[:,i,j], stdg2[:, i, j]) for i=1:8]
 plot(pl..., size=(1000,700))
+```
+
+```julia; echo=false
+h=3
+
+lapat = avgs[:,:,h]; lapatstd=stds[:,:,h]
+plot_parameters(concs[:, h], lapat, lapatstd)
 ```
 
 ## Paclitaxel
@@ -106,10 +120,24 @@ pl = [plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, 
 plot(pl..., size=(1000,700))
 ```
 
+```julia; echo=false
+h=4
+
+lapat = avgs[:,:,h]; lapatstd=stds[:,:,h]
+plot_parameters(concs[:, h], lapat, lapatstd)
+```
+
 ## Palbociclib
 
 ```julia; echo=false
 j=5
 pl = [plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], stdg1[:,i,j], stdg2[:, i, j]) for i=1:8]
 plot(pl..., size=(1000,700))
+```
+
+```julia; echo=false
+h=5
+
+lapat = avgs[:,:,h]; lapatstd=stds[:,:,h]
+plot_parameters(concs[:, h], lapat, lapatstd)
 ```

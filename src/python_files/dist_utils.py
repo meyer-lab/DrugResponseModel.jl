@@ -47,25 +47,44 @@ def plotDist(control, trial, cont_pr, parameters, label):
         plt.ylabel("probability")
         plt.legend()
     
-def pTotal(Control, Drug):
+def pTotal(Control, Drug1, Drug2, Drug3):
     control = polish(Control)
-    drug = polish(Drug)
+    drug1 = polish(Drug1)
+    drug2 = polish(Drug2)
+    drug3 = polish(Drug3)
 
     xbarCg1 = np.sum(control[0]) / len(control[0])
     xbarCg2 = np.sum(control[1]) / len(control[1])
-    xbarDg1 = np.sum(drug[0]) / len(drug[0])
-    xbarDg2 = np.sum(drug[1]) / len(drug[1])
+
+    xbarDg1_1 = np.sum(drug1[0]) / len(drug1[0])
+    xbarDg2_1 = np.sum(drug1[1]) / len(drug1[1])
+
+    xbarDg1_2 = np.sum(drug2[0]) / len(drug2[0])
+    xbarDg2_2 = np.sum(drug2[1]) / len(drug2[1])
+
+    xbarDg1_3 = np.sum(drug3[0]) / len(drug3[0])
+    xbarDg2_3 = np.sum(drug3[1]) / len(drug3[1])
 
     sh1 = []
     sh2 = []
     for k in range(1,100):
         tmc1 = sp.gamma.logpdf(control[0], a=k, loc=0, scale=xbarCg1/k).sum()
         tmc2 = sp.gamma.logpdf(control[1], a=k, loc=0, scale=xbarCg2/k).sum()
-        tmd1 = sp.gamma.logpdf(drug[0], a=k, loc=0, scale=xbarDg1/k).sum()
-        tmd2 = sp.gamma.logpdf(drug[1], a=k, loc=0, scale=xbarDg2/k).sum()
-        sh1.append(tmc1 + tmd1) # g1
-        sh2.append(tmc2 + tmd2) # g2
+
+        tmd1_1 = sp.gamma.logpdf(drug1[0], a=k, loc=0, scale=xbarDg1_1/k).sum()
+        tmd2_1 = sp.gamma.logpdf(drug1[1], a=k, loc=0, scale=xbarDg2_1/k).sum()
+
+        tmd1_2 = sp.gamma.logpdf(drug2[0], a=k, loc=0, scale=xbarDg1_2/k).sum()
+        tmd2_2 = sp.gamma.logpdf(drug2[1], a=k, loc=0, scale=xbarDg2_2/k).sum()
+
+        tmd1_3 = sp.gamma.logpdf(drug3[0], a=k, loc=0, scale=xbarDg1_3/k).sum()
+        tmd2_3 = sp.gamma.logpdf(drug3[1], a=k, loc=0, scale=xbarDg2_3/k).sum()
+
+        sh1.append(tmc1 + tmd1_1 + tmd1_2 + tmd1_3) # g1
+        sh2.append(tmc2 + tmd2_1 + tmd2_2 + tmd2_3) # g2
         
-    controlParams = [[np.argmax(sh1), xbarCg1/np.argmax(sh1)], [np.argmax(sh2), xbarCg2/np.argmax(sh2)]]
-    drugParams = [[np.argmax(sh1), xbarDg1/np.argmax(sh1)], [np.argmax(sh2), xbarDg2/np.argmax(sh2)]]
-    return control, drug, controlParams, drugParams
+    controlParams = [[np.argmax(sh1), xbarCg1/np.argmax(sh1)], [np.argmax(sh2), xbarCg2/np.argmax(sh2)]] #[[G1_shape, G1_scale], [G2_shape, G2_scale]]
+    drugScales = [[xbarDg1_1/np.argmax(sh1), xbarDg2_1/np.argmax(sh2)], # [G1_scale, G2_scale]
+                  [xbarDg1_2/np.argmax(sh1), xbarDg2_2/np.argmax(sh2)],
+                  [xbarDg1_3/np.argmax(sh1), xbarDg2_3/np.argmax(sh2)]]
+    return control, controlParams, drugScales

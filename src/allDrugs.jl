@@ -57,7 +57,7 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
 
     # The parameters used here in order:
     #(:Lap_EC50, :Lap_steepness, :Lap_maxG1ProgRate, :Lap_maxG2ProgRate, :Lap_maxDeathG1Rate, :Lap_maxDeathG2Rate, :Dox_EC50, :Dox_steepness, :Dox_maxG1ProgRate, :Dox_maxG2ProgRate, :Dox_maxDeathG1Rate, :Dox_maxDeathG2Rate, :Gem_EC50, :Gem_steepness, :Gem_maxG1ProgRate, :Gem_maxG2ProgRate, :Gem_maxDeathG1Rate, :Gem_maxDeathG2Rate, :Tax_EC50, :Tax_steepness, :Tax_maxG1ProgRate, :Tax_maxG2ProgRate, :Tax_maxDeathG1Rate, :Tax_maxDeathG2Rate, :pal_EC50, :pal_steepness, :pal_maxG1ProgRate, :pal_maxG2ProgRate, :pal_maxDeathG1Rate, :pal_maxDeathG2Rate, :G1ProgRateControl, :G2ProgRateControl, :percG1, :nG1, :nG2, :nD1, :nD2)
-    lowPiece = [0.01, 1e-9, 1e-9, 0.0, 0.0]
+    lowPiece = [0.01, 3.0, 0.9, 0.0, 0.0]
     low = vcat(
         minimum(concs[:, 1]),
         lowPiece,
@@ -72,12 +72,12 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
         1e-9,
         1e-9,
         0.45,
-        2,
-        10,
+        3,
+        15,
         0,
         0,
     )
-    highPiece = [10.0, 3.0, 3.0, 1.0, 1.0]
+    highPiece = [10.0, 7.0, 2.3, 3.0, 3.0]
     high = vcat(
         maximum(concs[:, 1]),
         highPiece,
@@ -92,8 +92,8 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
         3.0,
         3.0,
         0.55,
-        60,
-        180,
+        10,
+        25,
         50,
         50,
     )
