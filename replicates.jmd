@@ -18,8 +18,9 @@ meang1, meang2, stdg1, stdg2 = find_mean_std_gs(g1s1, g1s2, g1s3, g2s1, g2s2, g2
 
 function plot1(meang1, meang2, stdg1, stdg2)
     time = LinRange(0.0, 95.0, 189)
-    plot(time, meang1, ribbon = stdg1, label="G1")
+    plot(time, meang1, ribbon = stdg1, label="G1", xlabel = "time [hr]", ylable = "cell number")
     plot!(time, meang2, ribbon = stdg2, label="G2")
+    ylims!((0.0, 80))
 end
 ```
 
