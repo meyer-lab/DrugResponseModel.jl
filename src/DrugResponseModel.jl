@@ -12,6 +12,7 @@ using Base.Threads
 using Statistics
 import Calculus
 using DSP: conv
+using Optim
 
 include("importData.jl")
 include("ODEmodel.jl")
@@ -51,6 +52,7 @@ export setup_data,
     find_mean_std_gs,
     predict,
     find_mean_std_simul,
-    savitzky_golay_filter
+    savitzky_golay_filter,
+    optim_all
 
 end # module

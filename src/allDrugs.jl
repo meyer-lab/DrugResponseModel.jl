@@ -214,3 +214,51 @@ function avgRepsParams(rep1, rep2, rep3, concs)
     stds[:, :, 5] = palstd
     return avgs, stds
 end
+
+function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3})
+    residuals(hillParams) = residHillAll(hillParams, concs, g1, g2)
+    lowPiece = [0.01, 3.0, 0.9, 0.0, 0.0]
+    low = vcat(
+        minimum(concs[:, 1]),
+        lowPiece,
+        minimum(concs[:, 2]),
+        lowPiece,
+        minimum(concs[:, 3]),
+        lowPiece,
+        minimum(concs[:, 4]),
+        lowPiece,
+        minimum(concs[:, 5]),
+        lowPiece,
+        1e-9,
+        1e-9,
+        0.45,
+        3,
+        15,
+        0,
+        0,
+    )
+    highPiece = [10.0, 7.0, 2.3, 3.0, 3.0]
+    high = vcat(
+        maximum(concs[:, 1]),
+        highPiece,
+        maximum(concs[:, 2]),
+        highPiece,
+        maximum(concs[:, 3]),
+        highPiece,
+        maximum(concs[:, 4]),
+        highPiece,
+        maximum(concs[:, 5]),
+        highPiece,
+        3.0,
+        3.0,
+        0.55,
+        10,
+        25,
+        50,
+        50,
+    )
+    initial_x = [488.512, 1.23245, 3.0004, 2.2998, 1.0627, 0.470721, 499.847, 1.1376, 3.00089, 1.64837, 2.08782, 2.38183, 99.9222, 1.28673, 3.00047, 2.29938, 0.424356, 0.967114, 3.80719, 3.27323, 3.00041, 1.67737, 0.886276, 0.395782, 499.507, 0.858585, 3.00041, 2.29945, 0.938065, 0.351223, 0.369983, 0.44308, 0.549918, 9.39127, 15.38, 49.7701, 12.5483];
+# Fminbox(GradientDescent()),low, high, 
+    results = optimize(residuals, initial_x, Optim.Options(iterations = 5))
+    return Optim.minimizer(results)
+end
