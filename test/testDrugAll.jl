@@ -7,10 +7,11 @@
     @assert(all(x -> !isnan(x), effects))
 
     # TODO: Profile residHillAll
-    @profile optimize_hillAll(concs, g1s, g2s; maxstep = 1E2)
 
     # test the local optimization function
     params = optim_all(concs, g1s, g2s)
     @assert(all(x -> !isnan(x), params))
-    @time optim_all(concs, g1s, g2s)
+    @profile optim_all(concs, g1s, g2s)
+
+    Profile.print(noisefloor = 2.0)
 end
