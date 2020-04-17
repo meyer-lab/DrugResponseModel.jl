@@ -197,12 +197,9 @@ function heatmap_combination(d1, d2, cellNum, i1, i2, d1name, d2name, effs, conc
     end
 
     diffs = numscomb ./ cellNum
-    # normalize to be in interval [0, 1]
-    diffs = diffs .- minimum(diffs)
-    diffs = diffs ./ maximum(diffs)
     concs[1,:] .= 0.6
     heatmap(string.(round.(log.(concs[:,i2]), digits=1)),
         string.(round.(log.(concs[:,i1]), digits=1)), diffs,
         xlabel=string(d2name, " log[nM]"), ylabel=string(d1name, " log [nM]"),
-        title="cell number abs diff")
+        title="cell number abs diff", clim = (0.0, 3.0))
 end
