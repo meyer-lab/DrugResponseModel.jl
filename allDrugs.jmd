@@ -82,7 +82,6 @@ plot_parameters(moreConcs[:, 1], morelapat, std)
 ```julia; echo=false
 g0 = g1s[1,1,1] + g2s[1,1,1]
 T = 170
-plotGradient(lapat, concs[:, 1], g0, T)
 ```
 
 ### Doxorubicin
@@ -95,12 +94,6 @@ ODEplot_all(dox, g1s[:, :, 2], g2s[:, :, 2], populations[:, :, 2], concs[:, 2])
 plot_parameters(moreConcs[:, 2], moredox, std)
 ```
 
-```julia; echo=false
-g0 = g1s[1, 1, 2] + g2s[1,1,2]
-
-plotGradient(dox, concs[:, 2], g0, T)
-```
-
 ### Gemcitabine
 
 ```julia; echo=false
@@ -109,12 +102,6 @@ ODEplot_all(gemc, g1s[:, :, 3], g2s[:, :, 3], populations[:, :, 3], concs[:, 3])
 
 ```julia; echo=false
 plot_parameters(moreConcs[:, 3], moregemc, std)
-```
-
-```julia; echo=false
-g0 = g1s[1, 1, 3] + g2s[1,1,3]
-
-plotGradient(gemc, concs[:, 3], g0, T)
 ```
 
 ### Paclitaxel
@@ -127,12 +114,6 @@ ODEplot_all(pac, g1s[:, :, 4], g2s[:, :, 4], populations[:, :, 4], concs[:, 4])
 plot_parameters(moreConcs[:, 4], morepac, std)
 ```
 
-```julia; echo=false
-g0 = g1s[1, 1, 4] + g2s[1,1,4]
-
-plotGradient(pac, concs[:, 4], g0, T)
-```
-
 ### Palbociclib
 
 ```julia; echo=false
@@ -141,8 +122,4 @@ ODEplot_all(pal, g1s[:, :, 5], g2s[:, :, 5], populations[:, :, 5], concs[:, 5])
 
 ```julia; echo=false
 plot_parameters(moreConcs[:, 5], morepal, std)
-```
-
-```julia; echo=false
-plotGradient(pal, concs[:, 5], g0, T)
 ```
