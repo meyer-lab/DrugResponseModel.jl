@@ -96,34 +96,6 @@ function helperPlot(concd1, named1, concd2, named2, numscomb, legend, title, ymi
     p
 end
 
-""" Plotting cell# versus concentration for2 drugs """
-function combin2drugs(
-    d1::Array{Float64, 2},
-    d2::Array{Float64, 2},
-    concd1::Array{Float64, 1},
-    concd2::Array{Float64, 1},
-    named1::String,
-    named2::String,
-    effs::Array{Float64, 3},
-    blissNum,
-    g0::Float64,
-)
-    n = 8
-    combin = fullCombinationParam(d1, d2, effs, n)
-
-    numscomb = zeros(n, n)
-    for j = 1:n
-        for m = 1:n
-            numscomb[j, m] = numcells(combin[:, j, m], g0, 96)
-        end
-    end
-    diff = numscomb ./ blissNum
-    p1 = helperPlot(concd1, named1, concd2, named2, numscomb, true, "", 0.0, 45.0)
-    p2 = helperPlot(concd1, named1, concd2, named2, blissNum, false, "", 0.0, 45.0)
-    p3 = helperPlot(concd1, named1, concd2, named2, diff, false, "", -1.0, 3.5)
-    plot(p1, p2, p3, layout = (1, 3), size = (1300, 400))
-end
-
 
 """ In this function, we apply the Bliss synergy to the cell numbers. 
 This is to compare the traditional way of representing the combination effect, compare to the way we do in our model."""
