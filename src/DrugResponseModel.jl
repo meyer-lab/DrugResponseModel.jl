@@ -51,6 +51,7 @@ export setup_data,
     find_mean_std_gs,
     predict,
     find_mean_std_simul,
-    savitzky_golay_filter
+    savitzky_golay_filter,
+    heatmap_combination
 
 end # module

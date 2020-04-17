@@ -1,0 +1,96 @@
+This file will is a replacement for Bliss and contains combination results. All this is for replicate 1. We could average the three and report the results or plot the three replicates separately.
+
+
+```julia; echo=false
+using DrugResponseModel
+using Plots
+
+concs, populations, g1s, g2s = load(189, 1);
+g0 = g1s[1,1,1]+g2s[1,1,1];
+```
+
+```julia; echo=false
+pp = [488.512, 1.23245, 3.0004, 2.2998, 1.0627, 0.470721, 499.847, 1.1376, 3.00089, 1.64837, 2.08782, 2.38183, 99.9222, 1.28673, 3.00047, 2.29938, 0.424356, 0.967114, 3.80719, 3.27323, 3.00041, 1.67737, 0.886276, 0.395782, 499.507, 0.858585, 3.00041, 2.29945, 0.938065, 0.351223, 0.369983, 0.44308, 0.549918, 9.39127, 15.38, 49.7701, 12.5483];
+```
+
+```julia; echo=false
+effs = getODEparamsAll(pp, concs)
+lapat = effs[:,:,1];
+dox = effs[:,:,2];
+gemc = effs[:,:,3];
+pac = effs[:,:,4];
+pal = effs[:,:,5];
+cellnum=blissCellNum(g1s, g2s)
+LD = cellnum[:,:,1]; # lap and dox
+LG = cellnum[:,:,2]; # lap anf gem
+LP = cellnum[:,:,3]; # lap and pac
+LPA = cellnum[:,:,4]; # lap and palb
+DG = cellnum[:,:,5]; # dox and gem
+DP = cellnum[:,:,6]; # dox and pac
+DPA = cellnum[:,:,7]; # dox and palb
+GP = cellnum[:,:,8]; # gem and pac
+GPA = cellnum[:,:,9]; # gem and palb
+PPA = cellnum[:,:,10]; # pac and palb
+```
+
+The heatmap shows the normalized absolute difference between the results from our model; which is calculating cell number after applying Bliss independence on the model parameters (or simply drug effects), versus applying the Bliss formulation directly to the cell number which is standard way of drug combination calculation. The x and y axis show the log concentration of the two drugs, and the brighter the color gets, the more difference between the model and the conventional combination calculations are.
+
+# Lapatinib and doxorubicin
+
+```julia; echo=false
+heatmap_combination(lapat, dox, LD', 1, 2, "lapatinib", "doxorubicin", effs, concs, g0)
+```
+
+# Lapatinib and gemcitabine
+
+```julia; echo=false
+heatmap_combination(lapat, gemc, LG', 1, 3, "lapatinib", "gemcitabine", effs, concs, g0)
+```
+
+# Lapatinib and paclitaxel
+
+```julia; echo=false
+heatmap_combination(lapat, pac, LP', 1, 4, "lapatinib", "paclitaxel", effs, concs, g0)
+```
+
+# Lapatinib and palbociclib
+
+```julia; echo=false
+heatmap_combination(lapat, pal, LPA', 1, 5, "lapatinib", "palbociclib", effs, concs, g0)
+```
+
+# Doxorubicin and gemcitabine
+
+```julia; echo=false
+heatmap_combination(dox, gemc, DG', 2, 3, "doxorubicin", "gemcitabine", effs, concs, g0)
+```
+
+# Doxorubicin and paclitaxel
+
+```julia; echo=false
+heatmap_combination(dox, pac, DP', 2, 4, "doxorubicin", "paclitaxel", effs, concs, g0)
+```
+
+# Doxorubicin and palbociclib
+
+```julia; echo=false
+heatmap_combination(dox, pac, DPA', 2, 5, "doxorubicin", "palbociclib", effs, concs, g0)
+```
+
+# Gemcitabine and paclitaxel
+
+```julia; echo=false
+heatmap_combination(gemc, pac, GP', 3, 4, "gemcitabine", "paclitaxel", effs, concs, g0)
+```
+
+# Gemcitabine and palbociclib
+
+```julia; echo=false
+heatmap_combination(gemc, pal, GPA', 3, 5, "gemcitabine", "palbociclib", effs, concs, g0)
+```
+
+# Paclitaxel and palbociclib
+
+```julia; echo=false
+heatmap_combination(pac, pal, PPA', 4, 5, "paclitaxel", "palbociclib", effs, concs, g0)
+```

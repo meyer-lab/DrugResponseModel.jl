@@ -137,7 +137,7 @@ function blissCellNum(g1s, g2s; T = 96, n = 8)
     end
     combined = zeros(n, n, 10)
     for j = 1:n
-        combined[j, :, 1] = -(num[:, 1] .+ num[j, 2] .- (num[:, 1] .* num[j, 2]) .- 1.0) .* base # lap w/ dox
+        combined[j, :, 1] = -(num[:, 1] .+ num[j, 2] .- (num[:, 1] .* num[j, 2]) .- 1.0) .* base # lap w/ dox; meaning dox changes with rows and lap changes with columns
         combined[j, :, 2] = -(num[:, 1] .+ num[j, 3] .- (num[:, 1] .* num[j, 3]) .- 1.0) .* base # lap w/ gem
         combined[j, :, 3] = -(num[:, 1] .+ num[j, 4] .- (num[:, 1] .* num[j, 4]) .- 1.0) .* base # lap w/ pac
         combined[j, :, 4] = -(num[:, 1] .+ num[j, 5] .- (num[:, 1] .* num[j, 5]) .- 1.0) .* base # lap w/ palb
@@ -210,4 +210,27 @@ function find_IC50(population)
     IC50_tax = argmin(abs.(0.5 * tax[1] .- tax)) #4
     IC50_pal = argmin(abs.(0.5 * pal[1] .- pal)) #5
     return (IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal)
+end
+
+
+function heatmap_combination(d1, d2, cellNum, i1, i2, d1name, d2name, effs, concs, g0)
+    n = 8 # the number of concentrations we have
+    combin = fullCombinationParam(d1, d2, effs, n)
+
+    numscomb = zeros(n, n)
+    for j = 1:n
+        for m = 1:n
+            numscomb[j, m] = numcells(combin[:, j, m], g0, 96)
+        end
+    end
+
+    diffs = abs.(numscomb .- cellNum)
+    # normalize to be in interval [0, 1]
+    diffs = diffs .- minimum(diffs)
+    diffs = diffs ./ maximum(diffs)
+    concs[1,:] .= 0.6
+    heatmap(string.(round.(log.(concs[:,i2]), digits=1)),
+        string.(round.(log.(concs[:,i1]), digits=1)), diffs,
+        xlabel=string(d2name, " log[nM]"), ylabel=string(d1name, " log [nM]"),
+        title="cell number abs diff")
 end
