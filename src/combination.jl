@@ -201,5 +201,5 @@ function heatmap_combination(d1, d2, cellNum, i1, i2, d1name, d2name, effs, conc
     heatmap(string.(round.(log.(concs[:,i2]), digits=1)),
         string.(round.(log.(concs[:,i1]), digits=1)), diffs,
         xlabel=string(d2name, " log[nM]"), ylabel=string(d1name, " log [nM]"),
-        title="cell number abs diff", clim = (0.0, 2.5))
+        title="cell number abs diff", clim = (0.0, 2.0))
 end
