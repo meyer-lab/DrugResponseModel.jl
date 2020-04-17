@@ -196,7 +196,7 @@ function heatmap_combination(d1, d2, cellNum, i1, i2, d1name, d2name, effs, conc
         end
     end
 
-    diffs = abs.(numscomb .- cellNum)
+    diffs = numscomb ./ cellNum
     # normalize to be in interval [0, 1]
     diffs = diffs .- minimum(diffs)
     diffs = diffs ./ maximum(diffs)
