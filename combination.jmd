@@ -35,61 +35,61 @@ PPA = cellnum[:,:,10]; # pac and palb
 
 The heatmap shows the normalized absolute difference between the results from our model; which is calculating cell number after applying Bliss independence on the model parameters (or simply drug effects), versus applying the Bliss formulation directly to the cell number which is standard way of drug combination calculation. The x and y axis show the log concentration of the two drugs, and the brighter the color gets, the more difference between the model and the conventional combination calculations are.
 
-# Lapatinib and doxorubicin
+## Lapatinib and doxorubicin
 
 ```julia; echo=false
 heatmap_combination(lapat, dox, LD', 1, 2, "lapatinib", "doxorubicin", effs, concs, g0)
 ```
 
-# Lapatinib and gemcitabine
+## Lapatinib and gemcitabine
 
 ```julia; echo=false
 heatmap_combination(lapat, gemc, LG', 1, 3, "lapatinib", "gemcitabine", effs, concs, g0)
 ```
 
-# Lapatinib and paclitaxel
+## Lapatinib and paclitaxel
 
 ```julia; echo=false
 heatmap_combination(lapat, pac, LP', 1, 4, "lapatinib", "paclitaxel", effs, concs, g0)
 ```
 
-# Lapatinib and palbociclib
+## Lapatinib and palbociclib
 
 ```julia; echo=false
 heatmap_combination(lapat, pal, LPA', 1, 5, "lapatinib", "palbociclib", effs, concs, g0)
 ```
 
-# Doxorubicin and gemcitabine
+## Doxorubicin and gemcitabine
 
 ```julia; echo=false
 heatmap_combination(dox, gemc, DG', 2, 3, "doxorubicin", "gemcitabine", effs, concs, g0)
 ```
 
-# Doxorubicin and paclitaxel
+## Doxorubicin and paclitaxel
 
 ```julia; echo=false
 heatmap_combination(dox, pac, DP', 2, 4, "doxorubicin", "paclitaxel", effs, concs, g0)
 ```
 
-# Doxorubicin and palbociclib
+## Doxorubicin and palbociclib
 
 ```julia; echo=false
 heatmap_combination(dox, pac, DPA', 2, 5, "doxorubicin", "palbociclib", effs, concs, g0)
 ```
 
-# Gemcitabine and paclitaxel
+## Gemcitabine and paclitaxel
 
 ```julia; echo=false
 heatmap_combination(gemc, pac, GP', 3, 4, "gemcitabine", "paclitaxel", effs, concs, g0)
 ```
 
-# Gemcitabine and palbociclib
+## Gemcitabine and palbociclib
 
 ```julia; echo=false
 heatmap_combination(gemc, pal, GPA', 3, 5, "gemcitabine", "palbociclib", effs, concs, g0)
 ```
 
-# Paclitaxel and palbociclib
+## Paclitaxel and palbociclib
 
 ```julia; echo=false
 heatmap_combination(pac, pal, PPA', 4, 5, "paclitaxel", "palbociclib", effs, concs, g0)
