@@ -118,8 +118,8 @@ function find_mean_std_gs(g1s1, g1s2, g1s3, g2s1, g2s2, g2s3)
     stdg1 = ones(189, 8, 5)
     stdg2 = ones(189, 8, 5)
 
-    for h=1:5
-        for j=1:8
+    for h = 1:5
+        for j = 1:8
             for k = 1:189
                 meang1[k, j, h] = mean([g1s1[k, j, h], g1s2[k, j, h], g1s3[k, j, h]])
                 meang2[k, j, h] = mean([g2s1[k, j, h], g2s2[k, j, h], g2s3[k, j, h]])
