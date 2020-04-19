@@ -3,7 +3,7 @@
 """
 
 """ Make the transition matrix. """
-function ODEjac(p::Vector{T}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{T} where T
+function ODEjac(p::Vector{T}, nG1::UInt8, nG2::UInt8, nD1::UInt8, nD2::UInt8)::Matrix{T} where T
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
     if nD1 == 0
         D1 = T[]
@@ -53,10 +53,10 @@ end
 function predict(p::Vector{T}, g_0, t) where T
     @assert length(p) == 9
     # Convert parameters to phase numbers
-    nG1 = Int(floor(p[6]))
-    nG2 = Int(floor(p[7]))
-    nD1 = Int(floor(p[8]))
-    nD2 = Int(floor(p[9]))
+    nG1 = UInt8(floor(p[6]))
+    nG2 = UInt8(floor(p[7]))
+    nD1 = UInt8(floor(p[8]))
+    nD2 = UInt8(floor(p[9]))
 
     if g_0 isa Real
         if nD1 == 0
@@ -77,7 +77,7 @@ function predict(p::Vector{T}, g_0, t) where T
     A = ODEjac(p, nG1, nG2, nD1, nD2)
 
     prob = ODEProblem((du, u, p, t) -> mul!(du, A, u), g_0, maximum(t))
-    vOut = solve(prob, Tsit5(), saveat=t).u
+    vOut = solve(prob, Tsit5(), saveat=t, reltol=1.0e-9).u
 
     if length(t) > 1
         vOut = vcat(transpose.(vOut)...)

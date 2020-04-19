@@ -14,6 +14,7 @@ import Calculus
 using DSP: conv
 using Optim
 using OrdinaryDiffEq
+using ForwardDiff
 
 include("importData.jl")
 include("ODEmodel.jl")
