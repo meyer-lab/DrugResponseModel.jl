@@ -43,7 +43,7 @@ function getODEparams(p::Vector, concentrations::Vector{Float64})
     effects = Matrix{eltype(p)}(undef, 9, length(concentrations))
 
     # Scaled drug effect
-    xx = 1.0 ./ (1.0 .+ (p[1] ./ concentrations) .^ p[4])
+    xx = 1.0 ./ (1.0 .+ (p[1] ./ (concentrations .+ eps())) .^ p[4])
 
     # [EC50, left, right, steepness]
     effects[1, :] = p[2] .+ (p[3] - p[2]) .* xx

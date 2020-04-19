@@ -95,7 +95,7 @@ end
 """ Calculates the cost function for a given set of parameters. """
 function cost(p, g1, g2)
     t = LinRange(0.0, 0.5 * length(g1), length(g1))
-    G1, G2 = predict(p, g1[1] + g2[1], t)
+    G1, G2, vecOut = predict(p, g1[1] + g2[1], t)
 
     return norm(G1 - g1) + norm(G2 - g2)
 end
