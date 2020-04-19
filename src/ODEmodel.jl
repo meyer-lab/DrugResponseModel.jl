@@ -74,7 +74,7 @@ function predict(p::Vector{T}, g_0, t) where T
         g_0 = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
     end
 
-    A = ODEjac(p, nPs[1], nPs[2], nPs[3], nPs[4])
+    A = ODEjac(p, nG1, nG2, nD1, nD2)
 
     prob = ODEProblem((du, u, p, t) -> mul!(du, A, u), g_0, maximum(t))
     vOut = solve(prob, Tsit5(), saveat=t).u
