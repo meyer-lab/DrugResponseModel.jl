@@ -77,7 +77,7 @@ function predict(p::Vector{T}, g_0, t) where T
     A = ODEjac(p, nG1, nG2, nD1, nD2)
 
     prob = ODEProblem((du, u, p, t) -> mul!(du, A, u), g_0, maximum(t))
-    vOut = solve(prob, Tsit5(), saveat=t, reltol=1.0e-9).u
+    vOut = solve(prob, Tsit5(), saveat=t).u
 
     if length(t) > 1
         vOut = vcat(transpose.(vOut)...)

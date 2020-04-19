@@ -221,9 +221,42 @@ function avgRepsParams(rep1, rep2, rep3, concs)
 end
 
 function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3})
-    residuals(hillParams) = residHillAll(exp.(hillParams), concs, g1, g2)
+    f(hillParams) = residHillAll(hillParams, concs, g1, g2)
+    g!(G, hillParams) = ForwardDiff.gradient!(G, f, hillParams)
+
+    lowPiece = [1.0e-6, 0.01, 2.0, 0.9, 0.0, 0.0]
+    low = vcat(
+        lowPiece,
+        lowPiece,
+        lowPiece,
+        lowPiece,
+        lowPiece,
+        1e-9,
+        1e-9,
+        0.4,
+        3,
+        15,
+        0,
+        0,
+    )
+    highPiece = [1000.0, 10.0, 7.0, 3.0, 3.0, 3.0]
+    high = vcat(
+        highPiece,
+        highPiece,
+        highPiece,
+        highPiece,
+        highPiece,
+        3.0,
+        3.0,
+        0.6,
+        10,
+        25,
+        50,
+        50,
+    )
 
     initial_x = [488.5, 1.2, 3.0, 2.3, 1.1, 0.47, 499.8, 1.1, 3.0, 1.6, 2.1, 2.4, 99.9, 1.3, 3.0, 2.3, 0.42, 0.97, 3.8, 3.3, 3.0, 1.7, 0.89, 0.40, 499.5, 0.86, 3.0, 2.3, 0.94, 0.35, 0.37, 0.44, 0.55, 9.4, 15.4, 49.8, 12.5];
-    results = optimize(residuals, log.(initial_x), LBFGS(), Optim.Options(iterations = 5), autodiff = :forward)
+    results = optimize(f, g!, low, high, initial_x, Fminbox(GradientDescent()), Optim.Options(outer_iterations = 2, show_trace = true, iterations = 10))
+
     return Optim.minimizer(results)
 end
