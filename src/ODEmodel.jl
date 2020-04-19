@@ -79,14 +79,20 @@ function predict(p::Vector{T}, g_0, t) where T
     prob = ODEProblem((du, u, p, t) -> mul!(du, A, u), g_0, maximum(t))
     vOut = solve(prob, Tsit5(), saveat=t).u
 
+    if length(t) > 1
+        vOut = vcat(transpose.(vOut)...)
+    else
+        vOut = reshape(vOut[1], (1, :))
+    end
+
     println(size(vOut))
 
-    @views G1 = sum(vOut[1:nG1, :], dims = 1) + sum(vOut[(nG1 + nG2 + 1):(nG1 + nG2 + nD1), :], dims = 1)
-    @views G2 = sum(vOut[(nG1 + 1):(nG1 + nG2)], dims = 1) + sum(vOut[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)], dims = 1)
+    @views G1 = sum(vOut[:, 1:nG1], dims = 2) + sum(vOut[:, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)], dims = 2)
+    @views G2 = sum(vOut[:, (nG1 + 1):(nG1 + nG2)], dims = 2) + sum(vOut[:, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)], dims = 2)
 
     println(size(G1))
 
-    return abs.(G1), abs.(G2), vec(vOut[:, end])
+    return abs.(vec(G1)), abs.(vec(G2)), vec(vOut[end, :])
 end
 
 
