@@ -40,9 +40,9 @@ function ODEjac(p::Vector{T}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{T}
     end
 
     if nD1 & nD2 != 0
-        @assert all(A[1:(nG1 + nG2), (nG1 + nG2 + 1):end] .== 0.0)
-        @assert all(A[nG1 + nG2 + 1, (nG1 + 1):(nG1 + nG2)] .== 0.0)
-        @assert all(A[nG1 + nG2 + nD1 + 1, 1:nG1] .== 0.0)
+        @assert all(iszero, @view A[1:(nG1 + nG2), (nG1 + nG2 + 1):end])
+        @assert all(iszero, @view A[nG1 + nG2 + 1, (nG1 + 1):(nG1 + nG2)])
+        @assert all(iszero, @view A[nG1 + nG2 + nD1 + 1, 1:nG1])
     end
 
     return A
@@ -71,29 +71,24 @@ function predict(p::Vector{T}, g_0, t) where T
             D2 = zeros(nD2)
         end
 
-        v = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
-    else
-        v = g_0
+        g_0 = [ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2; D1; D2]
     end
 
     A = ODEjac(p, nG1, nG2, nD1, nD2)
 
-    # Some assumptions
-    @assert t[1] == 0.0
-    rmul!(A, t[2])
-    A = LinearAlgebra.exp!(A)
+    prob = ODEProblem((du, u, p, t) -> mul!(du, A, u), g_0, maximum(t))
+    vOut = solve(prob, Tsit5(), saveat=t).u
 
-    G1 = Vector{eltype(p)}(undef, length(t))
-    G2 = Vector{eltype(p)}(undef, length(t))
-
-    for ii = 1:length(G1)
-        G1[ii] = sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
-        G2[ii] = sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
-
-        v = A * v
+    if length(t) > 1
+        vOut = vcat(transpose.(vOut)...)
+    else
+        vOut = reshape(vOut[1], (1, :))
     end
 
-    return G1, G2, v
+    @views G1 = sum(vOut[:, 1:nG1], dims = 2) + sum(vOut[:, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)], dims = 2)
+    @views G2 = sum(vOut[:, (nG1 + 1):(nG1 + nG2)], dims = 2) + sum(vOut[:, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)], dims = 2)
+
+    return abs.(vec(G1)), abs.(vec(G2)), vec(vOut[end, :])
 end
 
 
