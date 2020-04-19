@@ -53,7 +53,10 @@ end
 function predict(p::Vector{T}, g_0, t) where T
     @assert length(p) == 9
     # Convert parameters to phase numbers
-    nPs = Int.(floor.(p[6:9]))
+    nG1 = Int(floor(p[6]))
+    nG2 = Int(floor(p[7]))
+    nD1 = Int(floor(p[8]))
+    nD2 = Int(floor(p[9]))
 
     if g_0 isa Real
         if nD1 == 0
