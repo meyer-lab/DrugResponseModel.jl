@@ -36,7 +36,6 @@ export setup_data,
     plotUnitSensitivity,
     allSensitivity,
     ODEplot_allPerc,
-    plotGradient,
     numcells,
     getODEparamsAll,
     optimize_hillAll,
@@ -44,7 +43,6 @@ export setup_data,
     fullCombinationParam,
     plotEffectsCombin,
     plotNumcells,
-    combin2drugs,
     blissCellNum,
     temporal_combination,
     plotTemporalCombin,
@@ -55,5 +53,6 @@ export setup_data,
     find_mean_std_simul,
     savitzky_golay_filter,
     optim_all
+    heatmap_combination
 
 end # module

@@ -119,11 +119,15 @@ function find_mean_std_gs(g1s1, g1s2, g1s3, g2s1, g2s2, g2s3)
     stdg1 = ones(189, 8, 5)
     stdg2 = ones(189, 8, 5)
 
-    for k = 1:189
-        meang1[k, :, :] .= mean([g1s1[k, :, :], g1s2[k, :, :], g1s3[k, :, :]])
-        meang2[k, :, :] .= mean([g2s1[k, :, :], g2s2[k, :, :], g2s3[k, :, :]])
-        stdg1[k, :, :] .= std([g1s1[k, :, :], g1s2[k, :, :], g1s3[k, :, :]])
-        stdg2[k, :, :] .= std([g2s1[k, :, :], g2s2[k, :, :], g2s3[k, :, :]])
+    for h = 1:5
+        for j = 1:8
+            for k = 1:189
+                meang1[k, j, h] = mean([g1s1[k, j, h], g1s2[k, j, h], g1s3[k, j, h]])
+                meang2[k, j, h] = mean([g2s1[k, j, h], g2s2[k, j, h], g2s3[k, j, h]])
+                stdg1[k, j, h] = std([g1s1[k, j, h], g1s2[k, j, h], g1s3[k, j, h]])
+                stdg2[k, j, h] = std([g2s1[k, j, h], g2s2[k, j, h], g2s3[k, j, h]])
+            end
+        end
     end
 
     return meang1, meang2, stdg1, stdg2
@@ -150,7 +154,7 @@ function find_mean_std_simul(rep1, rep2, rep3, concs, g0)
         end
     end
     meanG1, meanG2, stdG1, stdG2 = find_mean_std_gs(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3)
-    return meanG1, meanG2, stdG1, stdG2
+    return meanG1, meanG2, stdG1, stdG2, G1_1, G2_1, G1_2, G2_2, G1_3, G2_3
 end
 
 """ This function takes in the estimated Hill params for the 3 replicates, and outputs average and standard deviations of ODE model parameters"""

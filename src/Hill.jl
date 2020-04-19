@@ -114,3 +114,14 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
     plot!([realParam], seriestype = "vline", margin = 0.3cm, legend = :false)
     ylims!((1E2, 1E4))
 end
+
+""" Calculate the # of cells in G1 for a set of parameters and T """
+function numcells(params, g0, T)
+    @assert(all(params .>= 0.0), "negative params $params")
+    t = LinRange(0.0, 95.5, 192)
+    G1, G2 = predict(params, g0, t)
+
+    @assert(all(G1[2:end] .>= 0.0), "negative cell number in G1 $G1")
+    @assert(all(G2[2:end] .>= 0.0), "negative cell number in G2 $G2")
+    return G1[T] + G2[T]
+end
