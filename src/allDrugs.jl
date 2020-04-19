@@ -51,6 +51,17 @@ function residHillAll(hillParams::Vector, concentrations::Matrix, g1::Array, g2:
     return res
 end
 
+
+function residHillAllG(hillParams::Vector, concentrations::Matrix, g1::Array, g2::Array)
+
+    hillCostAll(hillParams) = residHillAll(hillParams, concentrations, g1, g2)
+
+    y, back = Zygote.gradient(hillCostAll, hillParams);
+
+    return y, back(one(hillParams))
+end
+
+
 """ Hill optimization function for all drugs. """
 function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxstep = 1E5)
     hillCostAll(hillParams) = residHillAll(hillParams, concs, g1, g2)
@@ -216,7 +227,7 @@ function avgRepsParams(rep1, rep2, rep3, concs)
 end
 
 function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3})
-    residuals(hillParams) = residHillAll(hillParams, concs, g1, g2)
+    residuals(hillParams) = residHillAll(exp.(hillParams), concs, g1, g2)
     lowPiece = [0.01, 3.0, 0.9, 0.0, 0.0]
     low = vcat(
         minimum(concs[:, 1]),
@@ -259,6 +270,6 @@ function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Fl
     )
     initial_x = [488.512, 1.23245, 3.0004, 2.2998, 1.0627, 0.470721, 499.847, 1.1376, 3.00089, 1.64837, 2.08782, 2.38183, 99.9222, 1.28673, 3.00047, 2.29938, 0.424356, 0.967114, 3.80719, 3.27323, 3.00041, 1.67737, 0.886276, 0.395782, 499.507, 0.858585, 3.00041, 2.29945, 0.938065, 0.351223, 0.369983, 0.44308, 0.549918, 9.39127, 15.38, 49.7701, 12.5483];
 # Fminbox(GradientDescent()),low, high, 
-    results = optimize(residuals, initial_x, Optim.Options(iterations = 5))
+    results = optimize(residuals, log.(initial_x), LBFGS(), Optim.Options(iterations = 5))
     return Optim.minimizer(results)
 end

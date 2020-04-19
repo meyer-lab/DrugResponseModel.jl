@@ -13,6 +13,7 @@ using Statistics
 import Calculus
 using DSP: conv
 using Optim
+using Zygote
 
 include("importData.jl")
 include("ODEmodel.jl")

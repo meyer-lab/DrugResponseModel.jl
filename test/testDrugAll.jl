@@ -8,6 +8,14 @@
 
     # TODO: Profile residHillAll
 
+
+    out, outback = DrugResponseModel.residHillAllG(p, concs, g1s, g2s)
+
+    println(out)
+    println(outback)
+
+
+
     # test the local optimization function
     params = optim_all(concs, g1s, g2s)
     @assert(all(x -> !isnan(x), params))
