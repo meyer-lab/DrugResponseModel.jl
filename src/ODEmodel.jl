@@ -3,7 +3,7 @@
 """
 
 """ Make the transition matrix. """
-function ODEjac(p::Vector{T}, nG1::UInt8, nG2::UInt8, nD1::UInt8, nD2::UInt8)::Matrix{T} where T
+function ODEjac(p::Vector{T}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::SparseMatrixCSC{T, Int64} where T
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
     if nD1 == 0
         D1 = T[]
@@ -29,7 +29,7 @@ function ODEjac(p::Vector{T}, nG1::UInt8, nG2::UInt8, nD1::UInt8, nD2::UInt8)::M
 
     v1 = [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); diagD1; diagD2]
     v2 = [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; D1; D2]
-    A = diagm(0 => v1, -1 => v2)
+    A = spdiagm(0 => v1, -1 => v2)
 
     A[1, nG1 + nG2] = 2 * p[2]
     if nD1 > 0
@@ -37,12 +37,6 @@ function ODEjac(p::Vector{T}, nG1::UInt8, nG2::UInt8, nD1::UInt8, nD2::UInt8)::M
     end
     if nD2 > 0
         A[nG1 + nG2 + nD1 + 1, (nG1 + 1):(nG1 + nG2)] = p[4] * ones(1, nG2)
-    end
-
-    if nD1 & nD2 != 0
-        @assert all(iszero, @view A[1:(nG1 + nG2), (nG1 + nG2 + 1):end])
-        @assert all(iszero, @view A[nG1 + nG2 + 1, (nG1 + 1):(nG1 + nG2)])
-        @assert all(iszero, @view A[nG1 + nG2 + nD1 + 1, 1:nG1])
     end
 
     return A
@@ -53,10 +47,10 @@ end
 function predict(p::Vector{T}, g_0, t) where T
     @assert length(p) == 9
     # Convert parameters to phase numbers
-    nG1 = UInt8(floor(p[6]))
-    nG2 = UInt8(floor(p[7]))
-    nD1 = UInt8(floor(p[8]))
-    nD2 = UInt8(floor(p[9]))
+    nG1 = Int(floor(p[6]))
+    nG2 = Int(floor(p[7]))
+    nD1 = Int(floor(p[8]))
+    nD2 = Int(floor(p[9]))
 
     if g_0 isa Real
         if nD1 == 0
@@ -77,18 +71,22 @@ function predict(p::Vector{T}, g_0, t) where T
     A = ODEjac(p, nG1, nG2, nD1, nD2)
 
     prob = ODEProblem((du, u, p, t) -> mul!(du, A, u), g_0, maximum(t))
-    vOut = solve(prob, Vern9(), saveat=t).u
+    integrator = init(prob, VCABM(); save_on = false)
 
-    if length(t) > 1
-        vOut = vcat(transpose.(vOut)...)
-    else
-        vOut = reshape(vOut[1], (1, :))
+    G1 = Vector{T}(undef, length(t))
+    G2 = Vector{T}(undef, length(t))
+
+    ii = 1
+    for (v, ttt) in TimeChoiceIterator(integrator, t)
+        G1[ii] = sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
+        G2[ii] = sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
+
+        if ii == length(t)
+            return abs.(G1), abs.(G2), v
+        end
+
+        ii += 1
     end
-
-    @views G1 = sum(vOut[:, 1:nG1], dims = 2) + sum(vOut[:, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)], dims = 2)
-    @views G2 = sum(vOut[:, (nG1 + 1):(nG1 + nG2)], dims = 2) + sum(vOut[:, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)], dims = 2)
-
-    return abs.(vec(G1)), abs.(vec(G2)), vec(vOut[end, :])
 end
 
 
