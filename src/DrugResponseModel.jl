@@ -12,6 +12,10 @@ using Base.Threads
 using Statistics
 import Calculus
 using DSP: conv
+using Optim
+using OrdinaryDiffEq
+using ForwardDiff
+using SparseArrays
 
 include("importData.jl")
 include("ODEmodel.jl")
@@ -50,6 +54,7 @@ export setup_data,
     predict,
     find_mean_std_simul,
     savitzky_golay_filter,
+    optim_all
     heatmap_combination
 
 end # module
