@@ -90,3 +90,17 @@ function plot_parameters(conc_l, parameters, std)
 
     plot(p1, p2, p3, p4)
 end
+
+function plot2(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3, g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, j)
+    time = LinRange(0.0, 95.0, 189)
+    meang1, meang2, stdg1, stdg2 = find_mean_std_gs(g1s1, g1s2, g1s3, g2s1, g2s2, g2s3);
+    plot(time, meang1[:, i, j]; ribbon = stdg1[:, i, j], color=1, label = "", xlabel = "time [hr]", ylabel = "cell number", alpha = 0.1)
+    plot!(time, G1_1, label="G1", color = 1)
+    plot!(time, G1_2, label="", color = 1)
+    plot!(time, G1_3, label="", color = 1)
+    plot!(time, meang2[:, i, j]; ribbon = stdg2[:, i, j], color=2, label = "", alpha = 0.1)
+    plot!(time, G2_1, label="G2", color = 2)
+    plot!(time, G2_2, label="", color = 2)
+    plot!(time, G2_3, label="", color = 2)
+    ylims!((0.0, 45))
+end

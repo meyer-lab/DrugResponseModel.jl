@@ -3,26 +3,102 @@ This file contains all the drugs, separately.
 
 ```julia; echo=false
 using DrugResponseModel
-using Plots
+using Plots, Statistics
 
 # import data from the path
+concs, populations1, g1s1, g2s1 = load(189, 1);
+concs, populations2, g1s2, g2s2 = load(189, 2);
+concs, populations3, g1s3, g2s3 = load(189, 3);
 conc_l, pop, g2, g1 = setup_data("Lapatinib1")
+g0 = g1s1[1,1,1]+g2s1[1,1,1];
 
-# costt, ps = optimize_hill(conc_l, g1, g2, maxstep = 4E4)
-ps = [68.856, 2.17748, 0.0233308, 0.942434, 1.5169, 2.98134, 0.0181415, 0.0359511, 0.531034, 48.6838, 52.3097, 1.66619, 4.44761]
-effects = getODEparams(ps, conc_l)
+# find mean and std of data
 
-g0 = g1[1] + g2[1]
+
+
+# costt, ps = optimize_hill(conc[1, :], g1s[:, :, 1], g2[:, :, 1], maxstep = 5E4)
+ps = ps1 = [66.24663072209786, 0.5367215735503916, 0.10925455859504071, 1.1888141935180816, 1.261611554581465, 2.2923953465431874, 0.012999087686638223, 0.04716329399962079, 0.5111779375803134, 14.746640041992908, 47.89248160541411, 1.5595068834286558, 1.7457653265339144]
+
+ps2 =  [40.2863762446942, 2.552443805268386, 0.2547328721481544, 1.1072205150238785, 0.362190556451814, 0.5389155992807828, 0.008860159161054988, 0.015643316503769825, 0.5473504413590508, 50.53765510441097, 10.831424646149785, 0.005476723200971964, 19.712222920154787]
+
+ps3 = [59.78303451440187, 2.6999194942192415, 0.0006384091103920911, 0.8108626839375536, 0.31168753221261974, 0.6609224933932639, 0.008619533892157808, 0.021702588438997264, 0.5461074708258699, 58.35167574239431, 11.130394681734316, 0.16276005961420112, 3.0269229688542527]
+
+effects = effects1 = getODEparams(ps1, concs[1, :])
+effects2 = getODEparams(ps2, concs[1, :])
+effects3 = getODEparams(ps3, conc[1, :])
+
+g0 = g1s1[1,1,1] + g2s1[1,1,1]
 T = 170
 ```
 
-## Lapatinib
-
-
-### Plotting the time-series simulations compared to the actual data.
+### Find mean and std for the data
 
 ```julia; echo=false
-ODEplot_all(effects, g1, g2, pop, conc_l)
+
+function fordata(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3)
+
+    meanG1 = ones(189, 8)
+    meanG2 = ones(189, 8)
+    stdG1 = ones(189, 8)
+    stdG2 = ones(189, 8)
+    for j = 1:8
+        for k = 1:189
+            meanG1[k, j] = mean([G1_1[k, j], G1_2[k, j], G1_3[k, j]])
+            meanG2[k, j] = mean([G2_1[k, j], G2_2[k, j], G2_3[k, j]])
+            stdG1[k, j] = std([G1_1[k, j], G1_2[k, j], G1_3[k, j]])
+            stdG2[k, j] = std([G2_1[k, j], G2_2[k, j], G2_3[k, j]])
+        end
+    end
+    return meanG1, meanG2, stdG1, stdG2
+end
+
+function find_mean_std(ps1, ps2, ps3, conc, g0)
+    t = LinRange(0.0, 95.0, 189)
+    p1 = getODEparams(ps1, concs)
+    p2 = getODEparams(ps2, concs)
+    p3 = getODEparams(ps3, concs)
+    j = 1 # drug number
+    G1_1 = ones(189, 8)
+    G2_1 = ones(189, 8)
+    G1_2 = ones(189, 8)
+    G2_2 = ones(189, 8)
+    G1_3 = ones(189, 8)
+    G2_3 = ones(189, 8)
+
+    for i = 1:8 # concentration number
+        G1_1[:, i], G2_1[:, i], _ = predict(p1[:, i], g0, t)
+        G1_2[:, i], G2_2[:, i], _ = predict(p2[:, i], g0, t)
+        G1_3[:, i], G2_3[:, i], _ = predict(p3[:, i], g0, t)
+    end
+
+    return G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 # all simulation
+end
+
+function plot3(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3, meang1, meang2, stdg1, stdg2, conc)
+    time = LinRange(0.0, 95.0, 189)
+    plot(time, meang1; ribbon = stdg1, color=1, label = "", xlabel = "time [hr]", ylabel = "cell number", alpha = 0.05, string(conc, " nM"))
+    plot!(time, G1_1, label="G1", color = 1)
+    plot!(time, G1_2, label="", color = 1)
+    plot!(time, G1_3, label="", color = 1)
+    plot!(time, meang2; ribbon = stdg2, color=2, label = "", alpha = 0.05)
+    plot!(time, G2_1, label="G2", color = 2)
+    plot!(time, G2_2, label="", color = 2)
+    plot!(time, G2_3, label="", color = 2)
+    ylims!((0.0, 45))
+end
+
+
+G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = find_mean_std(ps1, ps2, ps3, concs[1,:], g0) # for lapatinib
+
+meanG1, meanG2, stdG1, stdG2 = fordata(g1s1[:, :, 1], g1s2[:, :, 1], g1s3[:, :, 1], g2s1[:, :, 1], g2s2[:, :, 1], g2s3[:, :, 1])
+```
+
+
+### Plotting the time-series simulations compared to the actual data for three replicates.
+
+```julia; echo=false
+pl = [plot2(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], g1s1[:, i], g1s2[:, i], g1s3[:, i], g2s1[:, i], g2s2[:, i], g2s3[:, i], concs[1, i]) for i=1:8]
+plot(pl..., size=(1000,700))
 ```
 
 ### Plot the percentage
