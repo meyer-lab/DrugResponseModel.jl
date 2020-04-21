@@ -54,7 +54,7 @@ export setup_data,
     predict,
     find_mean_std_simul,
     savitzky_golay_filter,
-    optim_all
+    optim_all,
     heatmap_combination
 
 end # module
