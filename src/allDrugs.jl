@@ -222,9 +222,20 @@ end
 
 function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3})
     f(hillParams) = residHillAll(hillParams, concs, g1, g2)
-    g!(G, hillParams) = ForwardDiff.gradient!(G, f, hillParams)
 
-    low = vcat(ones(32) * 1.0e-9, 0.4, 3, 15, 0, 0)
+    function g!(G, hillParams)
+        ForwardDiff.gradient!(G, f, hillParams)
+        costCenter = f(hillParams)
+
+        # Handle the integer-valued parameters
+        for ii = 34:37
+            pp = copy(hillParams)
+            pp[ii] += 1.0
+            G[ii] = f(pp) - costCenter
+        end
+    end
+
+    low = vcat(ones(32) * 1.0e-9, 0.4, 3, 3, 0, 0)
     hP = [1000.0, 10.0, 7.0, 3.0, 3.0, 3.0]
     high = vcat(hP, hP, hP, hP, hP, 3.0, 3.0, 0.6, 10, 25, 50, 50)
 
@@ -267,8 +278,9 @@ function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Fl
         49.8,
         12.5,
     ]
-    results =
-        optimize(f, g!, low, high, initial_x, Fminbox(GradientDescent()), Optim.Options(outer_iterations = 2, show_trace = true, iterations = 3))
+  
+    options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = 3)
+    results = optimize(f, g!, low, high, initial_x, Fminbox(GradientDescent()), options)
 
     return Optim.minimizer(results)
 end
