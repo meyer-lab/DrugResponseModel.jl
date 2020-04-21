@@ -9,29 +9,19 @@ using Plots, Statistics
 concs, populations1, g1s1, g2s1 = load(189, 1);
 concs, populations2, g1s2, g2s2 = load(189, 2);
 concs, populations3, g1s3, g2s3 = load(189, 3);
-conc_l, pop, g2, g1 = setup_data("Lapatinib1")
 g0 = g1s1[1,1,1]+g2s1[1,1,1];
 
-# find mean and std of data
+# costt, ps1 = optimize_hill(concs[:, 1], g1s1[:, :, 1], g2s1[:, :, 1], maxstep = 5E4)
+ps1 = [42.9991, 0.322169, 0.0216808, 1.18987, 0.40185, 0.624496, 0.00761389, 0.0203664, 0.532923, 8.95115, 15.308, 0.212071, 2.51641];
 
+ps2 =  [37.0596, 0.448348, 0.0667311, 1.20681, 0.763462, 1.02403, 0.00923001, 0.010702, 0.530061, 9.60726, 21.6465, 0.290888, 2.71295];
 
+ps3 = [59.3718, 0.414454, 4.10103e-5, 0.790687, 0.569625, 1.05558, 0.00888337, 0.0158748, 0.528184, 9.75081, 20.3636, 0.282688, 2.13722];
 
-# costt, ps = optimize_hill(conc[1, :], g1s[:, :, 1], g2[:, :, 1], maxstep = 5E4)
-ps = ps1 = [66.24663072209786, 0.5367215735503916, 0.10925455859504071, 1.1888141935180816, 1.261611554581465, 2.2923953465431874, 0.012999087686638223, 0.04716329399962079, 0.5111779375803134, 14.746640041992908, 47.89248160541411, 1.5595068834286558, 1.7457653265339144]
-
-ps2 =  [40.2863762446942, 2.552443805268386, 0.2547328721481544, 1.1072205150238785, 0.362190556451814, 0.5389155992807828, 0.008860159161054988, 0.015643316503769825, 0.5473504413590508, 50.53765510441097, 10.831424646149785, 0.005476723200971964, 19.712222920154787]
-
-ps3 = [59.78303451440187, 2.6999194942192415, 0.0006384091103920911, 0.8108626839375536, 0.31168753221261974, 0.6609224933932639, 0.008619533892157808, 0.021702588438997264, 0.5461074708258699, 58.35167574239431, 11.130394681734316, 0.16276005961420112, 3.0269229688542527]
-
-effects = effects1 = getODEparams(ps1, concs[1, :])
-effects2 = getODEparams(ps2, concs[1, :])
-effects3 = getODEparams(ps3, conc[1, :])
-
-g0 = g1s1[1,1,1] + g2s1[1,1,1]
-T = 170
+effects1 = getODEparams(ps1, concs[:, 1]);
+effects2 = getODEparams(ps2, concs[:, 1]);
+effects3 = getODEparams(ps3, concs[:, 1]);
 ```
-
-### Find mean and std for the data
 
 ```julia; echo=false
 
@@ -52,12 +42,8 @@ function fordata(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3)
     return meanG1, meanG2, stdG1, stdG2
 end
 
-function find_mean_std(ps1, ps2, ps3, conc, g0)
+function find_simulation(p1, p2, p3, concs1, g0)
     t = LinRange(0.0, 95.0, 189)
-    p1 = getODEparams(ps1, concs)
-    p2 = getODEparams(ps2, concs)
-    p3 = getODEparams(ps3, concs)
-    j = 1 # drug number
     G1_1 = ones(189, 8)
     G2_1 = ones(189, 8)
     G1_2 = ones(189, 8)
@@ -76,196 +62,27 @@ end
 
 function plot3(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3, meang1, meang2, stdg1, stdg2, conc)
     time = LinRange(0.0, 95.0, 189)
-    plot(time, meang1; ribbon = stdg1, color=1, label = "", xlabel = "time [hr]", ylabel = "cell number", alpha = 0.05, string(conc, " nM"))
-    plot!(time, G1_1, label="G1", color = 1)
-    plot!(time, G1_2, label="", color = 1)
-    plot!(time, G1_3, label="", color = 1)
-    plot!(time, meang2; ribbon = stdg2, color=2, label = "", alpha = 0.05)
-    plot!(time, G2_1, label="G2", color = 2)
-    plot!(time, G2_2, label="", color = 2)
-    plot!(time, G2_3, label="", color = 2)
+    plot(time, meang1; ribbon = stdg1, color=6, label = "", xlabel = "time [hr]", ylabel = "cell number", alpha = 0.05, title = string(conc, " nM"))
+    plot!(time, G1_1, label="G1", color = 6)
+    plot!(time, G1_2, label="", color = 6)
+    plot!(time, G1_3, label="", color = 6)
+    plot!(time, meang2; ribbon = stdg2, color=7, label = "", alpha = 0.05)
+    plot!(time, G2_1, label="G2", color = 7)
+    plot!(time, G2_2, label="", color = 7)
+    plot!(time, G2_3, label="", color = 7)
     ylims!((0.0, 45))
 end
 
 
-G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = find_mean_std(ps1, ps2, ps3, concs[1,:], g0) # for lapatinib
+G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = find_simulation(effects1, effects2, effects3, concs[:, 1], g0) # for lapatinib
 
 meanG1, meanG2, stdG1, stdG2 = fordata(g1s1[:, :, 1], g1s2[:, :, 1], g1s3[:, :, 1], g2s1[:, :, 1], g2s2[:, :, 1], g2s3[:, :, 1])
 ```
 
-
+## Lapatinib
 ### Plotting the time-series simulations compared to the actual data for three replicates.
 
 ```julia; echo=false
-pl = [plot2(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], g1s1[:, i], g1s2[:, i], g1s3[:, i], g2s1[:, i], g2s2[:, i], g2s3[:, i], concs[1, i]) for i=1:8]
+pl = [plot3(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 1]) for i=1:8]
 plot(pl..., size=(1000,700))
-```
-
-### Plot the percentage
-
-```julia; echo=false
-ODEplot_allPerc(effects, g1, g2, pop, conc_l)
-```
-
-### Plot the parameters over concentration; these are known as the drug effects
-
-```julia; echo=false
-std = zeros(4,8)
-plot_parameters(conc_l, effects, std)
-```
-
-### Sensitivity analysis:
-
-```julia; echo=false
-result, paramRanges = allSensitivity(ps, conc_l, g1, g2)
-pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], ps[i], i) for i=1:11]
-plot(pl...)
-plot!(size=(1200, 800))
-```
-
-## Doxorubicin
-
-```julia; echo=false
-conc_l, pop, g2, g1 = setup_data("Doxorubicin1")
-# costt, ps = optimize_hill(conc_l, g1, g2, maxstep = 4E4)
-ps = [134.546, 0.100021, 0.0385798, 0.814924, 2.93535, 0.229024, 0.0875672, 0.168648, 0.631369, 2.37796, 88.8261, 4.03489, 2.42543]
-effects = getODEparams(ps, conc_l)
-g0 = g1[1] + g2[1]
-```
-
-### Plotting the time-series simulations compared to the actual data.
-
-```julia; echo=false
-ODEplot_all(effects, g1, g2, pop, conc_l)
-```
-
-### Plot the percentage
-
-```julia; echo=false
-ODEplot_allPerc(effects, g1, g2, pop, conc_l)
-```
-
-### Plot the parameters over concentration; these are known as the drug effects
-
-```julia; echo=false
-plot_parameters(conc_l, effects, std)
-```
-
-### Sensitivity analysis:
-
-```julia; echo=false
-result, paramRanges = allSensitivity(ps, conc_l, g1, g2)
-pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], ps[i], i) for i=1:11]
-plot(pl...)
-plot!(size=(1200, 800))
-```
-
-## Gemcitabine
-
-```julia; echo=false
-conc_l, pop, g2, g1 = setup_data("Gemcitabine1")
-# costt, ps = optimize_hill(conc_l, g1, g2, maxstep = 4E4)
-ps = [10.8326, 1.00369, 1.03549, 2.19808, 0.444854, 1.17305, 0.00923942, 0.122813, 0.483379, 20.7231, 15.4483, 6.60142, 4.18506]
-effects = getODEparams(ps, conc_l)
-g0 = g1[1] + g2[1]
-```
-
-### Plotting the time-series simulations compared to the actual data.
-
-```julia; echo=false
-ODEplot_all(effects, g1, g2, pop, conc_l)
-```
-
-### Plot the percentage
-
-```julia; echo=false
-ODEplot_allPerc(effects, g1, g2, pop, conc_l)
-```
-
-### Plot the parameters over concentration; these are known as the drug effects
-
-```julia; echo=false
-plot_parameters(conc_l, effects, std)
-```
-
-### Sensitivity analysis:
-
-```julia; echo=false
-result, paramRanges = allSensitivity(ps, conc_l, g1, g2)
-pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], ps[i], i) for i=1:11]
-plot(pl...)
-plot!(size=(1200, 800))
-```
-
-## Paclitaxel
-
-```julia; echo=false
-conc_l, pop, g2, g1 = setup_data("Paclitaxel1")
-# costt, ps = optimize_hill(conc_l, g1, g2, maxstep = 4E4)
-ps = [3.62825, 2.43233, 0.521699, 2.58588, 2.34811, 0.818595, 0.0894338, 0.0482111, 0.469062, 47.4889, 69.1083, 3.90522, 1.12117]
-effects = getODEparams(ps, conc_l)
-g0 = g1[1] + g2[1]
-```
-
-### Plotting the time-series simulations compared to the actual data.
-
-```julia; echo=false
-ODEplot_all(effects, g1, g2, pop, conc_l)
-```
-
-### Plot the percentage
-
-```julia; echo=false
-ODEplot_allPerc(effects, g1, g2, pop, conc_l)
-```
-
-### Plot the parameters over concentration; these are known as the drug effects
-
-```julia; echo=false
-plot_parameters(conc_l, effects, std)
-```
-
-### Sensitivity analysis:
-
-```julia; echo=false
-result, paramRanges = allSensitivity(ps, conc_l, g1, g2)
-pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], ps[i], i) for i=1:11]
-plot(pl...)
-plot!(size=(1200, 800))
-```
-## Palbociclib
-
-```julia; echo=false
-conc_l, pop, g2, g1 = setup_data("Palbociclib1")
-# costt, ps = optimize_hill(conc_l, g1, g2, maxstep = 4E4)
-ps = [39.8303, 0.754318, 0.243148, 0.840258, 0.294116, 0.645192, 0.0178644, 0.0515018, 0.547365, 16.831, 10.2171, 49.4393, 2.87593]
-effects = getODEparams(ps, conc_l)
-g0 = g1[1] + g2[1]
-```
-
-### Plotting the time-series simulations compared to the actual data.
-
-```julia; echo=false
-ODEplot_all(effects, g1, g2, pop, conc_l)
-```
-
-### Plot the percentage
-
-```julia; echo=false
-ODEplot_allPerc(effects, g1, g2, pop, conc_l)
-```
-
-### Plot the parameters over concentration; these are known as the drug effects
-
-```julia; echo=false
-plot_parameters(conc_l, effects, std)
-```
-
-### Sensitivity analysis:
-
-```julia; echo=false
-result, paramRanges = allSensitivity(ps, conc_l, g1, g2)
-pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], ps[i], i) for i=1:11]
-plot(pl...)
-plot!(size=(1200, 800))
 ```
