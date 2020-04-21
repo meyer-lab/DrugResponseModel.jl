@@ -3,7 +3,7 @@
 """
 
 """ Make the transition matrix. """
-function ODEjac(p::Vector{T}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::SparseMatrixCSC{T, Int64} where T
+function ODEjac(p::Vector{T}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::SparseMatrixCSC{T, Int64} where {T}
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
     if nD1 == 0
         D1 = T[]
@@ -44,7 +44,7 @@ end
 
 
 """ Predicts the model given a set of parametrs. """
-function predict(p::Vector{T}, g_0, t) where T
+function predict(p::Vector{T}, g_0, t) where {T}
     @assert length(p) == 9
     # Convert parameters to phase numbers
     nG1 = Int(floor(p[6]))
