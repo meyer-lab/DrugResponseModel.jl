@@ -74,7 +74,7 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
         1e-9,
         0.45,
         3,
-        15,
+        10,
         0,
         0,
     )
@@ -93,8 +93,8 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
         3.0,
         3.0,
         0.55,
-        10,
-        25,
+        50,
+        70,
         50,
         50,
     )
@@ -112,7 +112,7 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
 end
 
 
-function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3})
+function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}, initial_x)
     f(hillParams) = residHillAll(hillParams, concs, g1, g2)
 
     function g!(G, hillParams)
@@ -127,14 +127,11 @@ function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Fl
         end
     end
 
-    low = vcat(ones(32) * 1.0e-9, 0.4, 3, 3, 0, 0)
+    low = vcat(ones(32) * 1.0e-9, 0.4, 3, 10, 0, 0)
     hP = [1000.0, 10.0, 7.0, 3.0, 3.0, 3.0]
-    high = vcat(hP, hP, hP, hP, hP, 3.0, 3.0, 0.6, 10, 25, 50, 50)
-
-    initial_x = [481.136, 1.30481, 3.00053, 2.29917, 0.994507, 0.277225, 499.229, 1.09841, 3.14976, 0.988348, 1.79487, 1.83926, 97.848, 1.34234, 3.00102, 2.27548, 0.351486, 0.784008, 3.18769, 9.93378, 3.02063, 1.08641, 0.712448, 0.286206, 498.767, 1.16134, 3.00026, 2.29666, 0.894815, 0.251544, 0.405968, 0.440474, 0.525493, 9.12146, 15.0095, 49.6384, 9.63197];
-
+    high = vcat(hP, hP, hP, hP, hP, 3.0, 3.0, 0.6, 50, 70, 50, 50)
   
-    options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = 30)
+    options = Optim.Options(show_trace = true)
     results = optimize(f, g!, low, high, initial_x, Fminbox(GradientDescent()), options)
 
     return Optim.minimizer(results)

@@ -23,25 +23,25 @@ effects3 = getODEparams(ps3, concs[:, 1]);
 ```
 
 ```julia; echo=false
-G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = predict_replicates(effects1, effects2, effects3, concs[:, 1], g0); # for lapatinib
+G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, concs[:, 1], g0); # for lapatinib
 
-meanG1, meanG2, stdG1, stdG2 = mean_std_data(g1s1[:, :, 1], g1s2[:, :, 1], g1s3[:, :, 1], g2s1[:, :, 1], g2s2[:, :, 1], g2s3[:, :, 1]);
+meanG1, meanG2, stdG1, stdG2 = DrugResponseModel.mean_std_data(g1s1[:, :, 1], g1s2[:, :, 1], g1s3[:, :, 1], g2s1[:, :, 1], g2s2[:, :, 1], g2s3[:, :, 1]);
 ```
 
 ## Lapatinib
 ### Plotting the time-series simulations compared to the actual data for three replicates.
 
 ```julia; echo=false
-pl = [plot_reps_ribbon(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 1], false) for i=1:7]
-p2 = plot_reps_ribbon(G1_1[:, 8], G1_2[:, 8], G1_3[:, 8], G2_1[:, 8], G2_2[:, 8], G2_3[:, 8], meanG1[:, 8], meanG2[:, 8], stdG1[:, 8], stdG2[:, 8], concs[8, 1], true)
+pl = [DrugResponseModel.plot_reps_ribbon(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 1], false) for i=1:7]
+p2 = DrugResponseModel.plot_reps_ribbon(G1_1[:, 8], G1_2[:, 8], G1_3[:, 8], G2_1[:, 8], G2_2[:, 8], G2_3[:, 8], meanG1[:, 8], meanG2[:, 8], stdG1[:, 8], stdG2[:, 8], concs[8, 1], true)
 plot(pl..., p2, size=(1000,700))
 ```
 
 ### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
-stdn = zeros(4,8)
-plot_parameters(concs[:,1], effects1, stdn)
+meann, stdd = mean_std_params(effects1, effects2, effects3)
+DrugResponseModel.plot_parameters(concs[:,1], meann, stdd)
 ```
 
 ### Sensitivity analysis
@@ -68,19 +68,20 @@ effects3 = getODEparams(p3, concs[:, 2]);
 ```
 
 ```julia; echo=false
-G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = predict_replicates(effects1, effects2, effects3, concs[:, 2], g0); # for doxorubicin
-meanG1, meanG2, stdG1, stdG2 = mean_std_data(g1s1[:, :, 2], g1s2[:, :, 2], g1s3[:, :, 2], g2s1[:, :, 2], g2s2[:, :, 2], g2s3[:, :, 2]);
+G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, concs[:, 2], g0); # for doxorubicin
+meanG1, meanG2, stdG1, stdG2 = DrugResponseModel.mean_std_data(g1s1[:, :, 2], g1s2[:, :, 2], g1s3[:, :, 2], g2s1[:, :, 2], g2s2[:, :, 2], g2s3[:, :, 2]);
 ```
 
 ```julia; echo=false
-pl = [plot_reps_ribbon(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 2], true) for i=1:8]
+pl = [DrugResponseModel.plot_reps_ribbon(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 2], true) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
 ### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
-plot_parameters(concs[:,2], effects1, stdn)
+meann, stdd = DrugResponseModel.mean_std_params(effects1, effects2, effects3)
+DrugResponseModel.plot_parameters(concs[:,2], meann, stdd)
 ```
 
 ### Sensitivity analysis
@@ -107,19 +108,20 @@ effects3 = getODEparams(p3, concs[:, 3]);
 ```
 
 ```julia; echo=false
-G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = predict_replicates(effects1, effects2, effects3, concs[:, 3], g0); # for Gemcitabine
-meanG1, meanG2, stdG1, stdG2 = mean_std_data(g1s1[:, :, 3], g1s2[:, :, 3], g1s3[:, :, 3], g2s1[:, :, 3], g2s2[:, :, 3], g2s3[:, :, 3]);
+G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, concs[:, 3], g0); # for Gemcitabine
+meanG1, meanG2, stdG1, stdG2 = DrugResponseModel.mean_std_data(g1s1[:, :, 3], g1s2[:, :, 3], g1s3[:, :, 3], g2s1[:, :, 3], g2s2[:, :, 3], g2s3[:, :, 3]);
 ```
 
 ```julia; echo=false
-pl = [plot_reps_ribbon(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 3], true) for i=1:8]
+pl = [DrugResponseModel.plot_reps_ribbon(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 3], true) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
 ### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
-plot_parameters(concs[:,3], effects1, stdn)
+meann, stdd = DrugResponseModel.mean_std_params(effects1, effects2, effects3)
+DrugResponseModel.plot_parameters(concs[:,3], meann, stdd)
 ```
 
 ### Sensitivity analysis
@@ -146,19 +148,20 @@ effects3 = getODEparams(p3, concs[:, 4]);
 ```
 
 ```julia; echo=false
-G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = predict_replicates(effects1, effects2, effects3, concs[:, 4], g0); # for Paclitaxel
-meanG1, meanG2, stdG1, stdG2 = mean_std_data(g1s1[:, :, 4], g1s2[:, :, 4], g1s3[:, :, 4], g2s1[:, :, 4], g2s2[:, :, 4], g2s3[:, :, 4]);
+G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, concs[:, 4], g0); # for Paclitaxel
+meanG1, meanG2, stdG1, stdG2 = DrugResponseModel.mean_std_data(g1s1[:, :, 4], g1s2[:, :, 4], g1s3[:, :, 4], g2s1[:, :, 4], g2s2[:, :, 4], g2s3[:, :, 4]);
 ```
 
 ```julia; echo=false
-pl = [plot_reps_ribbon(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 4], true) for i=1:8]
+pl = [DrugResponseModel.plot_reps_ribbon(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 4], true) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
 ### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
-plot_parameters(concs[:,4], effects1, stdn)
+meann, stdd = DrugResponseModel.mean_std_params(effects1, effects2, effects3)
+DrugResponseModel.plot_parameters(concs[:,4], meann, stdd)
 ```
 
 ### Sensitivity analysis
@@ -185,19 +188,20 @@ effects3 = getODEparams(p3, concs[:, 5]);
 ```
 
 ```julia; echo=false
-G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = predict_replicates(effects1, effects2, effects3, concs[:, 2], g0); # for Palbociclib
-meanG1, meanG2, stdG1, stdG2 = mean_std_data(g1s1[:, :, 5], g1s2[:, :, 5], g1s3[:, :, 5], g2s1[:, :, 5], g2s2[:, :, 5], g2s3[:, :, 5]);
+G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, concs[:, 2], g0); # for Palbociclib
+meanG1, meanG2, stdG1, stdG2 = DrugResponseModel.mean_std_data(g1s1[:, :, 5], g1s2[:, :, 5], g1s3[:, :, 5], g2s1[:, :, 5], g2s2[:, :, 5], g2s3[:, :, 5]);
 ```
 
 ```julia; echo=false
-pl = [plot_reps_ribbon(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 5], true) for i=1:8]
+pl = [DrugResponseModel.plot_reps_ribbon(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 5], true) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
 ### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
-plot_parameters(concs[:,5], effects1, stdn)
+meann, stdd = DrugResponseModel.mean_std_params(effects1, effects2, effects3)
+DrugResponseModel.plot_parameters(concs[:,5], meann, stdd)
 ```
 
 ### Sensitivity analysis

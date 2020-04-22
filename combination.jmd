@@ -38,59 +38,59 @@ The heatmap shows the normalized absolute difference between the results from ou
 ## Lapatinib and doxorubicin
 
 ```julia; echo=false
-heatmap_combination(lapat, dox, LD', 1, 2, "lapatinib", "doxorubicin", effs, concs, g0)
+DrugResponseModel.heatmap_combination(lapat, dox, LD', 1, 2, "lapatinib", "doxorubicin", effs, concs, g0)
 ```
 
 ## Lapatinib and gemcitabine
 
 ```julia; echo=false
-heatmap_combination(lapat, gemc, LG', 1, 3, "lapatinib", "gemcitabine", effs, concs, g0)
+DrugResponseModel.heatmap_combination(lapat, gemc, LG', 1, 3, "lapatinib", "gemcitabine", effs, concs, g0)
 ```
 
 ## Lapatinib and paclitaxel
 
 ```julia; echo=false
-heatmap_combination(lapat, pac, LP', 1, 4, "lapatinib", "paclitaxel", effs, concs, g0)
+DrugResponseModel.heatmap_combination(lapat, pac, LP', 1, 4, "lapatinib", "paclitaxel", effs, concs, g0)
 ```
 
 ## Lapatinib and palbociclib
 
 ```julia; echo=false
-heatmap_combination(lapat, pal, LPA', 1, 5, "lapatinib", "palbociclib", effs, concs, g0)
+DrugResponseModel.heatmap_combination(lapat, pal, LPA', 1, 5, "lapatinib", "palbociclib", effs, concs, g0)
 ```
 
 ## Doxorubicin and gemcitabine
 
 ```julia; echo=false
-heatmap_combination(dox, gemc, DG', 2, 3, "doxorubicin", "gemcitabine", effs, concs, g0)
+DrugResponseModel.heatmap_combination(dox, gemc, DG', 2, 3, "doxorubicin", "gemcitabine", effs, concs, g0)
 ```
 
 ## Doxorubicin and paclitaxel
 
 ```julia; echo=false
-heatmap_combination(dox, pac, DP', 2, 4, "doxorubicin", "paclitaxel", effs, concs, g0)
+DrugResponseModel.heatmap_combination(dox, pac, DP', 2, 4, "doxorubicin", "paclitaxel", effs, concs, g0)
 ```
 
 ## Doxorubicin and palbociclib
 
 ```julia; echo=false
-heatmap_combination(dox, pac, DPA', 2, 5, "doxorubicin", "palbociclib", effs, concs, g0)
+DrugResponseModel.heatmap_combination(dox, pac, DPA', 2, 5, "doxorubicin", "palbociclib", effs, concs, g0)
 ```
 
 ## Gemcitabine and paclitaxel
 
 ```julia; echo=false
-heatmap_combination(gemc, pac, GP', 3, 4, "gemcitabine", "paclitaxel", effs, concs, g0)
+DrugResponseModel.heatmap_combination(gemc, pac, GP', 3, 4, "gemcitabine", "paclitaxel", effs, concs, g0)
 ```
 
 ## Gemcitabine and palbociclib
 
 ```julia; echo=false
-heatmap_combination(gemc, pal, GPA', 3, 5, "gemcitabine", "palbociclib", effs, concs, g0)
+DrugResponseModel.heatmap_combination(gemc, pal, GPA', 3, 5, "gemcitabine", "palbociclib", effs, concs, g0)
 ```
 
 ## Paclitaxel and palbociclib
 
 ```julia; echo=false
-heatmap_combination(pac, pal, PPA', 4, 5, "paclitaxel", "palbociclib", effs, concs, g0)
+DrugResponseModel.heatmap_combination(pac, pal, PPA', 4, 5, "paclitaxel", "palbociclib", effs, concs, g0)
 ```
