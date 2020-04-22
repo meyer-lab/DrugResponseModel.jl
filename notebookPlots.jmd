@@ -83,30 +83,28 @@ meanG1, meanG2, stdG1, stdG2 = fordata(g1s1[:, :, 1], g1s2[:, :, 1], g1s3[:, :, 
 ### Plotting the time-series simulations compared to the actual data for three replicates.
 
 ```julia; echo=false
-function plot4(G1_1, G2_1, meang1, meang2, stdg1, stdg2, conc, i, j)
-    time = LinRange(0.0, 95.0, 189)
-    title = string(conc, " nM")
-    plot(time, meang1; ribbon = stdg1, color=i, label = "", xlabel = "time [hr]", ylabel = "cell number", alpha = 0.05)
-    plot!(time, G1_1, label="G1", color = i)
-    plot!(time, meang2; ribbon = stdg2, color=j, label = "", alpha = 0.05)
-    plot!(time, G2_1, label="G2", color = j)
-    plot!(annotation = [(45, 45, text(title, 8))])
-    ylims!((0.0, 50))
-end
-
-p11 = plot4(G1_2[:, 1], G2_2[:, 1], meanG1[:, 1], meanG2[:, 1], stdG1[:, 1], stdG2[:, 1], concs[1, 1], 3, 4);
-p21 = plot4(G1_2[:, 5], G2_2[:, 5], meanG1[:, 5], meanG2[:, 5], stdG1[:, 5], stdG2[:, 5], concs[5, 1], 5, 6);
-p31 = plot4(G1_2[:, 8], G2_2[:, 8], meanG1[:, 8], meanG2[:, 8], stdG1[:, 8], stdG2[:, 8], concs[8, 1], 7, 8);
-plot(p11)
-plot!(p21)
-plot!(p31)
+time = LinRange(0.0, 95.0, 189)
+title = string(conc, " nM")
+plot(time, meang1[:, 1]; ribbon = stdg1[:, 1], color=3, label = "", xlabel = "time [hr]", ylabel = "cell number", alpha = 0.05)
+plot!(time, G1_1[:, 1], label="G1 control", color = 3)
+plot!(time, meang2[:, 1]; ribbon = stdg2[:, 1], color=4, label = "", alpha = 0.05)
+plot!(time, G2_1[:, 1], label="G2 control", color = 4)
+plot(time, meang1[:, 5]; ribbon = stdg1[:, 5], color=5, label = "", alpha = 0.05)
+plot!(time, G1_1[:, 5], label="G1 50nM", color = 5)
+plot!(time, meang2[:, 5]; ribbon = stdg2[:,5], color=6, label = "", alpha = 0.05)
+plot!(time, G2_1[:, 5], label="G2 50nM", color = 6)
+plot(time, meang1[:, 8]; ribbon = stdg1[:, 8], color=7, label = "", alpha = 0.05)
+plot!(time, G1_1[:, 8], label="G1 500nM", color = 7)
+plot!(time, meang2[:, 8]; ribbon = stdg2[:,8], color=8, label = "", alpha = 0.05)
+plot!(time, G2_1[:, 8], label="G2 500nM", color = 8)
+ylims!((0.0, 50))
 plot!(size=(1000,700))
 ```
 
 ```julia; echo=false
 pl = [plot3(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 1], false) for i=1:7]
 p2 = plot3(G1_1[:, 8], G1_2[:, 8], G1_3[:, 8], G2_1[:, 8], G2_2[:, 8], G2_3[:, 8], meanG1[:, 8], meanG2[:, 8], stdG1[:, 8], stdG2[:, 8], concs[8, 1], true)
-plot(pl..., size=(1000,700))
+plot(pl..., p2, size=(1000,700))
 ```
 
 ### Plot the parameters over concentration; these are known as the drug effects
@@ -142,7 +140,7 @@ effects3 = getODEparams(p3, concs[:, 2]);
 ```julia; echo=false
 G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = find_simulation(effects1, effects2, effects3, concs[:, 2], g0) # for doxorubicin
 meanG1, meanG2, stdG1, stdG2 = fordata(g1s1[:, :, 2], g1s2[:, :, 2], g1s3[:, :, 2], g2s1[:, :, 2], g2s2[:, :, 2], g2s3[:, :, 2])
-
+```
 
 ```julia; echo=false
 pl = [plot3(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 2], true) for i=1:8]
@@ -181,7 +179,7 @@ effects3 = getODEparams(p3, concs[:, 3]);
 ```julia; echo=false
 G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = find_simulation(effects1, effects2, effects3, concs[:, 3], g0) # for Gemcitabine
 meanG1, meanG2, stdG1, stdG2 = fordata(g1s1[:, :, 3], g1s2[:, :, 3], g1s3[:, :, 3], g2s1[:, :, 3], g2s2[:, :, 3], g2s3[:, :, 3])
-
+```
 
 ```julia; echo=false
 pl = [plot3(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 3], true) for i=1:8]
@@ -220,7 +218,7 @@ effects3 = getODEparams(p3, concs[:, 4]);
 ```julia; echo=false
 G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = find_simulation(effects1, effects2, effects3, concs[:, 4], g0) # for Paclitaxel
 meanG1, meanG2, stdG1, stdG2 = fordata(g1s1[:, :, 4], g1s2[:, :, 4], g1s3[:, :, 4], g2s1[:, :, 4], g2s2[:, :, 4], g2s3[:, :, 4])
-
+```
 
 ```julia; echo=false
 pl = [plot3(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 4], true) for i=1:8]
@@ -259,7 +257,7 @@ effects3 = getODEparams(p3, concs[:, 5]);
 ```julia; echo=false
 G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = find_simulation(effects1, effects2, effects3, concs[:, 2], g0) # for Palbociclib
 meanG1, meanG2, stdG1, stdG2 = fordata(g1s1[:, :, 5], g1s2[:, :, 5], g1s3[:, :, 5], g2s1[:, :, 5], g2s2[:, :, 5], g2s3[:, :, 5])
-
+```
 
 ```julia; echo=false
 pl = [plot3(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 5], true) for i=1:8]
