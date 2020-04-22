@@ -278,7 +278,7 @@ function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Fl
         49.8,
         12.5,
     ]
-  
+
     options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = 3)
     results = optimize(f, g!, low, high, initial_x, Fminbox(GradientDescent()), options)
 
