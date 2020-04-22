@@ -111,114 +111,6 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
     return best_fitness(results_ode), best_candidate(results_ode)
 end
 
-""" This function calculates the mean and std of the data for the three replicates. """
-function find_mean_std_gs(g1s1, g1s2, g1s3, g2s1, g2s2, g2s3)
-
-    meang1 = ones(189, 8, 5)
-    meang2 = ones(189, 8, 5)
-    stdg1 = ones(189, 8, 5)
-    stdg2 = ones(189, 8, 5)
-
-    for h = 1:5
-        for j = 1:8
-            for k = 1:189
-                meang1[k, j, h] = mean([g1s1[k, j, h], g1s2[k, j, h], g1s3[k, j, h]])
-                meang2[k, j, h] = mean([g2s1[k, j, h], g2s2[k, j, h], g2s3[k, j, h]])
-                stdg1[k, j, h] = std([g1s1[k, j, h], g1s2[k, j, h], g1s3[k, j, h]])
-                stdg2[k, j, h] = std([g2s1[k, j, h], g2s2[k, j, h], g2s3[k, j, h]])
-            end
-        end
-    end
-
-    return meang1, meang2, stdg1, stdg2
-end
-
-function find_mean_std_simul(rep1, rep2, rep3, concs, g0)
-    t = LinRange(0.0, 95.0, 189)
-    p1 = getODEparamsAll(rep1, concs)
-    p2 = getODEparamsAll(rep2, concs)
-    p3 = getODEparamsAll(rep3, concs)
-    j = 1 # drug number
-    G1_1 = ones(189, 8, 5)
-    G2_1 = ones(189, 8, 5)
-    G1_2 = ones(189, 8, 5)
-    G2_2 = ones(189, 8, 5)
-    G1_3 = ones(189, 8, 5)
-    G2_3 = ones(189, 8, 5)
-
-    for j = 1:5
-        for i = 1:8 # concentration number
-            G1_1[:, i, j], G2_1[:, i, j], _ = predict(p1[:, i, j], g0, t)
-            G1_2[:, i, j], G2_2[:, i, j], _ = predict(p2[:, i, j], g0, t)
-            G1_3[:, i, j], G2_3[:, i, j], _ = predict(p3[:, i, j], g0, t)
-        end
-    end
-    meanG1, meanG2, stdG1, stdG2 = find_mean_std_gs(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3)
-    return meanG1, meanG2, stdG1, stdG2, G1_1, G2_1, G1_2, G2_2, G1_3, G2_3
-end
-
-""" This function takes in the estimated Hill params for the 3 replicates, and outputs average and standard deviations of ODE model parameters"""
-function avgRepsParams(rep1, rep2, rep3, concs)
-    effs1 = getODEparamsAll(rep1, concs)
-    effs2 = getODEparamsAll(rep2, concs)
-    effs3 = getODEparamsAll(rep3, concs)
-    # each of the following are 9x8 matrices
-    lapat1 = effs1[:, :, 1]
-    dox1 = effs1[:, :, 2]
-    gemc1 = effs1[:, :, 3]
-    pac1 = effs1[:, :, 4]
-    pal1 = effs1[:, :, 5]
-
-    lapat2 = effs2[:, :, 1]
-    dox2 = effs2[:, :, 2]
-    gemc2 = effs2[:, :, 3]
-    pac2 = effs2[:, :, 4]
-    pal2 = effs2[:, :, 5]
-
-    lapat3 = effs3[:, :, 1]
-    dox3 = effs3[:, :, 2]
-    gemc3 = effs3[:, :, 3]
-    pac3 = effs3[:, :, 4]
-    pal3 = effs3[:, :, 5]
-
-    lapat = ones(9, 8)
-    dox = ones(9, 8)
-    gemc = ones(9, 8)
-    pac = ones(9, 8)
-    pal = ones(9, 8)
-    lapatstd = ones(9, 8)
-    doxstd = ones(9, 8)
-    gemcstd = ones(9, 8)
-    pacstd = ones(9, 8)
-    palstd = ones(9, 8)
-
-    for i = 1:9
-        lapat[i, :] .= mean([lapat1[i, :], lapat2[i, :], lapat[i, :]])
-        dox[i, :] .= mean([dox1[i, :], dox2[i, :], dox3[i, :]])
-        gemc[i, :] .= mean([gemc1[i, :], gemc2[i, :], gemc3[i, :]])
-        pac[i, :] .= mean([pac1[i, :], pac2[i, :], pac3[i, :]])
-        pal[i, :] .= mean([pal1[i, :], pal2[i, :], pal3[i, :]])
-
-        lapatstd[i, :] .= std([lapat1[i, :], lapat2[i, :], lapat[i, :]])
-        doxstd[i, :] .= std([dox1[i, :], dox2[i, :], dox3[i, :]])
-        gemcstd[i, :] .= std([gemc1[i, :], gemc2[i, :], gemc3[i, :]])
-        pacstd[i, :] .= std([pac1[i, :], pac2[i, :], pac3[i, :]])
-        palstd[i, :] .= std([pal1[i, :], pal2[i, :], pal3[i, :]])
-    end
-    avgs = ones(9, 8, 5)
-    stds = ones(9, 8, 5)
-    avgs[:, :, 1] = lapat
-    avgs[:, :, 2] = dox
-    avgs[:, :, 3] = gemc
-    avgs[:, :, 4] = pac
-    avgs[:, :, 5] = pal
-    stds[:, :, 1] = lapatstd
-    stds[:, :, 2] = doxstd
-    stds[:, :, 3] = gemcstd
-    stds[:, :, 4] = pacstd
-    stds[:, :, 5] = palstd
-    return avgs, stds
-end
 
 function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3})
     f(hillParams) = residHillAll(hillParams, concs, g1, g2)
@@ -239,47 +131,10 @@ function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Fl
     hP = [1000.0, 10.0, 7.0, 3.0, 3.0, 3.0]
     high = vcat(hP, hP, hP, hP, hP, 3.0, 3.0, 0.6, 10, 25, 50, 50)
 
-    initial_x = [
-        488.5,
-        1.2,
-        3.0,
-        2.3,
-        1.1,
-        0.47,
-        499.8,
-        1.1,
-        3.0,
-        1.6,
-        2.1,
-        2.4,
-        99.9,
-        1.3,
-        3.0,
-        2.3,
-        0.42,
-        0.97,
-        3.8,
-        3.3,
-        3.0,
-        1.7,
-        0.89,
-        0.40,
-        499.5,
-        0.86,
-        3.0,
-        2.3,
-        0.94,
-        0.35,
-        0.37,
-        0.44,
-        0.55,
-        9.4,
-        15.4,
-        49.8,
-        12.5,
-    ]
+    initial_x = [481.136, 1.30481, 3.00053, 2.29917, 0.994507, 0.277225, 499.229, 1.09841, 3.14976, 0.988348, 1.79487, 1.83926, 97.848, 1.34234, 3.00102, 2.27548, 0.351486, 0.784008, 3.18769, 9.93378, 3.02063, 1.08641, 0.712448, 0.286206, 498.767, 1.16134, 3.00026, 2.29666, 0.894815, 0.251544, 0.405968, 0.440474, 0.525493, 9.12146, 15.0095, 49.6384, 9.63197];
+
   
-    options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = 3)
+    options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = 30)
     results = optimize(f, g!, low, high, initial_x, Fminbox(GradientDescent()), options)
 
     return Optim.minimizer(results)

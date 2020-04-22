@@ -56,6 +56,10 @@ export setup_data,
     savitzky_golay_filter,
     optim_all,
     heatmap_combination,
-    plot2
+    plot2,
+    mean_std_data,
+    mean_std_params,
+    predict_replicates,
+    plot_reps_ribbon
 
 end # module
