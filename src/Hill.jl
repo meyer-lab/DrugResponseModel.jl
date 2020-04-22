@@ -23,8 +23,8 @@ end
 function optimize_hill(conc_l::Vector, g1::Matrix, g2::Matrix; maxstep = 1E5)
     hillCost(hillParams) = residHill(hillParams, conc_l, g1, g2)
 
-    low = [minimum(conc_l), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.4, 3, 10, 0, 0]
-    high = [maximum(conc_l), 3.0, 3.0, 10.0, 3.0, 3.0, 1.0, 1.0, 0.6, 20, 35, 50, 50]
+    low = [minimum(conc_l), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.25, 3, 5, 0, 0]
+    high = [maximum(conc_l), 3.0, 3.0, 10.0, 3.0, 3.0, 1.0, 1.0, 0.75, 100, 10, 50, 50]
 
     results_ode = bboptimize(
         hillCost;

@@ -1,4 +1,3 @@
-
 This file contains all the drugs, separately.
 
 ```julia; echo=false
@@ -12,9 +11,9 @@ concs, populations3, g1s3, g2s3 = load(189, 3);
 g0 = g1s1[1,1,1]+g2s1[1,1,1];
 
 # costt, ps1 = optimize_hill(concs[:, 1], g1s1[:, :, 1], g2s1[:, :, 1], maxstep = 1E5)
-ps1 = [42.9991, 0.322169, 0.0216808, 1.18987, 0.40185, 0.624496, 0.00761389, 0.0203664, 0.532923, 8.95115, 15.308, 0.212071, 2.51641];
-ps2 =  [37.0596, 0.448348, 0.0667311, 1.20681, 0.763462, 1.02403, 0.00923001, 0.010702, 0.530061, 9.60726, 21.6465, 0.290888, 2.71295];
-ps3 = [59.3718, 0.414454, 4.10103e-5, 0.790687, 0.569625, 1.05558, 0.00888337, 0.0158748, 0.528184, 9.75081, 20.3636, 0.282688, 2.13722];
+ps1 = [43.1206, 0.449396, 0.0303203, 1.1369, 0.129443, 0.247119, 0.00670847, 0.0282733, 0.54388, 11.962, 5.79151, 0.50114, 2.88369];
+ps2 = [40.6872, 2.86227, 0.269785, 1.09613, 0.325584, 0.486925, 0.00875771, 0.0160585, 0.547325, 56.4052, 9.85358, 0.605113, 30.0822];
+ps3 = [58.0924, 2.9926, 5.86566e-5, 0.80401, 0.194562, 0.429042, 0.00835781, 0.0226857, 0.546504, 64.1723, 7.33377, 0.550209, 3.3554];
 ```
 
 ```julia; echo=false
@@ -59,10 +58,10 @@ function find_simulation(p1, p2, p3, concs1, g0)
     return G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 # all simulation
 end
 
-function plot3(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3, meang1, meang2, stdg1, stdg2, conc)
+function plot3(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3, meang1, meang2, stdg1, stdg2, conc, legend)
     time = LinRange(0.0, 95.0, 189)
     title = string(conc, " nM")
-    plot(time, meang1; ribbon = stdg1, color=6, label = "", xlabel = "time [hr]", ylabel = "cell number", alpha = 0.05)
+    plot(time, meang1; ribbon = stdg1, color=6, label = "", xlabel = "time [hr]", ylabel = "cell number", alpha = 0.05, legend=legend)
     plot!(time, G1_1, label="G1", color = 6)
     plot!(time, G1_2, label="", color = 6)
     plot!(time, G1_3, label="", color = 6)
@@ -95,9 +94,9 @@ function plot4(G1_1, G2_1, meang1, meang2, stdg1, stdg2, conc, i, j)
     ylims!((0.0, 50))
 end
 
-p1 = plot4(G1_2[:, 1], G2_2[:, 1], meang1[:, 1], meang2[:, 1], stdg1[:, 1], stdg2[:, 1], conc[1, 1], 3, 4);
-p2 = plot4(G1_2[:, 5], G2_2[:, 5], meang1[:, 5], meang2[:, 5], stdg1[:, 5], stdg2[:, 5], conc[1, 5], 5, 6);
-p3 = plot4(G1_2[:, 8], G2_2[:, 8], meang1[:, 8], meang2[:, 8], stdg1[:, 8], stdg2[:, 8], conc[1, 8], 7, 8);
+p1 = plot4(G1_2[:, 1], G2_2[:, 1], meanG1[:, 1], meanG2[:, 1], stdG1[:, 1], stdG2[:, 1], conc[1, 1], 3, 4);
+p2 = plot4(G1_2[:, 5], G2_2[:, 5], meanG1[:, 5], meanG2[:, 5], stdG1[:, 5], stdG2[:, 5], conc[1, 5], 5, 6);
+p3 = plot4(G1_2[:, 8], G2_2[:, 8], meanG1[:, 8], meanG2[:, 8], stdG1[:, 8], stdG2[:, 8], conc[1, 8], 7, 8);
 plot(p1)
 plot!(p2)
 plot!(p3)
@@ -105,7 +104,8 @@ plot!(size=(1000,700))
 ```
 
 ```julia; echo=false
-pl = [plot3(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 1]) for i=1:8]
+pl = [plot3(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 1], false) for i=1:7]
+p2 = plot3(G1_1[:, 8], G1_2[:, 8], G1_3[:, 8], G2_1[:, 8], G2_2[:, 8], G2_3[:, 8], meanG1[:, 8], meanG2[:, 8], stdG1[:, 8], stdG2[:, 8], concs[8, 1], true)
 plot(pl..., size=(1000,700))
 ```
 
@@ -145,7 +145,7 @@ meanG1, meanG2, stdG1, stdG2 = fordata(g1s1[:, :, 2], g1s2[:, :, 2], g1s3[:, :, 
 
 
 ```julia; echo=false
-pl = [plot3(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 2]) for i=1:8]
+pl = [plot3(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 2], true) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
@@ -185,7 +185,7 @@ meanG1, meanG2, stdG1, stdG2 = fordata(g1s1[:, :, 3], g1s2[:, :, 3], g1s3[:, :, 
 
 
 ```julia; echo=false
-pl = [plot3(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 3]) for i=1:8]
+pl = [plot3(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 3], true) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
@@ -225,7 +225,7 @@ meanG1, meanG2, stdG1, stdG2 = fordata(g1s1[:, :, 4], g1s2[:, :, 4], g1s3[:, :, 
 
 
 ```julia; echo=false
-pl = [plot3(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 4]) for i=1:8]
+pl = [plot3(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 4], true) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
@@ -265,7 +265,7 @@ meanG1, meanG2, stdG1, stdG2 = fordata(g1s1[:, :, 5], g1s2[:, :, 5], g1s3[:, :, 
 
 
 ```julia; echo=false
-pl = [plot3(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 5]) for i=1:8]
+pl = [plot3(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], meanG1[:, i], meanG2[:, i], stdG1[:, i], stdG2[:, i], concs[i, 5], true) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
