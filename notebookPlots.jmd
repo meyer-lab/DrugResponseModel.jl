@@ -94,12 +94,12 @@ function plot4(G1_1, G2_1, meang1, meang2, stdg1, stdg2, conc, i, j)
     ylims!((0.0, 50))
 end
 
-p1 = plot4(G1_2[:, 1], G2_2[:, 1], meanG1[:, 1], meanG2[:, 1], stdG1[:, 1], stdG2[:, 1], concs[1, 1], 3, 4);
-p2 = plot4(G1_2[:, 5], G2_2[:, 5], meanG1[:, 5], meanG2[:, 5], stdG1[:, 5], stdG2[:, 5], concs[1, 5], 5, 6);
-p3 = plot4(G1_2[:, 8], G2_2[:, 8], meanG1[:, 8], meanG2[:, 8], stdG1[:, 8], stdG2[:, 8], concs[1, 8], 7, 8);
-plot(p1)
-plot!(p2)
-plot!(p3)
+p11 = plot4(G1_2[:, 1], G2_2[:, 1], meanG1[:, 1], meanG2[:, 1], stdG1[:, 1], stdG2[:, 1], concs[1, 1], 3, 4);
+p21 = plot4(G1_2[:, 5], G2_2[:, 5], meanG1[:, 5], meanG2[:, 5], stdG1[:, 5], stdG2[:, 5], concs[5, 1], 5, 6);
+p31 = plot4(G1_2[:, 8], G2_2[:, 8], meanG1[:, 8], meanG2[:, 8], stdG1[:, 8], stdG2[:, 8], concs[8, 1], 7, 8);
+plot(p11)
+plot!(p21)
+plot!(p31)
 plot!(size=(1000,700))
 ```
 
@@ -112,8 +112,8 @@ plot(pl..., size=(1000,700))
 ### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
-std = zeros(4,8)
-plot_parameters(concs[:,1], effects1, std)
+stdn = zeros(4,8)
+plot_parameters(concs[:,1], effects1, stdn)
 ```
 
 ### Sensitivity analysis
@@ -152,8 +152,7 @@ plot(pl..., size=(1000,700))
 ### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
-std = zeros(4,8)
-plot_parameters(concs[:,2], effects1, std)
+plot_parameters(concs[:,2], effects1, stdn)
 ```
 
 ### Sensitivity analysis
@@ -192,8 +191,7 @@ plot(pl..., size=(1000,700))
 ### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
-std = zeros(4,8)
-plot_parameters(concs[:,3], effects1, std)
+plot_parameters(concs[:,3], effects1, stdn)
 ```
 
 ### Sensitivity analysis
@@ -232,8 +230,7 @@ plot(pl..., size=(1000,700))
 ### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
-std = zeros(4,8)
-plot_parameters(concs[:,4], effects1, std)
+plot_parameters(concs[:,4], effects1, stdn)
 ```
 
 ### Sensitivity analysis
@@ -272,8 +269,7 @@ plot(pl..., size=(1000,700))
 ### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
-std = zeros(4,8)
-plot_parameters(concs[:,5], effects1, std)
+plot_parameters(concs[:,5], effects1, stdn)
 ```
 
 ### Sensitivity analysis

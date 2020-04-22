@@ -24,14 +24,14 @@ function correlationPlot(g1::Matrix, g2::Matrix, labels::Array, xlabel::String, 
     xlims!((0, ymax))
 end
 
-function plot_parameters(conc_l, parameters, std)
+function plot_parameters(conc_l, parameters, stdn)
     conc = log.(conc_l)
     p1 = plot(
         conc,
         parameters[1, :],
         xlabel = "log drug conc. [nM]",
         label = "",
-        ribbon = std[1, :],
+        ribbon = stdn[1, :],
         lw = 2.0,
         alpha = 0.6,
         color = [:black :gray],
@@ -46,7 +46,7 @@ function plot_parameters(conc_l, parameters, std)
         parameters[2, :],
         xlabel = "log drug conc. [nM]",
         label = "",
-        ribbon = std[2, :],
+        ribbon = stdn[2, :],
         lw = 2.0,
         alpha = 0.6,
         color = [:black :gray],
@@ -63,7 +63,7 @@ function plot_parameters(conc_l, parameters, std)
         parameters[3, :],
         xlabel = "log drug conc. [nM]",
         label = "",
-        ribbon = std[3, :],
+        ribbon = stdn[3, :],
         lw = 2.0,
         alpha = 0.6,
         color = [:black :gray],
@@ -78,7 +78,7 @@ function plot_parameters(conc_l, parameters, std)
         parameters[4, :],
         xlabel = "log drug conc. [nM]",
         label = "",
-        ribbon = std[4, :],
+        ribbon = stdn[4, :],
         lw = 2.0,
         alpha = 0.6,
         color = [:black :gray],
