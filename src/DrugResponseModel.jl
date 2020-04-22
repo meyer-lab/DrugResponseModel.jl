@@ -55,6 +55,7 @@ export setup_data,
     find_mean_std_simul,
     savitzky_golay_filter,
     optim_all,
-    heatmap_combination
+    heatmap_combination,
+    plot2
 
 end # module

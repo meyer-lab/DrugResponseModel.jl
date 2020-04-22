@@ -24,14 +24,14 @@ function correlationPlot(g1::Matrix, g2::Matrix, labels::Array, xlabel::String, 
     xlims!((0, ymax))
 end
 
-function plot_parameters(conc_l, parameters, std)
+function plot_parameters(conc_l, parameters, stdn)
     conc = log.(conc_l)
     p1 = plot(
         conc,
         parameters[1, :],
         xlabel = "log drug conc. [nM]",
         label = "",
-        ribbon = std[1, :],
+        ribbon = stdn[1, :],
         lw = 2.0,
         alpha = 0.6,
         color = [:black :gray],
@@ -46,7 +46,7 @@ function plot_parameters(conc_l, parameters, std)
         parameters[2, :],
         xlabel = "log drug conc. [nM]",
         label = "",
-        ribbon = std[2, :],
+        ribbon = stdn[2, :],
         lw = 2.0,
         alpha = 0.6,
         color = [:black :gray],
@@ -63,7 +63,7 @@ function plot_parameters(conc_l, parameters, std)
         parameters[3, :],
         xlabel = "log drug conc. [nM]",
         label = "",
-        ribbon = std[3, :],
+        ribbon = stdn[3, :],
         lw = 2.0,
         alpha = 0.6,
         color = [:black :gray],
@@ -78,7 +78,7 @@ function plot_parameters(conc_l, parameters, std)
         parameters[4, :],
         xlabel = "log drug conc. [nM]",
         label = "",
-        ribbon = std[4, :],
+        ribbon = stdn[4, :],
         lw = 2.0,
         alpha = 0.6,
         color = [:black :gray],
@@ -89,4 +89,18 @@ function plot_parameters(conc_l, parameters, std)
     ylims!(0.0, 1.2 * maxDeath)
 
     plot(p1, p2, p3, p4)
+end
+
+function plot2(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3, g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, j)
+    time = LinRange(0.0, 95.0, 189)
+    meang1, meang2, stdg1, stdg2 = find_mean_std_gs(g1s1, g1s2, g1s3, g2s1, g2s2, g2s3);
+    plot(time, meang1[:, i, j]; ribbon = stdg1[:, i, j], color=1, label = "", xlabel = "time [hr]", ylabel = "cell number", alpha = 0.1)
+    plot!(time, G1_1, label="G1", color = 1)
+    plot!(time, G1_2, label="", color = 1)
+    plot!(time, G1_3, label="", color = 1)
+    plot!(time, meang2[:, i, j]; ribbon = stdg2[:, i, j], color=2, label = "", alpha = 0.1)
+    plot!(time, G2_1, label="G2", color = 2)
+    plot!(time, G2_2, label="", color = 2)
+    plot!(time, G2_3, label="", color = 2)
+    ylims!((0.0, 45))
 end
