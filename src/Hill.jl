@@ -126,3 +126,69 @@ function numcells(params, g0, T)
     @assert(all(G2[2:end] .>= 0.0), "negative cell number in G2 $G2")
     return G1[T] + G2[T]
 end
+
+""" A function to calculate std and mean of ODE parameters for each drug. """
+function mean_std_params(effs1, effs2, effs3)
+    meann = ones(9,8)
+    stdd = ones(9,8)
+    for i=1:8
+        for j=1:9
+            meann[j,i]= mean([effs1[j,i], effs2[j,i], effs3[j,i]])
+            stdd[j,i]= std([effs1[j,i], effs2[j,i], effs3[j,i]])
+        end
+    end
+    return meann, stdd
+end
+
+""" A Function to find mean and std of data in G1 and G2 separately. """
+function mean_std_data(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3)
+
+    meanG1 = ones(189, 8)
+    meanG2 = ones(189, 8)
+    stdG1 = ones(189, 8)
+    stdG2 = ones(189, 8)
+    for j = 1:8
+        for k = 1:189
+            meanG1[k, j] = mean([G1_1[k, j], G1_2[k, j], G1_3[k, j]])
+            meanG2[k, j] = mean([G2_1[k, j], G2_2[k, j], G2_3[k, j]])
+            stdG1[k, j] = std([G1_1[k, j], G1_2[k, j], G1_3[k, j]])
+            stdG2[k, j] = std([G2_1[k, j], G2_2[k, j], G2_3[k, j]])
+        end
+    end
+    return meanG1, meanG2, stdG1, stdG2
+end
+
+""" A function to predict G1 and G2 for the three replicates. """
+function predict_replicates(p1, p2, p3, concs1, g0)
+    t = LinRange(0.0, 95.0, 189)
+    G1_1 = ones(189, 8)
+    G2_1 = ones(189, 8)
+    G1_2 = ones(189, 8)
+    G2_2 = ones(189, 8)
+    G1_3 = ones(189, 8)
+    G2_3 = ones(189, 8)
+
+    for i = 1:8 # concentration number
+        G1_1[:, i], G2_1[:, i], _ = predict(p1[:, i], g0, t)
+        G1_2[:, i], G2_2[:, i], _ = predict(p2[:, i], g0, t)
+        G1_3[:, i], G2_3[:, i], _ = predict(p3[:, i], g0, t)
+    end
+
+    return G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 # all simulation
+end
+
+""" A function to plot one of the concentrations for the three replicates with ribbon of std data. """
+function plot_reps_ribbon(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3, meang1, meang2, stdg1, stdg2, conc, legend)
+    time = LinRange(0.0, 95.0, 189)
+    title = string(conc, " nM")
+    plot(time, meang1; ribbon = stdg1, color=6, label = "", xlabel = "time [hr]", ylabel = "cell number", alpha = 0.05, legend=legend)
+    plot!(time, G1_1, label="G1", color = 6)
+    plot!(time, G1_2, label="", color = 6)
+    plot!(time, G1_3, label="", color = 6)
+    plot!(time, meang2; ribbon = stdg2, color=7, label = "", alpha = 0.05)
+    plot!(time, G2_1, label="G2", color = 7)
+    plot!(time, G2_2, label="", color = 7)
+    plot!(time, G2_3, label="", color = 7)
+    plot!(annotation = [(45, 40, text(title, 8))])
+    ylims!((0.0, 45))
+end

@@ -1,0 +1,97 @@
+Simulation and representation of the three replicates.
+```julia; echo=false
+using DrugResponseModel
+using Plots
+
+concs, populations1, g1s1, g2s1 = load(189, 1);
+concs, populations2, g1s2, g2s2 = load(189, 2);
+concs, populations3, g1s3, g2s3 = load(189, 3);
+g0 = g1s1[1,1,1]+g2s1[1,1,1];
+
+rep1=[131.399001020408, 1.6435671813612696, 3.0275907173462104, 2.2342379259772045, 0.33202837035970056, 0.3980475592686414, 318.0290059859216, 1.1843273174671463, 4.348428835784113, 0.9881785012508497, 1.4897526550735007, 1.9743914502590634, 14.236862789631882, 2.100808805102376, 3.0367521118439993, 1.347080536112803, 0.051161398075731494, 0.3177235145143605, 12.03626072237484, 2.1787126931493233, 3.0547294458188077, 0.9643495085287486, 2.419045074001623, 1.6304149013423437, 275.61300189526395, 0.8309557409386958, 3.0750863527484924, 2.1772776550641435, 0.32869704499179025, 0.3292348082432655, 2.0137331264569007, 0.3294416811196082, 0.5631818215020371, 49.76753274949015, 11.473801302978199, 43.257488339449154, 17.384130544042378]
+
+rep2 = [198.91398798150757, 1.5170035810810176, 3.105805914004245, 2.278460328250149, 0.4861967832133764, 0.2497493492759686, 263.78900398060415, 1.0628364297811481, 6.364731450612433, 0.9627995754844892, 0.9288874626068911, 1.3844673672330545, 14.668262923900992, 2.3273183541139852, 3.0113392755064394, 1.6928674297047266, 0.05661203584428106, 0.27942017995162555, 4.204585542179993, 4.230439854526857, 3.045053255322819, 1.1299383789704882, 0.805443750695255, 0.4736613423219186, 374.78397359271594, 0.8999270073286936, 3.024225743017071, 2.303494105858074, 0.30355634249563795, 0.23463695249433703, 2.3831731853376676, 0.5898661019737665, 0.4931648265895506, 47.056218824202155, 17.458307758333465, 38.82450602805367, 15.449572624804611]
+
+rep3 = [337.7829986393584, 1.4133206423819265, 3.0046739166058485, 2.294418955976581, 0.681939610026057, 0.3888563157159332, 76.31579350273093, 1.6560792356998417, 6.700866258333148, 0.9048832634258882, 0.6772552429134968, 0.8289817928887824, 16.440065246838152, 2.576482427164534, 3.012490075463931, 1.666866119552484, 0.042429278555406666, 0.377643110950908, 4.076260607262044, 6.5045456342083785, 6.484042441373402, 0.9069870178725308, 0.6892378416540841, 0.5832087130666235, 152.57199934631169, 1.2479051384290314, 3.016297064255622, 2.2929065389688272, 0.2709174164850029, 0.2848187690766134, 2.2338061351226877, 0.3219309589309654, 0.520050115496114, 49.81221129499854, 11.203662545709973, 43.407872185023265, 20.75386767781738]
+
+ef1 = getODEparamsAll(rep1, concs);
+ef2 = getODEparamsAll(rep2, concs);
+ef3 = getODEparamsAll(rep3, concs);
+```
+
+```julia; echo=false
+G1_1 = zeros(189, 8, 5)
+G1_2 = zeros(189, 8, 5)
+G1_3 = zeros(189, 8, 5)
+G2_1 = zeros(189, 8, 5)
+G2_2 = zeros(189, 8, 5)
+G2_3 = zeros(189, 8, 5)
+for i=1:5
+    G1_1[:, :, i], G2_1[:, :, i], G1_2[:, :, i], G2_2[:, :, i], G1_3[:, :, i], G2_3[:, :, i] = DrugResponseModel.predict_replicates(ef1[:, :, i], ef2[:, :, i], ef3[:, :, i], concs[:,1], g0)
+end
+
+j=1
+pl = [DrugResponseModel.plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, j) for i=1:8]
+plot(pl..., size=(1000,700))
+```
+
+The solid lines show the three simulations, meaning, after obtaining the three sets of the parameters, we calculate the time-series simulation and find the cell number for each time-point, for the three replicates, separately. The ribbon is the bounds of std of the original data. This shows that even if the model for individual replicates, deviates a little, but on-average it doesn't deviate the standard deviation. So it is reliable. (here again for lapatinib)
+
+
+```julia; echo=false
+avgs = zeros(9, 8, 5)
+stds = zeros(9, 8, 5)
+
+for j=1:5
+    avgs[:, :, j], stds[:, :, j] = DrugResponseModel.mean_std_params(ef1[:, :, j], ef2[:, :, j], ef3[:, :, j])
+end
+DrugResponseModel.plot_parameters(concs[:, 1], avgs[:, :, 1], stds[:, :, 1])
+```
+
+## Doxorubicin
+
+```julia; echo=false
+j=2
+pl = [DrugResponseModel.plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, j) for i=1:8]
+plot(pl..., size=(1000,700))
+```
+
+```julia; echo=false
+DrugResponseModel.plot_parameters(concs[:, 2], avgs[:, :, 2], stds[:, :, 2])
+```
+
+## Gemcitabine
+
+```julia; echo=false
+j=3
+pl = [DrugResponseModel.plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, j) for i=1:8]
+plot(pl..., size=(1000,700))
+```
+
+```julia; echo=false
+DrugResponseModel.plot_parameters(concs[:, 3], avgs[:, :, 3], stds[:, :, 3])
+```
+
+## Paclitaxel
+
+```julia; echo=false
+j=4
+pl = [DrugResponseModel.plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, j) for i=1:8]
+plot(pl..., size=(1000,700))
+```
+
+```julia; echo=false
+DrugResponseModel.plot_parameters(concs[:, 4], avgs[:, :, 4], stds[:, :, 4])
+```
+
+## Palbociclib
+
+```julia; echo=false
+j=5
+pl = [DrugResponseModel.plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, j) for i=1:8]
+plot(pl..., size=(1000,700))
+```
+
+```julia; echo=false
+DrugResponseModel.plot_parameters(concs[:, 5], avgs[:, :, 5], stds[:, :, 5])
+```

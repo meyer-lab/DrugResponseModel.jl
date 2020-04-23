@@ -12,7 +12,7 @@ dox = effs[:,:,2];
 gemc = effs[:,:,3];
 pac = effs[:,:,4];
 palb = effs[:,:,5];
-IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal = find_IC50(populations)
+IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal = DrugResponseModel.find_IC50(populations)
 ```
 
 ### temporal combination
