@@ -131,7 +131,7 @@ function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Fl
     hP = [1000.0, 10.0, 7.0, 3.0, 3.0, 3.0]
     high = vcat(hP, hP, hP, hP, hP, 3.0, 3.0, 0.6, 50, 70, 50, 50)
   
-    options = Optim.Options(show_trace = true)
+    options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = 3)
     results = optimize(f, g!, low, high, initial_x, Fminbox(GradientDescent()), options)
 
     return Optim.minimizer(results)
