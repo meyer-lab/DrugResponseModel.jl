@@ -47,8 +47,8 @@ DrugResponseModel.plot_parameters(concs[:,1], meann, stdd)
 ### Sensitivity analysis
 
 ```julia; echo=false
-result, paramRanges = allSensitivity(p1, concs[:, 1], g1s1[:, :, 1], g2s1[:, :, 1])
-pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
+result, paramRanges = allSensitivity(ps1, concs[:, 1], g1s1[:, :, 1], g2s1[:, :, 1])
+pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], ps1[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
 ```
