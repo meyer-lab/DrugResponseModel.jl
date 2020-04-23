@@ -40,14 +40,14 @@ plot(pl..., p2, size=(1000,700))
 ### Plot the parameters over concentration; these are known as the drug effects
 
 ```julia; echo=false
-meann, stdd = mean_std_params(effects1, effects2, effects3)
+meann, stdd = DrugResponseModel.mean_std_params(effects1, effects2, effects3)
 DrugResponseModel.plot_parameters(concs[:,1], meann, stdd)
 ```
 
 ### Sensitivity analysis
 
 ```julia; echo=false
-result, paramRanges = allSensitivity(ps1, concs[:, 1], g1s1[:, :, 1], g2s1[:, :, 1])
+result, paramRanges = allSensitivity(p1, concs[:, 1], g1s1[:, :, 1], g2s1[:, :, 1])
 pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
