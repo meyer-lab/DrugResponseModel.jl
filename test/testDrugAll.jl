@@ -9,6 +9,6 @@
     # TODO: Profile residHillAll
 
     # test the local optimization function
-    params = optim_all(concs, g1s, g2s)
+    params = optim_all(concs, g1s, g2s, p)
     @assert(all(x -> !isnan(x), params))
 end

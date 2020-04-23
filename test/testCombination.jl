@@ -48,7 +48,7 @@
     p2 = effects[:, :, 2]
     p2[2, 1] = 1.0
     p2[2, 2:end] .= 0.5
-    combination = BlissCombination(p1, p2, 8)
+    combination = DrugResponseModel.BlissCombination(p1, p2, 8)
     @assert(all(combination[2, 2:end, 2] .>= 0.3))
     @assert(all(combination[2, 2:end, 2] .<= 0.5))
 end
