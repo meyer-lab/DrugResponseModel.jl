@@ -1,5 +1,5 @@
 
-all: notebookPlots.pdf temporal_combination.pdf replicates.pdf combination.pdf
+all: notebookPlots.pdf temporal_combination.pdf replicatesAtOnce.pdf combination.pdf
 
 venv: venv/bin/activate
 
