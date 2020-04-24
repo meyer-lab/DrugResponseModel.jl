@@ -129,12 +129,12 @@ end
 
 """ A function to calculate std and mean of ODE parameters for each drug. """
 function mean_std_params(effs1, effs2, effs3)
-    meann = ones(9,8)
-    stdd = ones(9,8)
-    for i=1:8
-        for j=1:9
-            meann[j,i]= mean([effs1[j,i], effs2[j,i], effs3[j,i]])
-            stdd[j,i]= std([effs1[j,i], effs2[j,i], effs3[j,i]])
+    meann = ones(9, 8)
+    stdd = ones(9, 8)
+    for i = 1:8
+        for j = 1:9
+            meann[j, i] = mean([effs1[j, i], effs2[j, i], effs3[j, i]])
+            stdd[j, i] = std([effs1[j, i], effs2[j, i], effs3[j, i]])
         end
     end
     return meann, stdd
@@ -181,14 +181,14 @@ end
 function plot_reps_ribbon(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3, meang1, meang2, stdg1, stdg2, conc, legend)
     time = LinRange(0.0, 95.0, 189)
     title = string(conc, " nM")
-    plot(time, meang1; ribbon = stdg1, color=6, label = "", xlabel = "time [hr]", ylabel = "cell number", alpha = 0.05, legend=legend)
-    plot!(time, G1_1, label="G1", color = 6)
-    plot!(time, G1_2, label="", color = 6)
-    plot!(time, G1_3, label="", color = 6)
-    plot!(time, meang2; ribbon = stdg2, color=7, label = "", alpha = 0.05)
-    plot!(time, G2_1, label="G2", color = 7)
-    plot!(time, G2_2, label="", color = 7)
-    plot!(time, G2_3, label="", color = 7)
+    plot(time, meang1; ribbon = stdg1, color = 6, label = "", xlabel = "time [hr]", ylabel = "cell number", alpha = 0.05, legend = legend)
+    plot!(time, G1_1, label = "G1", color = 6)
+    plot!(time, G1_2, label = "", color = 6)
+    plot!(time, G1_3, label = "", color = 6)
+    plot!(time, meang2; ribbon = stdg2, color = 7, label = "", alpha = 0.05)
+    plot!(time, G2_1, label = "G2", color = 7)
+    plot!(time, G2_2, label = "", color = 7)
+    plot!(time, G2_3, label = "", color = 7)
     plot!(annotation = [(45, 40, text(title, 8))])
     ylims!((0.0, 45))
 end
