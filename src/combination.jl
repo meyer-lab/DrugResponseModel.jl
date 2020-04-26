@@ -134,7 +134,7 @@ function temporal_combination(params1, params2, g0::Float64, max1::Float64, max2
 end
 
 function helperPlotCombin(G1, G2, g0::Float64, title::String, legend::Any, ymax::Float64)
-    t_new = LinRange(0.0, 200, 400)
+    t_new = LinRange(0.0, 90.0, 180)
     plot(
         t_new,
         G1,
@@ -158,11 +158,12 @@ function plotTemporalCombin(params1, params2, g1s, g2s, pop, concl, concg, legen
     # This is right now specificly for lapatinib and doxorubicin
     # ith concentration of lapatinib
     # jth concentration of doxorubicin
+    diff = find_combin_order(params1, params2, g1s, g2s)
     max1 = max2 = 45.0
     G1_1, G2_1 = temporal_combination(params1, params2, g1s[1, 1, 1] + g2s[1, 1, 1], max1, max2)
     G1_2, G2_2 = temporal_combination(params2, params1, g1s[1, 1, 1] + g2s[1, 1, 1], max1, max2)
-    p1 = ode_plotIt(params1, g1s[:, :, k1], g2s[:, :, k1], pop[:, :, k1], i, string(concl[i], " nM ", named1), false, 70.0)
-    p2 = ode_plotIt(params2, g1s[:, :, k2], g2s[:, :, k2], pop[:, :, k2], j, string(concg[j], " nM ", named2), false, 70.0)
+    p1 = ode_plotIt(params1, g1s[:, :, k1], g2s[:, :, k1], pop[:, :, k1], i, string(concl[i], " nM ", named1), false, 70.0; 90)
+    p2 = ode_plotIt(params2, g1s[:, :, k2], g2s[:, :, k2], pop[:, :, k2], j, string(concg[j], " nM ", named2), false, 70.0; 90)
     p3 = helperPlotCombin(G1_1, G2_1, g1s[1, 1, 1] + g2s[1, 1, 1], string(concl[i], " nM ", named1, "+", concg[j], "nM ", named2), legend, 70.0) # first lapatinib, then gemcitabine
     p4 = helperPlotCombin(G1_2, G2_2, g1s[1, 1, 1] + g2s[1, 1, 1], string(concg[j], " nM ", named2, "+", concl[i], "nM ", named1), false, 70.0) # first gemcitabine then lapatinib
     plot(p1, p2, p3, p4, layout = (2, 2))
@@ -218,7 +219,7 @@ function find_combin_order(params1, params2, g1s, g2s)
         for max2 = 10.0:5:90.0
             G1_1, G2_1 = temporal_combination(params1, params2, g1s[1, 1, 1] + g2s[1, 1, 1], max1, max2)
             G1_2, G2_2 = temporal_combination(params2, params1, g1s[1, 1, 1] + g2s[1, 1, 1], max1, max2)
-            diff[i,j] = (G1_1[end] + G2_1[end]) / (G1_2[end] + G2_2[end])
+            diff[i,j] = abs((G1_1[end] + G2_1[end]) - (G1_2[end] + G2_2[end]))
             j += 1
         end
         j = 1
@@ -235,6 +236,7 @@ function plot_order_temporalCombin(params1, params2, g1s, g2s, named1, named2)
         diffs,
         xlabel = string("time max2 [hr]"),
         ylabel = string("time max1 [hr]"),
-        title = string("cell number diff", named1, "->", named2, "/", named2, "->", named1)
+        title = string("cell number diff", named1, "->", named2, "-", named2, "->", named1),
+        clim = (0.0, 15.0),
     )
 end

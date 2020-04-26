@@ -102,9 +102,13 @@ end
 """ Given estimated parameters for each trial, solve the DDE model plot the predicted curve 
     for number of cells in G1, G2, or total, along with their corresponding real data,
     for a longer time which is 2 times of the original time (~195 hours) """
-function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, title::String, legend::Any, ymax)
+function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, title::String, legend::Any, ymax; tnew=0)
     t = LinRange(0.0, 0.5 * length(g1[:, 1]), length(g1[:, 1]))
-    t_new = LinRange(0.0, 200, 400)
+    if tnew=0
+        t_new = LinRange(0.0, 200, 400)
+    else
+        t_new = LinRange(0.0, tnew, 2*tnew)
+    end
     G1, G2 = predict(params, g1[1] + g2[1], t_new)
 
     plot(
