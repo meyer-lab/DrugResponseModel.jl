@@ -4,7 +4,8 @@ function BlissCombination(p1::Array{Float64, 2}, p2::Array{Float64, 2}, n::Int)
     """ A function to calculate Bliss independence for drug combination assuming
     the two drugs hit different pathways and they effect independently. """
 
-    param1 = zeros()
+    param1 = zeros(4, 8)
+    param2 = zeros(4, 8)
     param1[1, :] .= p1[1, 1] .- p1[1, :]
     param1[2, :] .= p1[2, 1] .- p1[2, :]
     param1[3, :] .= p1[3, :]
