@@ -30,12 +30,20 @@ Lapatinib and Doxorubicin
 plotTemporalCombin(lapat[:,IC50_lap], dox[:,IC50_dox], g1s, g2s, populations, concs[:,1], concs[:,2], true, IC50_lap, IC50_dox, "lap.", "dox.", 1, 2)
 ```
 
+```julia; echo = false
+DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], dox[:,IC50_dox], g1s, g2s, "lap.", "dox.")
+```
+
 ....................................................................................................................
 
 Lapatinib and Gemcitabine.
 
 ```julia; echo=false
 plotTemporalCombin(lapat[:,IC50_lap], gemc[:,IC50_gem], g1s, g2s, populations, concs[:,1], concs[:,3], true, IC50_lap, IC50_gem, "lap.", "gemc.", 1, 3)
+```
+
+```julia; echo = false
+DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], gemc[:,IC50_gem], g1s, g2s, "lap.", "gemc.")
 ```
 
 ....................................................................................................................
@@ -46,12 +54,20 @@ Lapatinib and Paclitaxel
 plotTemporalCombin(lapat[:,IC50_lap], pac[:,IC50_tax], g1s, g2s, populations, concs[:,1], concs[:,4], true, IC50_lap, IC50_tax, "lap.", "taxol", 1, 4)
 ```
 
+```julia; echo = false
+DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], pac[:,IC50_tax], g1s, g2s, "lap.", "tax.")
+```
+
 ....................................................................................................................
 
 Lapatinib and Palboclicib
 
 ```julia; echo=false
 plotTemporalCombin(lapat[:,IC50_lap], palb[:,IC50_pal], g1s, g2s, populations, concs[:,1], concs[:,5], true, IC50_lap, IC50_pal, "lap.", "palb.", 1, 5)
+```
+
+```julia; echo = false
+DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], palb[:,IC50_pa], g1s, g2s, "lap.", "palb.")
 ```
 
 ....................................................................................................................
@@ -62,12 +78,20 @@ Doxorubicin and Gemcitabine
 plotTemporalCombin(dox[:,IC50_dox], gemc[:,IC50_gem], g1s, g2s, populations, concs[:,2], concs[:,3], true, IC50_dox, IC50_gem, "dox.", "gemc.", 2, 3)
 ```
 
+```julia; echo = false
+DrugResponseModel.plot_order_temporalCombin(dox[:,IC50_dox], gemc[:,IC50_gem], g1s, g2s, "dox.", "gemc.")
+```
+
 ....................................................................................................................
 
 Doxorubicin and Paclitaxel
 
 ```julia; echo=false
 plotTemporalCombin(dox[:,IC50_dox], pac[:,IC50_tax], g1s, g2s, populations, concs[:,2], concs[:,4], true, IC50_dox, IC50_tax, "dox.", "taxol", 2, 4)
+```
+
+```julia; echo = false
+DrugResponseModel.plot_order_temporalCombin(dox[:,IC50_dox], pac[:,IC50_tax], g1s, g2s, "dox.", "tax.")
 ```
 
 ....................................................................................................................
@@ -78,12 +102,22 @@ Doxorubicin and Palbociclib
 plotTemporalCombin(dox[:,IC50_dox], palb[:,IC50_pal], g1s, g2s, populations, concs[:,2], concs[:,5], true, IC50_dox, IC50_pal, "dox.", "palb", 2, 5)
 ```
 
+
+```julia; echo = false
+DrugResponseModel.plot_order_temporalCombin(dox[:,IC50_dox], palb[:,IC50_pal], g1s, g2s, "dox.", "palb.")
+```
+
 ....................................................................................................................
 
 Gemcitabine and Paclitaxel
 
 ```julia; echo=false
 plotTemporalCombin(gemc[:,IC50_gem], pac[:,IC50_tax], g1s, g2s, populations, concs[:,3], concs[:,4], true, IC50_gem, IC50_tax, "gemc.", "taxol", 3, 4)
+```
+
+
+```julia; echo = false
+DrugResponseModel.plot_order_temporalCombin(gemc[:,IC50_gem], pac[:,IC50_tax], g1s, g2s, "gemc.", "tax.")
 ```
 
 ....................................................................................................................
@@ -94,6 +128,10 @@ Gemcitabine and Palbociclib
 plotTemporalCombin(gemc[:,IC50_gem], palb[:,IC50_pal], g1s, g2s, populations, concs[:,3], concs[:,5], true, IC50_gem, IC50_pal, "gemc.", "palb", 3, 5)
 ```
 
+```julia; echo = false
+DrugResponseModel.plot_order_temporalCombin(gemc[:,IC50_gem], palb[:,IC50_pal], g1s, g2s, "gemc.", "palb.")
+```
+
 ....................................................................................................................
 
 Paclitaxel and Palbociclib
@@ -101,5 +139,10 @@ Paclitaxel and Palbociclib
 ```julia; echo=false
 plotTemporalCombin(pac[:,IC50_tax], palb[:,IC50_pal], g1s, g2s, populations, concs[:,4], concs[:,5], true, IC50_tax, IC50_pal, "taxol", "palb", 4, 5)
 ```
+
+```julia; echo = false
+DrugResponseModel.plot_order_temporalCombin(pac[:,IC50_tax], palb[:,IC50_pal], g1s, g2s, "tax.", "palb.")
+```
+
 
 In some cases, the combination does improve the results; if the result is considered lesser total cell number at the end of the experiment. It looks like all the differences are pretty small. We may benefit from changing the duration of time we treat the cells with different drugs; i.e., 30 hours drugA, then 90 hours drugB, or some such.

@@ -117,9 +117,9 @@ function blissCellNum(g1s, g2s; T = 96, n = 8)
 end
 
 """ Function for calculating temporal combination of two drugs. """
-function temporal_combination(params1, params2, g0)
-    t1 = LinRange(0.0, 160.0, 320)
-    t2 = LinRange(0.0, 40.0, 80)
+function temporal_combination(params1, params2, g0::Float64, max1::Float64, max2::Float64)
+    t1 = LinRange(0.0, max1, Int(max1*2))
+    t2 = LinRange(0.0, max2, Int(max2*2))
 
     g1L, g2L, vecL = predict(params1, g0, t1)
     g1G, g2G, _ = predict(params2, vec(vecL), t2)
@@ -127,7 +127,7 @@ function temporal_combination(params1, params2, g0)
     return vcat(g1L, g1G), vcat(g2L, g2G)
 end
 
-function helperPlotCombin(G1, G2, g0, title::String, legend::Any, ymax)
+function helperPlotCombin(G1, G2, g0::Float64, title::String, legend::Any, ymax::Float64)
     t_new = LinRange(0.0, 200, 400)
     plot(
         t_new,
@@ -152,8 +152,9 @@ function plotTemporalCombin(params1, params2, g1s, g2s, pop, concl, concg, legen
     # This is right now specificly for lapatinib and doxorubicin
     # ith concentration of lapatinib
     # jth concentration of doxorubicin
-    G1_1, G2_1 = temporal_combination(params1, params2, g1s[1, 1, 1] + g2s[1, 1, 1])
-    G1_2, G2_2 = temporal_combination(params2, params1, g1s[1, 1, 1] + g2s[1, 1, 1])
+    max1 = max2 = 45.0
+    G1_1, G2_1 = temporal_combination(params1, params2, g1s[1, 1, 1] + g2s[1, 1, 1], max1, max2)
+    G1_2, G2_2 = temporal_combination(params2, params1, g1s[1, 1, 1] + g2s[1, 1, 1], max1, max2)
     p1 = ode_plotIt(params1, g1s[:, :, k1], g2s[:, :, k1], pop[:, :, k1], i, string(concl[i], " nM ", named1), false, 70.0)
     p2 = ode_plotIt(params2, g1s[:, :, k2], g2s[:, :, k2], pop[:, :, k2], j, string(concg[j], " nM ", named2), false, 70.0)
     p3 = helperPlotCombin(G1_1, G2_1, g1s[1, 1, 1] + g2s[1, 1, 1], string(concl[i], " nM ", named1, "+", concg[j], "nM ", named2), legend, 70.0) # first lapatinib, then gemcitabine
@@ -188,7 +189,7 @@ function heatmap_combination(d1, d2, cellNum, i1, i2, d1name, d2name, effs, conc
         end
     end
 
-    diffs = numscomb ./ cellNum
+    diffs = numscomb ./ cellNum # model prediction / reference
     concs[1, :] .= 0.6
     heatmap(
         string.(round.(log.(concs[:, i2]), digits = 1)),
@@ -198,5 +199,36 @@ function heatmap_combination(d1, d2, cellNum, i1, i2, d1name, d2name, effs, conc
         ylabel = string(d1name, " log [nM]"),
         title = "cell number fold diff",
         clim = (0.0, 2.0),
+    )
+end
+
+""" find those conbiations in which order of treatment matters. """
+function find_combin_order(params1, params2, g1s, g2s)
+
+    diff = zeros(17, 17)
+    i=1
+    j=1
+    for max1 = 10.0:5:90.0 # 5-hour interval, from 10 hours to 90 hours
+        for max2 = 10.0:5:90.0
+            G1_1, G2_1 = temporal_combination(params1, params2, g1s[1, 1, 1] + g2s[1, 1, 1], max1, max2)
+            G1_2, G2_2 = temporal_combination(params2, params1, g1s[1, 1, 1] + g2s[1, 1, 1], max1, max2)
+            diff[i,j] = (G1_1[end] + G2_1[end]) / (G1_2[end] + G2_2[end])
+            j += 1
+        end
+        j = 1
+        i += 1
+    end
+    return diff
+end
+
+""" Plot the heatmap to describe the difference between the order of treatments. """
+function plot_order_temporalCombin(params1, params2, g1s, g2s, named1, named2)
+    diffs = DrugResponseModel.find_combin_order(params1, params2, g1s, g2s)
+    heatmap(string.(10.0:5:90.0),
+        string.(10.0:5:90.0),
+        diffs,
+        xlabel = string("time max2 [hr]"),
+        ylabel = string("time max1 [hr]"),
+        title = string("cell number diff", named1, "->", named2, "/", named2, "->", named1)
     )
 end
