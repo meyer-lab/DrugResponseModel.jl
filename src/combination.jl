@@ -160,14 +160,14 @@ function plotTemporalCombin(params1, params2, g1s, g2s, pop, concl, concg, legen
     # jth concentration of doxorubicin
     diff = find_combin_order(params1, params2, g1s, g2s)
     rowmaxind = zeros(length(diff[1,:]))
-    romaxval = zeros(length(diff[1,:]))
+    rowmaxval = zeros(length(diff[1,:]))
     for j = 1:length(diff[1,:])
         rowmaxval[j], rowmaxind[j] = findmax(diff[j, :]) # specifies column
     end
     maxdiff, index = findmax(rowmaxval) # specifies row
-    
+    time = 10.0:5:90.0
     max1 = time[index]
-    max2 = time[rowmaxind[index]]
+    max2 = time[Int(rowmaxind[index])]
     G1_1, G2_1 = temporal_combination(params1, params2, g1s[1, 1, 1] + g2s[1, 1, 1], max1, max2)
     G1_2, G2_2 = temporal_combination(params2, params1, g1s[1, 1, 1] + g2s[1, 1, 1], max1, max2)
     p1 = ode_plotIt(params1, g1s[:, :, k1], g2s[:, :, k1], pop[:, :, k1], i, string(concl[i], " nM ", named1), false, 70.0; tnew=90)
