@@ -1,22 +1,14 @@
 """ This file contains all the functions related to Bliss and temporal combinations. """
-function ParamForBliss(p::Matrix{Float64}, n::Int)
-    """ To calculate Bliss independence drug effect
-    we assume delays are constant, death rates are additive,
-    and will keep the alpha and beta intact."""
-    par = zeros(4, n)
-    par[1, :] = p[1, 1] .- p[1, :] # alpha stays the same
-    par[2, :] = p[2, 1] .- p[2, :] # beta stays the same
-    par[3, :] = p[3, :] # death rate in G1
-    par[4, :] = p[4, :] # death rate in G2
-    return par
-end
 
-function BlissCombination(p1::Array{Float64, 2}, p2::Array{Float64, 2}, n::Int)
+function BlissCombination(param1::Array{Float64, 2}, param2::Array{Float64, 2}, n::Int)
     """ A function to calculate Bliss independence for drug combination assuming
     the two drugs hit different pathways and they effect independently. """
 
-    param1 = ParamForBliss(p1, n)
-    param2 = ParamForBliss(p2, n)
+    param1[1, :] .= param1[1, 1] .- param1[1, :]
+    param1[2, :] .= param1[2, 1] .- param1[2, :]
+    param2[1, :] .= param2[1, 1] .- param2[1, :]
+    param2[2, :] .= param2[2, 1] .- param2[2, :]
+
     """ For 8x8 combination of drug concentrations for G1 progression rate, G2 progression rate, and death rates in G1 and G2, respectively. """
     combined = zeros(n, n, 4)
     for j = 1:n
