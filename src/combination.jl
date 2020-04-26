@@ -1,13 +1,18 @@
 """ This file contains all the functions related to Bliss and temporal combinations. """
 
-function BlissCombination(param1::Array{Float64, 2}, param2::Array{Float64, 2}, n::Int)
+function BlissCombination(p1::Array{Float64, 2}, p2::Array{Float64, 2}, n::Int)
     """ A function to calculate Bliss independence for drug combination assuming
     the two drugs hit different pathways and they effect independently. """
 
-    param1[1, :] .= param1[1, 1] .- param1[1, :]
-    param1[2, :] .= param1[2, 1] .- param1[2, :]
-    param2[1, :] .= param2[1, 1] .- param2[1, :]
-    param2[2, :] .= param2[2, 1] .- param2[2, :]
+    param1 = zeros()
+    param1[1, :] .= p1[1, 1] .- p1[1, :]
+    param1[2, :] .= p1[2, 1] .- p1[2, :]
+    param1[3, :] .= p1[3, :]
+    param1[4, :] .= p1[4, :]
+    param2[1, :] .= p2[1, 1] .- p2[1, :]
+    param2[2, :] .= p2[2, 1] .- p2[2, :]
+    param2[3, :] .= p2[3, :]
+    param2[4, :] .= p2[4, :]
 
     """ For 8x8 combination of drug concentrations for G1 progression rate, G2 progression rate, and death rates in G1 and G2, respectively. """
     combined = zeros(n, n, 4)
