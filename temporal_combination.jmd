@@ -67,7 +67,7 @@ plotTemporalCombin(lapat[:,IC50_lap], palb[:,IC50_pal], g1s, g2s, populations, c
 ```
 
 ```julia; echo = false
-DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], palb[:,IC50_pa], g1s, g2s, "lap.", "palb.")
+DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], palb[:,IC50_pal], g1s, g2s, "lap.", "palb.")
 ```
 
 ....................................................................................................................
