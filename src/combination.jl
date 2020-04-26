@@ -160,7 +160,7 @@ function plotTemporalCombin(params1, params2, g1s, g2s, pop, concl, concg, legen
     # jth concentration of doxorubicin
     diff = find_combin_order(params1, params2, g1s, g2s)
     rowmaxind = zeros(length(diff[1,:]))
-    romaxval = = zeros(length(diff[1,:]))
+    romaxval = zeros(length(diff[1,:]))
     for j = 1:length(diff[1,:])
         rowmaxval[j], rowmaxind[j] = findmax(diff[j, :]) # specifies column
     end
