@@ -104,7 +104,7 @@ end
     for a longer time which is 2 times of the original time (~195 hours) """
 function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, title::String, legend::Any, ymax; tnew=0)
     t = LinRange(0.0, 0.5 * length(g1[:, 1]), length(g1[:, 1]))
-    if tnew=0
+    if tnew==0
         t_new = LinRange(0.0, 200, 400)
     else
         t_new = LinRange(0.0, tnew, 2*tnew)
