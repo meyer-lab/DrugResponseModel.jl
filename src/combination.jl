@@ -162,8 +162,8 @@ function plotTemporalCombin(params1, params2, g1s, g2s, pop, concl, concg, legen
     max1 = max2 = 45.0
     G1_1, G2_1 = temporal_combination(params1, params2, g1s[1, 1, 1] + g2s[1, 1, 1], max1, max2)
     G1_2, G2_2 = temporal_combination(params2, params1, g1s[1, 1, 1] + g2s[1, 1, 1], max1, max2)
-    p1 = ode_plotIt(params1, g1s[:, :, k1], g2s[:, :, k1], pop[:, :, k1], i, string(concl[i], " nM ", named1), false, 70.0; 90)
-    p2 = ode_plotIt(params2, g1s[:, :, k2], g2s[:, :, k2], pop[:, :, k2], j, string(concg[j], " nM ", named2), false, 70.0; 90)
+    p1 = ode_plotIt(params1, g1s[:, :, k1], g2s[:, :, k1], pop[:, :, k1], i, string(concl[i], " nM ", named1), false, 70.0; tnew=90)
+    p2 = ode_plotIt(params2, g1s[:, :, k2], g2s[:, :, k2], pop[:, :, k2], j, string(concg[j], " nM ", named2), false, 70.0; tnew=90)
     p3 = helperPlotCombin(G1_1, G2_1, g1s[1, 1, 1] + g2s[1, 1, 1], string(concl[i], " nM ", named1, "+", concg[j], "nM ", named2), legend, 70.0) # first lapatinib, then gemcitabine
     p4 = helperPlotCombin(G1_2, G2_2, g1s[1, 1, 1] + g2s[1, 1, 1], string(concg[j], " nM ", named2, "+", concl[i], "nM ", named1), false, 70.0) # first gemcitabine then lapatinib
     plot(p1, p2, p3, p4, layout = (2, 2))
