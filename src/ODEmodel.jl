@@ -114,9 +114,9 @@ end
 """ Given estimated parameters for each trial, solve the DDE model plot the predicted curve 
     for number of cells in G1, G2, or total, along with their corresponding real data,
     for a longer time which is 2 times of the original time (~195 hours) """
-function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, title::String, legend::Any, ymax)
+function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, title::String, legend::Any, ymax, t_new)
     t = LinRange(0.0, 0.5 * length(g1[:, 1]), length(g1[:, 1]))
-    t_new = LinRange(0.0, 200, 400)
+
     G1, G2 = predict(params, g1[1] + g2[1], t_new)
 
     plot(
@@ -144,9 +144,10 @@ end
 """ Plot the data and curves for all concentrations. """
 function ODEplot_all(params_ode, g1_l::Matrix, g2_l::Matrix, pop_l, conc::Array{Float64, 1})
     # plotting the fitted curves
-    rl = [ode_plotIt(params_ode[:, i], g1_l, g2_l, pop_l, i, string(conc[i], " nM"), false, 80.0) for i = 1:4]
-    r2 = [ode_plotIt(params_ode[:, i], g1_l, g2_l, pop_l, i, string(conc[i], " nM"), false, 40.0) for i = 5:7]
-    r8 = ode_plotIt(params_ode[:, 8], g1_l, g2_l, pop_l, 8, string(conc[8], " nM"), :topleft, 40.0)
+    t_new = LinRange(0.0, 200.0, 400)
+    rl = [ode_plotIt(params_ode[:, i], g1_l, g2_l, pop_l, i, string(conc[i], " nM"), false, 80.0, t_new) for i = 1:4]
+    r2 = [ode_plotIt(params_ode[:, i], g1_l, g2_l, pop_l, i, string(conc[i], " nM"), false, 40.0, t_new) for i = 5:7]
+    r8 = ode_plotIt(params_ode[:, 8], g1_l, g2_l, pop_l, 8, string(conc[8], " nM"), :topleft, 40.0, t_new)
     plot(rl..., r2..., r8, layout = (2, 4))
 end
 
