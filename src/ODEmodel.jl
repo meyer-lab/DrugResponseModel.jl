@@ -44,7 +44,7 @@ end
 
 
 """ Predicts the model given a set of parametrs. """
-function predict(p::Vector{T}, g_0, t) where {T}
+function predict(p::Vector{T}, g_0, t; g1data = nothing, g2data = nothing) where {T}
     @assert length(p) == 9
     # Convert parameters to phase numbers
     nG1 = Int(floor(p[6]))
@@ -73,16 +73,29 @@ function predict(p::Vector{T}, g_0, t) where {T}
     prob = ODEProblem((du, u, p, t) -> mul!(du, A, u), g_0, maximum(t))
     integrator = init(prob, VCABM(); save_on = false)
 
-    G1 = Vector{T}(undef, length(t))
-    G2 = Vector{T}(undef, length(t))
+    if g1data === nothing
+        G1 = Vector{T}(undef, length(t))
+        G2 = Vector{T}(undef, length(t))
+    else
+        cost = 0.0
+    end
 
     ii = 1
     for (v, ttt) in TimeChoiceIterator(integrator, t)
-        G1[ii] = sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
-        G2[ii] = sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
+        if g1data === nothing
+            G1[ii] = sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
+            G2[ii] = sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
 
-        if ii == length(t)
-            return abs.(G1), abs.(G2), v
+            if ii == length(t)
+                return abs.(G1), abs.(G2), v
+            end
+        else
+            cost += norm(sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1))) - g1data[ii])
+            cost += norm(sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2))) - g2data[ii])
+
+            if ii == length(t)
+                return cost
+            end
         end
 
         ii += 1
@@ -93,9 +106,8 @@ end
 """ Calculates the cost function for a given set of parameters. """
 function cost(p, g1, g2)
     t = LinRange(0.0, 0.5 * length(g1), length(g1))
-    G1, G2, vecOut = predict(p, g1[1] + g2[1], t)
 
-    return norm(G1 - g1) + norm(G2 - g2)
+    return predict(p, g1[1] + g2[1], t, g1data = g1, g2data = g2)
 end
 
 
