@@ -15,6 +15,6 @@
         3.21729, 3.41872, 0.0841223, 1.52284, 0.281485, 0.207797, 
         60.2809, 0.913883, 0.00228251, 2.96638, 0.0583304, 0.0770743, 
         1.46021, 2.18259, 0.547192, 36.894, 70.8683, 17.2029, 10.6778];
-    params = optim_all(concs, g1s, g2s, initial)
-    @assert(all(x -> !isnan(x), params))
+#     params = optim_all(concs, g1s, g2s, initial)
+#     @assert(all(x -> !isnan(x), params))
 end
