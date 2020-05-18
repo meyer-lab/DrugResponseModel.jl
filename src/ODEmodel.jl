@@ -110,14 +110,13 @@ function cost(p, g1, g2)
     return predict(p, g1[1] + g2[1], t, g1data = g1, g2data = g2)
 end
 
-
 """ Given estimated parameters for each trial, solve the DDE model plot the predicted curve 
     for number of cells in G1, G2, or total, along with their corresponding real data,
     for a longer time which is 2 times of the original time (~195 hours) """
 function ode_plotIt(params::Vector, g1::Matrix, g2::Matrix, pop, i::Int, title::String, legend::Any, ymax, t_new)
     t = LinRange(0.0, 0.5 * length(g1[:, 1]), length(g1[:, 1]))
 
-    G1, G2 = predict(params, g1[1] + g2[1], t_new)
+    G1, G2 = predict(params, g1[1]+g2[1], t_new)
 
     plot(
         t_new,
