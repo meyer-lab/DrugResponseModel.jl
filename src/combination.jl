@@ -124,8 +124,8 @@ end
 
 """ Function for calculating temporal combination of two drugs. """
 function temporal_combination(params1, params2, g0::Float64, max1::Float64, max2::Float64)
-    t1 = LinRange(0.0, max1, Int(max1*2))
-    t2 = LinRange(0.0, max2, Int(max2*2))
+    t1 = LinRange(0.0, max1, Int(max1 * 2))
+    t2 = LinRange(0.0, max2, Int(max2 * 2))
 
     g1L, g2L, vecL = predict(params1, g0, t1)
     g1G, g2G, _ = predict(params2, vec(vecL), t2)
@@ -160,16 +160,16 @@ function plotTemporalCombin(params1, params2, g1s, g2s, pop, concl, concg, legen
     # ith concentration of lapatinib
     # jth concentration of doxorubicin
     diff = find_combin_order(params1, params2, g1s, g2s)
-    rowmaxind = zeros(length(diff[1,:]))
-    rowmaxval = zeros(length(diff[1,:]))
-    for j = 1:length(diff[1,:])
+    rowmaxind = zeros(length(diff[1, :]))
+    rowmaxval = zeros(length(diff[1, :]))
+    for j = 1:length(diff[1, :])
         rowmaxval[j], rowmaxind[j] = findmax(abs.(diff[j, :])) # specifies column
     end
     maxdiff, index = findmax(rowmaxval) # specifies row
     tim = 10.0:5:90.0
     max1 = tim[index]
     max2 = tim[Int(rowmaxind[index])]
-    t_new = LinRange(0.0, max1+max2, Int(2*(max1+max2)))
+    t_new = LinRange(0.0, max1 + max2, Int(2 * (max1 + max2)))
     G1_1, G2_1 = temporal_combination(params1, params2, g1s[1, 1, 1] + g2s[1, 1, 1], max1, max2)
     G1_2, G2_2 = temporal_combination(params2, params1, g1s[1, 1, 1] + g2s[1, 1, 1], max1, max2)
     p1 = ode_plotIt(params1, g1s[:, :, k1], g2s[:, :, k1], pop[:, :, k1], i, string(concl[i], " nM ", named1), false, 70.0, t_new)
@@ -183,13 +183,13 @@ end
 function find_combin_order(params1, params2, g1s, g2s)
 
     diff = zeros(17, 17)
-    i=1
-    j=1
+    i = 1
+    j = 1
     for max1 = 10.0:5:90.0 # 5-hour interval, from 10 hours to 90 hours
         for max2 = 10.0:5:90.0
             G1_1, G2_1 = temporal_combination(params1, params2, g1s[1, 1, 1] + g2s[1, 1, 1], max1, max2)
             G1_2, G2_2 = temporal_combination(params2, params1, g1s[1, 1, 1] + g2s[1, 1, 1], max1, max2)
-            diff[i,j] = (G1_1[end] + G2_1[end]) - (G1_2[end] + G2_2[end])
+            diff[i, j] = (G1_1[end] + G2_1[end]) - (G1_2[end] + G2_2[end])
             j += 1
         end
         j = 1
@@ -242,12 +242,12 @@ end
 """ Plot the heatmap to describe the difference between the order of treatments. """
 function plot_order_temporalCombin(params1, params2, g1s, g2s, named1, named2)
     diffs = DrugResponseModel.find_combin_order(params1, params2, g1s, g2s)
-    heatmap(string.(10.0:5:90.0),
+    heatmap(
+        string.(10.0:5:90.0),
         string.(10.0:5:90.0),
         diffs,
         xlabel = string("time max2 [hr]"),
         ylabel = string("time max1 [hr]"),
         title = string(named1, " --> ", named2, " - ", named2, " --> ", named1),
-        
     )
 end
