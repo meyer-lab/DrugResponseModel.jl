@@ -23,36 +23,29 @@ function getODEparamsAll(p::Array{Float64, 1}, concentrations::Array{Float64, 2}
     return effects
 end
 
-function residHillAll(hillParams::Vector, concentrations::Matrix, g1::Array, g2::Array)
-    res = 0.0
+function residHillAll(hillParams::Array{Float64, 1}, concentrations::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3})
+    res = Atomic{eltype(hillParams)}(0.0)
+    params = getODEparamsAll(hillParams, concentrations)
 
     # Solve for all drugs
-    t = 1
     for j = 1:5
-        hill = [
-            hillParams[t],
-            hillParams[31],
-            hillParams[t + 2],
-            hillParams[t + 1],
-            hillParams[32],
-            hillParams[t + 3],
-            hillParams[t + 4],
-            hillParams[t + 5],
-            hillParams[33],
-            hillParams[34],
-            hillParams[35],
-            hillParams[36],
-            hillParams[37],
-        ]
-        t += 6
-        res += residHill(hill, concentrations[:, j], g1[:, :, j], g2[:, :, j])
+        @threads for ii = 1:length(concentrations[:, j])
+            atomic_add!(
+                res,
+                cost(
+                    params[:, ii, j],
+                    g1[:, ii, j],
+                    g2[:, ii, j]
+                ),
+            )
+        end
     end
 
-    return res
+    return res[]
 end
 
 """ Hill optimization function for all drugs. """
-function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxstep = 6E4)
+function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxstep = 1E5)
     hillCostAll(hillParams) = residHillAll(hillParams, concs, g1, g2)
 
     # The parameters used here in order:
