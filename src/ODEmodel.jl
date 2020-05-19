@@ -3,11 +3,11 @@
 """
 
 """ Make the transition matrix. """
-function ODEjac(p::Vector{Float64}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Matrix{Float64}
+function ODEjac(p::Vector{T}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::SparseMatrixCSC{T, Int64} where {T}
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
     if nD1 == 0
-        D1 = Float64[]
-        diagD1 = Float64[]
+        D1 = T[]
+        diagD1 = T[]
     elseif nD1 == 1
         D1 = [0.0]
         diagD1 = -ones(nD1) * p[3]
@@ -17,8 +17,8 @@ function ODEjac(p::Vector{Float64}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Mat
     end
 
     if nD2 == 0
-        D2 = Float64[]
-        diagD2 = Float64[]
+        D2 = T[]
+        diagD2 = T[]
     elseif nD2 == 1
         D2 = [0.0]
         diagD2 = -ones(nD2) * p[4]
@@ -29,7 +29,7 @@ function ODEjac(p::Vector{Float64}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Mat
 
     v1 = [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); diagD1; diagD2]
     v2 = [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; D1; D2]
-    A = diagm(0 => v1, -1 => v2)
+    A = spdiagm(0 => v1, -1 => v2)
 
     A[1, nG1 + nG2] = 2 * p[2]
     if nD1 > 0
@@ -37,12 +37,6 @@ function ODEjac(p::Vector{Float64}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::Mat
     end
     if nD2 > 0
         A[nG1 + nG2 + nD1 + 1, (nG1 + 1):(nG1 + nG2)] = p[4] * ones(1, nG2)
-    end
-
-    if nD1 & nD2 != 0
-        @assert all(A[1:(nG1 + nG2), (nG1 + nG2 + 1):end] .== 0.0)
-        @assert all(A[nG1 + nG2 + 1, (nG1 + 1):(nG1 + nG2)] .== 0.0)
-        @assert all(A[nG1 + nG2 + nD1 + 1, 1:nG1] .== 0.0)
     end
 
     return A
@@ -76,7 +70,7 @@ function predict(p, g_0, t)
     A = ODEjac(p, nG1, nG2, nD1, nD2)
 
     if t isa Real
-        v = ExponentialUtilities.expv(t, A, v)
+        v = expmv(t, A, v)
 
         G1 = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
         G2 = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
@@ -84,7 +78,7 @@ function predict(p, g_0, t)
         # Some assumptions
         @assert t[1] == 0.0
         rmul!(A, t[2])
-        A = LinearAlgebra.exp!(A)
+        A = SparseMatrixExp(A)
 
         G1 = Vector{eltype(p)}(undef, length(t))
         G2 = Vector{eltype(p)}(undef, length(t))
