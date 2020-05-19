@@ -15,10 +15,6 @@ using DSP: conv
 using Optim
 using OrdinaryDiffEq
 using ForwardDiff
-using SparseArrays
-using ExpmV
-using LazySets
-using Expokit
 
 include("importData.jl")
 include("ODEmodel.jl")

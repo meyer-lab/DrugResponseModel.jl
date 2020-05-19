@@ -3,7 +3,7 @@
 """
 
 """ Make the transition matrix. """
-function ODEjac(p::Vector{T}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::SparseMatrixCSC{T, Int64} where {T}
+function ODEjac(p::Vector{T}, nG1::Int, nG2::Int, nD1::Int, nD2::Int) where {T}
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
     if nD1 == 0
         D1 = T[]
@@ -29,7 +29,7 @@ function ODEjac(p::Vector{T}, nG1::Int, nG2::Int, nD1::Int, nD2::Int)::SparseMat
 
     v1 = [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2]); diagD1; diagD2]
     v2 = [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]; D1; D2]
-    A = spdiagm(0 => v1, -1 => v2)
+    A = diagm(0 => v1, -1 => v2)
 
     A[1, nG1 + nG2] = 2 * p[2]
     if nD1 > 0
@@ -70,7 +70,7 @@ function predict(p, g_0, t)
     A = ODEjac(p, nG1, nG2, nD1, nD2)
 
     if t isa Real
-        v = expmv(t, A, v)
+        v = ExponentialUtilities.expv(t, A, v)
 
         G1 = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
         G2 = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
@@ -78,7 +78,7 @@ function predict(p, g_0, t)
         # Some assumptions
         @assert t[1] == 0.0
         rmul!(A, t[2])
-        A = SparseMatrixExp(A)
+        A = LinearAlgebra.exp!(A)
 
         G1 = Vector{eltype(p)}(undef, length(t))
         G2 = Vector{eltype(p)}(undef, length(t))

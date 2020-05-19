@@ -103,7 +103,7 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
         SearchRange = collect(zip(low, high)),
         NumDimensions = length(low),
         TraceMode = :verbose,
-        TraceInterval = 1,
+        TraceInterval = 100,
         MaxSteps = maxstep,
     )
 
