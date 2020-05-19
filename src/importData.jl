@@ -33,9 +33,9 @@ function get_data(path_g2::String, path_total::String; max = 189)
     end
     # removing the peaks
     for i = 1:8
-        population[:, i] = savitzky_golay_filter(population[:, i], 71, 3)
-        g2[:, i] = savitzky_golay_filter(g2[:, i], 71, 3)
-        g1[:, i] = savitzky_golay_filter(g1[:, i], 71, 3)
+        population[:, i] = savitzky_golay_filter(population[:, i], 41, 3)
+        g2[:, i] = savitzky_golay_filter(g2[:, i], 41, 3)
+        g1[:, i] = savitzky_golay_filter(g1[:, i], 41, 3)
     end
     return population, g2, g1
 end
