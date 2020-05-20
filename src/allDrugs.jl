@@ -51,7 +51,6 @@ function residHillAll(hillParams::Vector, concentrations::Matrix, g1::Array, g2:
     return res
 end
 
-
 """ Hill optimization function for all drugs. """
 function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxstep = 1E5)
     hillCostAll(hillParams) = residHillAll(hillParams, concs, g1, g2)
@@ -110,7 +109,6 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
 
     return best_fitness(results_ode), best_candidate(results_ode)
 end
-
 
 function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}, initial_x)
     f(hillParams) = residHillAll(hillParams, concs, g1, g2)

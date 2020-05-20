@@ -13,9 +13,6 @@ using Statistics
 import Calculus
 using DSP: conv
 using Optim
-using OrdinaryDiffEq
-using ForwardDiff
-using SparseArrays
 
 include("importData.jl")
 include("ODEmodel.jl")

@@ -27,6 +27,7 @@ function BlissCombination(p1::Array{Float64, 2}, p2::Array{Float64, 2}, n::Int)
     return combined
 end
 
+
 """ To output the full ODE params for plotting the cell number. """
 function fullCombinationParam(origP1::Array{Float64, 2}, origP2::Array{Float64, 2}, origFullParam::Array{Float64, 3}, n::Int)
     """ Here we assume the base is origP1, and we just want to get the params of EC50 from origP2. """
