@@ -252,3 +252,18 @@ function plot_order_temporalCombin(params1, params2, g1s, g2s, named1, named2)
         title = string(named1, " --> ", named2, " - ", named2, " --> ", named1),
     )
 end
+
+####--------------- Loewe additivity ------------------####
+""" Find the inverse of a hill function (concentration), given the parameters and the effect. """
+function inv_hill(p::Array{Float64, 1}, y)
+    #p = [EC50, min, max, steepness]
+    return p[1] * (((p[3] - y) / (y - p[2])) ** p[4])
+end
+
+""" The combination Index for Loewe. """
+function loewe(d1, p1, d2, p2)
+    # x: the combined effect
+    f(x) = (d1 / inv_hill(p1, x)) + (d2 / inv_hill(p2, x)) - 1.0
+    combined_effect = find_zero(f, (0.0, 3.0))
+    return combined_effect
+end
