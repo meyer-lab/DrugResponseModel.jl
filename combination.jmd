@@ -5,7 +5,7 @@ This file will is a replacement for Bliss and contains combination results. All 
 using DrugResponseModel
 using Plots
 
-concs, populations, g1s, g2s = load(189, 1);
+concs, populations, g1s, g2s = load(189, 3);
 g0 = g1s[1,1,1]+g2s[1,1,1];
 ```
 

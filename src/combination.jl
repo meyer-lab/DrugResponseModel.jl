@@ -256,14 +256,15 @@ end
 ####--------------- Loewe additivity ------------------####
 """ Find the inverse of a hill function (concentration), given the parameters and the effect. """
 function inv_hill(p::Array{Float64, 1}, y)
-    #p = [EC50, min, max, steepness]
-    return p[1] * (((p[3] - y) / (y - p[2])) ** p[4])
+    #p = [EC50, min, max, steepness], y:effect. it returns concentration
+    @assert minimum(p[2], p[3]) < y < maximum(p[2], p[3]) 
+    return p[1] * (((p[3] - y) / (y - p[2])) ^ p[4])
 end
 
 """ The combination Index for Loewe. """
 function loewe(d1, p1, d2, p2)
-    # x: the combined effect
+    # x: the combined effect 
     f(x) = (d1 / inv_hill(p1, x)) + (d2 / inv_hill(p2, x)) - 1.0
-    combined_effect = find_zero(f, (0.0, 3.0))
+    combined_effect = find_zero(f, (-2.0, 2.0))
     return combined_effect
 end
