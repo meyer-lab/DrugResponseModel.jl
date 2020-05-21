@@ -257,14 +257,27 @@ end
 """ Find the inverse of a hill function (concentration), given the parameters and the effect. """
 function inv_hill(p::Array{Float64, 1}, y)
     #p = [EC50, min, max, steepness], y:effect. it returns concentration
-    @assert minimum(p[2], p[3]) < y < maximum(p[2], p[3]) 
-    return p[1] * (((p[3] - y) / (y - p[2])) ^ p[4])
+    conc = p[1] * (((y - p[2]) / (p[3] - y)) ^ p[4])
+    return conc
 end
 
 """ The combination Index for Loewe. """
-function loewe(d1, p1, d2, p2)
+function loewe(d1, params1, d2, params2, conc1, conc2)
     # x: the combined effect 
-    f(x) = (d1 / inv_hill(p1, x)) + (d2 / inv_hill(p2, x)) - 1.0
-    combined_effect = find_zero(f, (-2.0, 2.0))
+    f(x) = (d1 / inv_hill(params1, x)) + (d2 / inv_hill(params2, x)) - 1.0
+
+    combined_effect = find_zero(f, [minimum([params1[2], params2[2]]), maximum([params1[3], params2[3]])])
     return combined_effect
+end
+
+""" Apply Loewe to a range of concentrations. """
+function apply_loewe(params1, params2, conc1, conc2)
+
+    combined_effects = zeros(length(conc1), length(conc2))
+    for (ind1, d1) in enumerate(conc1)
+        for (ind2, d2) in enumerate(conc2) # keep d1 constant and loop over d2
+            combined_effects[ind1, ind2] = loewe(d1, params1, d2, params2, conc1, conc2)
+        end
+    end
+    return combined_effects
 end
