@@ -214,7 +214,6 @@ function find_IC50(population)
     return (IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal)
 end
 
-
 function heatmap_combination(d1, d2, cellNum, i1, i2, d1name, d2name, effs, concs, g0)
     n = 8 # the number of concentrations we have
     combin = fullCombinationParam(d1, d2, effs, n)
@@ -239,7 +238,6 @@ function heatmap_combination(d1, d2, cellNum, i1, i2, d1name, d2name, effs, conc
     )
 end
 
-
 """ Plot the heatmap to describe the difference between the order of treatments. """
 function plot_order_temporalCombin(params1, params2, g1s, g2s, named1, named2)
     diffs = DrugResponseModel.find_combin_order(params1, params2, g1s, g2s)
@@ -262,11 +260,11 @@ function inv_hill(p::Array{Float64, 1}, y)
 end
 
 """ The combination Index for Loewe. """
-function loewe(d1, params1, d2, params2, conc1, conc2)
-    # x: the combined effect 
-    f(x) = (d1 / inv_hill(params1, x)) + (d2 / inv_hill(params2, x)) - 1.0
+function loewe(d1, p1, d2, p2, conc1, conc2)
+    # x: the combined effect
+    f(x) = (d1 / inv_hill(p1, x)) + (d2 / inv_hill(p2, x)) - 1.0
 
-    combined_effect = find_zero(f, [minimum([params1[2], params2[2]]), maximum([params1[3], params2[3]])])
+    combined_effect = find_zero(f, [(minimum([p1[2], p2[2]]) + eps()), (maximum([p1[3], p2[3]])-eps())])
     return combined_effect
 end
 
