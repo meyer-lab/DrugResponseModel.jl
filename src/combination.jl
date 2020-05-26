@@ -264,7 +264,13 @@ function loewe(d1, p1, d2, p2, conc1, conc2)
     # x: the combined effect
     f(x) = (d1 / inv_hill(p1, x)) + (d2 / inv_hill(p2, x)) - 1.0
 
-    combined_effect = find_zero(f, [(minimum([p1[2], p2[2]]) + eps()), (maximum([p1[3], p2[3]])-eps())])
+    find_min = maximum([minimum([p2[2], p2[3]]), minimum([p1[2], p1[3]])])
+    find_max = minimum([maximum([p2[2], p2[3]]), maximum([p1[2], p1[3]])])
+    combined_effect = try
+        find_zero(f, [find_min, find_max])
+    catch
+        0.0
+    end
     return combined_effect
 end
 
