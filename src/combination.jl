@@ -240,15 +240,14 @@ function costHill(ydata::Array{Float64, 1}, p::Array{Float64, 1}, conc::Array{Fl
     return norm(y - ydata)
 end
 
-function optimizeHill(p::Array{Float64, 1}, concs::Array{Float64, 2}, d1ind::Int, g1s::Array{Float64, 3}, g2s::Array{Float64, 3})
-    ps = DrugResponseModel.getODEparamsAll(p, concs);
+function optimizeHill(concs::Array{Float64, 2}, d1ind::Int, g1s::Array{Float64, 3}, g2s::Array{Float64, 3})
     nums1 = zeros(9)
     conc1 = zeros(9)
     p1 = ps[:, :, d1ind]
     conc1[1:8] = concs[:, d1ind]
     conc1[9] = 10000
     for i=1:8
-        nums1[i] = DrugResponseModel.numcells(p1[:, i], g1s[1,1,1]+g2s[1,1,1])
+        nums1[i] = g1s[end, i, d1ind] + g2s[end, i, d1ind]
     end
     costs(p) = costHill(nums1, p, conc1)
     low = [conc1[2], 0.1]
