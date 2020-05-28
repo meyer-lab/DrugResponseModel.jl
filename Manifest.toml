@@ -404,12 +404,6 @@ uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 [[Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
-[[LsqFit]]
-deps = ["Distributions", "LinearAlgebra", "NLSolversBase", "OptimBase", "Random", "StatsBase", "Test"]
-git-tree-sha1 = "186c2afbdb3cd52191078cfc6176f7084ed9dfb7"
-uuid = "2fda8390-95c7-5789-9bda-21331edee243"
-version = "0.8.1"
-
 [[MKL_jll]]
 deps = ["IntelOpenMP_jll", "Libdl", "Pkg"]
 git-tree-sha1 = "720629cc8cbd12c146ca01b661fd1a6cf66e2ff4"
