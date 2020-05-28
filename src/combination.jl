@@ -214,6 +214,79 @@ function find_IC50(population)
     return (IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal)
 end
 
+""" Plot the heatmap to describe the difference between the order of treatments. """
+function plot_order_temporalCombin(params1, params2, g1s, g2s, named1, named2)
+    diffs = DrugResponseModel.find_combin_order(params1, params2, g1s, g2s)
+    heatmap(
+        string.(10.0:5:90.0),
+        string.(10.0:5:90.0),
+        diffs,
+        xlabel = string("time max2 [hr]"),
+        ylabel = string("time max1 [hr]"),
+        title = string(named1, " --> ", named2, " - ", named2, " --> ", named1),
+    )
+end
+
+####--------------- Loewe additivity ------------------####
+""" Find the inverse of a hill function (concentration), given the parameters and the effect. """
+function inv_hill(p::Array{Float64, 1}, y)
+    #p = [EC50, min, max, steepness], y:effect. it returns concentration
+    conc = p[1] * (((y - p[2]) / (p[3] - y)) ^ p[4])
+    return conc
+end
+
+function costHill(ydata::Array{Float64, 1}, p::Array{Float64, 1}, conc::Array{Float64, 1})
+    y = ydata[1] .+ (ydata[end] - ydata[1]) ./ (1 .+ (p[1] ./ conc) .^ p[2])
+    return norm(y - ydata)
+end
+
+function optimizeHill(concs::Array{Float64, 2}, d1ind::Int, g1s::Array{Float64, 3}, g2s::Array{Float64, 3})
+    nums1 = zeros(9)
+    conc1 = zeros(9)
+    conc1[1:8] = concs[:, d1ind]
+    conc1[9] = 10000
+    for i=1:8
+        nums1[i] = g1s[end, i, d1ind] + g2s[end, i, d1ind]
+    end
+    costs(p) = costHill(nums1, p, conc1)
+    low = [conc1[2], 0.1]
+    high = [conc1[7], 10.0]
+    results_hill = bboptimize(
+        costs;
+        SearchRange = collect(zip(low, high)),
+        NumDimensions = length(low),
+        TraceMode = :silent,
+        TraceInterval = 100,
+        MaxSteps = 1E5,
+    )
+    par = best_candidate(results_hill)
+    return [par[1], nums1[1], nums1[end], par[2]]
+end
+
+function low(d1, d2, p1, p2)
+        f(x) = (d1 / inv_hill(p1, x)) + (d2 / inv_hill(p2, x)) - 1.0
+    find_min = maximum([minimum([p2[2], p2[3]]), minimum([p1[2], p1[3]])])
+    find_max = minimum([maximum([p2[2], p2[3]]), maximum([p1[2], p1[3]])])
+    combined_effect = find_zero(f, [find_min, find_max])
+    return combined_effect
+end
+
+function loweCellNum(concs, d1ind, d2ind, g1s, g2s)
+    pars1 = optimizeHill(concs, d1ind, g1s, g2s)
+    pars2 = optimizeHill(concs, d2ind, g1s, g2s)
+    combined_effs = zeros(9,9)
+    conc1 = zeros(9)
+    conc2 = zeros(9)
+    conc1[1:8] = concs[:, d1ind]
+    conc1[9] = conc2[9] = 10000.0
+    conc2[1:8] = concs[:, d2ind]
+    for i=1:9
+        for j=1:9
+            combined_effs[i,j] = low(conc1[i], conc2[j], pars1, pars2)
+        end
+    end
+    return combined_effs[1:8, 1:8]
+end
 
 function heatmap_combination(d1, d2, cellNum, i1, i2, d1name, d2name, effs, concs, g0)
     n = 8 # the number of concentrations we have
@@ -222,7 +295,7 @@ function heatmap_combination(d1, d2, cellNum, i1, i2, d1name, d2name, effs, conc
     numscomb = zeros(n, n)
     for j = 1:n
         for m = 1:n
-            numscomb[j, m] = numcells(combin[:, j, m], g0, 96)
+            numscomb[j, m] = numcells(combin[:, j, m], g0)
         end
     end
 
@@ -235,20 +308,6 @@ function heatmap_combination(d1, d2, cellNum, i1, i2, d1name, d2name, effs, conc
         xlabel = string(d2name, " log[nM]"),
         ylabel = string(d1name, " log [nM]"),
         title = "cell number fold diff",
-        clim = (0.0, 2.0),
-    )
-end
-
-
-""" Plot the heatmap to describe the difference between the order of treatments. """
-function plot_order_temporalCombin(params1, params2, g1s, g2s, named1, named2)
-    diffs = DrugResponseModel.find_combin_order(params1, params2, g1s, g2s)
-    heatmap(
-        string.(10.0:5:90.0),
-        string.(10.0:5:90.0),
-        diffs,
-        xlabel = string("time max2 [hr]"),
-        ylabel = string("time max1 [hr]"),
-        title = string(named1, " --> ", named2, " - ", named2, " --> ", named1),
+        clim = (0.0, 5.0),
     )
 end

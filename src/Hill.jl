@@ -117,14 +117,14 @@ end
 
 
 """ Calculate the # of cells in G1 for a set of parameters and T """
-function numcells(params, g0, T)
+function numcells(params, g0)
     @assert(all(params .>= 0.0), "negative params $params")
-    t = LinRange(0.0, 95.5, 192)
+    t = LinRange(0.0, 94.5, 189)
     G1, G2 = predict(params, g0, t)
 
     @assert(all(G1[2:end] .>= 0.0), "negative cell number in G1 $G1")
     @assert(all(G2[2:end] .>= 0.0), "negative cell number in G2 $G2")
-    return G1[T] + G2[T]
+    return G1[end] + G2[end]
 end
 
 """ A function to calculate std and mean of ODE parameters for each drug. """
