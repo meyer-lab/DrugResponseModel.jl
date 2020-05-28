@@ -19,7 +19,7 @@ pp = [52.1243, 1.2856, 0.0026682, 2.9096, 0.0250893, 0.0623134,
 ```
 
 ```julia; echo=false
-effs = getODEparamsAll(pp, concs)
+effs = getODEparamsAll(pp, concs);
 lapat = effs[:,:,1];
 dox = effs[:,:,2];
 gemc = effs[:,:,3];

@@ -310,6 +310,6 @@ function heatmap_combination(d1, d2, cellNum, i1, i2, d1name, d2name, effs, conc
         xlabel = string(d2name, " log[nM]"),
         ylabel = string(d1name, " log [nM]"),
         title = "cell number fold diff",
-        clim = (0.0, 2.0),
+        clim = (0.0, 5.0),
     )
 end
