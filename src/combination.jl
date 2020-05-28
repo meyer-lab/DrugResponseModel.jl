@@ -243,7 +243,6 @@ end
 function optimizeHill(concs::Array{Float64, 2}, d1ind::Int, g1s::Array{Float64, 3}, g2s::Array{Float64, 3})
     nums1 = zeros(9)
     conc1 = zeros(9)
-    p1 = ps[:, :, d1ind]
     conc1[1:8] = concs[:, d1ind]
     conc1[9] = 10000
     for i=1:8
