@@ -272,9 +272,9 @@ function low(d1, d2, p1, p2)
     return combined_effect
 end
 
-function loweCellNum(p, concs, d1ind, d2ind, g1s, g2s)
-    pars1 = optimizeHill(p, concs, d1ind, g1s, g2s)
-    pars2 = optimizeHill(p, concs, d2ind, g1s, g2s)
+function loweCellNum(concs, d1ind, d2ind, g1s, g2s)
+    pars1 = optimizeHill(concs, d1ind, g1s, g2s)
+    pars2 = optimizeHill(concs, d2ind, g1s, g2s)
     combined_effs = zeros(9,9)
     conc1 = zeros(9)
     conc2 = zeros(9)
