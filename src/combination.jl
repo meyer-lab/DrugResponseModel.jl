@@ -231,7 +231,7 @@ end
 """ Find the inverse of a hill function (concentration), given the parameters and the effect. """
 function inv_hill(p::Array{Float64, 1}, y)
     #p = [EC50, min, max, steepness], y:effect. it returns concentration
-    conc = p[1] * (((y - p[2]) / (p[3] - y)) ^ p[4])
+    conc = p[1] * (((y - p[2]) / (p[3] - y))^p[4])
     return conc
 end
 
@@ -245,7 +245,7 @@ function optimizeHill(concs::Array{Float64, 2}, d1ind::Int, g1s::Array{Float64, 
     conc1 = zeros(9)
     conc1[1:8] = concs[:, d1ind]
     conc1[9] = 10000
-    for i=1:8
+    for i = 1:8
         nums1[i] = g1s[end, i, d1ind] + g2s[end, i, d1ind]
     end
     costs(p) = costHill(nums1, p, conc1)
@@ -264,7 +264,7 @@ function optimizeHill(concs::Array{Float64, 2}, d1ind::Int, g1s::Array{Float64, 
 end
 
 function low(d1, d2, p1, p2)
-        f(x) = (d1 / inv_hill(p1, x)) + (d2 / inv_hill(p2, x)) - 1.0
+    f(x) = (d1 / inv_hill(p1, x)) + (d2 / inv_hill(p2, x)) - 1.0
     find_min = maximum([minimum([p2[2], p2[3]]), minimum([p1[2], p1[3]])])
     find_max = minimum([maximum([p2[2], p2[3]]), maximum([p1[2], p1[3]])])
     combined_effect = find_zero(f, [find_min, find_max])
@@ -274,15 +274,15 @@ end
 function loweCellNum(concs, d1ind, d2ind, g1s, g2s)
     pars1 = optimizeHill(concs, d1ind, g1s, g2s)
     pars2 = optimizeHill(concs, d2ind, g1s, g2s)
-    combined_effs = zeros(9,9)
+    combined_effs = zeros(9, 9)
     conc1 = zeros(9)
     conc2 = zeros(9)
     conc1[1:8] = concs[:, d1ind]
     conc1[9] = conc2[9] = 10000.0
     conc2[1:8] = concs[:, d2ind]
-    for i=1:9
-        for j=1:9
-            combined_effs[i,j] = low(conc1[i], conc2[j], pars1, pars2)
+    for i = 1:9
+        for j = 1:9
+            combined_effs[i, j] = low(conc1[i], conc2[j], pars1, pars2)
         end
     end
     return combined_effs[1:8, 1:8]
