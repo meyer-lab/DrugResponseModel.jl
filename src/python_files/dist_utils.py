@@ -87,4 +87,4 @@ def pTotal(Control, Drug1, Drug2, Drug3):
     drugScales = [[xbarDg1_1/np.argmax(sh1), xbarDg2_1/np.argmax(sh2)], # [G1_scale, G2_scale]
                   [xbarDg1_2/np.argmax(sh1), xbarDg2_2/np.argmax(sh2)],
                   [xbarDg1_3/np.argmax(sh1), xbarDg2_3/np.argmax(sh2)]]
-    return control, controlParams, drugScales
+    return controlParams, drugScales
