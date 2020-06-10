@@ -46,7 +46,7 @@ def plotDist(control, trial, cont_pr, parameters, label):
         plt.xlabel("phase durations [hrs]")
         plt.ylabel("probability")
         plt.legend()
-    
+                  
 def pTotal(Control, Drug1, Drug2, Drug3):
     control = polish(Control)
     drug1 = polish(Drug1)
