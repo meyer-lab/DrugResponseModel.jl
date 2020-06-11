@@ -47,11 +47,12 @@ def plotDist(control, trial, cont_pr, parameters, label):
         plt.ylabel("probability")
         plt.legend()
                   
-def pTotal(Control, Drug1, Drug2, Drug3):
+def pTotal(Control, Drug1, Drug2, Drug3, Drug4):
     control = polish(Control)
     drug1 = polish(Drug1)
     drug2 = polish(Drug2)
     drug3 = polish(Drug3)
+    drug4 = polish(Drug4)
 
     xbarCg1 = np.sum(control[0]) / len(control[0])
     xbarCg2 = np.sum(control[1]) / len(control[1])
@@ -65,6 +66,8 @@ def pTotal(Control, Drug1, Drug2, Drug3):
     xbarDg1_3 = np.sum(drug3[0]) / len(drug3[0])
     xbarDg2_3 = np.sum(drug3[1]) / len(drug3[1])
 
+    xbarDg1_4 = np.sum(drug4[0]) / len(drug4[0])
+    xbarDg2_4 = np.sum(drug4[1]) / len(drug4[1])
     sh1 = []
     sh2 = []
     for k in range(1,100):
@@ -80,11 +83,21 @@ def pTotal(Control, Drug1, Drug2, Drug3):
         tmd1_3 = sp.gamma.logpdf(drug3[0], a=k, loc=0, scale=xbarDg1_3/k).sum()
         tmd2_3 = sp.gamma.logpdf(drug3[1], a=k, loc=0, scale=xbarDg2_3/k).sum()
 
-        sh1.append(tmc1 + tmd1_1 + tmd1_2 + tmd1_3) # g1
-        sh2.append(tmc2 + tmd2_1 + tmd2_2 + tmd2_3) # g2
+        tmd1_4 = sp.gamma.logpdf(drug4[0], a=k, loc=0, scale=xbarDg1_4/k).sum()
+        tmd2_4 = sp.gamma.logpdf(drug4[1], a=k, loc=0, scale=xbarDg2_4/k).sum()
+
+        sh1.append(tmc1 + tmd1_1 + tmd1_2 + tmd1_3 + tmd1_4) # g1
+        sh2.append(tmc2 + tmd2_1 + tmd2_2 + tmd2_3 + tmd2_4) # g2
         
     controlParams = [[np.argmax(sh1), xbarCg1/np.argmax(sh1)], [np.argmax(sh2), xbarCg2/np.argmax(sh2)]] #[[G1_shape, G1_scale], [G2_shape, G2_scale]]
     drugScales = [[xbarDg1_1/np.argmax(sh1), xbarDg2_1/np.argmax(sh2)], # [G1_scale, G2_scale]
                   [xbarDg1_2/np.argmax(sh1), xbarDg2_2/np.argmax(sh2)],
-                  [xbarDg1_3/np.argmax(sh1), xbarDg2_3/np.argmax(sh2)]]
+                  [xbarDg1_3/np.argmax(sh1), xbarDg2_3/np.argmax(sh2)],
+                  [xbarDg1_4/np.argmax(sh1), xbarDg2_4/np.argmax(sh2)]]
     return controlParams, drugScales
+
+
+
+
+
+
