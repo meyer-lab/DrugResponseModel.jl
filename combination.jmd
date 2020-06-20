@@ -2,6 +2,8 @@ This file will is a replacement for Bliss and contains combination results. All 
 
 
 ```julia; echo=false
+import Pkg; Pkg.instantiate()
+Pkg.activate(".")
 using DrugResponseModel
 using Plots
 

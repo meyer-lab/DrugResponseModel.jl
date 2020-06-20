@@ -1,6 +1,8 @@
 The following inculdes combining the drugs in terms of treating cells successively with different drugs after a specific amount of time, and also, Bliss combination for cell number and the drug effects.
 
 ```julia; echo=false
+import Pkg; Pkg.instantiate()
+Pkg.activate(".")
 using DrugResponseModel
 using Plots
 concs, populations, g1s, g2s = load(189, 1);

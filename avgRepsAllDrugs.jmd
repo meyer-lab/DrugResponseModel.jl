@@ -1,6 +1,8 @@
 This file plots (1) time series simulations for average of 3 replicates on top of the average data. (2) shows the quantified drug effects for this setting. (3) shows the G2 phase percentage for each drug all concentrations, beside the G2 percentage of the data for that drug across all concentrations.
 
 ```julia; echo=false
+import Pkg; Pkg.instantiate()
+Pkg.activate(".")
 using DrugResponseModel
 using Plots, LinearAlgebra
 

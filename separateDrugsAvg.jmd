@@ -1,6 +1,8 @@
 This file contains all the drugs simulations for the average of replicates, separately. Time series, G2 percentage, and quantified drug effects are shown.
 
 ```julia; echo=false
+import Pkg; Pkg.instantiate()
+Pkg.activate(".")
 using DrugResponseModel
 using Plots, Statistics
 concs, populations1, g1s1, g2s1 = load(189, 1);

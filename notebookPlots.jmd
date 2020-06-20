@@ -1,6 +1,8 @@
 This file contains all the drugs, separately.
 
 ```julia; echo=false
+import Pkg; Pkg.instantiate()
+Pkg.activate(".")
 using DrugResponseModel
 using Plots, Statistics
 concs, populations1, g1s1, g2s1 = load(189, 1);

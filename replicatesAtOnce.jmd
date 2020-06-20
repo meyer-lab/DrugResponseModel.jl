@@ -1,5 +1,7 @@
 Simulation and representation of the three replicates.
 ```julia; echo=false
+import Pkg; Pkg.instantiate()
+Pkg.activate(".")
 using DrugResponseModel
 using Plots
 
