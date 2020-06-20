@@ -1,0 +1,174 @@
+This file plots (1) time series simulations for average of 3 replicates on top of the average data. (2) shows the quantified drug effects for this setting. (3) shows the G2 phase percentage for each drug all concentrations, beside the G2 percentage of the data for that drug across all concentrations.
+
+```julia; echo=false
+using DrugResponseModel
+using Plots, LinearAlgebra
+
+concs, populations1, g1s1, g2s1 = load(189, 1);
+concs, populations2, g1s2, g2s2 = load(189, 2);
+concs, populations3, g1s3, g2s3 = load(189, 3);
+g0 = g1s1[1,1,1]+g2s1[1,1,1];
+g1m = (g1s1 .+ g1s2 .+ g1s3) ./ 3;
+g2m = (g2s1 .+ g2s2 .+ g2s3) ./ 3;
+
+# Simulating only 7 concentrations to help improving the fit
+newconcs = concs[1:7,:];
+ng1m = g1m[:, 1:7, :];
+ng2m = g2m[:, 1:7, :];
+# _, p = optimize_hillAll(newconcs, ng1m, ng2m)
+
+# exponential growth, assuming nG1=nG2=1, nD1=nD2=0.
+p2 = [246.815, 1.53201, 0.26066, 0.573611, 0.000250779, 0.581831, 0.698425, 16.6995, 1.75911, 1.09693, 0.795781, 0.390415, 0.392315, 0.693793, 10.3353, 2.72854, 2.39486, 0.951811, 0.652654, 0.548388, 0.596213, 3.10551, 3.84515, 0.978355, 0.867345, 0.219522, 0.573921, 0.641519, 249.736, 1.22168, 0.736855, 0.921887, 0.000185764, 0.926901, 0.673717, 0.0437556, 0.0257515, 1.0, 1.0, 0.0, 0.0];
+
+# model
+p= [49.2322, 1.13253, 0.0557782, 3.43847, 0.0183834, 0.0530674, 0.538046, 58.3661, 1.7259, 2.69584, 0.0578749, 0.475825, 0.537772, 0.544677, 20.8855, 2.05741, 2.05982, 4.99875, 0.0697081, 0.359285, 0.496691, 3.9771, 4.8181, 0.0587329, 1.82322, 0.633786, 0.445822, 0.498424, 40.3828, 1.08046, 0.653381, 3.35693, 0.0426125, 0.0648354, 0.535886, 1.92651, 1.77876, 42.2714, 56.3408, 37.3421, 17.6778];
+
+efcs = getODEparamsAll(p, concs);
+```
+
+```julia; echo=false
+# find G1 and G2 cell number for this set of parameters
+G1 = zeros(189, 7, 5)
+G2 = zeros(189, 7, 5)
+t = LinRange(0.0, 95.0, 189)
+for k=1:5 # drug number
+    for i = 1:7 # concentration number
+        G1[:, i, k], G2[:, i, k], _ = predict(efcs[:, i, k], g0, t)
+    end
+end
+
+# find G2 percentage
+g2 = G2 ./(G1 .+ G2); # in model
+gdata2 = g2m ./ (g2m .+ g1m); # in data
+```
+
+print the SSE for all drugs over all the concentrations:
+
+```julia; echo=false
+# calculate the norm error (SSE)
+err = zeros(5)
+for i=1:5
+    err[i] = norm(G1[:, :, i] - g1m[:, 1:7, i]) + norm(G2[:, :, i] - g2m[:, 1:7, i])
+end
+print("lapatinib: ", err[1], ", doxorubicin: ", err[2], ", gemcitabine: ", err[3], ", paclitaxel: ", err[4], ", palbociclib: ", err[5])
+```
+
+### Lapatinib
+
+time series plot
+
+```julia; echo=false
+p1 = DrugResponseModel.plotavg(G1[:, :, 1], G2[:, :, 1], g1m[:, :, 1], g2m[:, :, 1], 1, :false, concs[1, 1])
+p =[DrugResponseModel.plotavg(G1[:, :, 1], G2[:, :, 1], g1m[:, :, 1], g2m[:, :, 1], i, :false, concs[i, 1]) for i=2:7]
+plot(p1, p..., figsize=(1000, 700), dpi=150)
+```
+
+percentage plot
+
+```julia; echo=false
+p1=DrugResponseModel.plotperc(g2[:, :, 1], "lap.", concs[:, 1])
+p2=DrugResponseModel.plotperc(gdata2[:, :, 1], "lap.", concs[:, 1])
+plot(p1, p2)
+```
+
+quantified response plot
+
+```julia; echo=false
+DrugResponseModel.plot_parameters(concs[:, 1], efcs[:, :, 1], zeros(4,7))
+```
+
+### Doxorubicin
+
+time series plot
+
+```julia; echo=false
+p1 = DrugResponseModel.plotavg(G1[:, :, 2], G2[:, :, 2], g1m[:, :, 2], g2m[:, :, 2], 1, :false, concs[1, 2])
+p =[DrugResponseModel.plotavg(G1[:, :, 2], G2[:, :, 2], g1m[:, :, 2], g2m[:, :, 2], i, :false, concs[i, 2]) for i=2:7]
+plot(p1, p..., figsize=(1000, 700), dpi=150)
+```
+
+percentage plot
+
+```julia; echo=false
+p1=DrugResponseModel.plotperc(g2[:, :, 2], "dox.", concs[:, 2])
+p2=DrugResponseModel.plotperc(gdata2[:, :, 2], "dox.", concs[:, 2])
+plot(p1, p2)
+```
+
+quantified response plot
+
+```julia; echo=false
+DrugResponseModel.plot_parameters(concs[:, 2], efcs[:, :, 2], zeros(4,7))
+```
+
+### Gemcitabine
+
+time series plot
+
+```julia; echo=false
+p1 = DrugResponseModel.plotavg(G1[:, :, 3], G2[:, :, 3], g1m[:, :, 3], g2m[:, :, 3], 1, :false, concs[1, 3])
+p =[DrugResponseModel.plotavg(G1[:, :, 3], G2[:, :, 3], g1m[:, :, 3], g2m[:, :, 3], i, :false, concs[i, 3]) for i=2:7]
+plot(p1, p..., figsize=(1000, 700), dpi=150)
+```
+
+percentage plot
+
+```julia; echo=false
+p1=DrugResponseModel.plotperc(g2[:, :, 3], "gem.", concs[:, 3])
+p2=DrugResponseModel.plotperc(gdata2[:, :, 3], "gem.", concs[:, 3])
+plot(p1, p2)
+```
+
+quantified response plot
+
+```julia; echo=false
+DrugResponseModel.plot_parameters(concs[:, 3], efcs[:, :, 3], zeros(4,7))
+```
+
+### Paclitaxel
+
+time series plot
+
+```julia; echo=false
+p1 = DrugResponseModel.plotavg(G1[:, :, 4], G2[:, :, 4], g1m[:, :, 4], g2m[:, :, 4], 1, :false, concs[1, 4])
+p =[DrugResponseModel.plotavg(G1[:, :, 4], G2[:, :, 4], g1m[:, :, 4], g2m[:, :, 4], i, :false, concs[i, 4]) for i=2:7]
+plot(p1, p..., figsize=(1000, 700), dpi=150)
+```
+
+percentage plot
+
+```julia; echo=false
+p1=DrugResponseModel.plotperc(g2[:, :, 4], "tax.", concs[:, 4])
+p2=DrugResponseModel.plotperc(gdata2[:, :, 4], "tax.", concs[:, 4])
+plot(p1, p2)
+```
+
+quantified response plot
+
+```julia; echo=false
+DrugResponseModel.plot_parameters(concs[:, 4], efcs[:, :, 4], zeros(4,7))
+```
+
+### Palbociclib
+
+time series plot
+
+```julia; echo=false
+p1 = DrugResponseModel.plotavg(G1[:, :, 5], G2[:, :, 5], g1m[:, :, 5], g2m[:, :, 5], 1, :false, concs[1, 5])
+p =[DrugResponseModel.plotavg(G1[:, :, 5], G2[:, :, 5], g1m[:, :, 5], g2m[:, :, 5], i, :false, concs[i, 5]) for i=2:7]
+plot(p1, p..., figsize=(1000, 700), dpi=150)
+```
+
+percentage plot
+
+```julia; echo=false
+p1=DrugResponseModel.plotperc(g2[:, :, 5], "palb.", concs[:, 5])
+p2=DrugResponseModel.plotperc(gdata2[:, :, 5], "palb.", concs[:, 5])
+plot(p1, p2)
+```
+
+quantified response plot
+
+```julia; echo=false
+DrugResponseModel.plot_parameters(concs[:, 5], efcs[:, :, 5], zeros(4,7))
+```
