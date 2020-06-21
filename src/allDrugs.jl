@@ -16,10 +16,10 @@ function getODEparamsAll(p::Array{Float64, 1}, concentrations::Array{Float64, 2}
         k += 7
     end
 
-    effects[6, :, :] .= 1
-    effects[7, :, :] .= 1
-    effects[8, :, :] .= 0
-    effects[9, :, :] .= 0
+    effects[6, :, :] .= p[38]
+    effects[7, :, :] .= p[39]
+    effects[8, :, :] .= p[40]
+    effects[9, :, :] .= p[41]
 
     return effects
 end
@@ -40,10 +40,10 @@ function residHillAll(hillParams::Vector, concentrations::Matrix, g1::Array, g2:
             hillParams[t + 4],
             hillParams[t + 5],
             hillParams[t + 6],
-            1,
-            1,
-            0,
-            0,
+            hillParams[38],
+            hillParams[39],
+            hillParams[40],
+            hillParams[41],
         ]
         t += 7
         res += residHill(hill, concentrations[:, j], g1[:, :, j], g2[:, :, j])

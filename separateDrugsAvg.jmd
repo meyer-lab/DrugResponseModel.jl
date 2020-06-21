@@ -43,8 +43,8 @@ G2 percentage plot
 ```julia; echo=false
 # percentage
 g2 = G2 ./(G1 .+ G2);
-p1=plot2(g2, "lap.", concs[:, 1], "model")
-p2=plot2(gdata2[:, :, 1], "lap.", concs[:, 1], "data")
+p1=DrugResponseModel.plotperc(g2, "lap.", concs[:, 1], "model")
+p2=DrugResponseModel.plotperc(gdata2[:, :, 1], "lap.", concs[:, 1], "data")
 plot(p1, p2)
 ```
 
@@ -87,8 +87,8 @@ G2 percentage plot
 ```julia; echo=false
 # percentage
 g2 = G2 ./(G1 .+ G2);
-p1=plot2(g2, "dox.", concs[:, 2], "model")
-p2=plot2(gdata2[:, :, 2], "dox.", concs[:, 2], "data")
+p1=DrugResponseModel.plotperc(g2, "dox.", concs[:, 2], "model")
+p2=DrugResponseModel.plotperc(gdata2[:, :, 2], "dox.", concs[:, 2], "data")
 plot(p1, p2)
 ```
 
@@ -131,8 +131,8 @@ G2 percentage plot
 ```julia; echo=false
 # percentage
 g2 = G2 ./(G1 .+ G2);
-p1=plot2(g2, "gem.", concs[:, 3], "model")
-p2=plot2(gdata2[:, :, 3], "gem.", concs[:, 3], "data")
+p1=DrugResponseModel.plotperc(g2, "gem.", concs[:, 3], "model")
+p2=DrugResponseModel.plotperc(gdata2[:, :, 3], "gem.", concs[:, 3], "data")
 plot(p1, p2)
 ```
 
@@ -175,8 +175,8 @@ G2 percentage plot
 ```julia; echo=false
 # percentage
 g2 = G2 ./(G1 .+ G2);
-p1=plot2(g2, "tax.", concs[:, 4], "model")
-p2=plot2(gdata2[:, :, 4], "tax.", concs[:, 4], "data")
+p1=DrugResponseModel.plotperc(g2, "tax.", concs[:, 4], "model")
+p2=DrugResponseModel.plotperc(gdata2[:, :, 4], "tax.", concs[:, 4], "data")
 plot(p1, p2)
 ```
 
@@ -219,8 +219,8 @@ G2 percentage plot
 ```julia; echo=false
 # percentage
 g2 = G2 ./(G1 .+ G2);
-p1=plot2(g2, "palbo.", concs[:, 5], "model")
-p2=plot2(gdata2[:, :, 5], "palbo.", concs[:, 5], "data")
+p1=DrugResponseModel.plotperc(g2, "palbo.", concs[:, 5], "model")
+p2=DrugResponseModel.plotperc(gdata2[:, :, 5], "palbo.", concs[:, 5], "data")
 plot(p1, p2)
 ```
 
