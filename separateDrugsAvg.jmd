@@ -4,7 +4,7 @@ This file contains all the drugs simulations for the average of replicates, sepa
 import Pkg; Pkg.instantiate()
 Pkg.activate(".")
 using DrugResponseModel
-using Plots, Statistics
+using Plots, LinearAlgebra
 concs, populations1, g1s1, g2s1 = load(189, 1);
 concs, populations2, g1s2, g2s2 = load(189, 2);
 concs, populations3, g1s3, g2s3 = load(189, 3);
