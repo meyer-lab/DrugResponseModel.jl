@@ -94,7 +94,7 @@ end
 """ plot the percentage of cells in G2 phase over time for all concentrations on top of each other. Depending on the g2 you pass to it, it could plot for the data or simulation. """
 function plotperc(g2, name, conc, txt)
     time = LinRange(0.0, 95.0, 189)
-    p4 = plot(time, 100.0 .* g2[:, 1], lw=3, color="red", label = "control ", legend=:best, title=string(txt, " " name), legendfontsize=5, xlabel = "time [hr]", ylabel = "S/G2 cell cycle (%) ", alpha = 0.7)
+    p4 = plot(time, 100.0 .* g2[:, 1], lw=3, color="red", label = "control ", legend=:best, title=string(txt, " ", name), legendfontsize=5, xlabel = "time [hr]", ylabel = "S/G2 cell cycle (%) ", alpha = 0.7)
 
     for i=2:7
         plot!(p4, time, 100.0 .* g2[:, i], lw=3, color="black", label = string(conc[i], " nM ", name), alpha = (1.0 - 0.1*i))
