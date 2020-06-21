@@ -949,3 +949,15 @@ deps = ["Libdl", "Pkg"]
 git-tree-sha1 = "61324ad346b00a6e541896b94201c9426591e43a"
 uuid = "dfaa095f-4041-5dcd-9319-2fabd8486b76"
 version = "3.0.0+1"
+
+[[ZMQ]]	
+deps = ["FileWatching", "Sockets", "ZeroMQ_jll"]	
+git-tree-sha1 = "fc68e8a3719166950a0f3e390a14c7302c48f8de"	
+uuid = "c2297ded-f4af-51ae-bb23-16f91089e4e1"	
+version = "1.2.1"	
+
+[[ZeroMQ_jll]]	
+deps = ["Libdl", "Pkg"]	
+git-tree-sha1 = "733352667c60ce39dfd3017db9b798b288c87417"	
+uuid = "8f1865be-045e-5c20-9c9f-bfbfb0764568"	
+version = "4.3.2+4"
