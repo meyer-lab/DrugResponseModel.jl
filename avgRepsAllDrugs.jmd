@@ -68,8 +68,8 @@ plot(p1, p..., figsize=(1000, 700), dpi=150)
 percentage plot
 
 ```julia; echo=false
-p1=DrugResponseModel.plotperc(g2[:, :, 1], "lap.", concs[:, 1])
-p2=DrugResponseModel.plotperc(gdata2[:, :, 1], "lap.", concs[:, 1])
+p1=DrugResponseModel.plotperc(g2[:, :, 1], "lap.", concs[:, 1], "model")
+p2=DrugResponseModel.plotperc(gdata2[:, :, 1], "lap.", concs[:, 1], "data")
 plot(p1, p2)
 ```
 
@@ -92,8 +92,8 @@ plot(p1, p..., figsize=(1000, 700), dpi=150)
 percentage plot
 
 ```julia; echo=false
-p1=DrugResponseModel.plotperc(g2[:, :, 2], "dox.", concs[:, 2])
-p2=DrugResponseModel.plotperc(gdata2[:, :, 2], "dox.", concs[:, 2])
+p1=DrugResponseModel.plotperc(g2[:, :, 2], "dox.", concs[:, 2], "model")
+p2=DrugResponseModel.plotperc(gdata2[:, :, 2], "dox.", concs[:, 2], "data")
 plot(p1, p2)
 ```
 
@@ -116,8 +116,8 @@ plot(p1, p..., figsize=(1000, 700), dpi=150)
 percentage plot
 
 ```julia; echo=false
-p1=DrugResponseModel.plotperc(g2[:, :, 3], "gem.", concs[:, 3])
-p2=DrugResponseModel.plotperc(gdata2[:, :, 3], "gem.", concs[:, 3])
+p1=DrugResponseModel.plotperc(g2[:, :, 3], "gem.", concs[:, 3], "model")
+p2=DrugResponseModel.plotperc(gdata2[:, :, 3], "gem.", concs[:, 3], "data")
 plot(p1, p2)
 ```
 
@@ -140,8 +140,8 @@ plot(p1, p..., figsize=(1000, 700), dpi=150)
 percentage plot
 
 ```julia; echo=false
-p1=DrugResponseModel.plotperc(g2[:, :, 4], "tax.", concs[:, 4])
-p2=DrugResponseModel.plotperc(gdata2[:, :, 4], "tax.", concs[:, 4])
+p1=DrugResponseModel.plotperc(g2[:, :, 4], "tax.", concs[:, 4], "model")
+p2=DrugResponseModel.plotperc(gdata2[:, :, 4], "tax.", concs[:, 4], "data")
 plot(p1, p2)
 ```
 
@@ -164,8 +164,8 @@ plot(p1, p..., figsize=(1000, 700), dpi=150)
 percentage plot
 
 ```julia; echo=false
-p1=DrugResponseModel.plotperc(g2[:, :, 5], "palb.", concs[:, 5])
-p2=DrugResponseModel.plotperc(gdata2[:, :, 5], "palb.", concs[:, 5])
+p1=DrugResponseModel.plotperc(g2[:, :, 5], "palb.", concs[:, 5], "model")
+p2=DrugResponseModel.plotperc(gdata2[:, :, 5], "palb.", concs[:, 5], "data")
 plot(p1, p2)
 ```
 
