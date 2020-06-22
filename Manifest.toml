@@ -329,12 +329,6 @@ git-tree-sha1 = "6187bb2d5fcbb2007c39e7ac53308b0d371124bd"
 uuid = "9fb69e20-1954-56bb-a84f-559cc56a8ff7"
 version = "0.2.2"
 
-[[IJulia]]
-deps = ["Base64", "Conda", "Dates", "InteractiveUtils", "JSON", "Markdown", "MbedTLS", "Pkg", "Printf", "REPL", "Random", "SoftGlobalScope", "Test", "UUIDs", "ZMQ"]
-git-tree-sha1 = "ce336ee8224143d053bf053680bf9182adfd8638"
-uuid = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
-version = "1.21.2"
-
 [[IniFile]]
 deps = ["Test"]
 git-tree-sha1 = "098e4d2c533924c921f9f9847274f2ad89e018b8"
@@ -783,11 +777,6 @@ git-tree-sha1 = "d8d8b8a9f4119829410ecd706da4cc8594a1e020"
 uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
 version = "0.10.3"
 
-[[StatPlots]]
-deps = ["Clustering", "DataStructures", "DataValues", "Distributions", "IterableTables", "KernelDensity", "Observables", "Plots", "RecipesBase", "Reexport", "StatsBase", "TableTraits", "TableTraitsUtils", "Test", "Widgets"]
-git-tree-sha1 = "245c50f8a6534bb16ada031e064363f8298b61b9"
-uuid = "60ddc479-9b66-56df-82fc-76a74619b69c"
-version = "0.9.2"
 
 [[StaticArrays]]
 deps = ["LinearAlgebra", "Random", "Statistics"]
@@ -810,12 +799,6 @@ deps = ["Rmath", "SpecialFunctions"]
 git-tree-sha1 = "04a5a8e6ab87966b43f247920eab053fd5fdc925"
 uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
 version = "0.9.5"
-
-[[StatsPlots]]
-deps = ["Clustering", "DataStructures", "DataValues", "Distributions", "Interpolations", "KernelDensity", "MultivariateStats", "Observables", "Plots", "RecipesBase", "RecipesPipeline", "Reexport", "StatsBase", "TableOperations", "Tables", "Widgets"]
-git-tree-sha1 = "b9b7fff81f573465fcac4685df1497d968537a9e"
-uuid = "f3b207a7-027a-5e70-b257-86293d7955fd"
-version = "0.14.6"
 
 [[SuiteSparse]]
 deps = ["Libdl", "LinearAlgebra", "Serialization", "SparseArrays"]
