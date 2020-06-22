@@ -765,6 +765,12 @@ version = "0.3.1"
 deps = ["LinearAlgebra", "Random"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
+[[StatsPlots]]	
+deps = ["Clustering", "DataStructures", "DataValues", "Distributions", "Interpolations", "KernelDensity", "MultivariateStats", "Observables", "Plots", "RecipesBase", "RecipesPipeline", "Reexport", "StatsBase", "TableOperations", "Tables", "Widgets"]	
+git-tree-sha1 = "b9b7fff81f573465fcac4685df1497d968537a9e"	
+uuid = "f3b207a7-027a-5e70-b257-86293d7955fd"	
+version = "0.14.6"
+
 [[SpatialIndexing]]
 deps = ["Printf", "Random", "Test"]
 git-tree-sha1 = "7bc6fc5c363aae476ec2c8bc527aef104b90c779"
