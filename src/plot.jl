@@ -72,7 +72,7 @@ function plot_parameters(conc_l, parameters, stdn)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "G1 death rate",
     )
-    ylims!(0.0, 1.2 * maxDeath)
+    ylims!(0.0, 0.8)
 
     p4 = plot(
         conc,
@@ -87,7 +87,30 @@ function plot_parameters(conc_l, parameters, stdn)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "G2 death rate",
     )
-    ylims!(0.0, 1.2 * maxDeath)
-
+    ylims!(0.0, 0.8)
     plot(p1, p2, p3, p4)
+end
+
+""" plot the percentage of cells in G2 phase over time for all concentrations on top of each other. Depending on the g2 you pass to it, it could plot for the data or simulation. """
+function plotperc(g2, name, conc, txt)
+    time = LinRange(0.0, 95.0, 189)
+    p4 = plot(time, 100.0 .* g2[:, 1], lw=3, color="red", label = "control ", legend=:best, title=string(txt, " ", name), legendfontsize=5, xlabel = "time [hr]", ylabel = "S/G2 cell cycle (%) ", alpha = 0.7)
+
+    for i=2:7
+        plot!(p4, time, 100.0 .* g2[:, i], lw=3, color="black", label = string(conc[i], " nM ", name), alpha = (1.0 - 0.1*i))
+        ylims!((0,80))
+        plot!(size=(600, 300))
+    end
+    p4
+end
+
+""" plot the average of three replicates in time series along with the model. it takes in i, that is the concentration number between 1 to 7, j is the number corresponding to the drug number, between 1 to 5. """
+function plotavg(G1, G2, g1m, g2m, i, leg, conc)
+    time = LinRange(0.0, 95.0, 189)
+
+    scatter(time, g1m[:, i], title=string(conc, "nM"), color = "green", markersize=1.0, markerstrokewidth=0, legend=leg, label = "data G1", xlabel = "time [hr]", ylabel = "cell number", alpha = 0.8)
+    plot!(time, G1[:, i], label = "model G1", color = "darkgreen")
+    scatter!(time, g2m[:, i], color = "sienna", label = "data G1", markerstrokewidth=0, markersize=1.0, alpha = 0.8)
+    plot!(time, G2[:, i], label = "model G2", color = "darkorange")
+    ylims!((0.0, 45))
 end

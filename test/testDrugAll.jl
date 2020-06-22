@@ -1,6 +1,6 @@
 @testset "Fit All drug at once tests" begin
     concs, populations, g1s, g2s = load(189, 1)
-    p = ones(45)
+    p = ones(41)
 
     effects = DrugResponseModel.getODEparamsAll(p, concs)
     @time optimize_hillAll(concs, g1s, g2s; maxstep = 1E2)

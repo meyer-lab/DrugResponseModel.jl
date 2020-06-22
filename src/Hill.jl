@@ -127,18 +127,6 @@ function numcells(params, g0)
     return G1[end] + G2[end]
 end
 
-""" A function to calculate std and mean of ODE parameters for each drug. """
-function mean_std_params(effs1, effs2, effs3)
-    meann = ones(9, 8)
-    stdd = ones(9, 8)
-    for i = 1:8
-        for j = 1:9
-            meann[j, i] = mean([effs1[j, i], effs2[j, i], effs3[j, i]])
-            stdd[j, i] = std([effs1[j, i], effs2[j, i], effs3[j, i]])
-        end
-    end
-    return meann, stdd
-end
 
 """ A Function to find mean and std of data in G1 and G2 separately. """
 function mean_std_data(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3)
@@ -156,25 +144,6 @@ function mean_std_data(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3)
         end
     end
     return meanG1, meanG2, stdG1, stdG2
-end
-
-""" A function to predict G1 and G2 for the three replicates. """
-function predict_replicates(p1, p2, p3, concs1, g0)
-    t = LinRange(0.0, 95.0, 189)
-    G1_1 = ones(189, 8)
-    G2_1 = ones(189, 8)
-    G1_2 = ones(189, 8)
-    G2_2 = ones(189, 8)
-    G1_3 = ones(189, 8)
-    G2_3 = ones(189, 8)
-
-    for i = 1:8 # concentration number
-        G1_1[:, i], G2_1[:, i], _ = predict(p1[:, i], g0, t)
-        G1_2[:, i], G2_2[:, i], _ = predict(p2[:, i], g0, t)
-        G1_3[:, i], G2_3[:, i], _ = predict(p3[:, i], g0, t)
-    end
-
-    return G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 # all simulation
 end
 
 function plot2(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3, g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, j)
