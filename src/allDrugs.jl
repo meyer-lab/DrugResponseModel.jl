@@ -176,4 +176,3 @@ end
 
 # for plotting all the concentrations on top of each other, from average of three reps.
 # function avgAllConcs(g0, g1m, g2m, p)
-    
