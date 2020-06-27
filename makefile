@@ -14,7 +14,7 @@ venv/bin/activate:
 
 coverage.cob: venv
 	julia -e 'using Pkg; using Coverage; Pkg.activate("."); Pkg.test("DrugResponseModel"; coverage=true); coverage = process_folder(); LCOV.writefile("coverage-lcov.info", coverage)'
-	. venv/bin/activate && python3 venv/lib/python3.7/site-packages/lcov_cobertura.py coverage-lcov.info -o coverage.cob
+	. venv/bin/activate && python3 venv/lib/python3.8/site-packages/lcov_cobertura.py coverage-lcov.info -o coverage.cob
 
 clean:
 	rm -rf *.html *.log *.pdf *.log *.aux *.out venv
