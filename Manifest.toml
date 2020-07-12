@@ -26,9 +26,9 @@ version = "3.5.0+3"
 
 [[ArrayInterface]]
 deps = ["LinearAlgebra", "Requires", "SparseArrays"]
-git-tree-sha1 = "851de9a8acd7b8863aa2ec2af0a44f375502c878"
+git-tree-sha1 = "0eccdcbe27fd6bd9cba3be31c67bdd435a21e865"
 uuid = "4fba245c-0d91-5ea0-9b3e-6abc04ee57a9"
-version = "2.9.0"
+version = "2.9.1"
 
 [[AssetRegistry]]
 deps = ["Distributed", "JSON", "Pidfile", "SHA", "Test"]
@@ -70,9 +70,9 @@ version = "1.0.0"
 
 [[CSV]]
 deps = ["CategoricalArrays", "DataFrames", "Dates", "Mmap", "Parsers", "PooledArrays", "SentinelArrays", "Tables", "Unicode"]
-git-tree-sha1 = "a90194846de31fb1ae2c9d55b0d590cbe03b4249"
+git-tree-sha1 = "a100a1dd6ab63fc49e79c90dae67e5bc126419ff"
 uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-version = "0.7.2"
+version = "0.7.3"
 
 [[Calculus]]
 deps = ["LinearAlgebra"]
@@ -249,9 +249,10 @@ uuid = "6a86dc24-6348-571c-b903-95158fe2bd41"
 version = "2.4.1"
 
 [[FixedPointNumbers]]
-git-tree-sha1 = "8fb797c37a3b7ced4327a05ac4ca0dd6a4f1ba92"
+deps = ["Statistics"]
+git-tree-sha1 = "266baee2e9d875cb7a3bfdcc6cab553c543ff8ab"
 uuid = "53c48c17-4a7d-5ca2-90c5-79b7896eea93"
-version = "0.8.1"
+version = "0.8.2"
 
 [[ForwardDiff]]
 deps = ["CommonSubexpressions", "DiffResults", "DiffRules", "NaNMath", "Random", "SpecialFunctions", "StaticArrays"]
@@ -586,9 +587,9 @@ version = "0.13.1"
 
 [[Plots]]
 deps = ["Base64", "Contour", "Dates", "FFMPEG", "FixedPointNumbers", "GR", "GeometryBasics", "GeometryTypes", "JSON", "LinearAlgebra", "Measures", "NaNMath", "PlotThemes", "PlotUtils", "Printf", "REPL", "Random", "RecipesBase", "RecipesPipeline", "Reexport", "Requires", "Showoff", "SparseArrays", "Statistics", "StatsBase", "UUIDs"]
-git-tree-sha1 = "f832a282a4ace9ac805454ad12176bcc9fe16c4c"
+git-tree-sha1 = "21d5dd05d230a98b97223d271561f1871989944c"
 uuid = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
-version = "1.5.3"
+version = "1.5.4"
 
 [[Polynomials]]
 deps = ["Intervals", "LinearAlgebra", "RecipesBase"]
@@ -676,9 +677,9 @@ uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 
 [[SentinelArrays]]
 deps = ["Dates", "Random"]
-git-tree-sha1 = "b78d16b576970e76d74dc285d945b81aa5b3a057"
+git-tree-sha1 = "41e78a6419de2279b23cc70342c7147dc4c98860"
 uuid = "91c51154-3ec4-41a3-a24f-3f23e20d615c"
-version = "1.2.7"
+version = "1.2.8"
 
 [[Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
