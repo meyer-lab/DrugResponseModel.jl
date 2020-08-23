@@ -33,7 +33,7 @@ end
 ```julia; eccho=false
 p1 = DrugResponseModel.plotavg(G1, G2, g1m[:, :, 1], g2m[:, :, 1], 1, :false, concs[1, 1])
 p =[DrugResponseModel.plotavg(G1, G2, g1m[:, :, 1], g2m[:, :, 1], i, :false, concs[i, 1]) for i=2:7]
-plot(p1, p..., figsize=(1000, 700),  layout = (2, 4))
+plot(p1, p..., figsize=(1400, 900))
 ```
 
 ## G2 percentage plot

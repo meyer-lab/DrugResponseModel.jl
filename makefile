@@ -1,6 +1,6 @@
 
-all: notebookPlots.pdf temporal_combination.pdf replicatesAtOnce.pdf combination.pdf avgRepsAllDrugs.pdf separateDrugsAvg.pdf
-
+all: separateDrugsAvg.pdf
+#  notebookPlots.pdf temporal_combination.pdf replicatesAtOnce.pdf combination.pdf avgRepsAllDrugs.pdf
 venv: venv/bin/activate
 
 venv/bin/activate:
