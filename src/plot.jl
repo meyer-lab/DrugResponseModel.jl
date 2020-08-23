@@ -124,6 +124,7 @@ function plotavg(G1, G2, g1m, g2m, i, leg, conc)
         time,
         g1m[:, i],
         title = string(conc, "nM"),
+        guidefontsize=10,
         color = "green",
         markersize = 1.0,
         markerstrokewidth = 0,
