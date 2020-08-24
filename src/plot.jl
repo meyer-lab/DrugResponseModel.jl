@@ -126,7 +126,7 @@ function plotavg(G1, G2, g1m, g2m, i, leg, conc)
         title = string(conc, "nM"),
         titlefontsize= 8,
         color = "green",
-        markersize = 1.0,
+        markersize = 1.5,
         markerstrokewidth = 0,
         legend = leg,
         label = "data G1",
@@ -135,10 +135,10 @@ function plotavg(G1, G2, g1m, g2m, i, leg, conc)
         xguidefontsize = 8,
         yguidefontsize= 8,
         legendfontsize=6,
-        alpha = 0.8,
+        alpha = 0.5,
     )
     plot!(time, G1[:, i], label = "model G1", color = "darkgreen")
-    scatter!(time, g2m[:, i], color = "sienna", label = "data G2", markerstrokewidth = 0, markersize = 1.0, alpha = 0.8)
+    scatter!(time, g2m[:, i], color = "sienna", label = "data G2", markerstrokewidth = 0, markersize = 1.5, alpha = 0.5)
     plot!(time, G2[:, i], label = "model G2", color = "darkorange")
     ylims!((0.0, 45))
 end
