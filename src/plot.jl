@@ -134,10 +134,11 @@ function plotavg(G1, G2, g1m, g2m, i, leg, conc)
         ylabel = "cell number",
         xguidefontsize = 8,
         yguidefontsize= 8,
+        legendfontsize=6,
         alpha = 0.8,
     )
     plot!(time, G1[:, i], label = "model G1", color = "darkgreen")
-    scatter!(time, g2m[:, i], color = "sienna", label = "data G1", markerstrokewidth = 0, markersize = 1.0, alpha = 0.8)
+    scatter!(time, g2m[:, i], color = "sienna", label = "data G2", markerstrokewidth = 0, markersize = 1.0, alpha = 0.8)
     plot!(time, G2[:, i], label = "model G2", color = "darkorange")
     ylims!((0.0, 45))
 end
