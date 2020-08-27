@@ -109,7 +109,7 @@ function plotperc(g2, name, conc, txt)
     )
 
     for i = 2:7
-        plot!(p4, time, 100.0 .* g2[:, i], lw = 3, color = "black", label = string(conc[i], " nM ", name), alpha = (1.0 - 0.1 * i))
+        plot!(p4, time, 100.0 .* g2[:, i], lw = 3, color = "black", label = string(conc[i], " nM ", name), alpha = (0.1 * i))
         ylims!((0, 80))
         plot!(size = (600, 300))
     end
