@@ -19,5 +19,5 @@ jobs:
       with:
         name: files
         path: |
-          ~/*.svg
+          ~/*.pdf
           ~/*.html
