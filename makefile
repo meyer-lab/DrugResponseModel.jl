@@ -1,6 +1,6 @@
 
-all: notebookPlots.pdf temporal_combination.pdf replicatesAtOnce.pdf combination.pdf avgRepsAllDrugs.pdf separateDrugsAvg.pdf
-
+all: combination.pdf  replicatesAtOnce.pdf avgRepsAllDrugs.pdf temporal_combination.pdf
+# separateDrugsAvg.pdf notebookPlots.pdf
 venv: venv/bin/activate
 
 venv/bin/activate:
@@ -17,4 +17,4 @@ coverage.cob: venv
 	. venv/bin/activate && python3 venv/lib/python3.8/site-packages/lcov_cobertura.py coverage-lcov.info -o coverage.cob
 
 clean:
-	rm -rf *.html *.log *.pdf *.log *.aux *.out venv
+	rm -rf *.html *.log *.pdf *.aux *.out venv
