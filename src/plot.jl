@@ -40,7 +40,7 @@ function plot_parameters(conc_l, parameters, stdn)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "G1 progression rate",
     )
-    ylims!(0.0, 1.2 * maxProg)
+    ylims!(0.0, 2.0)
 
     p2 = plot(
         conc,
@@ -55,7 +55,7 @@ function plot_parameters(conc_l, parameters, stdn)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "G2 progression rate",
     )
-    ylims!(0.0, 1.2 * maxProg)
+    ylims!(0.0, 2.0)
 
     maxDeath = maximum(parameters[3:4, :])
 
@@ -72,7 +72,7 @@ function plot_parameters(conc_l, parameters, stdn)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "G1 death rate",
     )
-    ylims!(0.0, 0.8)
+    ylims!(0.0, 0.4)
 
     p4 = plot(
         conc,
@@ -87,7 +87,7 @@ function plot_parameters(conc_l, parameters, stdn)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "G2 death rate",
     )
-    ylims!(0.0, 0.8)
+    ylims!(0.0, 0.4)
     plot(p1, p2, p3, p4)
 end
 
@@ -124,17 +124,21 @@ function plotavg(G1, G2, g1m, g2m, i, leg, conc)
         time,
         g1m[:, i],
         title = string(conc, "nM"),
+        titlefontsize= 8,
         color = "green",
-        markersize = 1.0,
+        markersize = 1.5,
         markerstrokewidth = 0,
         legend = leg,
         label = "data G1",
         xlabel = "time [hr]",
         ylabel = "cell number",
-        alpha = 0.8,
+        xguidefontsize = 8,
+        yguidefontsize= 8,
+        legendfontsize=6,
+        alpha = 0.5,
     )
     plot!(time, G1[:, i], label = "model G1", color = "darkgreen")
-    scatter!(time, g2m[:, i], color = "sienna", label = "data G1", markerstrokewidth = 0, markersize = 1.0, alpha = 0.8)
+    scatter!(time, g2m[:, i], color = "sienna", label = "data G2", markerstrokewidth = 0, markersize = 1.5, alpha = 0.5)
     plot!(time, G2[:, i], label = "model G2", color = "darkorange")
     ylims!((0.0, 45))
 end

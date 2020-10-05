@@ -46,6 +46,7 @@ The heatmap shows the normalized absolute difference between the results from ou
 
 ```julia; echo=false
 comb = DrugResponseModel.loweCellNum(concs, 1, 2, g1s, g2s);
+
 DrugResponseModel.heatmap_combination(lapat, dox, comb, 1, 2, "lapatinib", "doxorubicin", effs, concs, g0)
 ```
 
