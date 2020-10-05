@@ -146,6 +146,7 @@ function mean_std_data(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3)
     return meanG1, meanG2, stdG1, stdG2
 end
 
+""" plots all the three simulated trials. Along with avg and std of data. """
 function plot2(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3, g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, j)
     time = LinRange(0.0, 95.0, 189)
     meang1 = zeros(189, 8, 5)
