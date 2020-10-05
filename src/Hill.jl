@@ -147,7 +147,7 @@ function mean_std_data(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3)
 end
 
 """ plots all the three simulated trials. Along with avg and std of data. """
-function plot2(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3, g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, j)
+function plot2(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3, g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, conc, i, j)
     time = LinRange(0.0, 95.0, 189)
     meang1 = zeros(189, 8, 5)
     meang2 = zeros(189, 8, 5)
@@ -157,7 +157,7 @@ function plot2(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3, g1s1, g1s2, g1s3, g2s1, g2s2,
         meang1[:, :, k], meang2[:, :, k], stdg1[:, :, k], stdg2[:, :, k] =
             mean_std_data(g1s1[:, :, k], g1s2[:, :, k], g1s3[:, :, k], g2s1[:, :, k], g2s2[:, :, k], g2s3[:, :, k])
     end
-    plot(time, meang1[:, i, j]; ribbon = stdg1[:, i, j], color = 6, label = "", xlabel = "time [hr]", ylabel = "cell number", alpha = 0.1)
+    plot(time, meang1[:, i, j]; ribbon = stdg1[:, i, j], title= string(conc, "nM"), color = 6, label = "", xlabel = "time [hr]", ylabel = "cell number", alpha = 0.1)
     plot!(time, G1_1, label = "G1", color = 6)
     plot!(time, G1_2, label = "", color = 6)
     plot!(time, G1_3, label = "", color = 6)
