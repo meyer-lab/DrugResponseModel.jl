@@ -27,8 +27,8 @@ pp = [52.1243, 1.2856, 0.0026682, 2.9096, 0.0250893, 0.0623134,
        40.3828, 1.08046, 0.653381, 3.35693, 0.0426125, 0.0648354, 0.535886, 
        1.92651, 1.77876, 42.2714, 56.3408, 37.3421, 17.6778]; # with 41 parameters
 
-IC90_lap, IC90_dox, IC90_gem, IC90_tax, IC90_pal = DrugResponseModel.find_IC(populations, 0.9)
-println("IC50s: \n lpt ", IC90_lap, " dox ", IC90_dox, " gem ", IC90_gem, " tax ", IC90_tax, " pal ", IC90_pal)
+IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal = DrugResponseModel.find_IC(populations, 0.5)
+println("IC50s: \n lpt ", IC50_lap, " dox ", IC50_dox, " gem ", IC50_gem, " tax ", IC50_tax, " pal ", IC50_pal)
 ```
 
 ```julia; echo=false

@@ -49,7 +49,7 @@ for i=1:5
 end
 
 j=1
-pl = [DrugResponseModel.plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, j) for i=1:8]
+pl = [DrugResponseModel.plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[j, i], i, j) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
@@ -70,7 +70,7 @@ DrugResponseModel.plot_parameters(concs[:, 1], avgs[:, :, 1], stds[:, :, 1])
 
 ```julia; echo=false
 j=2
-pl = [DrugResponseModel.plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, j) for i=1:8]
+pl = [DrugResponseModel.plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[j, i], i, j) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
@@ -82,7 +82,7 @@ DrugResponseModel.plot_parameters(concs[:, 2], avgs[:, :, 2], stds[:, :, 2])
 
 ```julia; echo=false
 j=3
-pl = [DrugResponseModel.plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, j) for i=1:8]
+pl = [DrugResponseModel.plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[j, i], i, j) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
@@ -94,7 +94,7 @@ DrugResponseModel.plot_parameters(concs[:, 3], avgs[:, :, 3], stds[:, :, 3])
 
 ```julia; echo=false
 j=4
-pl = [DrugResponseModel.plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, j) for i=1:8]
+pl = [DrugResponseModel.plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[j, i], i, j) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
@@ -106,7 +106,7 @@ DrugResponseModel.plot_parameters(concs[:, 4], avgs[:, :, 4], stds[:, :, 4])
 
 ```julia; echo=false
 j=5
-pl = [DrugResponseModel.plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, j) for i=1:8]
+pl = [DrugResponseModel.plot2(G1_1[:, i, j], G1_2[:, i, j], G1_3[:, i, j], G2_1[:, i, j], G2_2[:, i, j], G2_3[:, i, j], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[j, i], i, j) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
