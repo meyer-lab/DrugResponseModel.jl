@@ -135,6 +135,18 @@ function predict_replicates(p1, p2, p3, concs1, g0)
     return G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 # all simulation
 end
 
+""" A function to calculate std and mean of ODE parameters for each drug. """
+function mean_std_params(effs1, effs2, effs3)
+    meann = ones(9, 8)
+    stdd = ones(9, 8)
+    for i = 1:8
+        for j = 1:9
+            meann[j, i] = mean([effs1[j, i], effs2[j, i], effs3[j, i]])
+            stdd[j, i] = std([effs1[j, i], effs2[j, i], effs3[j, i]])
+        end
+    end
+    return meann, stdd
+end
 
 """ Calculate the # of cells in G1 for a set of parameters and T """
 function numcells(params, g0)
