@@ -124,7 +124,7 @@ function plotavg(G1, G2, g1m, g2m, i, leg, conc)
         time,
         g1m[:, i],
         title = string(conc, "nM"),
-        titlefontsize= 8,
+        titlefontsize = 8,
         color = "green",
         markersize = 1.5,
         markerstrokewidth = 0,
@@ -133,8 +133,8 @@ function plotavg(G1, G2, g1m, g2m, i, leg, conc)
         xlabel = "time [hr]",
         ylabel = "cell number",
         xguidefontsize = 8,
-        yguidefontsize= 8,
-        legendfontsize=6,
+        yguidefontsize = 8,
+        legendfontsize = 6,
         alpha = 0.5,
     )
     plot!(time, G1[:, i], label = "model G1", color = "darkgreen")
