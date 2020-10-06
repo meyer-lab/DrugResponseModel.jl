@@ -1,0 +1,176 @@
+Left figures: Bliss applied on pure cell number of data, i.e., the traditional approach.
+Right figures: Bliss applied on the model results, i.e., our approach for drug combination.
+
+```julia; echo=false
+import Pkg; Pkg.instantiate()
+Pkg.activate(".")
+using DrugResponseModel
+using Plots, LinearAlgebra
+concs, populations1, g1s1, g2s1 = load(189, 1);
+concs, populations2, g1s2, g2s2 = load(189, 2);
+concs, populations3, g1s3, g2s3 = load(189, 3);
+g0 = g1s1[1,1,1]+g2s1[1,1,1];
+
+g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
+g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
+
+#---- traditional approach
+BlissOnData = blissCellNum(g1avg, g2avg; T=96, n=8) # 8 x 8 x 10
+#----
+
+#---- our approach
+paramAvg = p= [49.2322, 1.13253, 0.0557782, 3.43847, 0.0183834, 0.0530674, 0.538046, 
+               58.3661, 1.7259, 2.69584, 0.0578749, 0.475825, 0.537772, 0.544677, 
+               20.8855, 2.05741, 2.05982, 4.99875, 0.0697081, 0.359285, 0.496691, 
+               3.9771, 4.8181, 0.0587329, 1.82322, 0.633786, 0.445822, 0.498424, 
+               40.3828, 1.08046, 0.653381, 3.35693, 0.0426125, 0.0648354, 0.535886, 
+               1.92651, 1.77876, 42.2714, 56.3408, 37.3421, 17.6778];
+
+efcs = getODEparamsAll(paramAvg, concs);
+```
+
+```julia; echo=falseEC50s = [paramAvg[1], paramAvg[8], paramAvg[15], paramAvg[22], paramAvg[29]]
+
+function paramsAtEC50(p)
+    ps = zeros(9, 5) # num_parameters x number of drugs.
+    k = 1
+    for i =1:5
+        ps[:, i] = [0.5*(p[36] + p[k + 2]), 0.5*(p[37] + p[k + 3]), 0.5*p[k + 4], 0.5*p[k + 5], p[k + 6], floor(p[38]), floor(p[39]), floor(p[40]), floor(p[41])]
+        k += 7
+    end
+    return ps
+end
+
+params = paramsAtEC50(paramAvg)
+
+function BlissUnit(p1, p2)
+    # p1 and p2 are Arrays 9x1 and are assumed to be from the EC50 concentration.
+    combin = similar(p1)
+    combin[1:2] .= p1[1:2] .+ p2[1:2] .- p1[1:2] .* p2[1:2]
+    combin[3:4] .= p1[3:4] .+ p2[3:4]
+    combin[5:end] .= p1[5:end]
+    return combin
+end
+
+tim = 0.0:5:90.0
+```
+
+
+# Lapatinib and Dox
+```julia; echo=false
+
+combin = BlissUnit(params[:, 1], params[:, 2]) # lpt and dox
+
+G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
+
+plot(tim, G1, label="G1", title="Lpt & Dox")
+plot!(tim, G2, label="G2")
+plot!(tim, G1 .+ G2, label="total")
+```
+
+# Lpt and Gemc
+```julia; echo=false
+
+combin = BlissUnit(params[:, 1], params[:, 3]) # lpt and gmc
+
+G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
+
+plot(tim, G1, label="G1", title="Lpt & Gmc")
+plot!(tim, G2, label="G2")
+plot!(tim, G1 .+ G2, label="total")
+```
+
+# Lpt and tax
+```julia; echo=false
+
+combin = BlissUnit(params[:, 1], params[:, 4]) # lpt and tax
+
+G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
+
+plot(tim, G1, label="G1", title="Lpt & tax")
+plot!(tim, G2, label="G2")
+plot!(tim, G1 .+ G2, label="total")
+```
+
+# Lpt and Palbo
+```julia; echo=false
+
+combin = BlissUnit(params[:, 1], params[:, 5]) # lpt and palbo
+
+G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
+
+plot(tim, G1, label="G1", title="Lpt & Palbo")
+plot!(tim, G2, label="G2")
+plot!(tim, G1 .+ G2, label="total")
+```
+
+# Dox and Gemc
+```julia; echo=false
+
+combin = BlissUnit(params[:, 2], params[:, 3]) # dox and gmc
+
+G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
+
+plot(tim, G1, label="G1", title="Dox & Gmc")
+plot!(tim, G2, label="G2")
+plot!(tim, G1 .+ G2, label="total")
+```
+
+# Dox and Tax
+```julia; echo=false
+
+combin = BlissUnit(params[:, 2], params[:, 4]) # dox and tax
+
+G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
+
+plot(tim, G1, label="G1", title="Dox & Tax")
+plot!(tim, G2, label="G2")
+plot!(tim, G1 .+ G2, label="total")
+```
+
+# Dox and Palbo
+```julia; echo=false
+
+combin = BlissUnit(params[:, 2], params[:, 5]) # dox and palbo
+
+G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
+
+plot(tim, G1, label="G1", title="Dox & Palbo")
+plot!(tim, G2, label="G2")
+plot!(tim, G1 .+ G2, label="total")
+```
+# Gem and Tax
+```julia; echo=false
+
+combin = BlissUnit(params[:, 3], params[:, 4]) # gem and tax
+
+G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
+
+plot(tim, G1, label="G1", title="Gem & Tax")
+plot!(tim, G2, label="G2")
+plot!(tim, G1 .+ G2, label="total")
+```
+
+# Gem and Palbo
+```julia; echo=false
+
+combin = BlissUnit(params[:, 3], params[:, 5]) # gem and palbo
+
+G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
+
+plot(tim, G1, label="G1", title="Gem & Palbo")
+plot!(tim, G2, label="G2")
+plot!(tim, G1 .+ G2, label="total")
+```
+
+# Tax and Palbo
+```julia; echo=false
+
+combin = BlissUnit(params[:, 4], params[:, 5]) # tax and palbo
+
+G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
+
+plot(tim, G1, label="G1", title="Tax & Palbo")
+plot!(tim, G2, label="G2")
+plot!(tim, G1 .+ G2, label="total")
+```

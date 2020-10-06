@@ -1,5 +1,5 @@
 
-all: notebookPlots.pdf temporal_combination.pdf replicatesAtOnce.pdf combination.pdf avgRepsAllDrugs.pdf separateDrugsAvg.pdf
+all: Bliss.pdf notebookPlots.pdf temporal_combination.pdf replicatesAtOnce.pdf combination.pdf avgRepsAllDrugs.pdf separateDrugsAvg.pdf
 
 venv: venv/bin/activate
 
