@@ -40,7 +40,11 @@ pac = effs[:,:,4];
 pal = effs[:,:,5];
 ```
 
-The heatmap shows the normalized absolute difference between the results from our model; which is calculating cell number after applying Bliss independence on the model parameters (or simply drug effects), versus applying the Bliss formulation directly to the cell number which is standard way of drug combination calculation. The x and y axis show the log concentration of the two drugs, and the brighter the color gets, the more difference between the model and the conventional combination calculations are.
+The heatmap shows the normalized absolute difference between the results from our model;
+which is calculating cell number after applying Bliss independence on the model parameters (or simply drug effects),
+versus applying the Bliss formulation directly to the cell number which is standard way of drug combination calculation.
+The x and y axis show the log concentration of the two drugs, and the brighter the color gets, the more difference between 
+the model and the conventional combination calculations are.
 
 ## Lapatinib and doxorubicin
 
