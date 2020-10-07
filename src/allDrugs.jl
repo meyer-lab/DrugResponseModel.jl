@@ -77,7 +77,7 @@ function optimize_hillAll(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::A
         0,
         0,
     )
-    highPiece = [10.0, 5.0, 5.0, 1.0, 1.0, 0.7]
+    highPiece = [10.0, 1.0, 1.0, 1.0, 1.0, 0.7]
     high = vcat(
         maximum(concs[:, 1]),
         highPiece,
