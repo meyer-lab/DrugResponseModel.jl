@@ -199,19 +199,19 @@ function find_combin_order(params1, params2, g1s, g2s)
     return diff
 end
 
-""" To find IC50 for each drug, separately."""
-function find_IC50(population)
+""" To find IC50 or IC90 for each drug, separately."""
+function find_IC(population, which)
     lap = Array(population[189, :, 1])
     dox = Array(population[189, :, 2])
     gem = Array(population[189, :, 3])
     tax = Array(population[189, :, 4])
     pal = Array(population[189, :, 5])
-    IC50_lap = argmin(abs.(0.5 * lap[1] .- lap)) #6
-    IC50_dox = argmin(abs.(0.5 * dox[1] .- dox)) #3
-    IC50_gem = argmin(abs.(0.5 * gem[1] .- gem)) #6
-    IC50_tax = argmin(abs.(0.5 * tax[1] .- tax)) #4
-    IC50_pal = argmin(abs.(0.5 * pal[1] .- pal)) #5
-    return (IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal)
+    IC_lap = argmin(abs.(which * lap[1] .- lap)) #6
+    IC_dox = argmin(abs.(which * dox[1] .- dox)) #3
+    IC_gem = argmin(abs.(which * gem[1] .- gem)) #6
+    IC_tax = argmin(abs.(which * tax[1] .- tax)) #4
+    IC_pal = argmin(abs.(which * pal[1] .- pal)) #5
+    return (IC_lap, IC_dox, IC_gem, IC_tax, IC_pal)
 end
 
 """ Plot the heatmap to describe the difference between the order of treatments. """
