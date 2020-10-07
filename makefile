@@ -1,6 +1,6 @@
 
-all: combination.pdf  replicatesAtOnce.pdf avgRepsAllDrugs.pdf temporal_combination.pdf separateDrugsAvg.pdf 
-# notebookPlots.pdf
+all: Bliss.pdf notebookPlots.pdf temporal_combination.pdf replicatesAtOnce.pdf combination.pdf avgRepsAllDrugs.pdf separateDrugsAvg.pdf
+
 venv: venv/bin/activate
 
 venv/bin/activate:

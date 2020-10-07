@@ -40,7 +40,7 @@ function plot_parameters(conc_l, parameters, stdn)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "G1 progression rate",
     )
-    ylims!(0.0, 2.0)
+    ylims!(0.0, 1.0)
 
     p2 = plot(
         conc,
@@ -55,7 +55,7 @@ function plot_parameters(conc_l, parameters, stdn)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "G2 progression rate",
     )
-    ylims!(0.0, 2.0)
+    ylims!(0.0, 1.0)
 
     maxDeath = maximum(parameters[3:4, :])
 
@@ -72,7 +72,7 @@ function plot_parameters(conc_l, parameters, stdn)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "G1 death rate",
     )
-    ylims!(0.0, 0.4)
+    ylims!(0.0, 1.0)
 
     p4 = plot(
         conc,
@@ -87,7 +87,7 @@ function plot_parameters(conc_l, parameters, stdn)
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "G2 death rate",
     )
-    ylims!(0.0, 0.4)
+    ylims!(0.0, 1.0)
     plot(p1, p2, p3, p4)
 end
 

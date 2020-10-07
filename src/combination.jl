@@ -103,7 +103,7 @@ function blissCellNum(g1s, g2s; T = 96, n = 8)
     # for no specific reason, I chose lapatinib's control trial to be the base case for converting.
     base = g1s[T, 1, 1] + g2s[T, 1, 1]
     for i = 1:5
-        # num is a 8 x 4 matrix, holding cell numbers for 4 drugs, in 8 concenntration, for a specific time point.
+        # num is a 8 x 5 matrix, holding cell numbers for 5 drugs, in 8 concenntration, for a specific time point.
         num[:, i] = 1.0 .- ((g1s[T, :, i] + g2s[T, :, i]) ./ base)
     end
     combined = zeros(n, n, 10)
