@@ -21,7 +21,7 @@ paramAvg = [50.9919, 1.17818, 0.0561335, 0.759656, 0.0235411, 0.0602663, 0.54822
 
 efcs = getODEparamsAll(paramAvg, concs);
 
-EC50s = [paramAvg[1], paramAvg[8], paramAvg[15], paramAvg[22], paramAvg[29]]
+EC50s = [round(paramAvg[1], digits=1), round(paramAvg[8], digits=1), round(paramAvg[15], digits=1), round(paramAvg[22], digits=1), round(paramAvg[29], digits=1)]
 
 function paramsAtEC50(p)
     ps = zeros(9, 5) # num_parameters x number of drugs.
@@ -55,9 +55,9 @@ combin = BlissUnit(params[:, 1], params[:, 2]) # lpt and dox
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
-plot(tim, G1, label="G1", title="Lpt & Dox")
-plot!(tim, G2, label="G2")
-plot!(tim, G1 .+ G2, label="total")
+plot(tim, G1, label="G1", lw=2, title=string("Lpt ", EC50s[1], " & Dox ", EC50s[2])
+plot!(tim, G2, lw=2, label="G2")
+plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr]")
 ```
 
 # Lpt and Gemc
@@ -67,9 +67,9 @@ combin = BlissUnit(params[:, 1], params[:, 3]) # lpt and gmc
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
-plot(tim, G1, label="G1", title="Lpt & Gmc")
-plot!(tim, G2, label="G2")
-plot!(tim, G1 .+ G2, label="total")
+plot(tim, G1, label="G1", lw=2, title=string("Lpt ", EC50s[1], " & Gem ", EC50s[3])
+plot!(tim, G2, lw=2, label="G2")
+plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr]")
 ```
 
 # Lpt and tax
@@ -79,9 +79,9 @@ combin = BlissUnit(params[:, 1], params[:, 4]) # lpt and tax
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
-plot(tim, G1, label="G1", title="Lpt & tax")
-plot!(tim, G2, label="G2")
-plot!(tim, G1 .+ G2, label="total")
+plot(tim, G1, label="G1", lw=2, title=string("Lpt ", EC50s[1], " & Tax ", EC50s[4])
+plot!(tim, G2, lw=2, label="G2")
+plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr]")
 ```
 
 # Lpt and Palbo
@@ -91,9 +91,9 @@ combin = BlissUnit(params[:, 1], params[:, 5]) # lpt and palbo
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
-plot(tim, G1, label="G1", title="Lpt & Palbo")
-plot!(tim, G2, label="G2")
-plot!(tim, G1 .+ G2, label="total")
+plot(tim, G1, label="G1", lw=2, title=string("Lpt ", EC50s[1], " & Palbo ", EC50s[5])
+plot!(tim, G2, lw=2, label="G2")
+plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr]")
 ```
 
 # Dox and Gemc
@@ -103,9 +103,9 @@ combin = BlissUnit(params[:, 2], params[:, 3]) # dox and gmc
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
-plot(tim, G1, label="G1", title="Dox & Gmc")
-plot!(tim, G2, label="G2")
-plot!(tim, G1 .+ G2, label="total")
+plot(tim, G1, label="G1", lw=2, title=string("Dox ", EC50s[2], " & Gem ", EC50s[3])
+plot!(tim, G2, lw=2, label="G2")
+plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr]")
 ```
 
 # Dox and Tax
@@ -115,9 +115,9 @@ combin = BlissUnit(params[:, 2], params[:, 4]) # dox and tax
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
-plot(tim, G1, label="G1", title="Dox & Tax")
-plot!(tim, G2, label="G2")
-plot!(tim, G1 .+ G2, label="total")
+plot(tim, G1, label="G1", lw=2, title=string("Dox ", EC50s[2], " & Tax ", EC50s[4])
+plot!(tim, G2, lw=2, label="G2")
+plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr]")
 ```
 
 # Dox and Palbo
@@ -127,9 +127,9 @@ combin = BlissUnit(params[:, 2], params[:, 5]) # dox and palbo
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
-plot(tim, G1, label="G1", title="Dox & Palbo")
-plot!(tim, G2, label="G2")
-plot!(tim, G1 .+ G2, label="total")
+plot(tim, G1, label="G1", lw=2, title=string("Dox ", EC50s[2], " & Palbo ", EC50s[5])
+plot!(tim, G2, lw=2, label="G2")
+plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr]")
 ```
 # Gem and Tax
 ```julia; echo=false
@@ -138,9 +138,9 @@ combin = BlissUnit(params[:, 3], params[:, 4]) # gem and tax
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
-plot(tim, G1, label="G1", title="Gem & Tax")
-plot!(tim, G2, label="G2")
-plot!(tim, G1 .+ G2, label="total")
+plot(tim, G1, label="G1", lw=2, title=string("Gem ", EC50s[3], " & Tax ", EC50s[4])
+plot!(tim, G2, lw=2, label="G2")
+plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr]")
 ```
 
 # Gem and Palbo
@@ -150,9 +150,9 @@ combin = BlissUnit(params[:, 3], params[:, 5]) # gem and palbo
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
-plot(tim, G1, label="G1", title="Gem & Palbo")
-plot!(tim, G2, label="G2")
-plot!(tim, G1 .+ G2, label="total")
+plot(tim, G1, label="G1", lw=2, title=string("Gem ", EC50s[3], " & Palbo ", EC50s[5])
+plot!(tim, G2, label="G2", lw=2)
+plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr]")
 ```
 
 # Tax and Palbo
@@ -162,7 +162,7 @@ combin = BlissUnit(params[:, 4], params[:, 5]) # tax and palbo
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
-plot(tim, G1, label="G1", title="Tax & Palbo")
-plot!(tim, G2, label="G2")
-plot!(tim, G1 .+ G2, label="total")
+plot(tim, G1, label="G1", lw=2, title=string("Tax ", EC50s[4], " & Palbo ", EC50s[5])
+plot!(tim, G2, label="G2", lw=2)
+plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr]")
 ```
