@@ -1,5 +1,4 @@
-Left figures: Bliss applied on pure cell number of data, i.e., the traditional approach.
-Right figures: Bliss applied on the model results, i.e., our approach for drug combination.
+Time series simulation for a pair of drugs in their EC50 concentration based on Bliss index.
 
 ```julia; echo=false
 import Pkg; Pkg.instantiate()
@@ -13,9 +12,8 @@ g0 = g1s1[1,1,1]+g2s1[1,1,1];
 
 g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
 g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
+popavg = g1avg .+ g2avg
 
-
-BlissOnData = blissCellNum(g1avg, g2avg; T=96, n=8) # 8 x 8 x 10
 
 paramAvg = [50.9919, 1.17818, 0.0561335, 0.759656, 0.0235411, 0.0602663, 0.548225, 98.0379, 1.3303, 0.994777, 0.0500693, 0.462114, 0.582957, 0.553253, 16.6879, 2.27928, 0.99894, 0.782578, 0.0205941, 0.27198, 0.503975, 3.98399, 4.36471, 0.0801577, 0.304947, 0.472025, 0.336453, 0.505411, 50.6239, 1.03073, 0.565949, 0.754982, 0.0499804, 0.0728504, 0.542676, 2.03711, 0.376571, 44.1783, 12.8029, 25.9681, 13.9574];
 
@@ -23,17 +21,9 @@ efcs = getODEparamsAll(paramAvg, concs);
 
 EC50s = [round(paramAvg[1], digits=1), round(paramAvg[8], digits=1), round(paramAvg[15], digits=1), round(paramAvg[22], digits=1), round(paramAvg[29], digits=1)]
 
-function paramsAtEC50(p)
-    ps = zeros(9, 5) # num_parameters x number of drugs.
-    k = 1
-    for i =1:5
-        ps[:, i] = [0.5*(p[36] + p[k + 2]), 0.5*(p[37] + p[k + 3]), 0.5*p[k + 4], 0.5*p[k + 5], p[k + 6], floor(p[38]), floor(p[39]), floor(p[40]), floor(p[41])]
-        k += 7
-    end
-    return ps
-end
+### Our way of Bliss combination:
 
-params = paramsAtEC50(paramAvg)
+params = DrugResponseModel.paramsAtEC50(paramAvg)
 
 function BlissUnit(p1, p2)
     # p1 and p2 are Arrays 9x1 and are assumed to be from the EC50 concentration.
@@ -54,6 +44,7 @@ tim = 0.0:2:88.0
 combin = BlissUnit(params[:, 1], params[:, 2]) # lpt and dox
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
+
 
 plot(tim, G1, label="G1", lw=2, title=string("Lpt ", EC50s[1], " & Dox ", EC50s[2]))
 plot!(tim, G2, lw=2, label="G2")
