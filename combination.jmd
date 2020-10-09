@@ -15,11 +15,7 @@ g0 = g1s1[1,1,1]+g2s1[1,1,1];
 
 g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
 g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
-popavg = g1avg .+ g2avg
-```
-
-```julia; echo=false
-
+popavg = g1avg .+ g2avg;
 pp = [52.1243, 1.2856, 0.0026682, 2.9096, 0.0250893, 0.0623134, 
       154.803, 1.10582, 0.304235, 0.295368, 0.411795, 0.613183, 
       82.5301, 1.05063, 0.391899, 0.919925, 0.0730874, 0.338454, 
@@ -34,12 +30,9 @@ p = [50.9919, 1.17818, 0.0561335, 0.759656, 0.0235411, 0.0602663, 0.548225,
       50.6239, 1.03073, 0.565949, 0.754982, 0.0499804, 0.0728504, 0.542676, 
       2.03711, 0.376571, 44.1783, 12.8029, 25.9681, 13.9574];
 
-IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal = DrugResponseModel.find_IC(popavg, 0.5)
+IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal = DrugResponseModel.find_IC(popavg, 0.5);
 println("IC50s from the data: \n lpt ", concs[IC50_lap,1], " dox ", concs[IC50_dox,2], " gem ", concs[IC50_gem,3], " tax ", concs[IC50_tax,4], " pal ", concs[IC50_pal,5])
 println("\n IC50s from the model: \n lpt ", p[1], " dox ", p[8], " gem ", p[15], " tax ", p[22], " pal ", p[29])
-```
-
-```julia; echo=false
 effs = getODEparamsAll(pp, concs);
 lapat = effs[:,:,1];
 dox = effs[:,:,2];
@@ -47,6 +40,7 @@ gemc = effs[:,:,3];
 pac = effs[:,:,4];
 pal = effs[:,:,5];
 ```
+
 # Loewe combination
 
 The heatmap shows the fold change between the cell number from our model and from the data; (cellnum(model) / cellnum(data) as a result of applying Loewe)
