@@ -211,7 +211,7 @@ function find_IC(population, which)
     IC_gem = argmin(abs.(which * gem[1] .- gem)) #6
     IC_tax = argmin(abs.(which * tax[1] .- tax)) #4
     IC_pal = argmin(abs.(which * pal[1] .- pal)) #5
-    return (IC_lap, IC_dox, IC_gem, IC_tax, IC_pal)
+    return IC_lap, IC_dox, IC_gem, IC_tax, IC_pal # returns the argument
 end
 
 """ Plot the heatmap to describe the difference between the order of treatments. """
@@ -269,6 +269,16 @@ function low(d1, d2, p1, p2)
     find_max = minimum([maximum([p2[2], p2[3]]), maximum([p1[2], p1[3]])])
     combined_effect = find_zero(f, [find_min, find_max])
     return combined_effect
+end
+
+function paramsAtEC50(p)
+    ps = zeros(9, 5) # num_parameters x number of drugs.
+    k = 1
+    for i =1:5
+        ps[:, i] = [0.5*(p[36] + p[k + 2]), 0.5*(p[37] + p[k + 3]), 0.5*p[k + 4], 0.5*p[k + 5], p[k + 6], floor(p[38]), floor(p[39]), floor(p[40]), floor(p[41])]
+        k += 7
+    end
+    return ps
 end
 
 function loweCellNum(concs, d1ind, d2ind, g1s, g2s)

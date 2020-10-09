@@ -14,6 +14,7 @@ import Calculus
 using DSP: conv
 using Optim
 using Roots
+using ExponentialUtilities
 
 include("importData.jl")
 include("ODEmodel.jl")
