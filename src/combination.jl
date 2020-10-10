@@ -274,8 +274,18 @@ end
 function paramsAtEC50(p)
     ps = zeros(9, 5) # num_parameters x number of drugs.
     k = 1
-    for i =1:5
-        ps[:, i] = [0.5*(p[36] + p[k + 2]), 0.5*(p[37] + p[k + 3]), 0.5*p[k + 4], 0.5*p[k + 5], p[k + 6], floor(p[38]), floor(p[39]), floor(p[40]), floor(p[41])]
+    for i = 1:5
+        ps[:, i] = [
+            0.5 * (p[36] + p[k + 2]),
+            0.5 * (p[37] + p[k + 3]),
+            0.5 * p[k + 4],
+            0.5 * p[k + 5],
+            p[k + 6],
+            floor(p[38]),
+            floor(p[39]),
+            floor(p[40]),
+            floor(p[41]),
+        ]
         k += 7
     end
     return ps
