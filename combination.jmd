@@ -1,5 +1,4 @@
-This file will is a replacement for Bliss and contains combination results. All this is for replicate 1. We could average the three and report the results or plot the three replicates separately.
-
+Left show Bliss_model/Bliss_data and right shows Bliss_model/Loewe_data
 
 ```julia; echo=false
 import Pkg; Pkg.instantiate()
@@ -28,7 +27,7 @@ p = [50.9919, 1.17818, 0.0561335, 0.759656, 0.0235411, 0.0602663, 0.548225,
       16.6879, 2.27928, 0.99894, 0.782578, 0.0205941, 0.27198, 0.503975, 
       3.98399, 4.36471, 0.0801577, 0.304947, 0.472025, 0.336453, 0.505411, 
       50.6239, 1.03073, 0.565949, 0.754982, 0.0499804, 0.0728504, 0.542676, 
-      2.03711, 0.376571, 44.1783, 12.8029, 25.9681, 13.9574];
+      2.03711, 0.376571, 44.1783, 12.8029, 25.9681, 13.9574]; # with 41 parameters
 
 IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal = DrugResponseModel.find_IC(popavg, 0.5);
 println("IC50s from the data: \n lpt ", concs[IC50_lap,1], " dox ", concs[IC50_dox,2], " gem ", concs[IC50_gem,3], " tax ", concs[IC50_tax,4], " pal ", concs[IC50_pal,5])
@@ -41,92 +40,24 @@ pac = effs[:,:,4];
 pal = effs[:,:,5];
 ```
 
-# Loewe combination
-
-The heatmap shows the fold change between the cell number from our model and from the data; (cellnum(model) / cellnum(data) as a result of applying Loewe)
-which is calculating cell number after applying Loewe on the model parameters,
-versus applying the Loewe formulation directly to the cell number which is standard way of drug combination calculation.
-The x and y axis show the log concentration of the two drugs, and the brighter the color gets, the more difference between 
-the model and the conventional combination calculations are.
-
-## Lapatinib and doxorubicin
-
-```julia; echo=false
-comb = DrugResponseModel.loweCellNum(concs, 1, 2, g1avg, g2avg);
-
-DrugResponseModel.heatmap_combination(lapat, dox, comb, 1, 2, "lapatinib", "doxorubicin", effs, concs, g0)
-```
-
-## Lapatinib and gemcitabine
-
-```julia; echo=false
-comb = DrugResponseModel.loweCellNum(concs, 1, 3, g1avg, g2avg);
-DrugResponseModel.heatmap_combination(lapat, gemc, comb, 1, 3, "lapatinib", "gemcitabine", effs, concs, g0)
-```
-
-## Lapatinib and paclitaxel
-
-```julia; echo=false
-comb = DrugResponseModel.loweCellNum(concs, 1, 4, g1avg, g2avg);
-DrugResponseModel.heatmap_combination(lapat, pac, comb, 1, 4, "lapatinib", "paclitaxel", effs, concs, g0)
-```
-
-## Lapatinib and palbociclib
-
-```julia; echo=false
-comb = DrugResponseModel.loweCellNum(concs, 1, 5, g1avg, g2avg);
-DrugResponseModel.heatmap_combination(lapat, pal, comb, 1, 5, "lapatinib", "palbociclib", effs, concs, g0)
-```
-
-## Doxorubicin and gemcitabine
-
-```julia; echo=false
-comb = DrugResponseModel.loweCellNum(concs, 2, 3, g1avg, g2avg);
-DrugResponseModel.heatmap_combination(dox, gemc, comb, 2, 3, "doxorubicin", "gemcitabine", effs, concs, g0)
-```
-
-## Doxorubicin and paclitaxel
-
-```julia; echo=false
-comb = DrugResponseModel.loweCellNum(concs, 2, 4, g1avg, g2avg);
-DrugResponseModel.heatmap_combination(dox, pac, comb, 2, 4, "doxorubicin", "paclitaxel", effs, concs, g0)
-```
-
-## Doxorubicin and palbociclib
-
-```julia; echo=false
-comb = DrugResponseModel.loweCellNum(concs, 2, 5, g1avg, g2avg);
-DrugResponseModel.heatmap_combination(dox, pac, comb, 2, 5, "doxorubicin", "palbociclib", effs, concs, g0)
-```
-
-## Gemcitabine and paclitaxel
-
-```julia; echo=false
-comb = DrugResponseModel.loweCellNum(concs, 3, 4, g1avg, g2avg);
-DrugResponseModel.heatmap_combination(gemc, pac, comb, 3, 4, "gemcitabine", "paclitaxel", effs, concs, g0)
-```
-
-## Gemcitabine and palbociclib
-
-```julia; echo=false
-comb = DrugResponseModel.loweCellNum(concs, 3, 5, g1avg, g2avg);
-DrugResponseModel.heatmap_combination(gemc, pal, comb, 3, 5, "gemcitabine", "palbociclib", effs, concs, g0)
-```
-
-## Paclitaxel and palbociclib
-
-```julia; echo=false
-comb = DrugResponseModel.loweCellNum(concs, 4, 5, g1avg, g2avg);
-DrugResponseModel.heatmap_combination(pac, pal, comb, 4, 5, "paclitaxel", "palbociclib", effs, concs, g0)
-```
-
 # Bliss combination
 
 ```julia; echo=false
 # Bliss on pure cell numbers
 BlissOnData = DrugResponseModel.blissCellNum(g1avg, g2avg; T = 96, n = 8) # includes are combinations 8 x 8 x 10
 
-function heatmap_bliss(concs, data, model, i1, i2, d1name, d2name)
+function BlissModelComb(bliss_comb, g0)
+      bliss_comb_cellnum = zeros(8,8)
+      for i=1:8
+      for j=1:8
+            g1, g2, _ = predict(bliss_comb[:, i, j], g0, 96)
+            bliss_comb_cellnum[i,j] = g1 + g2
+      end
+      end
+      return bliss_comb_cellnum
+end
+
+function Heatmap(concs, data, model, i1, i2, d1name, d2name)
     diffs = model ./ data # model prediction / reference
     concs[1, :] .= 0.6
     heatmap(
@@ -143,16 +74,14 @@ end
 ## Lapatinib and doxorubicin
 
 ```julia; echo=false
-# Bliss on model outputs in terms of cell number
 bliss_comb = DrugResponseModel.fullCombinationParam(lapat, dox, effs, 8)
-bliss_comb_cellnum = zeros(8,8)
-for i=1:8
-    for j=1:8
-        g1, g2, _ = predict(bliss_comb[:, i, j], g0, 96)
-        bliss_comb_cellnum[i,j] = g1 + g2
-    end
-end
-heatmap_bliss(concs, BlissOnData[:, :, 1], bliss_comb_cellnum, 1, 2, "Lpt", "Dox")
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+
+loeweOnData = DrugResponseModel.loweCellNum(concs, 1, 2, g1avg, g2avg);
+
+p1=Heatmap(concs, BlissOnData[:, :, 1], bliss_comb_cellnum, 1, 2, "Lpt", "Dox")
+p2=Heatmap(concs, loeweOnData, bliss_comb_cellnum, 1, 2, "Lpt", "Dox")
+plot(p1, p2, size=(800, 400))
 ```
 
 
@@ -160,118 +89,109 @@ heatmap_bliss(concs, BlissOnData[:, :, 1], bliss_comb_cellnum, 1, 2, "Lpt", "Dox
 
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(lapat, gemc, effs, 8)
-bliss_comb_cellnum = zeros(8,8)
-for i=1:8
-    for j=1:8
-        g1, g2, _ = predict(bliss_comb[:, i, j], g0, 96)
-        bliss_comb_cellnum[i,j] = g1 + g2
-    end
-end
-heatmap_bliss(concs, BlissOnData[:, :, 2], bliss_comb_cellnum, 1, 3, "Lpt", "Gem")
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+
+loeweOnData = DrugResponseModel.loweCellNum(concs, 1, 3, g1avg, g2avg);
+
+p1=Heatmap(concs, BlissOnData[:, :, 2], bliss_comb_cellnum, 1, 3, "Lpt", "Gem")
+p2=Heatmap(concs, loeweOnData, bliss_comb_cellnum, 1, 3, "Lpt", "Gem")
+plot(p1, p2, size=(800, 400))
 ```
 
 ## Lapatinib and paclitaxel
 
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(lapat, pac, effs, 8)
-bliss_comb_cellnum = zeros(8,8)
-for i=1:8
-    for j=1:8
-        g1, g2, _ = predict(bliss_comb[:, i, j], g0, 96)
-        bliss_comb_cellnum[i,j] = g1 + g2
-    end
-end
-heatmap_bliss(concs, BlissOnData[:, :, 3], bliss_comb_cellnum, 1, 4, "Lpt", "Tax")
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+
+loeweOnData = DrugResponseModel.loweCellNum(concs, 1, 4, g1avg, g2avg);
+
+p1=Heatmap(concs, BlissOnData[:, :, 3], bliss_comb_cellnum, 1, 4, "Lpt", "Tax")
+p2=Heatmap(concs, loeweOnData, bliss_comb_cellnum, 1, 4, "Lpt", "Tax")
+plot(p1, p2, size=(800, 400))
 ```
 
 ## Lapatinib and palbociclib
 
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(lapat, pal, effs, 8)
-bliss_comb_cellnum = zeros(8,8)
-for i=1:8
-    for j=1:8
-        g1, g2, _ = predict(bliss_comb[:, i, j], g0, 96)
-        bliss_comb_cellnum[i,j] = g1 + g2
-    end
-end
-heatmap_bliss(concs, BlissOnData[:, :, 4], bliss_comb_cellnum, 1, 5, "Lpt", "Palb")
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+
+loeweOnData = DrugResponseModel.loweCellNum(concs, 1, 5, g1avg, g2avg);
+
+p1=Heatmap(concs, BlissOnData[:, :, 4], bliss_comb_cellnum, 1, 5, "Lpt", "Palb")
+p2=Heatmap(concs, loeweOnData, bliss_comb_cellnum, 1, 5, "Lpt", "Palb")
+plot(p1, p2, size=(800, 400))
 ```
 
 ## Doxorubicin and gemcitabine
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(dox, gemc, effs, 8)
-bliss_comb_cellnum = zeros(8,8)
-for i=1:8
-    for j=1:8
-        g1, g2, _ = predict(bliss_comb[:, i, j], g0, 96)
-        bliss_comb_cellnum[i,j] = g1 + g2
-    end
-end
-heatmap_bliss(concs, BlissOnData[:, :, 5], bliss_comb_cellnum, 2, 3, "Dox", "Gem")
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+
+loeweOnData = DrugResponseModel.loweCellNum(concs, 2, 3, g1avg, g2avg);
+
+p1=Heatmap(concs, BlissOnData[:, :, 5], bliss_comb_cellnum, 2, 3, "Dox", "Gem")
+p2=Heatmap(concs, loeweOnData, bliss_comb_cellnum, 2, 3, "Dox", "Gem")
+plot(p1, p2, size=(800, 400))
 ```
 
 ## Doxorubicin and paclitaxel
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(dox, pac, effs, 8)
-bliss_comb_cellnum = zeros(8,8)
-for i=1:8
-    for j=1:8
-        g1, g2, _ = predict(bliss_comb[:, i, j], g0, 96)
-        bliss_comb_cellnum[i,j] = g1 + g2
-    end
-end
-heatmap_bliss(concs, BlissOnData[:, :, 6], bliss_comb_cellnum, 2, 4, "Dox", "Tax")
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+
+loeweOnData = DrugResponseModel.loweCellNum(concs, 2, 4, g1avg, g2avg);
+
+p1=Heatmap(concs, BlissOnData[:, :, 6], bliss_comb_cellnum, 2, 4, "Dox", "Tax")
+p2=Heatmap(concs, loeweOnData, bliss_comb_cellnum, 2, 4, "Dox", "Tax")
+plot(p1, p2, size=(800, 400))
 ```
 
 ## Doxorubicin and palbociclib
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(dox, pal, effs, 8)
-bliss_comb_cellnum = zeros(8,8)
-for i=1:8
-    for j=1:8
-        g1, g2, _ = predict(bliss_comb[:, i, j], g0, 96)
-        bliss_comb_cellnum[i,j] = g1 + g2
-    end
-end
-heatmap_bliss(concs, BlissOnData[:, :, 7], bliss_comb_cellnum, 2, 5, "Dox", "Palb")
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+
+loeweOnData = DrugResponseModel.loweCellNum(concs, 2, 5, g1avg, g2avg);
+
+p1=Heatmap(concs, BlissOnData[:, :, 7], bliss_comb_cellnum, 2, 5, "Dox", "Palb")
+p2=Heatmap(concs, loeweOnData, bliss_comb_cellnum, 2, 5, "Dox", "Palb")
+plot(p1, p2, size=(800, 400))
 ```
 
 ## Gemcitabine and paclitaxel
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(gemc, pac, effs, 8)
-bliss_comb_cellnum = zeros(8,8)
-for i=1:8
-    for j=1:8
-        g1, g2, _ = predict(bliss_comb[:, i, j], g0, 96)
-        bliss_comb_cellnum[i,j] = g1 + g2
-    end
-end
-heatmap_bliss(concs, BlissOnData[:, :, 8], bliss_comb_cellnum, 3, 4, "Gem", "Tax")
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+
+loeweOnData = DrugResponseModel.loweCellNum(concs, 3, 4, g1avg, g2avg);
+
+p1=Heatmap(concs, BlissOnData[:, :, 8], bliss_comb_cellnum, 3, 4, "Gem", "Tax")
+p2=Heatmap(concs, loeweOnData, bliss_comb_cellnum, 3, 4, "Gem", "Tax")
+plot(p1, p2, size=(800, 400))
 ```
 
 ## Gemcitabine and palbociclib
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(gemc, pal, effs, 8)
-bliss_comb_cellnum = zeros(8,8)
-for i=1:8
-    for j=1:8
-        g1, g2, _ = predict(bliss_comb[:, i, j], g0, 96)
-        bliss_comb_cellnum[i,j] = g1 + g2
-    end
-end
-heatmap_bliss(concs, BlissOnData[:, :, 9], bliss_comb_cellnum, 3, 4, "Gem", "Palb")
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+
+loeweOnData = DrugResponseModel.loweCellNum(concs, 3, 5, g1avg, g2avg);
+
+p1=Heatmap(concs, BlissOnData[:, :, 9], bliss_comb_cellnum, 3, 5, "Gem", "Palb")
+p2=Heatmap(concs, loeweOnData, bliss_comb_cellnum, 3, 5, "Gem", "Palb")
+plot(p1, p2, size=(800, 400))
 ```
 
 ## Paclitaxel and palbociclib
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(pac, pal, effs, 8)
-bliss_comb_cellnum = zeros(8,8)
-for i=1:8
-    for j=1:8
-        g1, g2, _ = predict(bliss_comb[:, i, j], g0, 96)
-        bliss_comb_cellnum[i,j] = g1 + g2
-    end
-end
-heatmap_bliss(concs, BlissOnData[:, :, 10], bliss_comb_cellnum, 4, 5, "Tax", "Palb")
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+
+loeweOnData = DrugResponseModel.loweCellNum(concs, 4, 5, g1avg, g2avg);
+
+p1=Heatmap(concs, BlissOnData[:, :, 10], bliss_comb_cellnum, 4, 5, "Tax", "Palb")
+p2=Heatmap(concs, loeweOnData, bliss_comb_cellnum, 2, 5, "Tax", "Palb")
+plot(p1, p2, size=(800, 400))
 ```
