@@ -40,7 +40,7 @@ pac = effs[:,:,4];
 pal = effs[:,:,5];
 ```
 
-# Bliss combination
+# Combination
 
 ```julia; echo=false
 # Bliss on pure cell numbers
@@ -67,7 +67,7 @@ function Heatmap(concs, data, model, i1, i2, d1name, d2name)
         xlabel = string(d2name, " log[nM]"),
         ylabel = string(d1name, " log [nM]"),
         title = "cell number fold diff",
-        clim = (0.0, 5.0),
+        clim = (0.0, 2.0),
     )
 end
 ```
