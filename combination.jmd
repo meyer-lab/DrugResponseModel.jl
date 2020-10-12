@@ -33,7 +33,7 @@ p = [97.7434, 1.41726, 0.0501761, 0.930205, 0.111494, 0.123604, 0.552216,
 IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal = DrugResponseModel.find_IC(popavg, 0.5);
 println("IC50s from the data: \n lpt ", concs[IC50_lap,1], " dox ", concs[IC50_dox,2], " gem ", concs[IC50_gem,3], " tax ", concs[IC50_tax,4], " pal ", concs[IC50_pal,5])
 println("\n IC50s from the model: \n lpt ", p[1], " dox ", p[8], " gem ", p[15], " tax ", p[22], " pal ", p[29])
-effs = getODEparamsAll(pp, concs);
+effs = getODEparamsAll(p, concs);
 lapat_before = [43.1527, 0.966066, 0.149468, 1.07396, 0.20995, 0.373793, 0.0079829, 0.0202241, 0.536791, 21.7392, 7.00735, 0.101821, 1.41611];
 dox_before = [95.5176, 0.141023, 0.0453853, 0.846542, 0.164408, 1.00001e-9, 0.0720467, 0.14468, 0.689475, 3.66135, 5.46383, 4.29732, 2.9077];
 gemc_before = [10.7831, 0.925396, 0.93767, 1.85477, 0.219639, 0.491569, 0.00593379, 0.110279, 0.517813, 19.6588, 7.90343, 9.62803, 3.21637];
@@ -159,6 +159,7 @@ p3=Heatmap(concs, loeweOnData, 2, 4, "Dox", "Tax", "Loewe Data")
 plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 ```
 
+
 ## Doxorubicin and palbociclib
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(dox, pal, effs, 8)
@@ -171,6 +172,7 @@ p2=Heatmap(concs, BlissOnData[:, :, 7], 2, 5, "Dox", "Palbo", "Bliss Data")
 p3=Heatmap(concs, loeweOnData, 2, 5, "Dox", "Palbo", "Loewe Data")
 plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 ```
+
 
 ## Gemcitabine and paclitaxel
 ```julia; echo=false

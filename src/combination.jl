@@ -4,22 +4,24 @@ function BlissCombination(p1::Array{Float64, 2}, p2::Array{Float64, 2}, n::Int)
     """ A function to calculate Bliss independence for drug combination assuming
     the two drugs hit different pathways and they effect independently. """
 
-    param1 = zeros(4, 8)
-    param2 = zeros(4, 8)
-    param1[1, :] .= p1[1, 1] .- p1[1, :]
-    param1[2, :] .= p1[2, 1] .- p1[2, :]
-    param1[3, :] .= p1[3, :]
-    param1[4, :] .= p1[4, :]
-    param2[1, :] .= p2[1, 1] .- p2[1, :]
-    param2[2, :] .= p2[2, 1] .- p2[2, :]
-    param2[3, :] .= p2[3, :]
-    param2[4, :] .= p2[4, :]
+    param1 = p1
+    param2 = p2
+    # param1 = zeros(4, 8)
+    # param2 = zeros(4, 8)
+    # param1[1, :] .= p1[1, 1] .- p1[1, :]
+    # param1[2, :] .= p1[2, 1] .- p1[2, :]
+    # param1[3, :] .= p1[3, :]
+    # param1[4, :] .= p1[4, :]
+    # param2[1, :] .= p2[1, 1] .- p2[1, :]
+    # param2[2, :] .= p2[2, 1] .- p2[2, :]
+    # param2[3, :] .= p2[3, :]
+    # param2[4, :] .= p2[4, :]
 
     """ For 8x8 combination of drug concentrations for G1 progression rate, G2 progression rate, and death rates in G1 and G2, respectively. """
     combined = zeros(n, n, 4)
     for j = 1:n
         for k = 1:n
-            combined[j, k, 1:2] .= -(param1[1:2, j] .+ param2[1:2, k] .- param1[1:2, j] .* param2[1:2, k]) .+ p1[1:2, 1, 1]
+            combined[j, k, 1:2] .= param1[1:2, j] .+ param2[1:2, k] .- param1[1:2, j] .* param2[1:2, k]
             combined[j, k, 3:4] .= param1[3:4, j] .+ param2[3:4, k]
         end
     end
