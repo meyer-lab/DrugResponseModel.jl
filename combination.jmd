@@ -2,6 +2,7 @@ Left show Bliss_model/Bliss_data and right shows Bliss_model/Loewe_data
 
 ```julia; echo=false
 import Pkg; Pkg.instantiate()
+
 Pkg.activate(".")
 using DrugResponseModel
 using ExponentialUtilities
