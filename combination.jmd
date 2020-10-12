@@ -17,6 +17,8 @@ g0 = g1s1[1,1,1]+g2s1[1,1,1];
 g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
 g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
 popavg = g1avg .+ g2avg;
+
+# this is the optimum estimated parameters for all drugs at once, and considers % in G1 as shared. ==> 37 parameters
 pp = [52.1243, 1.2856, 0.0026682, 2.9096, 0.0250893, 0.0623134, 
       154.803, 1.10582, 0.304235, 0.295368, 0.411795, 0.613183, 
       82.5301, 1.05063, 0.391899, 0.919925, 0.0730874, 0.338454, 
@@ -24,6 +26,7 @@ pp = [52.1243, 1.2856, 0.0026682, 2.9096, 0.0250893, 0.0623134,
       60.2809, 0.913883, 0.00228251, 2.96638, 0.0583304, 0.0770743, 
       1.46021, 2.18259, 0.547192, 36.894, 70.8683, 17.2029, 10.6778]; # with 37 parameters
 
+# this is the optimum estimated parameters for all drugs at once, and considers % in G1 separately for drugs. ==> 41 parameters
 p = [97.7434, 1.41726, 0.0501761, 0.930205, 0.111494, 0.123604, 0.552216, 
      92.9045, 1.40024, 0.996396, 0.0513087, 0.521831, 0.6535, 0.566578, 
      15.5317, 2.3689, 0.592433, 0.999986, 0.0283363, 0.286975, 0.503328, 
@@ -35,6 +38,8 @@ IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal = DrugResponseModel.find_IC(pop
 println("IC50s from the data: \n lpt ", concs[IC50_lap,1], " dox ", concs[IC50_dox,2], " gem ", concs[IC50_gem,3], " tax ", concs[IC50_tax,4], " pal ", concs[IC50_pal,5])
 println("\n IC50s from the model: \n lpt ", p[1], " dox ", p[8], " gem ", p[15], " tax ", p[22], " pal ", p[29])
 effs = getODEparamsAll(p, concs);
+
+# These are parameters from fitting each drug individually.
 lapat_before = [43.1527, 0.966066, 0.149468, 1.07396, 0.20995, 0.373793, 0.0079829, 0.0202241, 0.536791, 21.7392, 7.00735, 0.101821, 1.41611];
 dox_before = [95.5176, 0.141023, 0.0453853, 0.846542, 0.164408, 1.00001e-9, 0.0720467, 0.14468, 0.689475, 3.66135, 5.46383, 4.29732, 2.9077];
 gemc_before = [10.7831, 0.925396, 0.93767, 1.85477, 0.219639, 0.491569, 0.00593379, 0.110279, 0.517813, 19.6588, 7.90343, 9.62803, 3.21637];
@@ -53,6 +58,7 @@ pal = DrugResponseModel.getODEparams(pal_before, concs[:, 5]);
 # Bliss on pure cell numbers
 BlissOnData = DrugResponseModel.blissCellNum(g1avg, g2avg; T = 96, n = 8) # includes are combinations 8 x 8 x 10
 
+""" This function calculates cell number for parameter sets that are the result of Bliss on prog. rates. """
 function BlissModelComb(bliss_comb, g0)
       bliss_comb_cellnum = zeros(8,8)
       for i=1:8
@@ -64,6 +70,7 @@ function BlissModelComb(bliss_comb, g0)
       return bliss_comb_cellnum
 end
 
+""" This function plots the heatmap of combined cell numbers given any two drugs. """
 function Heatmap(concs, data, i1, i2, d1name, d2name, title)
     concs[1, :] .= 0.6
     heatmap(
@@ -73,7 +80,7 @@ function Heatmap(concs, data, i1, i2, d1name, d2name, title)
         xlabel = string(d2name, " log[nM]"),
         ylabel = string(d1name, " log [nM]"),
         title = title,
-        clim = (0.0, 30.0),
+        clim = (0.0, 40.0),
     )
 end
 ```
