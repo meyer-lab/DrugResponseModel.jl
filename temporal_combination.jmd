@@ -5,15 +5,21 @@ import Pkg; Pkg.instantiate()
 Pkg.activate(".")
 using DrugResponseModel
 using Plots
-concs, populations, g1s, g2s = load(189, 1);
-g0 = g1s[1,1,1]+g2s[1,1,1];
+concs, populations1, g1s1, g2s1 = load(189, 1);
+concs, populations2, g1s2, g2s2 = load(189, 2);
+concs, populations3, g1s3, g2s3 = load(189, 3);
+g0 = g1s1[1,1,1]+g2s1[1,1,1];
 
-pp =  [49.2322, 1.13253, 0.0557782, 3.43847, 0.0183834, 0.0530674, 0.538046, 
-       58.3661, 1.7259, 2.69584, 0.0578749, 0.475825, 0.537772, 0.544677, 
-       20.8855, 2.05741, 2.05982, 4.99875, 0.0697081, 0.359285, 0.496691, 
-       3.9771, 4.8181, 0.0587329, 1.82322, 0.633786, 0.445822, 0.498424, 
-       40.3828, 1.08046, 0.653381, 3.35693, 0.0426125, 0.0648354, 0.535886, 
-       1.92651, 1.77876, 42.2714, 56.3408, 37.3421, 17.6778];
+g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
+g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
+popavg = g1avg .+ g2avg;
+
+pp =  [97.7434, 1.41726, 0.0501761, 0.930205, 0.111494, 0.123604, 0.552216, 
+     92.9045, 1.40024, 0.996396, 0.0513087, 0.521831, 0.6535, 0.566578, 
+     15.5317, 2.3689, 0.592433, 0.999986, 0.0283363, 0.286975, 0.503328, 
+     3.96929, 4.62768, 0.0512281, 0.307528, 0.549714, 0.378717, 0.50959, 
+     63.4248, 0.976052, 0.16582, 0.740009, 0.0572609, 0.0776912, 0.534201, 
+     0.734513, 0.375555, 16.8387, 12.3945, 30.176, 14.5352]
 
 
 effs = getODEparamsAll(pp, concs)
@@ -22,7 +28,7 @@ dox = effs[:,:,2];
 gemc = effs[:,:,3];
 pac = effs[:,:,4];
 palb = effs[:,:,5];
-IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal = DrugResponseModel.find_IC(populations, 0.5)
+IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal = DrugResponseModel.find_IC(popavg, 0.5)
 ```
 
 ### temporal combination
@@ -37,11 +43,11 @@ This plot on the top row, shows time-series simulation and data for individual d
 Lapatinib and Doxorubicin
 
 ```julia; echo=false
-plotTemporalCombin(lapat[:,IC50_lap], dox[:,IC50_dox], g1s, g2s, populations, concs[:,1], concs[:,2], true, IC50_lap, IC50_dox, "lap.", "dox.", 1, 2)
+plotTemporalCombin(lapat[:,IC50_lap], dox[:,IC50_dox], g1avg, g2avg, popavg, concs[:,1], concs[:,2], true, IC50_lap, IC50_dox, "lap.", "dox.", 1, 2)
 ```
 
 ```julia; echo = false
-DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], dox[:,IC50_dox], g1s, g2s, "lap.", "dox.")
+DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], dox[:,IC50_dox], g1avg, g2avg, "lap.", "dox.")
 ```
 
 ....................................................................................................................
@@ -49,11 +55,11 @@ DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], dox[:,IC50_dox], 
 Lapatinib and Gemcitabine.
 
 ```julia; echo=false
-plotTemporalCombin(lapat[:,IC50_lap], gemc[:,IC50_gem], g1s, g2s, populations, concs[:,1], concs[:,3], true, IC50_lap, IC50_gem, "lap.", "gemc.", 1, 3)
+plotTemporalCombin(lapat[:,IC50_lap], gemc[:,IC50_gem], g1avg, g2avg, popavg, concs[:,1], concs[:,3], true, IC50_lap, IC50_gem, "lap.", "gemc.", 1, 3)
 ```
 
 ```julia; echo = false
-DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], gemc[:,IC50_gem], g1s, g2s, "lap.", "gemc.")
+DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], gemc[:,IC50_gem], g1avg, g2avg, "lap.", "gemc.")
 ```
 
 ....................................................................................................................
@@ -61,11 +67,11 @@ DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], gemc[:,IC50_gem],
 Lapatinib and Paclitaxel
 
 ```julia; echo=false
-plotTemporalCombin(lapat[:,IC50_lap], pac[:,IC50_tax], g1s, g2s, populations, concs[:,1], concs[:,4], true, IC50_lap, IC50_tax, "lap.", "taxol", 1, 4)
+plotTemporalCombin(lapat[:,IC50_lap], pac[:,IC50_tax], g1avg, g2avg, popavg, concs[:,1], concs[:,4], true, IC50_lap, IC50_tax, "lap.", "taxol", 1, 4)
 ```
 
 ```julia; echo = false
-DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], pac[:,IC50_tax], g1s, g2s, "lap.", "tax.")
+DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], pac[:,IC50_tax], g1avg, g2avg, "lap.", "tax.")
 ```
 
 ....................................................................................................................
@@ -73,7 +79,7 @@ DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], pac[:,IC50_tax], 
 Lapatinib and Palboclicib
 
 ```julia; echo=false
-plotTemporalCombin(lapat[:,IC50_lap], palb[:,IC50_pal], g1s, g2s, populations, concs[:,1], concs[:,5], true, IC50_lap, IC50_pal, "lap.", "palb.", 1, 5)
+plotTemporalCombin(lapat[:,IC50_lap], palb[:,IC50_pal], g1avg, g2avg, popavg, concs[:,1], concs[:,5], true, IC50_lap, IC50_pal, "lap.", "palb.", 1, 5)
 ```
 
 ```julia; echo = false
@@ -85,11 +91,11 @@ DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], palb[:,IC50_pal],
 Doxorubicin and Gemcitabine
 
 ```julia; echo=false
-plotTemporalCombin(dox[:,IC50_dox], gemc[:,IC50_gem], g1s, g2s, populations, concs[:,2], concs[:,3], true, IC50_dox, IC50_gem, "dox.", "gemc.", 2, 3)
+plotTemporalCombin(dox[:,IC50_dox], gemc[:,IC50_gem], g1avg, g2avg, popavg, concs[:,2], concs[:,3], true, IC50_dox, IC50_gem, "dox.", "gemc.", 2, 3)
 ```
 
 ```julia; echo = false
-DrugResponseModel.plot_order_temporalCombin(dox[:,IC50_dox], gemc[:,IC50_gem], g1s, g2s, "dox.", "gemc.")
+DrugResponseModel.plot_order_temporalCombin(dox[:,IC50_dox], gemc[:,IC50_gem], g1avg, g2avg, "dox.", "gemc.")
 ```
 
 ....................................................................................................................
@@ -97,11 +103,11 @@ DrugResponseModel.plot_order_temporalCombin(dox[:,IC50_dox], gemc[:,IC50_gem], g
 Doxorubicin and Paclitaxel
 
 ```julia; echo=false
-plotTemporalCombin(dox[:,IC50_dox], pac[:,IC50_tax], g1s, g2s, populations, concs[:,2], concs[:,4], true, IC50_dox, IC50_tax, "dox.", "taxol", 2, 4)
+plotTemporalCombin(dox[:,IC50_dox], pac[:,IC50_tax], g1avg, g2avg, popavg, concs[:,2], concs[:,4], true, IC50_dox, IC50_tax, "dox.", "taxol", 2, 4)
 ```
 
 ```julia; echo = false
-DrugResponseModel.plot_order_temporalCombin(dox[:,IC50_dox], pac[:,IC50_tax], g1s, g2s, "dox.", "tax.")
+DrugResponseModel.plot_order_temporalCombin(dox[:,IC50_dox], pac[:,IC50_tax], g1avg, g2avg, "dox.", "tax.")
 ```
 
 ....................................................................................................................
@@ -109,12 +115,12 @@ DrugResponseModel.plot_order_temporalCombin(dox[:,IC50_dox], pac[:,IC50_tax], g1
 Doxorubicin and Palbociclib
 
 ```julia; echo=false
-plotTemporalCombin(dox[:,IC50_dox], palb[:,IC50_pal], g1s, g2s, populations, concs[:,2], concs[:,5], true, IC50_dox, IC50_pal, "dox.", "palb", 2, 5)
+plotTemporalCombin(dox[:,IC50_dox], palb[:,IC50_pal], g1avg, g2avg, popavg, concs[:,2], concs[:,5], true, IC50_dox, IC50_pal, "dox.", "palb", 2, 5)
 ```
 
 
 ```julia; echo = false
-DrugResponseModel.plot_order_temporalCombin(dox[:,IC50_dox], palb[:,IC50_pal], g1s, g2s, "dox.", "palb.")
+DrugResponseModel.plot_order_temporalCombin(dox[:,IC50_dox], palb[:,IC50_pal], g1avg, g2avg, "dox.", "palb.")
 ```
 
 ....................................................................................................................
@@ -122,12 +128,12 @@ DrugResponseModel.plot_order_temporalCombin(dox[:,IC50_dox], palb[:,IC50_pal], g
 Gemcitabine and Paclitaxel
 
 ```julia; echo=false
-plotTemporalCombin(gemc[:,IC50_gem], pac[:,IC50_tax], g1s, g2s, populations, concs[:,3], concs[:,4], true, IC50_gem, IC50_tax, "gemc.", "taxol", 3, 4)
+plotTemporalCombin(gemc[:,IC50_gem], pac[:,IC50_tax], g1avg, g2avg, popavg, concs[:,3], concs[:,4], true, IC50_gem, IC50_tax, "gemc.", "taxol", 3, 4)
 ```
 
 
 ```julia; echo = false
-DrugResponseModel.plot_order_temporalCombin(gemc[:,IC50_gem], pac[:,IC50_tax], g1s, g2s, "gemc.", "tax.")
+DrugResponseModel.plot_order_temporalCombin(gemc[:,IC50_gem], pac[:,IC50_tax], g1avg, g2avg, "gemc.", "tax.")
 ```
 
 ....................................................................................................................
@@ -135,11 +141,11 @@ DrugResponseModel.plot_order_temporalCombin(gemc[:,IC50_gem], pac[:,IC50_tax], g
 Gemcitabine and Palbociclib
 
 ```julia; echo=false
-plotTemporalCombin(gemc[:,IC50_gem], palb[:,IC50_pal], g1s, g2s, populations, concs[:,3], concs[:,5], true, IC50_gem, IC50_pal, "gemc.", "palb", 3, 5)
+plotTemporalCombin(gemc[:,IC50_gem], palb[:,IC50_pal], g1avg, g2avg, popavg, concs[:,3], concs[:,5], true, IC50_gem, IC50_pal, "gemc.", "palb", 3, 5)
 ```
 
 ```julia; echo = false
-DrugResponseModel.plot_order_temporalCombin(gemc[:,IC50_gem], palb[:,IC50_pal], g1s, g2s, "gemc.", "palb.")
+DrugResponseModel.plot_order_temporalCombin(gemc[:,IC50_gem], palb[:,IC50_pal], g1avg, g2avg, "gemc.", "palb.")
 ```
 
 ....................................................................................................................
@@ -147,11 +153,11 @@ DrugResponseModel.plot_order_temporalCombin(gemc[:,IC50_gem], palb[:,IC50_pal], 
 Paclitaxel and Palbociclib
 
 ```julia; echo=false
-plotTemporalCombin(pac[:,IC50_tax], palb[:,IC50_pal], g1s, g2s, populations, concs[:,4], concs[:,5], true, IC50_tax, IC50_pal, "taxol", "palb", 4, 5)
+plotTemporalCombin(pac[:,IC50_tax], palb[:,IC50_pal], g1avg, g2avg, popavg, concs[:,4], concs[:,5], true, IC50_tax, IC50_pal, "taxol", "palb", 4, 5)
 ```
 
 ```julia; echo = false
-DrugResponseModel.plot_order_temporalCombin(pac[:,IC50_tax], palb[:,IC50_pal], g1s, g2s, "tax.", "palb.")
+DrugResponseModel.plot_order_temporalCombin(pac[:,IC50_tax], palb[:,IC50_pal], g1avg, g2avg, "tax.", "palb.")
 ```
 
 
