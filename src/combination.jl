@@ -1,5 +1,6 @@
 """ This file contains all the functions related to Bliss and temporal combinations. """
 
+######---------------- Functions for Bliss combination ----------------########
 function BlissCombination(p1::Array{Float64, 2}, p2::Array{Float64, 2}, n::Int)
     """ A function to calculate Bliss independence for drug combination assuming
     the two drugs hit different pathways and they effect independently. """
@@ -14,6 +15,8 @@ function BlissCombination(p1::Array{Float64, 2}, p2::Array{Float64, 2}, n::Int)
     param2[2, :] .= 1.0 .- (p2[2, :] ./ p2[2, 1])
     param2[3, :] .= p2[3, :]
     param2[4, :] .= p2[4, :]
+
+    @assert param1[1,1] == param1[2,1] == param2[1,1] == param2[2,1] == 0.0
 
     """ For 8x8 combination of drug concentrations for G1 progression rate, G2 progression rate, and death rates in G1 and G2, respectively. """
     combined = zeros(n, n, 4)
@@ -100,24 +103,24 @@ end
 This is to compare the traditional way of representing the combination effect, compare to the way we do in our model."""
 function blissCellNum(g1s, g2s; T = 96, n = 8)
     num = zeros(n, 5)
-    # for no specific reason, I chose lapatinib's control trial to be the base case for converting.
-    base = g1s[T, 1, 1] + g2s[T, 1, 1]
+
     for i = 1:5
-        # num is a 8 x 5 matrix, holding cell numbers for 5 drugs, in 8 concenntration, for a specific time point.
-        num[:, i] = 1.0 .- ((g1s[T, :, i] + g2s[T, :, i]) ./ base)
+        # num is a 8 x 5 matrix, holding scaled cell numbers for 5 drugs, in 8 concenntration, for a specific time point.
+        num[:, i] = 1.0 .- ((g1s[T, :, i] .+ g2s[T, :, i]) ./ (g1s[T, 1, i] + g2s[T, 1, i]))
     end
     combined = zeros(n, n, 10)
     for j = 1:n
-        combined[j, :, 1] = -(num[:, 1] .+ num[j, 2] .- (num[:, 1] .* num[j, 2]) .- 1.0) .* base # lap w/ dox; meaning dox changes with rows and lap changes with columns
-        combined[j, :, 2] = -(num[:, 1] .+ num[j, 3] .- (num[:, 1] .* num[j, 3]) .- 1.0) .* base # lap w/ gem
-        combined[j, :, 3] = -(num[:, 1] .+ num[j, 4] .- (num[:, 1] .* num[j, 4]) .- 1.0) .* base # lap w/ pac
-        combined[j, :, 4] = -(num[:, 1] .+ num[j, 5] .- (num[:, 1] .* num[j, 5]) .- 1.0) .* base # lap w/ palb
-        combined[j, :, 5] = -(num[:, 2] .+ num[j, 3] .- (num[:, 2] .* num[j, 3]) .- 1.0) .* base # dox w/ gem
-        combined[j, :, 6] = -(num[:, 2] .+ num[j, 4] .- (num[:, 2] .* num[j, 4]) .- 1.0) .* base # dox w/ pac
-        combined[j, :, 7] = -(num[:, 2] .+ num[j, 5] .- (num[:, 2] .* num[j, 5]) .- 1.0) .* base # dox w/ palb
-        combined[j, :, 8] = -(num[:, 3] .+ num[j, 4] .- (num[:, 3] .* num[j, 4]) .- 1.0) .* base # gem w/ pac
-        combined[j, :, 9] = -(num[:, 3] .+ num[j, 5] .- (num[:, 3] .* num[j, 5]) .- 1.0) .* base # gem w/ palb
-        combined[j, :, 10] = -(num[:, 4] .+ num[j, 5] .- (num[:, 4] .* num[j, 5]) .- 1.0) .* base # pac w/ palb
+        # the base case for either of combinations is drugA to scale the cell numbers back.
+        combined[j, :, 1] = -(num[:, 1] .+ num[j, 2] .- (num[:, 1] .* num[j, 2]) .- 1.0) .* (g1s[T, 1, 1] + g2s[T, 1, 1]) # lap w/ dox; meaning dox changes with rows and lap changes with columns
+        combined[j, :, 2] = -(num[:, 1] .+ num[j, 3] .- (num[:, 1] .* num[j, 3]) .- 1.0) .* (g1s[T, 1, 1] + g2s[T, 1, 1]) # lap w/ gem
+        combined[j, :, 3] = -(num[:, 1] .+ num[j, 4] .- (num[:, 1] .* num[j, 4]) .- 1.0) .* (g1s[T, 1, 1] + g2s[T, 1, 1]) # lap w/ pac
+        combined[j, :, 4] = -(num[:, 1] .+ num[j, 5] .- (num[:, 1] .* num[j, 5]) .- 1.0) .* (g1s[T, 1, 1] + g2s[T, 1, 1]) # lap w/ palb
+        combined[j, :, 5] = -(num[:, 2] .+ num[j, 3] .- (num[:, 2] .* num[j, 3]) .- 1.0) .* (g1s[T, 1, 2] + g2s[T, 1, 2]) # dox w/ gem
+        combined[j, :, 6] = -(num[:, 2] .+ num[j, 4] .- (num[:, 2] .* num[j, 4]) .- 1.0) .* (g1s[T, 1, 2] + g2s[T, 1, 2]) # dox w/ pac
+        combined[j, :, 7] = -(num[:, 2] .+ num[j, 5] .- (num[:, 2] .* num[j, 5]) .- 1.0) .* (g1s[T, 1, 2] + g2s[T, 1, 2]) # dox w/ palb
+        combined[j, :, 8] = -(num[:, 3] .+ num[j, 4] .- (num[:, 3] .* num[j, 4]) .- 1.0) .* (g1s[T, 1, 3] + g2s[T, 1, 3]) # gem w/ pac
+        combined[j, :, 9] = -(num[:, 3] .+ num[j, 5] .- (num[:, 3] .* num[j, 5]) .- 1.0) .* (g1s[T, 1, 3] + g2s[T, 1, 3]) # gem w/ palb
+        combined[j, :, 10] = -(num[:, 4] .+ num[j, 5] .- (num[:, 4] .* num[j, 5]) .- 1.0) .* (g1s[T, 1, 4] + g2s[T, 1, 4]) # pac w/ palb
     end
     combined[1, :, 1] = g1s[T, :, 2] + g2s[T, :, 2] # dox
     combined[1, :, [2, 5]] .= g1s[T, :, 3] + g2s[T, :, 3] # gem
@@ -133,6 +136,93 @@ function blissCellNum(g1s, g2s; T = 96, n = 8)
     return combined
 end
 
+
+####--------------- Loewe additivity ------------------####
+""" Find the inverse of a hill function (concentration), given the parameters and the effect. """
+function inv_hill(p::Array{Float64, 1}, y)
+    #p = [EC50, min, max, steepness], y:effect. it returns concentration
+    conc = p[1] * (((y - p[2]) / (p[3] - y))^p[4])
+    return conc
+end
+
+function costHill(ydata::Array{Float64, 1}, p::Array{Float64, 1}, conc::Array{Float64, 1})
+    y = ydata[1] .+ (ydata[end] - ydata[1]) ./ (1 .+ (p[1] ./ conc) .^ p[2])
+    return norm(y - ydata)
+end
+
+function optimizeHill(conc::Array{Float64, 1}, cellnums::Array{Float64, 2})
+    nums1 = zeros(9)
+    conc1 = zeros(9)
+    conc1[1:8] = conc
+    conc1[9] = 10000
+    for i = 1:8
+        nums1[i] = cellnums[end, i, d1ind]
+    end
+    costs(p) = costHill(nums1, p, conc1)
+    low = [conc1[2], 0.1] # EC50 and steepness
+    high = [conc1[7], 10.0]
+    results_hill = bboptimize(
+        costs;
+        SearchRange = collect(zip(low, high)),
+        NumDimensions = length(low),
+        TraceMode = :silent,
+        TraceInterval = 100,
+        MaxSteps = 1E5,
+    )
+    par = best_candidate(results_hill)
+    return [par[1], nums1[1], nums1[end], par[2]] # [EC50, min, max, steepness]
+end
+
+function low(d1, d2, p1, p2)
+    f(x) = (d1 / inv_hill(p1, x)) + (d2 / inv_hill(p2, x)) - 1.0 # Loewe function
+    _min = maximum([minimum([p2[2], p2[3]]), minimum([p1[2], p1[3]])])
+    _max = minimum([maximum([p2[2], p2[3]]), maximum([p1[2], p1[3]])])
+    combined_effect = find_zero(f, [_min, _max])
+    return combined_effect
+end
+
+function paramsAtEC50(p)
+    ps = zeros(9, 5) # num_parameters x number of drugs.
+    k = 1
+    for i = 1:5
+        ps[:, i] = [
+            0.5 * (p[36] + p[k + 2]),
+            0.5 * (p[37] + p[k + 3]),
+            0.5 * p[k + 4],
+            0.5 * p[k + 5],
+            p[k + 6],
+            floor(p[38]),
+            floor(p[39]),
+            floor(p[40]),
+            floor(p[41]),
+        ]
+        k += 7
+    end
+    return ps
+end
+
+function loweCellNum(concs, d1ind, d2ind, total_cellnum)
+    cellNumScaled1 = 1.0 .- ((total_cellnum[:, :, d1ind]  ./ (total_cellnum[:, 1, d1ind]))
+    cellNumScaled2 = 1.0 .- ((total_cellnum[:, :, d2ind]  ./ (total_cellnum[:, 1, d2ind]))
+    pars1 = optimizeHill(concs[:, d1ind], cellNumScaled1)
+    pars2 = optimizeHill(concs[:, d2ind], cellNumScaled2)
+    combined_effs = zeros(9, 9)
+    conc1 = zeros(9)
+    conc2 = zeros(9)
+    conc1[1:8] = concs[:, d1ind]
+    conc1[9] = conc2[9] = 10000.0
+    conc2[1:8] = concs[:, d2ind]
+    for i = 1:9
+        for j = 1:9
+            combined_effs[i, j] = (1.0 .- (low(conc1[i], conc2[j], pars1, pars2))) .* total_cellnum[96, 1, d1ind]
+        end
+    end
+
+    return combined_effs[1:8, 1:8]
+end
+
+
+########-------------------- Functions for temporal combination ---------------------###########
 """ Function for calculating temporal combination of two drugs. """
 function temporal_combination(params1, params2, g0::Float64, max1::Float64, max2::Float64)
     t1 = LinRange(0.0, max1, Int(max1 * 2))
@@ -234,113 +324,5 @@ function plot_order_temporalCombin(params1, params2, g1s, g2s, named1, named2)
         xlabel = string("time max2 [hr]"),
         ylabel = string("time max1 [hr]"),
         title = string(named1, " --> ", named2, " - ", named2, " --> ", named1),
-    )
-end
-
-####--------------- Loewe additivity ------------------####
-""" Find the inverse of a hill function (concentration), given the parameters and the effect. """
-function inv_hill(p::Array{Float64, 1}, y)
-    #p = [EC50, min, max, steepness], y:effect. it returns concentration
-    conc = p[1] * (((y - p[2]) / (p[3] - y))^p[4])
-    return conc
-end
-
-function costHill(ydata::Array{Float64, 1}, p::Array{Float64, 1}, conc::Array{Float64, 1})
-    y = ydata[1] .+ (ydata[end] - ydata[1]) ./ (1 .+ (p[1] ./ conc) .^ p[2])
-    return norm(y - ydata)
-end
-
-function optimizeHill(concs::Array{Float64, 2}, d1ind::Int, g1s::Array{Float64, 3}, g2s::Array{Float64, 3})
-    nums1 = zeros(9)
-    conc1 = zeros(9)
-    conc1[1:8] = concs[:, d1ind]
-    conc1[9] = 10000
-    for i = 1:8
-        nums1[i] = g1s[end, i, d1ind] + g2s[end, i, d1ind]
-    end
-    costs(p) = costHill(nums1, p, conc1)
-    low = [conc1[2], 0.1]
-    high = [conc1[7], 10.0]
-    results_hill = bboptimize(
-        costs;
-        SearchRange = collect(zip(low, high)),
-        NumDimensions = length(low),
-        TraceMode = :silent,
-        TraceInterval = 100,
-        MaxSteps = 1E5,
-    )
-    par = best_candidate(results_hill)
-    return [par[1], nums1[1], nums1[end], par[2]]
-end
-
-function low(d1, d2, p1, p2)
-    f(x) = (d1 / inv_hill(p1, x)) + (d2 / inv_hill(p2, x)) - 1.0
-    find_min = maximum([minimum([p2[2], p2[3]]), minimum([p1[2], p1[3]])])
-    find_max = minimum([maximum([p2[2], p2[3]]), maximum([p1[2], p1[3]])])
-    combined_effect = find_zero(f, [find_min, find_max])
-    return combined_effect
-end
-
-function paramsAtEC50(p)
-    ps = zeros(9, 5) # num_parameters x number of drugs.
-    k = 1
-    for i = 1:5
-        ps[:, i] = [
-            0.5 * (p[36] + p[k + 2]),
-            0.5 * (p[37] + p[k + 3]),
-            0.5 * p[k + 4],
-            0.5 * p[k + 5],
-            p[k + 6],
-            floor(p[38]),
-            floor(p[39]),
-            floor(p[40]),
-            floor(p[41]),
-        ]
-        k += 7
-    end
-    return ps
-end
-
-function loweCellNum(concs, d1ind, d2ind, g1s, g2s)
-    pars1 = optimizeHill(concs, d1ind, g1s, g2s)
-    pars2 = optimizeHill(concs, d2ind, g1s, g2s)
-    combined_effs = zeros(9, 9)
-    conc1 = zeros(9)
-    conc2 = zeros(9)
-    conc1[1:8] = concs[:, d1ind]
-    conc1[9] = conc2[9] = 10000.0
-    conc2[1:8] = concs[:, d2ind]
-    for i = 1:9
-        for j = 1:9
-            combined_effs[i, j] = low(conc1[i], conc2[j], pars1, pars2)
-        end
-    end
-    combined_effs[1:8,1] .= g1s[96, :, d1ind] .+ g2s[96, :, d1ind]
-    combined_effs[1,1:8] .= g1s[96, :, d2ind] .+ g2s[96, :, d2ind]
-
-    return combined_effs[1:8, 1:8]
-end
-
-function heatmap_combination(d1, d2, cellNum, i1, i2, d1name, d2name, effs, concs, g0)
-    n = 8 # the number of concentrations we have
-    combin = fullCombinationParam(d1, d2, effs, n)
-
-    numscomb = zeros(n, n)
-    for j = 1:n
-        for m = 1:n
-            numscomb[j, m] = numcells(combin[:, j, m], g0)
-        end
-    end
-
-    diffs = numscomb ./ cellNum # model prediction / reference
-    concs[1, :] .= 0.6
-    heatmap(
-        string.(round.(log.(concs[:, i2]), digits = 1)),
-        string.(round.(log.(concs[:, i1]), digits = 1)),
-        diffs,
-        xlabel = string(d2name, " log[nM]"),
-        ylabel = string(d1name, " log [nM]"),
-        title = "cell number fold diff",
-        clim = (0.0, 5.0),
     )
 end
