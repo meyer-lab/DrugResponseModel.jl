@@ -59,14 +59,17 @@ pal = DrugResponseModel.getODEparams(pal_before, concs[:, 5]);
 BlissOnData = DrugResponseModel.blissCellNum(g1avg, g2avg; T = 96, n = 8) # includes are combinations 8 x 8 x 10
 
 """ This function calculates cell number for parameter sets that are the result of Bliss on prog. rates. """
-function BlissModelComb(bliss_comb, g0)
+function BlissModelComb(bliss_comb, g1avg, g2avg, id1, id2)
       bliss_comb_cellnum = zeros(8,8)
       for i=1:8
-      for j=1:8
-            g1, g2, _ = predict(bliss_comb[:, i, j], g0, 96)
-            bliss_comb_cellnum[i,j] = g1 + g2
+            for j=1:8
+                  g1, g2, _ = predict(bliss_comb[:, i, j], g1avg[1,1,1] + g2avg[1,1,1], 96)
+                  bliss_comb_cellnum[i,j] = g1 + g2
+            end
       end
-      end
+
+      bliss_comb_cellnum[1, :] .=  g1avg[96, :, id2] .+ g2avg[96, :, id2]
+      bliss_comb_cellnum[:, 1] .=  g1avg[96, :, id1] .+ g2avg[96, :, id1]
       return bliss_comb_cellnum
 end
 
@@ -88,7 +91,7 @@ end
 
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(lapat, dox, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 1, 2)
 
 loeweOnData = DrugResponseModel.loweCellNum(concs, 1, 2, g1avg, g2avg);
 
@@ -103,7 +106,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(lapat, gemc, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 1, 3)
 
 loeweOnData = DrugResponseModel.loweCellNum(concs, 1, 3, g1avg, g2avg);
 
@@ -117,7 +120,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(lapat, pac, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 1, 4)
 
 loeweOnData = DrugResponseModel.loweCellNum(concs, 1, 4, g1avg, g2avg);
 
@@ -131,7 +134,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(lapat, pal, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 1, 5)
 
 loeweOnData = DrugResponseModel.loweCellNum(concs, 1, 5, g1avg, g2avg);
 
@@ -144,7 +147,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 ## Doxorubicin and gemcitabine
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(dox, gemc, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 2, 3)
 
 loeweOnData = DrugResponseModel.loweCellNum(concs, 2, 3, g1avg, g2avg);
 
@@ -157,7 +160,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 ## Doxorubicin and paclitaxel
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(dox, pac, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 2, 4)
 
 loeweOnData = DrugResponseModel.loweCellNum(concs, 2, 4, g1avg, g2avg);
 
@@ -171,7 +174,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 ## Doxorubicin and palbociclib
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(dox, pal, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 2, 5)
 
 loeweOnData = DrugResponseModel.loweCellNum(concs, 2, 5, g1avg, g2avg);
 
@@ -185,7 +188,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 ## Gemcitabine and paclitaxel
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(gemc, pac, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 3, 4)
 
 loeweOnData = DrugResponseModel.loweCellNum(concs, 3, 4, g1avg, g2avg);
 
@@ -198,7 +201,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 ## Gemcitabine and palbociclib
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(gemc, pal, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 3, 5)
 
 loeweOnData = DrugResponseModel.loweCellNum(concs, 3, 5, g1avg, g2avg);
 
@@ -211,7 +214,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 ## Paclitaxel and palbociclib
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(pac, pal, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 4, 5)
 
 loeweOnData = DrugResponseModel.loweCellNum(concs, 4, 5, g1avg, g2avg);
 
