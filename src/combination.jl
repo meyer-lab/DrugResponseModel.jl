@@ -119,6 +119,16 @@ function blissCellNum(g1s, g2s; T = 96, n = 8)
         combined[j, :, 9] = -(num[:, 3] .+ num[j, 5] .- (num[:, 3] .* num[j, 5]) .- 1.0) .* base # gem w/ palb
         combined[j, :, 10] = -(num[:, 4] .+ num[j, 5] .- (num[:, 4] .* num[j, 5]) .- 1.0) .* base # pac w/ palb
     end
+    combined[1, :, 1] = g1s[T, :, 2] + g2s[T, :, 2] # dox
+    combined[1, :, [2, 5]] .= g1s[T, :, 3] + g2s[T, :, 3] # gem
+    combined[1, :, [3, 6, 8]] .= g1s[T, :, 4] + g2s[T, :, 4] # tax
+    combined[1, :, [4, 7, 9, 10]] .= g1s[T, :, 5] + g2s[T, :, 5] # palbo
+
+    combined[:, 1, 1:4] .= g1s[T, :, 1] + g2s[T, :, 1] # lap
+    combined[:, 1, 5:7] .= g1s[T, :, 2] + g2s[T, :, 2] # dox
+    combined[:, 1, 8:9] .= g1s[T, :, 3] + g2s[T, :, 3] # gem
+    combined[:, 1, 10] = g1s[T, :, 4] + g2s[T, :, 4] # tax
+
     @assert(all(combined .>= 0.0))
     return combined
 end
@@ -305,6 +315,9 @@ function loweCellNum(concs, d1ind, d2ind, g1s, g2s)
             combined_effs[i, j] = low(conc1[i], conc2[j], pars1, pars2)
         end
     end
+    combined_effs[1:8,1] .= g1s[96, :, d1ind] .+ g2s[96, :, d1ind]
+    combined_effs[1,1:8] .= g1s[96, :, d2ind] .+ g2s[96, :, d2ind]
+
     return combined_effs[1:8, 1:8]
 end
 
