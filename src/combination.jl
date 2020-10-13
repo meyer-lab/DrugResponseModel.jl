@@ -61,8 +61,8 @@ function plotNumcells(drugB::Array{Float64, 2}, combination::Array{Float64, 2}, 
     numscomb = zeros(n)
     nums = zeros(n)
     for j = 1:n
-        numscomb[j] = numcells(combination[:, j], g0, 96)
-        nums[j] = numcells(drugB[:, j], g0, 96)
+        numscomb[j] = numcells(combination[:, j], g0, 189)
+        nums[j] = numcells(drugB[:, j], g0, 189)
     end
     plot(log.(concDrugB), numscomb, label = "pac + gemc", lw = 3, fg_legend = :transparent, shape = :circle, color = :purple)
     plot!(log.(concDrugB), nums, label = "pac", lw = 3, xlabel = "log drug concentration", ylabel = "cell #", shape = :circle, color = :green)
@@ -75,7 +75,7 @@ function helperPlot(concd1, named1, concd2, named2, numscomb, legend, title, ymi
         label = string(named1),
         lw = 3,
         xlabel = "log drug concentration",
-        ylabel = "cell # at t = 96 hrs",
+        ylabel = "cell # at t = 93 hrs",
         shape = :circle,
         color = :green,
         title = title,
@@ -101,7 +101,7 @@ end
 
 """ In this function, we apply the Bliss synergy to the cell numbers. 
 This is to compare the traditional way of representing the combination effect, compare to the way we do in our model."""
-function blissCellNum(g1s, g2s; T = 96, n = 8)
+function blissCellNum(g1s, g2s; T = 189, n = 8)
     num = zeros(n, 5)
 
     for i = 1:5
@@ -122,15 +122,6 @@ function blissCellNum(g1s, g2s; T = 96, n = 8)
         combined[j, :, 9] = -(num[:, 3] .+ num[j, 5] .- (num[:, 3] .* num[j, 5]) .- 1.0) .* (g1s[T, 1, 3] + g2s[T, 1, 3]) # gem w/ palb
         combined[j, :, 10] = -(num[:, 4] .+ num[j, 5] .- (num[:, 4] .* num[j, 5]) .- 1.0) .* (g1s[T, 1, 4] + g2s[T, 1, 4]) # pac w/ palb
     end
-    combined[1, :, 1] = g1s[T, :, 2] + g2s[T, :, 2] # dox
-    combined[1, :, [2, 5]] .= g1s[T, :, 3] + g2s[T, :, 3] # gem
-    combined[1, :, [3, 6, 8]] .= g1s[T, :, 4] + g2s[T, :, 4] # tax
-    combined[1, :, [4, 7, 9, 10]] .= g1s[T, :, 5] + g2s[T, :, 5] # palbo
-
-    combined[:, 1, 1:4] .= g1s[T, :, 1] + g2s[T, :, 1] # lap
-    combined[:, 1, 5:7] .= g1s[T, :, 2] + g2s[T, :, 2] # dox
-    combined[:, 1, 8:9] .= g1s[T, :, 3] + g2s[T, :, 3] # gem
-    combined[:, 1, 10] = g1s[T, :, 4] + g2s[T, :, 4] # tax
 
     @assert(all(combined .>= 0.0))
     return combined
@@ -150,35 +141,56 @@ function costHill(ydata::Array{Float64, 1}, p::Array{Float64, 1}, conc::Array{Fl
     return norm(y - ydata)
 end
 
-function optimizeHill(conc::Array{Float64, 1}, cellnums::Array{Float64, 2})
-    nums1 = zeros(9)
-    conc1 = zeros(9)
-    conc1[1:8] = conc
-    conc1[9] = 10000
-    for i = 1:8
-        nums1[i] = cellnums[end, i, d1ind]
-    end
-    costs(p) = costHill(nums1, p, conc1)
-    low = [conc1[2], 0.1] # EC50 and steepness
-    high = [conc1[7], 10.0]
-    results_hill = bboptimize(
-        costs;
-        SearchRange = collect(zip(low, high)),
-        NumDimensions = length(low),
-        TraceMode = :silent,
-        TraceInterval = 100,
-        MaxSteps = 1E5,
-    )
-    par = best_candidate(results_hill)
-    return [par[1], nums1[1], nums1[end], par[2]] # [EC50, min, max, steepness]
+function optimizeHill(concs::Array{Float64, 2}, d1ind::Int, total_cell::Array{Float64, 3})	
+    nums1 = zeros(9)	
+    conc1 = zeros(9)	
+    conc1[1:8] = concs[:, d1ind]	
+    conc1[9] = 10000	
+    for i = 1:8	
+        nums1[i] = total_cell[end, i, d1ind]	
+    end	
+    costs(p) = costHill(nums1, p, conc1)	
+    low = [conc1[2], 0.1]	
+    high = [conc1[7], 10.0]	
+    results_hill = bboptimize(	
+        costs;	
+        SearchRange = collect(zip(low, high)),	
+        NumDimensions = length(low),	
+        TraceMode = :silent,	
+        TraceInterval = 100,	
+        MaxSteps = 1E5,	
+    )	
+    par = best_candidate(results_hill)	
+    return [par[1], nums1[1], nums1[end], par[2]]	
 end
 
-function low(d1, d2, p1, p2)
-    f(x) = (d1 / inv_hill(p1, x)) + (d2 / inv_hill(p2, x)) - 1.0 # Loewe function
-    _min = maximum([minimum([p2[2], p2[3]]), minimum([p1[2], p1[3]])])
-    _max = minimum([maximum([p2[2], p2[3]]), maximum([p1[2], p1[3]])])
-    combined_effect = find_zero(f, [_min, _max])
-    return combined_effect
+function low(d1, d2, p1, p2)	
+    f(x) = (d1 / inv_hill(p1, x)) + (d2 / inv_hill(p2, x)) - 1.0	
+    find_min = maximum([minimum([p2[2], p2[3]]), minimum([p1[2], p1[3]])])	
+    find_max = minimum([maximum([p2[2], p2[3]]), maximum([p1[2], p1[3]])])	
+    combined_effect = find_zero(f, [find_min, find_max])	
+    return combined_effect	
+end
+
+function loweCellNum(concs, d1ind, d2ind, g1s, g2s)	
+    scaled_d1 = 1.0 .- ((g1s .+ g2s) ./ (g1s[:, 1, d1ind] .+ g2s[:, 1, d1ind]))
+    scaled_d2 = 1.0 .- ((g1s .+ g2s) ./ (g1s[:, 1, d2ind] .+ g2s[:, 1, d2ind]))
+
+    pars1 = optimizeHill(concs, d1ind, scaled_d1)	
+    pars2 = optimizeHill(concs, d2ind, scaled_d2)
+	
+    combined_effs = zeros(9, 9)	
+    conc1 = zeros(9)	
+    conc2 = zeros(9)	
+    conc1[1:8] = concs[:, d1ind]	
+    conc1[9] = conc2[9] = 10000.0	
+    conc2[1:8] = concs[:, d2ind]	
+    for i = 1:9	
+        for j = 1:9	
+            combined_effs[i, j] = (1.0 .- low(conc1[i], conc2[j], pars1, pars2)) .* (g1s[end, 1, d1ind] .+ g2s[end, 1, d1ind])
+        end	
+    end	
+    return combined_effs[1:8, 1:8]	
 end
 
 function paramsAtEC50(p)
@@ -200,27 +212,6 @@ function paramsAtEC50(p)
     end
     return ps
 end
-
-function loweCellNum(concs, d1ind, d2ind, total_cellnum)
-    cellNumScaled1 = 1.0 .- ((total_cellnum[:, :, d1ind]  ./ (total_cellnum[:, 1, d1ind]))
-    cellNumScaled2 = 1.0 .- ((total_cellnum[:, :, d2ind]  ./ (total_cellnum[:, 1, d2ind]))
-    pars1 = optimizeHill(concs[:, d1ind], cellNumScaled1)
-    pars2 = optimizeHill(concs[:, d2ind], cellNumScaled2)
-    combined_effs = zeros(9, 9)
-    conc1 = zeros(9)
-    conc2 = zeros(9)
-    conc1[1:8] = concs[:, d1ind]
-    conc1[9] = conc2[9] = 10000.0
-    conc2[1:8] = concs[:, d2ind]
-    for i = 1:9
-        for j = 1:9
-            combined_effs[i, j] = (1.0 .- (low(conc1[i], conc2[j], pars1, pars2))) .* total_cellnum[96, 1, d1ind]
-        end
-    end
-
-    return combined_effs[1:8, 1:8]
-end
-
 
 ########-------------------- Functions for temporal combination ---------------------###########
 """ Function for calculating temporal combination of two drugs. """
