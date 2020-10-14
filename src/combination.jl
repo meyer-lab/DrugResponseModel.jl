@@ -163,7 +163,7 @@ function optimizeHill(concs::Array{Float64, 2}, d1ind::Int, total_cell::Array{Fl
         MaxSteps = 1E5,	
     )	
     par = best_candidate(results_hill)	
-    return [par[1], nums1[1], (nums1[end], par[2]]	
+    return [par[1], nums1[1], nums1[end], par[2]]	
 end
 
 function low(d1, d2, p1, p2)	
