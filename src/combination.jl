@@ -142,17 +142,17 @@ function costHill(ydata::Array{Float64, 1}, p::Array{Float64, 1}, conc::Array{Fl
 end
 
 function optimizeHill(concs::Array{Float64, 2}, d1ind::Int, total_cell::Array{Float64, 3})	
-    nums1 = zeros(9)	
+    nums1 = ones(9)	
     conc1 = zeros(9)	
     conc1[1:8] = concs[:, d1ind]	
     conc1[9] = 10000	
     for i = 1:8	
-        nums1[i] = total_cell[end, i, d1ind]	
+        nums1[i] = (total_cell[end, 1, d1ind] .- total_cell[end, i, d1ind]) ./ total_cell[end, 1, d1ind]
     end	
     costs(p) = costHill(nums1, p, conc1)	
-    low = [conc1[2], 0.1]	
-    high = [conc1[7], 10.0]	
-    results_hill = bboptimize(	
+    low = [conc1[2], 0.01]	
+    high = [conc1[8], 100.0]	
+    results_hill = bboptimize(
         costs;	
         SearchRange = collect(zip(low, high)),	
         NumDimensions = length(low),	
@@ -165,7 +165,7 @@ function optimizeHill(concs::Array{Float64, 2}, d1ind::Int, total_cell::Array{Fl
 end
 
 function low(d1, d2, p1, p2)	
-    f(x) = (d1 / inv_hill(p1, x)) + (d2 / inv_hill(p2, x)) - 1.0	
+    f(x) = (d1 / inv_hill(p1, x)) + (d2 / inv_hill(p2, x)) - 1.0
     find_min = maximum([minimum([p2[2], p2[3]]), minimum([p1[2], p1[3]])])	
     find_max = minimum([maximum([p2[2], p2[3]]), maximum([p1[2], p1[3]])])	
     combined_effect = find_zero(f, [find_min, find_max])	
@@ -173,11 +173,13 @@ function low(d1, d2, p1, p2)
 end
 
 function loweCellNum(concs, d1ind, d2ind, g1s, g2s)	
-    scaled_d1 = 1.0 .- ((g1s .+ g2s) ./ (g1s[:, 1, d1ind] .+ g2s[:, 1, d1ind]))
-    scaled_d2 = 1.0 .- ((g1s .+ g2s) ./ (g1s[:, 1, d2ind] .+ g2s[:, 1, d2ind]))
 
-    pars1 = optimizeHill(concs, d1ind, scaled_d1)	
-    pars2 = optimizeHill(concs, d2ind, scaled_d2)
+    nums = g1s .+ g2s
+    pars1 = optimizeHill(concs, d1ind, nums)	
+    pars2 = optimizeHill(concs, d2ind, nums)
+
+    print(pars1)
+    print(pars2)
 	
     combined_effs = zeros(9, 9)	
     conc1 = zeros(9)	
@@ -187,7 +189,7 @@ function loweCellNum(concs, d1ind, d2ind, g1s, g2s)
     conc2[1:8] = concs[:, d2ind]	
     for i = 1:9	
         for j = 1:9	
-            combined_effs[i, j] = (1.0 .- low(conc1[i], conc2[j], pars1, pars2)) .* (g1s[end, 1, d1ind] .+ g2s[end, 1, d1ind])
+            combined_effs[i, j] = (1.0 - low(conc1[i], conc2[j], pars1, pars2)) * (g1s[end, 1, d1ind] .+ g2s[end, 1, d1ind])
         end	
     end	
     return combined_effs[1:8, 1:8]	

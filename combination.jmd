@@ -53,7 +53,6 @@ pal = DrugResponseModel.getODEparams(pal_before, concs[:, 5]);
 ```
 
 # Combination
-
 ```julia; echo=false
 
 # Bliss on pure cell numbers
@@ -70,8 +69,6 @@ function BlissModelComb(bliss_comb, g1avg, g2avg, id1, id2)
       end
       return bliss_comb_cellnum
 end
-
-
 
 """ This function plots the heatmap of combined cell numbers given any two drugs. """
 function Heatmap(concs, data, i1, i2, d1name, d2name, title)
