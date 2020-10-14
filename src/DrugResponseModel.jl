@@ -47,6 +47,8 @@ export setup_data,
     plotTemporalCombin,
     predict,
     savitzky_golay_filter,
-    optim_all
+    optim_all,
+    BlissModelComb,
+    Heatmap
 
 end # module

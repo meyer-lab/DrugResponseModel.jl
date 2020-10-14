@@ -5,6 +5,8 @@ import Pkg; Pkg.instantiate()
 Pkg.activate(".")
 using DrugResponseModel
 using Plots, LinearAlgebra
+Plots.scalefontsizes(0.7)
+
 concs, populations1, g1s1, g2s1 = load(189, 1);
 concs, populations2, g1s2, g2s2 = load(189, 2);
 concs, populations3, g1s3, g2s3 = load(189, 3);
@@ -160,4 +162,55 @@ G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 plot(tim, G1, label="G1", lw=2, title=string("Tax ", EC50s[4], " & Palbo ", EC50s[5]))
 plot!(tim, G2, label="G2", lw=2)
 plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr]")
+```
+
+# Weird combinations
+
+```julia; echo=false
+lapat_before = [43.1527, 0.966066, 0.149468, 1.07396, 0.20995, 0.373793, 0.0079829, 0.0202241, 0.536791, 21.7392, 7.00735, 0.101821, 1.41611];
+dox_before = [95.5176, 0.141023, 0.0453853, 0.846542, 0.164408, 1.00001e-9, 0.0720467, 0.14468, 0.689475, 3.66135, 5.46383, 4.29732, 2.9077];
+gemc_before = [10.7831, 0.925396, 0.93767, 1.85477, 0.219639, 0.491569, 0.00593379, 0.110279, 0.517813, 19.6588, 7.90343, 9.62803, 3.21637];
+pac_before = [3.33798, 0.768057, 1.00004e-9, 3.01442, 0.27915, 0.0669792, 0.0570235, 0.0385754, 0.501908, 17.3979, 9.04839, 2.0261, 1.64753];
+pal_before = [26.8681, 0.843195, 0.337619, 0.895753, 0.359512, 0.632667, 0.00720161, 0.0401928, 0.577674, 18.8691, 11.3867, 31.7324, 1.16337];
+lapat = DrugResponseModel.getODEparams(lapat_before, concs[:, 1]);
+dox = DrugResponseModel.getODEparams(dox_before, concs[:, 2]);
+gemc = DrugResponseModel.getODEparams(gemc_before, concs[:, 3]);
+pac = DrugResponseModel.getODEparams(pac_before, concs[:, 4]);
+pal = DrugResponseModel.getODEparams(pal_before, concs[:, 5]);
+```
+
+## gemcitabine and taxol
+
+```julia; echo=false
+bliss_comb = DrugResponseModel.fullCombinationParam(gemc, pac, efcs, 8);
+
+```
+
+combination
+
+```julia; echo=false
+ G1 = zeros(45, 8)
+ G2 = zeros(45, 8)
+for i=1:8
+    G1[:, i], G2[:, i] = predict(bliss_comb[:, 6, i], g1avg[1] + g2avg[1], tim);
+end
+
+p = [plot(tim, G1[:, i] .+ G2[:, i], lw=2, ylabel="cell number", xlabel="time [hr]") for i=1:8]
+plot(p...)
+```
+
+separately
+
+```julia; echo=false
+ G1 = zeros(45, 8)
+ G2 = zeros(45, 8)
+for i=1:8
+    G1[:, i], G2[:, i] = predict(pac[:, i], g1avg[1] + g2avg[1], tim);
+end
+
+g1, g2 = predict(gemc[:, 6], g1avg[1] + g2avg[1], tim);
+
+p = [plot(tim, G1[:, i] .+ G2[:, i], lw=2, ylabel="cell number", xlabel="time [hr]") for i=1:8]
+p2 = plot(tim, g1 .+ g2, lw=2, ylabel="cell number", xlabel="time [hr]", title="gemcitabine 6th conc.")
+plot(p2, p...)
 ```

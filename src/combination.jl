@@ -43,6 +43,32 @@ function fullCombinationParam(origP1::Array{Float64, 2}, origP2::Array{Float64, 
     return fullparam
 end
 
+""" This function calculates cell number for parameter sets that are the result of Bliss on prog. rates. """
+function BlissModelComb(bliss_comb, g1avg, g2avg, id1, id2)
+      bliss_comb_cellnum = zeros(8,8)
+      for i=1:8
+            for j=1:8
+                  g1, g2, _ = predict(bliss_comb[:, i, j], g1avg[1,1,1] + g2avg[1,1,1], 189)
+                  bliss_comb_cellnum[i,j] = g1 + g2
+            end
+      end
+      return bliss_comb_cellnum
+end
+
+""" This function plots the heatmap of combined cell numbers given any two drugs. """
+function Heatmap(concs, data, i1, i2, d1name, d2name, title)
+    concs[1, :] .= 0.05
+    heatmap(
+        string.(round.(log.(concs[:, i2]), digits = 1)),
+        string.(round.(log.(concs[:, i1]), digits = 1)),
+        data,
+        xlabel = string(d2name, " log[nM]"),
+        ylabel = string(d1name, " log [nM]"),
+        title = title,
+        clim = (0.0, 40.0),
+    )
+end
+
 """ Function unit to plot drug effects before and after combination. """
 function plotunitCombin(conc::Array{Float64, 1}, gemc::Array{Float64, 1}, titles, combin::Array{Float64, 1})
     concs = log.(conc)
