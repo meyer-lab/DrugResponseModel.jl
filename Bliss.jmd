@@ -186,17 +186,33 @@ bliss_comb = DrugResponseModel.fullCombinationParam(gemc, pac, efcs, 8);
 
 ```
 
-combination
+combination:  
+This plots combination of 10nM Gemcitabine with all paclitaxel concentrations. Also we see separate drugs. 
 
 ```julia; echo=false
- G1 = zeros(45, 8)
- G2 = zeros(45, 8)
-for i=1:8
-    G1[:, i], G2[:, i] = predict(bliss_comb[:, 6, i], g1avg[1] + g2avg[1], tim);
+function plotall(tim, G1, G2, G1pac, G2pac, G1gemc, G2gemc, label1, label2, i)
+    plot(tim, G1[:, i] .+ G2[:, i], lw=2, ylabel="cell number", xlabel="time [hr]", label="cmbn")
+    plot!(tim, G1pac[:, i] .+ G2pac[:, i], lw=2, label=label1)
+    plot!(tim, G1gemc[:, i] .+ G2gemc[:, i], lw=2, label=label2)
 end
 
-p = [plot(tim, G1[:, i] .+ G2[:, i], lw=2, ylabel="cell number", xlabel="time [hr]") for i=1:8]
+G1 = zeros(45, 8)
+G2 = zeros(45, 8)
+G1pac = zeros(45, 8)
+G2pac = zeros(45, 8)
+G1gemc = zeros(45, 8)
+G2gemc = zeros(45, 8)
+ 
+for i=1:8
+    G1[:, i], G2[:, i] = predict(bliss_comb[:, 6, i], g1avg[1] + g2avg[1], tim);
+    G1pac[:, i], G2pac[:, i] = predict(pac[:, i], g1avg[1] + g2avg[1], tim);
+    G1gemc[:, i], G2gemc[:, i] = predict(gemc[:, i], g1avg[1] + g2avg[1], tim);
+end
+
+p = [plotall(tim, G1, G2, G1pac, G2pac, G1gemc, G2gemc, "tax", "gem", i) for i=1:8]
 plot(p...)
+ylims!((0.0, 60.0))
+
 ```
 
 parameters
@@ -219,21 +235,6 @@ end
 plotEffectsCombin(concs, pac, bliss_comb)
 ```
 
-separately
-
-```julia; echo=false
- G1 = zeros(45, 8)
- G2 = zeros(45, 8)
-for i=1:8
-    G1[:, i], G2[:, i] = predict(pac[:, i], g1avg[1] + g2avg[1], tim);
-end
-
-g1, g2 = predict(gemc[:, 6], g1avg[1] + g2avg[1], tim);
-
-p = [plot(tim, G1[:, i] .+ G2[:, i], lw=2, ylabel="cell number", xlabel="time [hr]", title=string("taxol ", concs[i,4], "nM")) for i=1:8]
-p2 = plot(tim, g1 .+ g2, lw=2, ylabel="cell number", xlabel="time [hr]", title="gemcitabine 6th conc.")
-plot(p2, p...)
-```
 
 ## Gemcitabine and palbociclib
 
@@ -242,18 +243,26 @@ bliss_comb = DrugResponseModel.fullCombinationParam(gemc, pal, efcs, 8);
 
 ```
 
-combination
+combination:
+This plots combination of 30nM Gemcitabine with all palbociclib concentrations. Also we see separate drugs. 
 
 ```julia; echo=false
- G1 = zeros(45, 8)
- G2 = zeros(45, 8)
+G1 = zeros(45, 8)
+G2 = zeros(45, 8)
+G1pal = zeros(45, 8)
+G2pal = zeros(45, 8)
+G1gemc = zeros(45, 8)
+G2gemc = zeros(45, 8)
+
 for i=1:8
     G1[:, i], G2[:, i] = predict(bliss_comb[:, 7, i], g1avg[1] + g2avg[1], tim);
+    G1pal[:, i], G2pal[:, i] = predict(pal[:, i], g1avg[1] + g2avg[1], tim);
+    G1gemc[:, i], G2gemc[:, i] = predict(gemc[:, i], g1avg[1] + g2avg[1], tim);
 end
 
-p = [plot(tim, G1[:, i] .+ G2[:, i], lw=2, ylabel="cell number", xlabel="time [hr]") for i=1:7]
-p2 = plot(tim, G1[:,8] .+ G2[:, 8], lw=2, ylabel="cell number", xlabel="time [hr]", title="gemc30 + palbo")
-plot(p..., p2)
+p = [plotall(tim, G1, G2, G1pal, G2pal, G1gemc, G2gemc, "palb", "gem", i) for i=1:8]
+plot(p...)
+ylims!((0.0, 60.0))
 ```
 
 parameters
@@ -265,6 +274,7 @@ function PlotunitCombin2(conc::Array{Float64, 1}, drug2::Array{Float64, 1}, titl
     plot!(concs, combin, label = "palbo w/ 5nM gemc.", lw = 2, shape = :circle, color = :green)
     plot!(concs, combin2, label = "palbo w/ 10nM gemc.", lw = 2, shape = :circle, color = :orange)
     plot!(concs, combin3, label = "palbo w/ 30nM gemc.", lw = 2, shape = :circle, color = :blue)
+    ylims!((0.0, 1.05))
 end
 
 """ Function to plot all of the drug effects before and after drug combination. """
@@ -274,20 +284,4 @@ function plotEffectsCombins(concs::Array{Float64, 2}, drug2::Array{Float64, 2}, 
     plot(pl..., layout = (2, 2))
 end
 plotEffectsCombins(concs, pal, bliss_comb)
-```
-
-separately
-
-```julia; echo=false
- G1 = zeros(45, 8)
- G2 = zeros(45, 8)
-for i=1:8
-    G1[:, i], G2[:, i] = predict(pal[:, i], g1avg[1] + g2avg[1], tim);
-end
-
-g1, g2 = predict(gemc[:, 7], g1avg[1] + g2avg[1], tim);
-
-p = [plot(tim, G1[:, i] .+ G2[:, i], lw=2, ylabel="cell number", xlabel="time [hr]") for i=1:8]
-p2 = plot(tim, g1 .+ g2, lw=2, ylabel="cell number", xlabel="time [hr]", title="gemcitabine 7th conc.")
-plot(p2, p...)
 ```
