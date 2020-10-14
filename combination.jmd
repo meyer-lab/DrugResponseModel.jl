@@ -1,4 +1,4 @@
-Left show Bliss_model/Bliss_data and right shows Bliss_model/Loewe_data
+Upper plot show Bliss on cell cycle model and the lower plot shows Bliss on pure cell number data.
 
 ```julia; echo=false
 import Pkg; Pkg.instantiate()
@@ -17,14 +17,6 @@ g0 = g1s1[1,1,1]+g2s1[1,1,1];
 g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
 g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
 popavg = g1avg .+ g2avg;
-
-# this is the optimum estimated parameters for all drugs at once, and considers % in G1 as shared. ==> 37 parameters
-pp = [52.1243, 1.2856, 0.0026682, 2.9096, 0.0250893, 0.0623134, 
-      154.803, 1.10582, 0.304235, 0.295368, 0.411795, 0.613183, 
-      82.5301, 1.05063, 0.391899, 0.919925, 0.0730874, 0.338454, 
-      3.21729, 3.41872, 0.0841223, 1.52284, 0.281485, 0.207797, 
-      60.2809, 0.913883, 0.00228251, 2.96638, 0.0583304, 0.0770743, 
-      1.46021, 2.18259, 0.547192, 36.894, 70.8683, 17.2029, 10.6778]; # with 37 parameters
 
 # this is the optimum estimated parameters for all drugs at once, and considers % in G1 separately for drugs. ==> 41 parameters
 p = [97.7434, 1.41726, 0.0501761, 0.930205, 0.111494, 0.123604, 0.552216, 
@@ -45,6 +37,7 @@ dox_before = [95.5176, 0.141023, 0.0453853, 0.846542, 0.164408, 1.00001e-9, 0.07
 gemc_before = [10.7831, 0.925396, 0.93767, 1.85477, 0.219639, 0.491569, 0.00593379, 0.110279, 0.517813, 19.6588, 7.90343, 9.62803, 3.21637];
 pac_before = [3.33798, 0.768057, 1.00004e-9, 3.01442, 0.27915, 0.0669792, 0.0570235, 0.0385754, 0.501908, 17.3979, 9.04839, 2.0261, 1.64753];
 pal_before = [26.8681, 0.843195, 0.337619, 0.895753, 0.359512, 0.632667, 0.00720161, 0.0401928, 0.577674, 18.8691, 11.3867, 31.7324, 1.16337];
+
 lapat = DrugResponseModel.getODEparams(lapat_before, concs[:, 1]);
 dox = DrugResponseModel.getODEparams(dox_before, concs[:, 2]);
 gemc = DrugResponseModel.getODEparams(gemc_before, concs[:, 3]);
@@ -64,7 +57,7 @@ BlissOnData = DrugResponseModel.blissCellNum(g1avg, g2avg; T = 189, n = 8); # in
 
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(lapat, dox, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 1, 2)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 p1=Heatmap(concs, bliss_comb_cellnum, 1, 2, "Lpt", "Dox", "Bliss Cell Cycle Model")
 p2=Heatmap(concs, BlissOnData[:, :, 1], 1, 2, "Lpt", "Dox", "Bliss Data")
@@ -75,7 +68,7 @@ plot(p1, p2, layout=(2,1))
 
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(lapat, gemc, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 1, 3)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 p1=Heatmap(concs, bliss_comb_cellnum, 1, 3, "Lpt", "Gem", "Bliss Cell Cycle Model")
 p2=Heatmap(concs, BlissOnData[:, :, 2], 1, 3, "Lpt", "Gem", "Bliss Data")
@@ -87,7 +80,7 @@ plot(p1, p2, layout=(2,1))
 
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(lapat, pac, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 1, 4)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 
 p1=Heatmap(concs, bliss_comb_cellnum, 1, 4, "Lpt", "Tax", "Bliss Cell Cycle Model")
@@ -99,7 +92,7 @@ plot(p1, p2, layout=(2,1))
 
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(lapat, pal, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 1, 5)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 
 p1=Heatmap(concs, bliss_comb_cellnum, 1, 5, "Lpt", "Palbo", "Bliss Cell Cycle Model")
@@ -110,7 +103,7 @@ plot(p1, p2, layout=(2,1))
 ## Doxorubicin and gemcitabine
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(dox, gemc, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 2, 3)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 
 p1=Heatmap(concs, bliss_comb_cellnum, 2, 3, "Dox", "Gem", "Bliss Cell Cycle Model")
@@ -121,7 +114,7 @@ plot(p1, p2, layout=(2,1))
 ## Doxorubicin and paclitaxel
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(dox, pac, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 2, 4)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 
 p1=Heatmap(concs, bliss_comb_cellnum, 2, 4, "Dox", "Tax", "Bliss Cell Cycle Model")
@@ -133,7 +126,7 @@ plot(p1, p2, layout=(2,1))
 ## Doxorubicin and palbociclib
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(dox, pal, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 2, 5)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 p1=Heatmap(concs, bliss_comb_cellnum, 2, 5, "Dox", "Palbo", "Bliss Cell Cycle Model")
 p2=Heatmap(concs, BlissOnData[:, :, 7], 2, 5, "Dox", "Palbo", "Bliss Data")
@@ -144,7 +137,7 @@ plot(p1, p2, layout=(2,1))
 ## Gemcitabine and paclitaxel
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(gemc, pac, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 3, 4)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 
 p1=Heatmap(concs, bliss_comb_cellnum, 3, 4, "Gem", "Tax", "Bliss Cell Cycle Model")
@@ -155,7 +148,7 @@ plot(p1, p2, layout=(2,1))
 ## Gemcitabine and palbociclib
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(gemc, pal, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 3, 5)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 
 p1=Heatmap(concs, bliss_comb_cellnum, 3, 5, "Gem", "Palbo", "Bliss Cell Cycle Model")
@@ -166,7 +159,7 @@ plot(p1, p2, layout=(2,1))
 ## Paclitaxel and palbociclib
 ```julia; echo=false
 bliss_comb = DrugResponseModel.fullCombinationParam(pac, pal, effs, 8)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g1avg, g2avg, 4, 5)
+bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 
 p1=Heatmap(concs, bliss_comb_cellnum, 4, 5, "Tax", "Palbo", "Bliss Cell Cycle Model")

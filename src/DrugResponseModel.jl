@@ -22,6 +22,7 @@ include("Hill.jl")
 include("plot.jl")
 include("allDrugs.jl")
 include("combination.jl")
+include("replicates.jl")
 
 export setup_data,
     load,
@@ -31,20 +32,16 @@ export setup_data,
     plot_all,
     optimize_hill,
     getODEparams,
-    sensitivity,
-    plotUnitSensitivity,
-    allSensitivity,
     ODEplot_allPerc,
     numcells,
     getODEparamsAll,
     optimize_hillAll,
-    BlissCombination,
+    numcells,
+    CombinationParam,
     fullCombinationParam,
     plotEffectsCombin,
     plotNumcells,
     blissCellNum,
-    temporal_combination,
-    plotTemporalCombin,
     predict,
     savitzky_golay_filter,
     optim_all,

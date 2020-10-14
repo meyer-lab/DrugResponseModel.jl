@@ -193,5 +193,17 @@ function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Fl
     return Optim.minimizer(results)
 end
 
-# for plotting all the concentrations on top of each other, from average of three reps.
-# function avgAllConcs(g0, g1m, g2m, p)
+""" To find IC50 or IC90 for each drug, separately."""
+function find_IC(population, which)
+    lap = Array(population[189, :, 1])
+    dox = Array(population[189, :, 2])
+    gem = Array(population[189, :, 3])
+    tax = Array(population[189, :, 4])
+    pal = Array(population[189, :, 5])
+    IC_lap = argmin(abs.(which * lap[1] .- lap)) #6
+    IC_dox = argmin(abs.(which * dox[1] .- dox)) #3
+    IC_gem = argmin(abs.(which * gem[1] .- gem)) #6
+    IC_tax = argmin(abs.(which * tax[1] .- tax)) #4
+    IC_pal = argmin(abs.(which * pal[1] .- pal)) #5
+    return IC_lap, IC_dox, IC_gem, IC_tax, IC_pal # returns the argument
+end
