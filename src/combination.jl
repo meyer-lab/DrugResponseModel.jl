@@ -72,8 +72,8 @@ end
 """ Function unit to plot drug effects before and after combination. """
 function plotunitCombin(conc::Array{Float64, 1}, gemc::Array{Float64, 1}, titles, combin::Array{Float64, 1})
     concs = log.(conc)
-    plot(concs, gemc, ylabel = titles, label = "taxol alone", lw = 3, fg_legend = :transparent, shape = :circle, color = :purple)
-    plot!(concs, combin, label = "taxol w/ 5nM gemc.", lw = 3, shape = :circle, color = :green)
+    plot(concs, gemc, ylabel = titles, label = "taxol alone", lw = 2, fg_legend = :transparent, shape = :circle, color = :purple)
+    plot!(concs, combin, label = "taxol w/ 5nM gemc.", lw = 2, shape = :circle, color = :green)
 end
 
 """ Function to plot all of the drug effects before and after drug combination. """
