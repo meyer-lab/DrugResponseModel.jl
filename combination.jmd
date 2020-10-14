@@ -84,6 +84,7 @@ function Heatmap(concs, data, i1, i2, d1name, d2name, title)
     )
 end
 ```
+
 ## Lapatinib and doxorubicin
 
 ```julia; echo=false

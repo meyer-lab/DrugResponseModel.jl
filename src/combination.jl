@@ -145,13 +145,15 @@ function optimizeHill(concs::Array{Float64, 2}, d1ind::Int, total_cell::Array{Fl
     nums1 = ones(9)	
     conc1 = zeros(9)	
     conc1[1:8] = concs[:, d1ind]	
-    conc1[9] = 10000	
-    for i = 1:8	
+    conc1[9] = 10000
+    for i = 1:8
+        # scaling cell numbers based on the control condition
         nums1[i] = (total_cell[end, 1, d1ind] .- total_cell[end, i, d1ind]) ./ total_cell[end, 1, d1ind]
-    end	
+    end
+
     costs(p) = costHill(nums1, p, conc1)	
-    low = [conc1[2], 0.01]	
-    high = [conc1[8], 100.0]	
+    low = [conc1[2], 0.1]	
+    high = [conc1[7], 10.0]	
     results_hill = bboptimize(
         costs;	
         SearchRange = collect(zip(low, high)),	
@@ -161,7 +163,7 @@ function optimizeHill(concs::Array{Float64, 2}, d1ind::Int, total_cell::Array{Fl
         MaxSteps = 1E5,	
     )	
     par = best_candidate(results_hill)	
-    return [par[1], nums1[1], nums1[end], par[2]]	
+    return [par[1], nums1[1], (nums1[end], par[2]]	
 end
 
 function low(d1, d2, p1, p2)	
