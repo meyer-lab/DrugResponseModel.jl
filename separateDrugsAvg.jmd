@@ -1,5 +1,11 @@
+---
+weave_options:
+  error: true
+  echo: false
+---
+
 This file contains all the drugs simulations for the average of replicates, separately. Time series, G2 percentage, and quantified drug effects are shown.
-```julia; echo=false
+```julia
 import Pkg; Pkg.instantiate()
 Pkg.activate(".")
 using DrugResponseModel
@@ -17,7 +23,7 @@ gdata2 = g2m ./ (g2m .+ g1m);
 ```
 
 # Lapatinib
-```julia; echo=false
+```julia
 ps1= [43.1527, 0.966066, 0.149468, 1.07396, 0.20995, 0.373793, 0.0079829, 0.0202241, 0.536791, 21.7392, 7.00735, 0.101821, 1.41611];
 efcs = getODEparams(ps1, concs[:, 1]);
 
@@ -37,7 +43,7 @@ plot(p1, p..., figsize=(1000, 700), dpi=250)
 ```
 
 ## G2 percentage plot
-```julia; echo=false
+```julia
 # percentage
 g2 = G2 ./(G1 .+ G2);
 p1=DrugResponseModel.plotperc(g2, "lap.", concs[:, 1], "model")
@@ -46,17 +52,17 @@ plot(p1, p2)
 ```
 
 ## quantified parameters plot
-```julia; echo=false
+```julia
 DrugResponseModel.plot_parameters(concs[:, 1], efcs, zeros(4,7))
 ```
 
 ## print error for lapatinib:
-```julia; echo=false
+```julia
 norm(G1 - g1m[:, 1:7, 1]) + norm(G2 - g2m[:, 1:7, 1])
 ```
 
 # Doxorubicin
-```julia; echo=false
+```julia
 ps2 = [95.5176, 0.141023, 0.0453853, 0.846542, 0.164408, 1.00001e-9, 0.0720467, 0.14468, 0.689475, 3.66135, 5.46383, 4.29732, 2.9077];
 efcs2 = getODEparams(ps2, concs[:, 2]);
 
@@ -76,7 +82,7 @@ plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
 ## G2 percentage plot
-```julia; echo=false
+```julia
 # percentage
 g2 = G2 ./(G1 .+ G2);
 p1=DrugResponseModel.plotperc(g2, "dox.", concs[:, 2], "model")
@@ -85,17 +91,17 @@ plot(p1, p2)
 ```
 
 ## quantified parameters plot
-```julia; echo=false
+```julia
 DrugResponseModel.plot_parameters(concs[:, 2], efcs2, zeros(4,7))
 ```
 
 ## print error for doxorubicin:
-```julia; echo=false
+```julia
 norm(G1 - g1m[:, 1:7, 2]) + norm(G2 - g2m[:, 1:7, 2])
 ```
 
 # Gemcitabine
-```julia; echo=false
+```julia
 ps3 = [10.7831, 0.925396, 0.93767, 1.85477, 0.219639, 0.491569, 0.00593379, 0.110279, 0.517813, 19.6588, 7.90343, 9.62803, 3.21637];
 efcs3 = getODEparams(ps3, concs[:, 3]);
 
@@ -115,7 +121,7 @@ plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
 ## G2 percentage plot
-```julia; echo=false
+```julia
 # percentage
 g2 = G2 ./(G1 .+ G2);
 p1=DrugResponseModel.plotperc(g2, "gem.", concs[:, 3], "model")
@@ -124,17 +130,17 @@ plot(p1, p2)
 ```
 
 ## quantified parameters plot
-```julia; echo=false
+```julia
 DrugResponseModel.plot_parameters(concs[:, 3], efcs3, zeros(4,7))
 ```
 
 ## print error for gemcitabine
-```julia; echo=false
+```julia
 norm(G1 - g1m[:, 1:7, 3]) + norm(G2 - g2m[:, 1:7, 3])
 ```
 
 # Paclitaxel
-```julia; echo=false
+```julia
 ps4 = [3.33798, 0.768057, 1.00004e-9, 3.01442, 0.27915, 0.0669792, 0.0570235, 0.0385754, 0.501908, 17.3979, 9.04839, 2.0261, 1.64753];
 efcs4 = getODEparams(ps4, concs[:, 4]);
 
@@ -154,7 +160,7 @@ plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
 ## G2 percentage plot
-```julia; echo=false
+```julia
 # percentage
 g2 = G2 ./(G1 .+ G2);
 p1=DrugResponseModel.plotperc(g2, "tax.", concs[:, 4], "model")
@@ -163,17 +169,17 @@ plot(p1, p2)
 ```
 
 ## quantified parameters plot
-```julia; echo=false
+```julia
 DrugResponseModel.plot_parameters(concs[:, 4], efcs4, zeros(4,7))
 ```
 
 ## print error for paclitaxel:
-```julia; echo=false
+```julia
 norm(G1 - g1m[:, 1:7, 4]) + norm(G2 - g2m[:, 1:7, 4])
 ```
 
 # Palbociclib
-```julia; echo=false
+```julia
 ps5 = [26.8681, 0.843195, 0.337619, 0.895753, 0.359512, 0.632667, 0.00720161, 0.0401928, 0.577674, 18.8691, 11.3867, 31.7324, 1.16337];
 efcs5 = getODEparams(ps5, concs[:, 5]);
 
@@ -193,7 +199,7 @@ plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
 ## G2 percentage plot
-```julia; echo=false
+```julia
 # percentage
 g2 = G2 ./(G1 .+ G2);
 p1=DrugResponseModel.plotperc(g2, "palbo.", concs[:, 5], "model")
@@ -202,11 +208,11 @@ plot(p1, p2)
 ```
 
 ## quantified parameters plot
-```julia; echo=false
+```julia
 DrugResponseModel.plot_parameters(concs[:, 5], efcs5, zeros(4,7))
 ```
 
 ## print error for palbociclib
-```julia; echo=false
+```julia
 norm(G1 - g1m[:, 1:7, 5]) + norm(G2 - g2m[:, 1:7, 5])
 ```

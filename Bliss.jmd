@@ -1,6 +1,12 @@
+---
+weave_options:
+  error: true
+  echo: false
+---
+
 Time series simulation for a pair of drugs in their EC50 concentration based on Bliss index.
 
-```julia; echo=false
+```julia
 import Pkg; Pkg.instantiate()
 Pkg.activate(".")
 using DrugResponseModel
@@ -43,7 +49,7 @@ tim = 0.0:2:88.0
 
 
 # Lapatinib and Dox
-```julia; echo=false
+```julia
 
 combin = BlissUnit(params[:, 1], params[:, 2]) # lpt and dox
 
@@ -56,7 +62,7 @@ plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr
 ```
 
 # Lpt and Gemc
-```julia; echo=false
+```julia
 
 combin = BlissUnit(params[:, 1], params[:, 3]) # lpt and gmc
 
@@ -68,7 +74,7 @@ plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr
 ```
 
 # Lpt and tax
-```julia; echo=false
+```julia
 
 combin = BlissUnit(params[:, 1], params[:, 4]) # lpt and tax
 
@@ -80,7 +86,7 @@ plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr
 ```
 
 # Lpt and Palbo
-```julia; echo=false
+```julia
 
 combin = BlissUnit(params[:, 1], params[:, 5]) # lpt and palbo
 
@@ -92,7 +98,7 @@ plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr
 ```
 
 # Dox and Gemc
-```julia; echo=false
+```julia
 
 combin = BlissUnit(params[:, 2], params[:, 3]) # dox and gmc
 
@@ -104,7 +110,7 @@ plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr
 ```
 
 # Dox and Tax
-```julia; echo=false
+```julia
 
 combin = BlissUnit(params[:, 2], params[:, 4]) # dox and tax
 
@@ -116,7 +122,7 @@ plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr
 ```
 
 # Dox and Palbo
-```julia; echo=false
+```julia
 
 combin = BlissUnit(params[:, 2], params[:, 5]) # dox and palbo
 
@@ -127,7 +133,7 @@ plot!(tim, G2, lw=2, label="G2")
 plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr]")
 ```
 # Gem and Tax
-```julia; echo=false
+```julia
 
 combin = BlissUnit(params[:, 3], params[:, 4]) # gem and tax
 
@@ -139,7 +145,7 @@ plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr
 ```
 
 # Gem and Palbo
-```julia; echo=false
+```julia
 
 combin = BlissUnit(params[:, 3], params[:, 5]) # gem and palbo
 
@@ -151,7 +157,7 @@ plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr
 ```
 
 # Tax and Palbo
-```julia; echo=false
+```julia
 
 combin = BlissUnit(params[:, 4], params[:, 5]) # tax and palbo
 

@@ -3,8 +3,8 @@
 """
 function get_data(path_g2::String, path_total::String; max = 189)
     # Import data all the trials for each drug
-    data = CSV.read(path_g2)
-    total = CSV.read(path_total)
+    data = DataFrame(CSV.File(path_g2))
+    total = DataFrame(CSV.File(path_total))
 
     # delete the extra index column
     data = data[:, 2:9]
@@ -60,7 +60,7 @@ function setup_data(drug_name::String)
     end
 
     #----------- import concentrations
-    concentration = CSV.read(joinpath(basePath, "concentrations.csv"))
+    concentration = DataFrame(CSV.File(joinpath(basePath, "concentrations.csv")))
     conc_l = [Float64(concentration[idx, col]) for col = 2:9]
     conc_l[1] = 0.05
 
