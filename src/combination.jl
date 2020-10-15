@@ -68,7 +68,7 @@ function Heatmap(concs, data, i1, i2, d1name, d2name, title)
         xlabel = string(d2name, " log[nM]"),
         ylabel = string(d1name, " log [nM]"),
         title = title,
-        clim = (0.0, 70.0),
+        clim = (0.0, 60.0),
     )
 end
 
