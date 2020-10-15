@@ -48,11 +48,12 @@ end
 
 """ This function calculates cell number for parameter sets that are the result of Bliss on prog. rates. """
 function BlissModelComb(bliss_comb, g0)
+t = 0.0:0.5:94
       bliss_comb_cellnum = zeros(8,8)
       for i=1:8 # param1 is changing
             for j=1:8 # param2 is changing
-                  g1, g2, _ = predict(bliss_comb[:, i, j], g0, 189)
-                  bliss_comb_cellnum[i, j] = g1 + g2
+                  g1, g2 = predict(bliss_comb[:, i, j], g0, t)
+                  bliss_comb_cellnum[i, j] = g1[end] + g2[end]
             end
       end
       return bliss_comb_cellnum
@@ -66,7 +67,7 @@ function Heatmap(concs, data, i1, i2, d1name, d2name, title)
         string.(round.(log.(concs[:, i1]), digits = 1)),
         data,
         xlabel = string(d2name, " log[nM]"),
-        ylabel = string(d1name, " log [nM]"),
+        ylabel = string(d1name, " log[nM]"),
         title = title,
         clim = (0.0, 60.0),
     )
