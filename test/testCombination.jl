@@ -1,58 +1,31 @@
-@testset "Combination tests" begin
-    concs, populations, g1s, g2s = load(189, 1)
-    g0 = g1s[1, 1, 1] + g2s[1, 1, 1]
-    p = [
-        97.7434,
-        1.41726,
-        0.0501761,
-        0.930205,
-        0.111494,
-        0.123604,
-        0.552216,
-        92.9045,
-        1.40024,
-        0.996396,
-        0.0513087,
-        0.521831,
-        0.6535,
-        0.566578,
-        15.5317,
-        2.3689,
-        0.592433,
-        0.999986,
-        0.0283363,
-        0.286975,
-        0.503328,
-        3.96929,
-        4.62768,
-        0.0512281,
-        0.307528,
-        0.549714,
-        0.378717,
-        0.50959,
-        63.4248,
-        0.976052,
-        0.16582,
-        0.740009,
-        0.0572609,
-        0.0776912,
-        0.534201,
-        0.734513,
-        0.375555,
-        16.8387,
-        12.3945,
-        30.176,
-        14.5352,
-    ]
-    effects = DrugResponseModel.getODEparamsAll(p, concs)
-    # combination test case
-    p1 = effects[:, :, 1] # lapatinib
-    p1[2, 1] = 1.0
-    p1[2, 2:end] .= 0.8
-    p2 = effects[:, :, 2] # doxorubicin
-    p2[2, 1] = 1.0
-    p2[2, 2:end] .= 0.5
-    combination = DrugResponseModel.BlissCombination(p1, p2, 8)
-    @assert(all(combination[2, 2:end, 2] .>= 0.3))
-    @assert(all(combination[2, 2:end, 2] .<= 0.5))
+@testset "Combination tests where g1 prog. rate increased for one drug and decreases for the other drug and g2 prog. rates where in both drugs the rate is decreasing compared to control." begin
+    p1 = ones(9, 8)
+    p2 = ones(9, 8)
+
+    # drugA
+    p1[1, 1] = 0.6          # g1 prog. rate in control
+    p1[1, 2:end] .= 0.8     # g1 prog. rate in all other concentrations
+    p1[2, 1] = 1.0          # g2 prog. rate in control
+    p1[2, 2:end] .= 0.8     # g2 prog. rate in all other concentrations
+    # drugB
+    p2[2, 1] = 1.0          # g2 prog. rate in control
+    p2[2, 2:end] .= 0.5     # g2 prog. rate in all other concentrations
+    p2[1, 1] = 0.6          # g1 prog. rate in control
+    p2[1, 2:end] .= 0.3     # g1 prog. rate in all other concentrations
+    combination = DrugResponseModel.CombinationParam(p1, p2, 8)
+    @assert(all(combination[1:2, 2:end, 2] .>= 0.3))
+    @assert(all(combination[1:2, 2:end, 2] .<= 0.5))
+end
+
+@testset "Combination tests from estimated parameters to converting to ODE parameters where for both drugs, rates are decreasing and one reaches to zero." begin
+    concs, _, _, _ = load(189, 1);
+    gem_before = [10.0, 0.9, 0.9, 1.8, 0.2, 0.5, 0.00593379, 0.110279, 0.5, 10.0, 10.0, 10.0, 10.0];
+    dox_before = [100.0, 0.1, 0.04, 0.8, 0.16, 0.0, 0.0720467, 0.14468, 0.5, 10.0, 10.0, 10.0, 10.0];
+    p1 = DrugResponseModel.getODEparams(gem_before, concs[:, 3]);
+    p2 = DrugResponseModel.getODEparams(dox_before, concs[:, 2]);
+
+    cmb = DrugResponseModel.CombinationParam(p1, p2, 8)
+    print(cmb[1, :, end])
+    @assert(all(cmb[1, :, end] .>= 0.0))
+    @assert(all(cmb[1, :, end] .<= 0.2))
 end
