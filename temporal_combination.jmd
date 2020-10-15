@@ -1,6 +1,12 @@
+---
+weave_options:
+  error: true
+  echo: false
+---
+
 The following inculdes combining the drugs in terms of treating cells successively with different drugs after a specific amount of time, and also, Bliss combination for cell number and the drug effects.
 
-```julia; echo=false
+```julia
 import Pkg; Pkg.instantiate()
 Pkg.activate(".")
 using DrugResponseModel
@@ -42,7 +48,7 @@ This plot on the top row, shows time-series simulation and data for individual d
 
 Lapatinib and Doxorubicin
 
-```julia; echo=false
+```julia
 plotTemporalCombin(lapat[:,IC50_lap], dox[:,IC50_dox], g1avg, g2avg, popavg, concs[:,1], concs[:,2], true, IC50_lap, IC50_dox, "lap.", "dox.", 1, 2)
 ```
 
@@ -54,7 +60,7 @@ DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], dox[:,IC50_dox], 
 
 Lapatinib and Gemcitabine.
 
-```julia; echo=false
+```julia
 plotTemporalCombin(lapat[:,IC50_lap], gemc[:,IC50_gem], g1avg, g2avg, popavg, concs[:,1], concs[:,3], true, IC50_lap, IC50_gem, "lap.", "gemc.", 1, 3)
 ```
 
@@ -66,7 +72,7 @@ DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], gemc[:,IC50_gem],
 
 Lapatinib and Paclitaxel
 
-```julia; echo=false
+```julia
 plotTemporalCombin(lapat[:,IC50_lap], pac[:,IC50_tax], g1avg, g2avg, popavg, concs[:,1], concs[:,4], true, IC50_lap, IC50_tax, "lap.", "taxol", 1, 4)
 ```
 
@@ -78,7 +84,7 @@ DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], pac[:,IC50_tax], 
 
 Lapatinib and Palboclicib
 
-```julia; echo=false
+```julia
 plotTemporalCombin(lapat[:,IC50_lap], palb[:,IC50_pal], g1avg, g2avg, popavg, concs[:,1], concs[:,5], true, IC50_lap, IC50_pal, "lap.", "palb.", 1, 5)
 ```
 
@@ -90,7 +96,7 @@ DrugResponseModel.plot_order_temporalCombin(lapat[:,IC50_lap], palb[:,IC50_pal],
 
 Doxorubicin and Gemcitabine
 
-```julia; echo=false
+```julia
 plotTemporalCombin(dox[:,IC50_dox], gemc[:,IC50_gem], g1avg, g2avg, popavg, concs[:,2], concs[:,3], true, IC50_dox, IC50_gem, "dox.", "gemc.", 2, 3)
 ```
 
@@ -102,7 +108,7 @@ DrugResponseModel.plot_order_temporalCombin(dox[:,IC50_dox], gemc[:,IC50_gem], g
 
 Doxorubicin and Paclitaxel
 
-```julia; echo=false
+```julia
 plotTemporalCombin(dox[:,IC50_dox], pac[:,IC50_tax], g1avg, g2avg, popavg, concs[:,2], concs[:,4], true, IC50_dox, IC50_tax, "dox.", "taxol", 2, 4)
 ```
 
@@ -114,7 +120,7 @@ DrugResponseModel.plot_order_temporalCombin(dox[:,IC50_dox], pac[:,IC50_tax], g1
 
 Doxorubicin and Palbociclib
 
-```julia; echo=false
+```julia
 plotTemporalCombin(dox[:,IC50_dox], palb[:,IC50_pal], g1avg, g2avg, popavg, concs[:,2], concs[:,5], true, IC50_dox, IC50_pal, "dox.", "palb", 2, 5)
 ```
 
@@ -127,7 +133,7 @@ DrugResponseModel.plot_order_temporalCombin(dox[:,IC50_dox], palb[:,IC50_pal], g
 
 Gemcitabine and Paclitaxel
 
-```julia; echo=false
+```julia
 plotTemporalCombin(gemc[:,IC50_gem], pac[:,IC50_tax], g1avg, g2avg, popavg, concs[:,3], concs[:,4], true, IC50_gem, IC50_tax, "gemc.", "taxol", 3, 4)
 ```
 
@@ -140,7 +146,7 @@ DrugResponseModel.plot_order_temporalCombin(gemc[:,IC50_gem], pac[:,IC50_tax], g
 
 Gemcitabine and Palbociclib
 
-```julia; echo=false
+```julia
 plotTemporalCombin(gemc[:,IC50_gem], palb[:,IC50_pal], g1avg, g2avg, popavg, concs[:,3], concs[:,5], true, IC50_gem, IC50_pal, "gemc.", "palb", 3, 5)
 ```
 
@@ -152,7 +158,7 @@ DrugResponseModel.plot_order_temporalCombin(gemc[:,IC50_gem], palb[:,IC50_pal], 
 
 Paclitaxel and Palbociclib
 
-```julia; echo=false
+```julia
 plotTemporalCombin(pac[:,IC50_tax], palb[:,IC50_pal], g1avg, g2avg, popavg, concs[:,4], concs[:,5], true, IC50_tax, IC50_pal, "taxol", "palb", 4, 5)
 ```
 

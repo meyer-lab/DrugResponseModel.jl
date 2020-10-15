@@ -1,6 +1,12 @@
+---
+weave_options:
+  error: true
+  echo: false
+---
+
 Left show Bliss_model/Bliss_data and right shows Bliss_model/Loewe_data
 
-```julia; echo=false
+```julia
 import Pkg; Pkg.instantiate()
 
 Pkg.activate(".")
@@ -54,7 +60,7 @@ pal = DrugResponseModel.getODEparams(pal_before, concs[:, 5]);
 
 # Combination
 
-```julia; echo=false
+```julia
 # Bliss on pure cell numbers
 BlissOnData = DrugResponseModel.blissCellNum(g1avg, g2avg; T = 96, n = 8) # includes are combinations 8 x 8 x 10
 
@@ -86,7 +92,7 @@ end
 ```
 ## Lapatinib and doxorubicin
 
-```julia; echo=false
+```julia
 bliss_comb = DrugResponseModel.fullCombinationParam(lapat, dox, effs, 8)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
@@ -101,7 +107,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 
 ## Lapatinib and gemcitabine
 
-```julia; echo=false
+```julia
 bliss_comb = DrugResponseModel.fullCombinationParam(lapat, gemc, effs, 8)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
@@ -115,7 +121,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 
 ## Lapatinib and paclitaxel
 
-```julia; echo=false
+```julia
 bliss_comb = DrugResponseModel.fullCombinationParam(lapat, pac, effs, 8)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
@@ -129,7 +135,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 
 ## Lapatinib and palbociclib
 
-```julia; echo=false
+```julia
 bliss_comb = DrugResponseModel.fullCombinationParam(lapat, pal, effs, 8)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
@@ -142,7 +148,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 ```
 
 ## Doxorubicin and gemcitabine
-```julia; echo=false
+```julia
 bliss_comb = DrugResponseModel.fullCombinationParam(dox, gemc, effs, 8)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
@@ -155,7 +161,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 ```
 
 ## Doxorubicin and paclitaxel
-```julia; echo=false
+```julia
 bliss_comb = DrugResponseModel.fullCombinationParam(dox, pac, effs, 8)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
@@ -169,7 +175,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 
 
 ## Doxorubicin and palbociclib
-```julia; echo=false
+```julia
 bliss_comb = DrugResponseModel.fullCombinationParam(dox, pal, effs, 8)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
@@ -183,7 +189,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 
 
 ## Gemcitabine and paclitaxel
-```julia; echo=false
+```julia
 bliss_comb = DrugResponseModel.fullCombinationParam(gemc, pac, effs, 8)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
@@ -196,7 +202,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 ```
 
 ## Gemcitabine and palbociclib
-```julia; echo=false
+```julia
 bliss_comb = DrugResponseModel.fullCombinationParam(gemc, pal, effs, 8)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
@@ -209,7 +215,7 @@ plot(p1, p2, p3, size=(400, 550), layout=(3,1))
 ```
 
 ## Paclitaxel and palbociclib
-```julia; echo=false
+```julia
 bliss_comb = DrugResponseModel.fullCombinationParam(pac, pal, effs, 8)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 

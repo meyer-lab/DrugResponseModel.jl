@@ -1,6 +1,12 @@
+---
+weave_options:
+  error: true
+  echo: false
+---
+
 This file contains all the drugs, separately.
 
-```julia; echo=false
+```julia
 import Pkg; Pkg.instantiate()
 Pkg.activate(".")
 using DrugResponseModel
@@ -11,41 +17,41 @@ concs, populations3, g1s3, g2s3 = load(189, 3);
 g0 = g1s1[1,1,1]+g2s1[1,1,1];
 ```
 
-```julia; echo=false
+```julia
 # costt, ps1 = optimize_hill(concs[:, 1], g1s1[:, :, 1], g2s1[:, :, 1], maxstep = 1E5)
 ps1 = [43.1206, 0.449396, 0.0303203, 1.1369, 0.129443, 0.247119, 0.00670847, 0.0282733, 0.54388, 11.962, 5.79151, 0.50114, 2.88369];
 ps2 = [40.6872, 2.86227, 0.269785, 1.09613, 0.325584, 0.486925, 0.00875771, 0.0160585, 0.547325, 56.4052, 9.85358, 0.605113, 30.0822];
 ps3 = [58.0924, 2.9926, 5.86566e-5, 0.80401, 0.194562, 0.429042, 0.00835781, 0.0226857, 0.546504, 64.1723, 7.33377, 0.550209, 3.3554];
 ```
 
-```julia; echo=false
+```julia
 effects1 = getODEparams(ps1, concs[:, 1]);
 effects2 = getODEparams(ps2, concs[:, 1]);
 effects3 = getODEparams(ps3, concs[:, 1]);
 ```
 
-```julia; echo=false
+```julia
 G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, concs[:, 1], g0); # for lapatinib
 ```
 
 ## Lapatinib
 ### Plotting the time-series simulations compared to the actual data for three replicates.
 
-```julia; echo=false
+```julia
 pl = [DrugResponseModel.plot2(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, 1) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
 ### Plot the parameters over concentration; these are known as the drug effects
 
-```julia; echo=false
+```julia
 meann, stdd = DrugResponseModel.mean_std_params(effects1, effects2, effects3)
 DrugResponseModel.plot_parameters(concs[:,1], meann, stdd)
 ```
 
 ### Sensitivity analysis
 
-```julia; echo=false
+```julia
 result, paramRanges = allSensitivity(ps1, concs[:, 1], g1s1[:, :, 1], g2s1[:, :, 1]);
 pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], ps1[i], i) for i=1:11]
 plot(pl...)
@@ -54,41 +60,41 @@ plot!(size=(1200, 800))
 
 ## Doxorubicin
 
-```julia; echo=false
+```julia
 p1 = [494.867, 0.762569, 0.703234, 0.637796, 0.323034, 1.42901, 0.0826001, 0.375677, 0.599994, 18.127, 10.5583, 2.31724, 2.72285];
 p2 = [106.434, 0.977652, 0.146036, 0.861029, 0.327639, 2.44912e-6, 0.0963328, 0.182144, 0.599999, 19.8484, 10.9186, 5.63048, 3.61192];
 p3 = [78.7602, 0.44481, 0.0819257, 0.930385, 0.32925, 4.28135e-5, 0.0859336, 0.170148, 0.59999, 10.4141, 10.4449, 5.6001, 3.7104];
 ```
 
-```julia; echo=false
+```julia
 effects1 = getODEparams(p1, concs[:, 2]);
 effects2 = getODEparams(p2, concs[:, 2]);
 effects3 = getODEparams(p3, concs[:, 2]);
 ```
 
-```julia; echo=false
+```julia
 G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, concs[:, 2], g0); # for doxorubicin
 ```
 
-```julia; echo=false
+```julia
 pl = [DrugResponseModel.plot2(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, 2) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
-```julia; echo=false
+```julia
 DrugResponseModel.plot_parameters(concs[:, 2], avgs[:, :, 2], stds[:, :, 2])
 ```
 
 ### Plot the parameters over concentration; these are known as the drug effects
 
-```julia; echo=false
+```julia
 meann, stdd = DrugResponseModel.mean_std_params(effects1, effects2, effects3)
 DrugResponseModel.plot_parameters(concs[:,2], meann, stdd)
 ```
 
 ### Sensitivity analysis
 
-```julia; echo=false
+```julia
 result, paramRanges = allSensitivity(p1, concs[:, 2], g1s1[:, :, 2], g2s1[:, :, 2]);
 pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
@@ -97,37 +103,37 @@ plot!(size=(1200, 800))
 
 ## Gemcitabine
 
-```julia; echo=false
+```julia
 p1 = [11.9233, 0.58781, 0.682964, 2.08271, 0.290042, 0.884223, 0.042281, 0.193428, 0.545268, 13.3209, 10.5829, 3.5772, 10.3274];
 p2 = [9.37154, 0.567506, 0.576591, 2.69545, 1.12055, 2.50093, 0.0302259, 0.166029, 0.462917, 11.4632, 31.5679, 3.71661, 8.57658];
 p3 = [14.7254, 0.60611, 0.607182, 2.4846, 0.621001, 2.39721, 0.0398666, 0.260305, 0.480246, 12.8007, 21.3855, 3.48551, 14.4457];
 ```
 
-```julia; echo=false
+```julia
 effects1 = getODEparams(p1, concs[:, 3]);
 effects2 = getODEparams(p2, concs[:, 3]);
 effects3 = getODEparams(p3, concs[:, 3]);
 ```
 
-```julia; echo=false
+```julia
 G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, concs[:, 3], g0); # for Gemcitabine
 ```
 
-```julia; echo=false
+```julia
 pl = [DrugResponseModel.plot2(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, 3) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
 ### Plot the parameters over concentration; these are known as the drug effects
 
-```julia; echo=false
+```julia
 meann, stdd = DrugResponseModel.mean_std_params(effects1, effects2, effects3)
 DrugResponseModel.plot_parameters(concs[:,3], meann, stdd)
 ```
 
 ### Sensitivity analysis
 
-```julia; echo=false
+```julia
 result, paramRanges = allSensitivity(p1, concs[:, 3], g1s1[:, :, 3], g2s1[:, :, 3])
 pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
@@ -136,37 +142,37 @@ plot!(size=(1200, 800))
 
 ## Paclitaxel
 
-```julia; echo=false
+```julia
 p1 = [2.86883, 0.738378, 1.08344e-9, 2.47463, 0.308802, 0.0403115, 0.049593, 0.0309074, 0.574614, 19.6009, 10.6076, 2.30608, 1.45019];
 p2 = [3.56092, 0.772971, 0.118196, 2.66166, 0.436672, 0.14033, 0.0877691, 0.0481839, 0.456908, 15.3122, 13.0191, 3.4835, 1.80713];
 p3 = [3.05457, 0.856089, 0.148589, 6.46391, 0.291542, 0.0979095, 0.0470583, 0.0415147, 0.481111, 19.5458, 10.6196, 2.21889, 1.48875];
 ```
 
-```julia; echo=false
+```julia
 effects1 = getODEparams(p1, concs[:, 4]);
 effects2 = getODEparams(p2, concs[:, 4]);
 effects3 = getODEparams(p3, concs[:, 4]);
 ```
 
-```julia; echo=false
+```julia
 G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, concs[:, 4], g0); # for Paclitaxel
 ```
 
-```julia; echo=false
+```julia
 pl = [DrugResponseModel.plot2(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, 4) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
 ### Plot the parameters over concentration; these are known as the drug effects
 
-```julia; echo=false
+```julia
 meann, stdd = DrugResponseModel.mean_std_params(effects1, effects2, effects3)
 DrugResponseModel.plot_parameters(concs[:,4], meann, stdd)
 ```
 
 ### Sensitivity analysis
 
-```julia; echo=false
+```julia
 result, paramRanges = allSensitivity(p1, concs[:, 4], g1s1[:, :, 4], g2s1[:, :, 4])
 pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
@@ -181,31 +187,31 @@ p2 = [22.309, 0.912702, 0.372627, 0.891832, 0.486649, 0.762721, 0.00745086, 0.03
 p3 = [42.3216, 0.615337, 0.165559, 0.788022, 0.832693, 1.77446, 0.0168269, 0.0525446, 0.566758, 13.6348, 27.7363, 24.4526, 2.32304];
 ```
 
-```julia; echo=false
+```julia
 effects1 = getODEparams(p1, concs[:, 5]);
 effects2 = getODEparams(p2, concs[:, 5]);
 effects3 = getODEparams(p3, concs[:, 5]);
 ```
 
-```julia; echo=false
+```julia
 G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, concs[:, 2], g0); # for Palbociclib
 ```
 
-```julia; echo=false
+```julia
 pl = [DrugResponseModel.plot2(G1_1[:, i], G1_2[:, i], G1_3[:, i], G2_1[:, i], G2_2[:, i], G2_3[:, i], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, 5) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
 ### Plot the parameters over concentration; these are known as the drug effects
 
-```julia; echo=false
+```julia
 meann, stdd = DrugResponseModel.mean_std_params(effects1, effects2, effects3)
 DrugResponseModel.plot_parameters(concs[:,5], meann, stdd)
 ```
 
 ### Sensitivity analysis
 
-```julia; echo=false
+```julia
 result, paramRanges = allSensitivity(p1, concs[:, 5], g1s1[:, :, 5], g2s1[:, :, 5])
 pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
