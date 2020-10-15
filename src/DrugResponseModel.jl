@@ -3,7 +3,8 @@ module DrugResponseModel
 
 ENV["GKSwstype"] = "100"
 
-import CSV
+using CSV
+using DataFrames
 using Plots
 using Measures
 using BlackBoxOptim
@@ -13,7 +14,6 @@ using Statistics
 import Calculus
 using DSP: conv
 using Optim
-using Roots
 using ExponentialUtilities
 
 include("importData.jl")
