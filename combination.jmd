@@ -62,7 +62,7 @@ bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 p1=Heatmap(concs, bliss_comb_cellnum, 1, 2, "Lpt", "Dox", "Bliss Cell Cycle Model")
 p2=Heatmap(concs, BlissOnData[:, :, 1], 1, 2, "Lpt", "Dox", "Bliss Data")
-plot(p1, p2, layout=(2,1))
+plot(p1, p2, size=(400, 500), layout=(2,1))
 ```
 
 ## Lapatinib and gemcitabine
@@ -73,7 +73,7 @@ bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 p1=Heatmap(concs, bliss_comb_cellnum, 1, 3, "Lpt", "Gem", "Bliss Cell Cycle Model")
 p2=Heatmap(concs, BlissOnData[:, :, 2], 1, 3, "Lpt", "Gem", "Bliss Data")
-plot(p1, p2, layout=(2,1))
+plot(p1, p2, size=(400, 500), layout=(2,1))
 ```
 
 
@@ -86,7 +86,7 @@ bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 p1=Heatmap(concs, bliss_comb_cellnum, 1, 4, "Lpt", "Tax", "Bliss Cell Cycle Model")
 p2=Heatmap(concs, BlissOnData[:, :, 3], 1, 4, "Lpt", "Tax", "Bliss Data")
-plot(p1, p2, layout=(2,1))
+plot(p1, p2, size=(400, 500), layout=(2,1))
 ```
 
 ## Lapatinib and palbociclib
@@ -98,7 +98,7 @@ bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 p1=Heatmap(concs, bliss_comb_cellnum, 1, 5, "Lpt", "Palbo", "Bliss Cell Cycle Model")
 p2=Heatmap(concs, BlissOnData[:, :, 4], 1, 5, "Lpt", "Palbo", "Bliss Data")
-plot(p1, p2, layout=(2,1))
+plot(p1, p2, size=(400, 500), layout=(2,1))
 ```
 
 ## Doxorubicin and gemcitabine
@@ -109,7 +109,7 @@ bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 p1=Heatmap(concs, bliss_comb_cellnum, 2, 3, "Dox", "Gem", "Bliss Cell Cycle Model")
 p2=Heatmap(concs, BlissOnData[:, :, 5], 2, 3, "Dox", "Gem", "Bliss Data")
-plot(p1, p2, layout=(2,1))
+plot(p1, p2, size=(400, 500), layout=(2,1))
 ```
 
 ## Doxorubicin and paclitaxel
@@ -120,7 +120,7 @@ bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 p1=Heatmap(concs, bliss_comb_cellnum, 2, 4, "Dox", "Tax", "Bliss Cell Cycle Model")
 p2=Heatmap(concs, BlissOnData[:, :, 6], 2, 4, "Dox", "Tax", "Bliss Data")
-plot(p1, p2, layout=(2,1))
+plot(p1, p2, size=(400, 500), layout=(2,1))
 ```
 
 
@@ -131,7 +131,7 @@ bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 p1=Heatmap(concs, bliss_comb_cellnum, 2, 5, "Dox", "Palbo", "Bliss Cell Cycle Model")
 p2=Heatmap(concs, BlissOnData[:, :, 7], 2, 5, "Dox", "Palbo", "Bliss Data")
-plot(p1, p2, layout=(2,1))
+plot(p1, p2, size=(400, 500), layout=(2,1))
 ```
 
 
@@ -143,7 +143,7 @@ bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 p1=Heatmap(concs, bliss_comb_cellnum, 3, 4, "Gem", "Tax", "Bliss Cell Cycle Model")
 p2=Heatmap(concs, BlissOnData[:, :, 8], 3, 4, "Gem", "Tax", "Bliss Data")
-plot(p1, p2, layout=(2,1))
+plot(p1, p2, size=(400, 500), layout=(2,1))
 ```
 
 ## Gemcitabine and palbociclib
@@ -154,7 +154,11 @@ bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 p1=Heatmap(concs, bliss_comb_cellnum, 3, 5, "Gem", "Palbo", "Bliss Cell Cycle Model")
 p2=Heatmap(concs, BlissOnData[:, :, 9], 3, 5, "Gem", "Palbo", "Bliss Data")
-plot(p1, p2, layout=(2,1))
+plot(p1, p2, size=(400, 500), layout=(2,1))
+```
+
+```julia; echo=false
+
 ```
 
 ## Paclitaxel and palbociclib
@@ -165,5 +169,5 @@ bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 
 p1=Heatmap(concs, bliss_comb_cellnum, 4, 5, "Tax", "Palbo", "Bliss Cell Cycle Model")
 p2=Heatmap(concs, BlissOnData[:, :, 10], 4, 5, "Tax", "Palbo", "Bliss Data")
-plot(p1, p2, layout=(2,1))
+plot(p1, p2, size=(400, 500), layout=(2,1))
 ```
