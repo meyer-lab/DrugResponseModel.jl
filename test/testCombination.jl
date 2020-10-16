@@ -18,11 +18,11 @@
 end
 
 @testset "Combination tests from estimated parameters to converting to ODE parameters where for both drugs, rates are decreasing and one reaches to zero." begin
-    concs, _, _, _ = load(189, 1);
-    gem_before = [10.0, 0.9, 0.9, 1.8, 0.2, 0.5, 0.00593379, 0.110279, 0.5, 10.0, 10.0, 10.0, 10.0];
-    dox_before = [100.0, 0.1, 0.04, 0.8, 0.16, 0.0, 0.0720467, 0.14468, 0.5, 10.0, 10.0, 10.0, 10.0];
-    p1 = DrugResponseModel.getODEparams(gem_before, concs[:, 3]);
-    p2 = DrugResponseModel.getODEparams(dox_before, concs[:, 2]);
+    concs, _, _, _ = load(189, 1)
+    gem_before = [10.0, 0.9, 0.9, 1.8, 0.2, 0.5, 0.00593379, 0.110279, 0.5, 10.0, 10.0, 10.0, 10.0]
+    dox_before = [100.0, 0.1, 0.04, 0.8, 0.16, 0.0, 0.0720467, 0.14468, 0.5, 10.0, 10.0, 10.0, 10.0]
+    p1 = DrugResponseModel.getODEparams(gem_before, concs[:, 3])
+    p2 = DrugResponseModel.getODEparams(dox_before, concs[:, 2])
 
     cmb = DrugResponseModel.CombinationParam(p1, p2, 8)
     print(cmb[1, :, end])
