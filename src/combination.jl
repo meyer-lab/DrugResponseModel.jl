@@ -48,12 +48,12 @@ end
 
 """ This function calculates cell number for parameter sets that are the result of Bliss on prog. rates. """
 function BlissModelComb(bliss_comb, g0)
-    t = 0.0:189.0
+
     bliss_comb_cellnum = zeros(8,8)
     for i=1:8 # param1 is changing
         for j=1:8 # param2 is changing
-            g1, g2 = predict(bliss_comb[:, i, j], g0, t)
-            bliss_comb_cellnum[i, j] = g1[end] + g2[end]
+            g1, g2, _ = predict(bliss_comb[:, i, j], g0, 189.0)
+            bliss_comb_cellnum[i, j] = g1 + g2
         end
     end
     return bliss_comb_cellnum
