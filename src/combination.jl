@@ -17,13 +17,14 @@ function CombinationParam(p1::Array{Float64, 2}, p2::Array{Float64, 2}, n::Int)
     param2[3:4, :] .= pprime2[3:4, :]
 
     # make sure normalized correctly; the prog. rates in control condition must be zero in both drugs.
-    @assert param1[1,1] == param1[2,1] == param2[1,1] == param2[2,1] == 0.0
+    @assert param1[1, 1] == param1[2, 1] == param2[1, 1] == param2[2, 1] == 0.0
 
     """ For 8x8 combination of drug concentrations for G1 progression rate, G2 progression rate, and death rates in G1 and G2, respectively. """
     combined = zeros(n, n, 4)
     for j = 1:n
         for k = 1:n # param2 is changing, param1 is constant
-            combined[j, k, 1:2] .= (1.0 .- (param1[1:2, j] .+ param2[1:2, k] .- param1[1:2, j] .* param2[1:2, k])) .* ((p1[1:2, 1] .+ p2[1:2, 1]) ./ 2)
+            combined[j, k, 1:2] .=
+                (1.0 .- (param1[1:2, j] .+ param2[1:2, k] .- param1[1:2, j] .* param2[1:2, k])) .* ((p1[1:2, 1] .+ p2[1:2, 1]) ./ 2)
             combined[j, k, 3:4] .= param1[3:4, j] .+ param2[3:4, k]
         end
     end
@@ -48,14 +49,14 @@ end
 
 """ This function calculates cell number for parameter sets that are the result of Bliss on prog. rates. """
 function BlissModelComb(bliss_comb, g0)
-      bliss_comb_cellnum = zeros(8,8)
-      for i=1:8 # param1 is changing
-            for j=1:8 # param2 is changing
-                  g1, g2, _ = predict(bliss_comb[:, i, j], g0, 189)
-                  bliss_comb_cellnum[i, j] = g1 + g2
-            end
-      end
-      return bliss_comb_cellnum
+    bliss_comb_cellnum = zeros(8, 8)
+    for i = 1:8 # param1 is changing
+        for j = 1:8 # param2 is changing
+            g1, g2, _ = predict(bliss_comb[:, i, j], g0, 189)
+            bliss_comb_cellnum[i, j] = g1 + g2
+        end
+    end
+    return bliss_comb_cellnum
 end
 
 """ This function plots the heatmap of combined cell numbers given any two drugs. """
@@ -86,16 +87,26 @@ function blissCellNum(g1s, g2s; T = 189, n = 8)
     for j = 1:n
         # the base case for either of combinations is the average of drugA and drugB to scale the cell numbers back.
         # columns are drugA and rows are drug 2, and the third dimension shows which pair of drugs were combined.
-        combined[:, j, 1] = -(num[:, 1] .+ num[j, 2] .- (num[:, 1] .* num[j, 2]) .- 1.0) .* ((g1s[T, 1, 1] + g2s[T, 1, 1]) + (g1s[T, 1, 2] + g2s[T, 1, 2])) / 2 # lap w/ dox; meaning dox changes with rows and lap changes with columns
-        combined[:, j, 2] = -(num[:, 1] .+ num[j, 3] .- (num[:, 1] .* num[j, 3]) .- 1.0) .* ((g1s[T, 1, 1] + g2s[T, 1, 1]) + (g1s[T, 1, 3] + g2s[T, 1, 3])) / 2 # lap w/ gem
-        combined[:, j, 3] = -(num[:, 1] .+ num[j, 4] .- (num[:, 1] .* num[j, 4]) .- 1.0) .* ((g1s[T, 1, 1] + g2s[T, 1, 1]) + (g1s[T, 1, 4] + g2s[T, 1, 4])) / 2 # lap w/ pac
-        combined[:, j, 4] = -(num[:, 1] .+ num[j, 5] .- (num[:, 1] .* num[j, 5]) .- 1.0) .* ((g1s[T, 1, 1] + g2s[T, 1, 1]) + (g1s[T, 1, 5] + g2s[T, 1, 5])) / 2# lap w/ palb
-        combined[:, j, 5] = -(num[:, 2] .+ num[j, 3] .- (num[:, 2] .* num[j, 3]) .- 1.0) .* ((g1s[T, 1, 2] + g2s[T, 1, 2]) + (g1s[T, 1, 3] + g2s[T, 1, 3])) / 2 # dox w/ gem
-        combined[:, j, 6] = -(num[:, 2] .+ num[j, 4] .- (num[:, 2] .* num[j, 4]) .- 1.0) .* ((g1s[T, 1, 2] + g2s[T, 1, 2]) + (g1s[T, 1, 4] + g2s[T, 1, 4])) / 2 # dox w/ pac
-        combined[:, j, 7] = -(num[:, 2] .+ num[j, 5] .- (num[:, 2] .* num[j, 5]) .- 1.0) .* ((g1s[T, 1, 2] + g2s[T, 1, 2]) + (g1s[T, 1, 5] + g2s[T, 1, 5])) / 2 # dox w/ palb
-        combined[:, j, 8] = -(num[:, 3] .+ num[j, 4] .- (num[:, 3] .* num[j, 4]) .- 1.0) .* ((g1s[T, 1, 3] + g2s[T, 1, 3]) + (g1s[T, 1, 4] + g2s[T, 1, 4])) / 2 # gem w/ pac
-        combined[:, j, 9] = -(num[:, 3] .+ num[j, 5] .- (num[:, 3] .* num[j, 5]) .- 1.0) .* ((g1s[T, 1, 3] + g2s[T, 1, 3]) + (g1s[T, 1, 5] + g2s[T, 1, 5])) / 2 # gem w/ palb
-        combined[:, j, 10] = -(num[:, 4] .+ num[j, 5] .- (num[:, 4] .* num[j, 5]) .- 1.0) .* ((g1s[T, 1, 4] + g2s[T, 1, 4]) + (g1s[T, 1, 5] + g2s[T, 1, 5])) / 2 # pac w/ palb
+        combined[:, j, 1] =
+            -(num[:, 1] .+ num[j, 2] .- (num[:, 1] .* num[j, 2]) .- 1.0) .* ((g1s[T, 1, 1] + g2s[T, 1, 1]) + (g1s[T, 1, 2] + g2s[T, 1, 2])) / 2 # lap w/ dox; meaning dox changes with rows and lap changes with columns
+        combined[:, j, 2] =
+            -(num[:, 1] .+ num[j, 3] .- (num[:, 1] .* num[j, 3]) .- 1.0) .* ((g1s[T, 1, 1] + g2s[T, 1, 1]) + (g1s[T, 1, 3] + g2s[T, 1, 3])) / 2 # lap w/ gem
+        combined[:, j, 3] =
+            -(num[:, 1] .+ num[j, 4] .- (num[:, 1] .* num[j, 4]) .- 1.0) .* ((g1s[T, 1, 1] + g2s[T, 1, 1]) + (g1s[T, 1, 4] + g2s[T, 1, 4])) / 2 # lap w/ pac
+        combined[:, j, 4] =
+            -(num[:, 1] .+ num[j, 5] .- (num[:, 1] .* num[j, 5]) .- 1.0) .* ((g1s[T, 1, 1] + g2s[T, 1, 1]) + (g1s[T, 1, 5] + g2s[T, 1, 5])) / 2# lap w/ palb
+        combined[:, j, 5] =
+            -(num[:, 2] .+ num[j, 3] .- (num[:, 2] .* num[j, 3]) .- 1.0) .* ((g1s[T, 1, 2] + g2s[T, 1, 2]) + (g1s[T, 1, 3] + g2s[T, 1, 3])) / 2 # dox w/ gem
+        combined[:, j, 6] =
+            -(num[:, 2] .+ num[j, 4] .- (num[:, 2] .* num[j, 4]) .- 1.0) .* ((g1s[T, 1, 2] + g2s[T, 1, 2]) + (g1s[T, 1, 4] + g2s[T, 1, 4])) / 2 # dox w/ pac
+        combined[:, j, 7] =
+            -(num[:, 2] .+ num[j, 5] .- (num[:, 2] .* num[j, 5]) .- 1.0) .* ((g1s[T, 1, 2] + g2s[T, 1, 2]) + (g1s[T, 1, 5] + g2s[T, 1, 5])) / 2 # dox w/ palb
+        combined[:, j, 8] =
+            -(num[:, 3] .+ num[j, 4] .- (num[:, 3] .* num[j, 4]) .- 1.0) .* ((g1s[T, 1, 3] + g2s[T, 1, 3]) + (g1s[T, 1, 4] + g2s[T, 1, 4])) / 2 # gem w/ pac
+        combined[:, j, 9] =
+            -(num[:, 3] .+ num[j, 5] .- (num[:, 3] .* num[j, 5]) .- 1.0) .* ((g1s[T, 1, 3] + g2s[T, 1, 3]) + (g1s[T, 1, 5] + g2s[T, 1, 5])) / 2 # gem w/ palb
+        combined[:, j, 10] =
+            -(num[:, 4] .+ num[j, 5] .- (num[:, 4] .* num[j, 5]) .- 1.0) .* ((g1s[T, 1, 4] + g2s[T, 1, 4]) + (g1s[T, 1, 5] + g2s[T, 1, 5])) / 2 # pac w/ palb
     end
 
     @assert(all(combined .>= 0.0))
