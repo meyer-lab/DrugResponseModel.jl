@@ -3,8 +3,7 @@ weave_options:
   error: true
   echo: false
 ---
-
-Left show Bliss_model/Bliss_data and right shows Bliss_model/Loewe_data
+upper Bliss based on Cell cycle model. Lower Bliss based on pure data
 
 ```julia
 import Pkg; Pkg.instantiate()
@@ -54,7 +53,7 @@ pal = DrugResponseModel.getODEparams(pal_before, concs[:, 5]);
 
 ```julia
 # Bliss on pure cell numbers
-BlissOnData = DrugResponseModel.blissCellNum(g1avg, g2avg; T = 189, n = 8); # includes are combinations 8 x 8 x 10
+BlissOnData = DrugResponseModel.blissCellNum(g1avg, g2avg; n = 8); # includes are combinations 8 x 8 x 10
 
 ```
 
@@ -145,6 +144,46 @@ bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 p1=Heatmap(concs, bliss_comb_cellnum, 3, 4, "Gem", "Tax", "Bliss Cell Cycle Model")
 p2=Heatmap(concs, BlissOnData[:, :, 8], 3, 4, "Gem", "Tax", "Bliss Data")
 plot(p1, p2, size=(400, 550), layout=(2, 1))
+```
+### To show what is going on in this figure, we plot the parameters over concentrations.
+```julia
+function plot_dummy(i, concs, pac, bliss_comb, ylabel)
+  p = plot(concs[:, 4], pac[i, :], label="taxol alone", ylabel=ylabel, xlabel="taxol conc.")
+  plot!(concs[:, 4], bliss_comb[i, 5, :], label="tx & 5nM gm")
+  plot!(concs[:, 4], bliss_comb[i, 6, :], label="tx & 10nM gm")
+  plot!(concs[:, 4], bliss_comb[i, 7, :], label="tx & 30nM gm")
+  plot!(concs[:, 4], bliss_comb[i, 8, :], label="tx & 100nM gm")
+  return p
+end
+
+p1 = plot_dummy(1, concs, pac, bliss_comb, "g1 prog. rate")
+p2 = plot_dummy(2, concs, pac, bliss_comb, "g2 prog. rate")
+p3 = plot_dummy(3, concs, pac, bliss_comb, "g1 death rate")
+p4 = plot_dummy(4, concs, pac, bliss_comb, "g1 death rate")
+
+plot(p1, p2, p3, p4)
+ylims!((0.0, 0.85))
+```
+
+### To show what is going on in this figure, we plot the time series over time.
+
+```julia
+function plot_dummy2(i, concs, bliss_comb, g0)
+  t = 0.0:0.5:192.0 
+  g5t_g1, g5t_g2 = predict(bliss_comb[:, 5, i], g0, t)
+  g5t1_g1, g5t1_g2 = predict(bliss_comb[:, 6, i], g0, t)
+  g5t2_g1, g5t2_g2 = predict(bliss_comb[:, 7, i], g0, t)
+  g5t3_g1, g5t3_g2 = predict(bliss_comb[:, 8, i], g0, t)
+  p = plot(t, g5t_g1 .+ g5t_g2, label=string("taxol", concs[i, 4], " & gem 5"), ylabel="cell #", xlabel="time [hr]")
+  plot!(t, g5t1_g1 .+ g5t1_g2, label=string("taxol", concs[i, 4], " & gem 10"), ylabel="cell #", xlabel="time [hr]")
+  plot!(t, g5t2_g1 .+ g5t2_g2, label=string("taxol", concs[i, 4], " gem 30"), ylabel="cell #", xlabel="time [hr]")
+  plot!(t, g5t3_g1 .+ g5t3_g2, label=string("taxol", concs[i, 4], "& gem 100"), ylabel="cell #", xlabel="time [hr]")
+  return p
+end
+
+p1 = [plot_dummy2(i, concs, bliss_comb, g0) for i=1:8]
+plot(p1..., layout=(2,4))
+ylims!((0.0, 50.0))
 ```
 
 ## Gemcitabine and palbociclib
