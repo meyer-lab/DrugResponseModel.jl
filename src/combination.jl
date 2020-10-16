@@ -17,13 +17,14 @@ function CombinationParam(p1::Array{Float64, 2}, p2::Array{Float64, 2}, n::Int)
     param2[3:4, :] .= pprime2[3:4, :]
 
     # make sure normalized correctly; the prog. rates in control condition must be zero in both drugs.
-    @assert param1[1,1] == param1[2,1] == param2[1,1] == param2[2,1] == 0.0
+    @assert param1[1, 1] == param1[2, 1] == param2[1, 1] == param2[2, 1] == 0.0
 
     """ For 8x8 combination of drug concentrations for G1 progression rate, G2 progression rate, and death rates in G1 and G2, respectively. """
     combined = zeros(n, n, 4)
     for j = 1:n
         for k = 1:n # param2 is changing, param1 is constant
-            combined[j, k, 1:2] .= (1.0 .- (param1[1:2, j] .+ param2[1:2, k] .- param1[1:2, j] .* param2[1:2, k])) .* ((p1[1:2, 1] .+ p2[1:2, 1]) ./ 2)
+            combined[j, k, 1:2] .=
+                (1.0 .- (param1[1:2, j] .+ param2[1:2, k] .- param1[1:2, j] .* param2[1:2, k])) .* ((p1[1:2, 1] .+ p2[1:2, 1]) ./ 2)
             combined[j, k, 3:4] .= param1[3:4, j] .+ param2[3:4, k]
         end
     end
