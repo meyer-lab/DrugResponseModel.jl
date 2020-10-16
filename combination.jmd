@@ -35,19 +35,11 @@ IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal = DrugResponseModel.find_IC(pop
 println("IC50s from the data: \n lpt ", concs[IC50_lap,1], " dox ", concs[IC50_dox,2], " gem ", concs[IC50_gem,3], " tax ", concs[IC50_tax,4], " pal ", concs[IC50_pal,5])
 println("\n IC50s from the model: \n lpt ", p[1], " dox ", p[8], " gem ", p[15], " tax ", p[22], " pal ", p[29])
 effs = getODEparamsAll(p, concs);
-
-# These are parameters from fitting each drug individually.
-lapat_before = [43.1527, 0.966066, 0.149468, 1.07396, 0.20995, 0.373793, 0.0079829, 0.0202241, 0.536791, 21.7392, 7.00735, 0.101821, 1.41611];
-dox_before = [95.5176, 0.141023, 0.0453853, 0.846542, 0.164408, 1.00001e-9, 0.0720467, 0.14468, 0.689475, 3.66135, 5.46383, 4.29732, 2.9077];
-gemc_before = [10.37136, 0.976559, 0.95372, 2.03741, 0.1871880, 0.4303, 0.009946, 0.1226, 0.52401, 20.15357, 6.05552, 2.8544, 4.0875];
-pac_before = [3.33798, 0.768057, 1.00004e-9, 3.01442, 0.27915, 0.0669792, 0.0570235, 0.0385754, 0.501908, 17.3979, 9.04839, 2.0261, 1.64753];
-pal_before = [26.8681, 0.843195, 0.337619, 0.895753, 0.359512, 0.632667, 0.00720161, 0.0401928, 0.577674, 18.8691, 11.3867, 31.7324, 1.16337];
-
-lapat = DrugResponseModel.getODEparams(lapat_before, concs[:, 1]);
-dox = DrugResponseModel.getODEparams(dox_before, concs[:, 2]);
-gemc = DrugResponseModel.getODEparams(gemc_before, concs[:, 3]);
-pac = DrugResponseModel.getODEparams(pac_before, concs[:, 4]);
-pal = DrugResponseModel.getODEparams(pal_before, concs[:, 5]);
+lapat = effs[:, :, 1]
+dox = effs[:, :, 2]
+gemc = effs[:, :, 3]
+pac = effs[:, :, 4]
+pal = effs[:, :, 5]
 ```
 
 
@@ -144,46 +136,6 @@ bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 p1=Heatmap(concs, bliss_comb_cellnum, 3, 4, "Gem", "Tax", "Bliss Cell Cycle Model")
 p2=Heatmap(concs, BlissOnData[:, :, 8], 3, 4, "Gem", "Tax", "Bliss Data")
 plot(p1, p2, size=(400, 550), layout=(2, 1))
-```
-### To show what is going on in this figure, we plot the parameters over concentrations.
-```julia
-function plot_dummy(i, concs, pac, bliss_comb, ylabel)
-  p = plot(concs[:, 4], pac[i, :], label="taxol alone", ylabel=ylabel, xlabel="taxol conc.")
-  plot!(concs[:, 4], bliss_comb[i, 5, :], label="tx & 5nM gm")
-  plot!(concs[:, 4], bliss_comb[i, 6, :], label="tx & 10nM gm")
-  plot!(concs[:, 4], bliss_comb[i, 7, :], label="tx & 30nM gm")
-  plot!(concs[:, 4], bliss_comb[i, 8, :], label="tx & 100nM gm")
-  return p
-end
-
-p1 = plot_dummy(1, concs, pac, bliss_comb, "g1 prog. rate")
-p2 = plot_dummy(2, concs, pac, bliss_comb, "g2 prog. rate")
-p3 = plot_dummy(3, concs, pac, bliss_comb, "g1 death rate")
-p4 = plot_dummy(4, concs, pac, bliss_comb, "g1 death rate")
-
-plot(p1, p2, p3, p4)
-ylims!((0.0, 0.85))
-```
-
-### To show what is going on in this figure, we plot the time series over time.
-
-```julia
-function plot_dummy2(i, concs, bliss_comb, g0)
-  t = 0.0:0.5:192.0 
-  g5t_g1, g5t_g2 = predict(bliss_comb[:, 5, i], g0, t)
-  g5t1_g1, g5t1_g2 = predict(bliss_comb[:, 6, i], g0, t)
-  g5t2_g1, g5t2_g2 = predict(bliss_comb[:, 7, i], g0, t)
-  g5t3_g1, g5t3_g2 = predict(bliss_comb[:, 8, i], g0, t)
-  p = plot(t, g5t_g1 .+ g5t_g2, label=string("taxol", concs[i, 4], " & gem 5"), ylabel="cell #", xlabel="time [hr]")
-  plot!(t, g5t1_g1 .+ g5t1_g2, label=string("taxol", concs[i, 4], " & gem 10"), ylabel="cell #", xlabel="time [hr]")
-  plot!(t, g5t2_g1 .+ g5t2_g2, label=string("taxol", concs[i, 4], " gem 30"), ylabel="cell #", xlabel="time [hr]")
-  plot!(t, g5t3_g1 .+ g5t3_g2, label=string("taxol", concs[i, 4], "& gem 100"), ylabel="cell #", xlabel="time [hr]")
-  return p
-end
-
-p1 = [plot_dummy2(i, concs, bliss_comb, g0) for i=1:8]
-plot(p1..., layout=(2,4))
-ylims!((0.0, 50.0))
 ```
 
 ## Gemcitabine and palbociclib
