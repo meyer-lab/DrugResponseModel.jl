@@ -75,3 +75,21 @@ G1, G2 = predict(taxol2_gem10, g0, tim)
 plot(tim, G1./(G1 .+ G2), lw=2, ylabel="%G1", xlabel="time [hr]")
 ylims!((0.0, 1.0))
 ```
+
+# Gemcitabine 5 nM with Doxorubicin 20 nM
+```julia
+bliss_comb = DrugResponseModel.fullCombinationParam(efcs[:, :, 3], efcs[:, :, 2], efcs, 8)
+gem5_dox20 = bliss_comb[:, 5, 4]
+G1, G2 = predict(gem5_dox20, g0, tim)
+plot(tim, G1./(G1 .+ G2), lw=2, ylabel="%G1", xlabel="time [hr]")
+ylims!((0.0, 1.0))
+```
+
+# Palbociclib 100 nM with Gemcitabine 10 nM
+```julia
+bliss_comb = DrugResponseModel.fullCombinationParam(efcs[:, :, 5], efcs[:, :, 3], efcs, 8)
+palbo100_gem10 = bliss_comb[:, 6, 6]
+G1, G2 = predict(palbo100_gem10, g0, tim)
+plot(tim, G1./(G1 .+ G2), lw=2, ylabel="%G1", xlabel="time [hr]")
+ylims!((0.0, 1.0))
+```
