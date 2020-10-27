@@ -61,7 +61,7 @@ function BlissModelComb(bliss_comb, g0)
 end
 
 """ This function plots the heatmap of combined cell numbers given any two drugs. """
-function Heatmap(concs, data, i1, i2, d1name, d2name, title)
+function Heatmap(concs, data, i1, i2, d1name, d2name, title; clim_min = 0.0, clim_max = 60.0)
     concs[1, :] .= 0.05
     heatmap(
         string.(round.(log.(concs[:, i2]), digits = 1)),
@@ -70,7 +70,7 @@ function Heatmap(concs, data, i1, i2, d1name, d2name, title)
         xlabel = string(d2name, " log[nM]"),
         ylabel = string(d1name, " log[nM]"),
         title = title,
-        clim = (0.0, 60.0),
+        clim = (clim_min, clim_max),
     )
 end
 
