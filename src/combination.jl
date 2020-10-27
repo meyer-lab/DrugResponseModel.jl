@@ -50,9 +50,9 @@ end
 """ This function calculates cell number for parameter sets that are the result of Bliss on prog. rates. """
 function BlissModelComb(bliss_comb, g0)
 
-    bliss_comb_cellnum = zeros(8,8)
-    for i=1:8 # param1 is changing
-        for j=1:8 # param2 is changing
+    bliss_comb_cellnum = zeros(8, 8)
+    for i = 1:8 # param1 is changing
+        for j = 1:8 # param2 is changing
             g1, g2, _ = predict(bliss_comb[:, i, j], g0, 96.0)
             bliss_comb_cellnum[i, j] = g1 + g2
         end
@@ -88,16 +88,36 @@ function blissCellNum(g1s, g2s; n = 8)
     for j = 1:n
         # the base case for either of combinations is the average of drugA and drugB to scale the cell numbers back.
         # columns are drugA and rows are drug 2, and the third dimension shows which pair of drugs were combined.
-        combined[:, j, 1] = -(num[:, 1] .+ num[j, 2] .- (num[:, 1] .* num[j, 2]) .- 1.0) .* ((g1s[end, 1, 1] + g2s[end, 1, 1]) + (g1s[end, 1, 2] + g2s[end, 1, 2])) / 2 # lap w/ dox; meaning dox changes with rows and lap changes with columns
-        combined[:, j, 2] = -(num[:, 1] .+ num[j, 3] .- (num[:, 1] .* num[j, 3]) .- 1.0) .* ((g1s[end, 1, 1] + g2s[end, 1, 1]) + (g1s[end, 1, 3] + g2s[end, 1, 3])) / 2 # lap w/ gem
-        combined[:, j, 3] = -(num[:, 1] .+ num[j, 4] .- (num[:, 1] .* num[j, 4]) .- 1.0) .* ((g1s[end, 1, 1] + g2s[end, 1, 1]) + (g1s[end, 1, 4] + g2s[end, 1, 4])) / 2 # lap w/ pac
-        combined[:, j, 4] = -(num[:, 1] .+ num[j, 5] .- (num[:, 1] .* num[j, 5]) .- 1.0) .* ((g1s[end, 1, 1] + g2s[end, 1, 1]) + (g1s[end, 1, 5] + g2s[end, 1, 5])) / 2# lap w/ palb
-        combined[:, j, 5] = -(num[:, 2] .+ num[j, 3] .- (num[:, 2] .* num[j, 3]) .- 1.0) .* ((g1s[end, 1, 2] + g2s[end, 1, 2]) + (g1s[end, 1, 3] + g2s[end, 1, 3])) / 2 # dox w/ gem
-        combined[:, j, 6] = -(num[:, 2] .+ num[j, 4] .- (num[:, 2] .* num[j, 4]) .- 1.0) .* ((g1s[end, 1, 2] + g2s[end, 1, 2]) + (g1s[end, 1, 4] + g2s[end, 1, 4])) / 2 # dox w/ pac
-        combined[:, j, 7] = -(num[:, 2] .+ num[j, 5] .- (num[:, 2] .* num[j, 5]) .- 1.0) .* ((g1s[end, 1, 2] + g2s[end, 1, 2]) + (g1s[end, 1, 5] + g2s[end, 1, 5])) / 2 # dox w/ palb
-        combined[:, j, 8] = -(num[:, 3] .+ num[j, 4] .- (num[:, 3] .* num[j, 4]) .- 1.0) .* ((g1s[end, 1, 3] + g2s[end, 1, 3]) + (g1s[end, 1, 4] + g2s[end, 1, 4])) / 2 # gem w/ pac
-        combined[:, j, 9] = -(num[:, 3] .+ num[j, 5] .- (num[:, 3] .* num[j, 5]) .- 1.0) .* ((g1s[end, 1, 3] + g2s[end, 1, 3]) + (g1s[end, 1, 5] + g2s[end, 1, 5])) / 2 # gem w/ palb
-        combined[:, j, 10] = -(num[:, 4] .+ num[j, 5] .- (num[:, 4] .* num[j, 5]) .- 1.0) .* ((g1s[end, 1, 4] + g2s[end, 1, 4]) + (g1s[end, 1, 5] + g2s[end, 1, 5])) / 2 # pac w/ palb
+        combined[:, j, 1] =
+            -(num[:, 1] .+ num[j, 2] .- (num[:, 1] .* num[j, 2]) .- 1.0) .* ((g1s[end, 1, 1] + g2s[end, 1, 1]) + (g1s[end, 1, 2] + g2s[end, 1, 2])) /
+            2 # lap w/ dox; meaning dox changes with rows and lap changes with columns
+        combined[:, j, 2] =
+            -(num[:, 1] .+ num[j, 3] .- (num[:, 1] .* num[j, 3]) .- 1.0) .* ((g1s[end, 1, 1] + g2s[end, 1, 1]) + (g1s[end, 1, 3] + g2s[end, 1, 3])) /
+            2 # lap w/ gem
+        combined[:, j, 3] =
+            -(num[:, 1] .+ num[j, 4] .- (num[:, 1] .* num[j, 4]) .- 1.0) .* ((g1s[end, 1, 1] + g2s[end, 1, 1]) + (g1s[end, 1, 4] + g2s[end, 1, 4])) /
+            2 # lap w/ pac
+        combined[:, j, 4] =
+            -(num[:, 1] .+ num[j, 5] .- (num[:, 1] .* num[j, 5]) .- 1.0) .* ((g1s[end, 1, 1] + g2s[end, 1, 1]) + (g1s[end, 1, 5] + g2s[end, 1, 5])) /
+            2# lap w/ palb
+        combined[:, j, 5] =
+            -(num[:, 2] .+ num[j, 3] .- (num[:, 2] .* num[j, 3]) .- 1.0) .* ((g1s[end, 1, 2] + g2s[end, 1, 2]) + (g1s[end, 1, 3] + g2s[end, 1, 3])) /
+            2 # dox w/ gem
+        combined[:, j, 6] =
+            -(num[:, 2] .+ num[j, 4] .- (num[:, 2] .* num[j, 4]) .- 1.0) .* ((g1s[end, 1, 2] + g2s[end, 1, 2]) + (g1s[end, 1, 4] + g2s[end, 1, 4])) /
+            2 # dox w/ pac
+        combined[:, j, 7] =
+            -(num[:, 2] .+ num[j, 5] .- (num[:, 2] .* num[j, 5]) .- 1.0) .* ((g1s[end, 1, 2] + g2s[end, 1, 2]) + (g1s[end, 1, 5] + g2s[end, 1, 5])) /
+            2 # dox w/ palb
+        combined[:, j, 8] =
+            -(num[:, 3] .+ num[j, 4] .- (num[:, 3] .* num[j, 4]) .- 1.0) .* ((g1s[end, 1, 3] + g2s[end, 1, 3]) + (g1s[end, 1, 4] + g2s[end, 1, 4])) /
+            2 # gem w/ pac
+        combined[:, j, 9] =
+            -(num[:, 3] .+ num[j, 5] .- (num[:, 3] .* num[j, 5]) .- 1.0) .* ((g1s[end, 1, 3] + g2s[end, 1, 3]) + (g1s[end, 1, 5] + g2s[end, 1, 5])) /
+            2 # gem w/ palb
+        combined[:, j, 10] =
+            -(num[:, 4] .+ num[j, 5] .- (num[:, 4] .* num[j, 5]) .- 1.0) .* ((g1s[end, 1, 4] + g2s[end, 1, 4]) + (g1s[end, 1, 5] + g2s[end, 1, 5])) /
+            2 # pac w/ palb
     end
 
     @assert(all(combined .>= 0.0))
