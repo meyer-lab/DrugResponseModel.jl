@@ -1,0 +1,130 @@
+---
+weave_options:
+  error: true
+  echo: false
+---
+
+Time series simulations for some pairs of drugs.
+
+```julia
+import Pkg; Pkg.instantiate()
+Pkg.activate(".")
+using DrugResponseModel
+using Plots, LinearAlgebra
+Plots.scalefontsizes(0.8)
+
+concs, populations1, g1s1, g2s1 = load(189, 1);
+concs, populations2, g1s2, g2s2 = load(189, 2);
+concs, populations3, g1s3, g2s3 = load(189, 3);
+g0 = g1s1[1,1,1]+g2s1[1,1,1];
+
+g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
+g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
+popavg = g1avg .+ g2avg
+paramAvg = [97.7434, 1.41726, 0.0501761, 0.930205, 0.111494, 0.123604, 0.552216, 
+     92.9045, 1.40024, 0.996396, 0.0513087, 0.521831, 0.6535, 0.566578, 
+     15.5317, 2.3689, 0.592433, 0.999986, 0.0283363, 0.286975, 0.503328, 
+     3.96929, 4.62768, 0.0512281, 0.307528, 0.549714, 0.378717, 0.50959, 
+     63.4248, 0.976052, 0.16582, 0.740009, 0.0572609, 0.0776912, 0.534201, 
+     0.734513, 0.375555, 16.8387, 12.3945, 30.176, 14.5352];
+efcs = getODEparamsAll(paramAvg, concs);
+tim = 0.0:1.0:96.0;
+```
+
+# Lapatinib 100 nM with Doxorubicin 20 nM
+```julia
+bliss_comb = DrugResponseModel.fullCombinationParam(efcs[:, :, 1], efcs[:, :, 2], efcs, 8)
+lap100_dox20 = bliss_comb[:, 6, 4]
+G1, G2 = predict(lap100_dox20, g0, tim)
+p1 = plot(tim, G1, lw=2, label="G1", xlabel="time [hr]", ylabel="cell number")
+plot!(tim, G2, lw=2, label="G2")
+plot!(tim, G1 .+ G2, lw=2, label="total")
+ylims!((0.0, 60.0))
+p2 = plot(tim, G1./(G1 .+ G2), lw=2, ylabel="%G1", xlabel="time [hr]")
+ylims!((0.0, 1.0))
+plot(p1, p2, layout=(1,2), size=(700, 300))
+```
+
+# Lapatinib 100 nM with Gemcitabine 30 nM
+```julia
+bliss_comb = DrugResponseModel.fullCombinationParam(efcs[:, :, 1], efcs[:, :, 3], efcs, 8)
+lap100_gem30 = bliss_comb[:, 6, 7]
+G1, G2 = predict(lap100_gem30, g0, tim)
+p1 = plot(tim, G1, lw=2, label="G1", xlabel="time [hr]", ylabel="cell number")
+plot!(tim, G2, lw=2, label="G2")
+plot!(tim, G1 .+ G2, lw=2, label="total")
+ylims!((0.0, 60.0))
+p2 = plot(tim, G1./(G1 .+ G2), lw=2, ylabel="%G1", xlabel="time [hr]")
+ylims!((0.0, 1.0))
+plot(p1, p2, layout=(1,2), size=(700, 300))
+```
+
+# Lapatinib 250 nM with Palbociclib 50 nM
+```julia
+bliss_comb = DrugResponseModel.fullCombinationParam(efcs[:, :, 1], efcs[:, :, 5], efcs, 8)
+lap250_palbo50 = bliss_comb[:, 7, 5]
+G1, G2 = predict(lap250_palbo50, g0, tim)
+p1 = plot(tim, G1, lw=2, label="G1", xlabel="time [hr]", ylabel="cell number")
+plot!(tim, G2, lw=2, label="G2")
+plot!(tim, G1 .+ G2, lw=2, label="total")
+ylims!((0.0, 60.0))
+p2 = plot(tim, G1./(G1 .+ G2), lw=2, ylabel="%G1", xlabel="time [hr]")
+ylims!((0.0, 1.0))
+plot(p1, p2, layout=(1,2), size=(700, 300))
+```
+
+# Paclitaxel 2 nM with Doxorubicin 20 nM
+```julia
+bliss_comb = DrugResponseModel.fullCombinationParam(efcs[:, :, 4], efcs[:, :, 2], efcs, 8)
+taxol2_dox20 = bliss_comb[:, 4, 4]
+G1, G2 = predict(taxol2_dox20, g0, tim)
+p1 = plot(tim, G1, lw=2, label="G1", xlabel="time [hr]", ylabel="cell number")
+plot!(tim, G2, lw=2, label="G2")
+plot!(tim, G1 .+ G2, lw=2, label="total")
+ylims!((0.0, 60.0))
+p2 = plot(tim, G1./(G1 .+ G2), lw=2, ylabel="%G1", xlabel="time [hr]")
+ylims!((0.0, 1.0))
+plot(p1, p2, layout=(1,2), size=(700, 300))
+```
+
+# Paclitaxel 2 nM with Gemcitabine 10 nM
+```julia
+bliss_comb = DrugResponseModel.fullCombinationParam(efcs[:, :, 4], efcs[:, :, 3], efcs, 8)
+taxol2_gem10 = bliss_comb[:, 4, 6]
+G1, G2 = predict(taxol2_gem10, g0, tim)
+p1 = plot(tim, G1, lw=2, label="G1", xlabel="time [hr]", ylabel="cell number")
+plot!(tim, G2, lw=2, label="G2")
+plot!(tim, G1 .+ G2, lw=2, label="total")
+ylims!((0.0, 60.0))
+p2 = plot(tim, G1./(G1 .+ G2), lw=2, ylabel="%G1", xlabel="time [hr]")
+ylims!((0.0, 1.0))
+plot(p1, p2, layout=(1,2), size=(700, 300))
+```
+
+# Gemcitabine 5 nM with Doxorubicin 20 nM
+```julia
+bliss_comb = DrugResponseModel.fullCombinationParam(efcs[:, :, 3], efcs[:, :, 2], efcs, 8)
+gem5_dox20 = bliss_comb[:, 5, 4]
+G1, G2 = predict(gem5_dox20, g0, tim)
+p1 = plot(tim, G1, lw=2, label="G1", xlabel="time [hr]", ylabel="cell number")
+plot!(tim, G2, lw=2, label="G2")
+plot!(tim, G1 .+ G2, lw=2, label="total")
+ylims!((0.0, 60.0))
+p2 = plot(tim, G1./(G1 .+ G2), lw=2, ylabel="%G1", xlabel="time [hr]")
+ylims!((0.0, 1.0))
+plot(p1, p2, layout=(1,2), size=(700, 300))
+```
+
+# Palbociclib 100 nM with Gemcitabine 10 nM
+```julia
+bliss_comb = DrugResponseModel.fullCombinationParam(efcs[:, :, 5], efcs[:, :, 3], efcs, 8)
+palbo100_gem10 = bliss_comb[:, 6, 6]
+G1, G2 = predict(palbo100_gem10, g0, tim)
+p1 = plot(tim, G1, lw=2, label="G1", xlabel="time [hr]", ylabel="cell number")
+plot!(tim, G2, lw=2, label="G2")
+plot!(tim, G1 .+ G2, lw=2, label="total")
+ylims!((0.0, 60.0))
+p2 = plot(tim, G1./(G1 .+ G2), lw=2, ylabel="%G1", xlabel="time [hr]")
+ylims!((0.0, 1.0))
+plot(p1, p2, layout=(1,2), size=(700, 300))
+```
