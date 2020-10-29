@@ -28,211 +28,74 @@ paramAvg = [97.7434, 1.41726, 0.0501761, 0.930205, 0.111494, 0.123604, 0.552216,
      0.734513, 0.375555, 16.8387, 12.3945, 30.176, 14.5352];
 efcs = getODEparamsAll(paramAvg, concs);
 tim = 0.0:1.0:96.0;
+
+""" To avoid repetition. """
+function plot_combin_time(idA, idB, efcts, DrugA_name, DrugB_name, concA, concB)
+  bliss_comb = DrugResponseModel.fullCombinationParam(efcts[:, :, idA], efcts[:, :, idB], efcts, 8)
+  combb = bliss_comb[:, concA, concB]
+  G1_lap, G2_lap = predict(efcs[:, concA, idA], g0, tim)
+  G1_dox, G2_dox = predict(efcs[:, concA, idB], g0, tim)
+  G1_com, G2_com = predict(combb, g0, tim)
+  p1 = plot(tim, G1_lap, lw=2, label=DrugA_name, xlabel="time [hr]", ylabel="G1 cell number")
+  plot!(tim, G1_dox, lw=2, label=DrugB_name)
+  plot!(tim, G1_com, lw=2, label="combin")
+  ylims!((0.0, 40.0))
+
+  p2 = plot(tim, G2_lap, lw=2, label=DrugA_name, xlabel="time [hr]", ylabel="G2 cell number")
+  plot!(tim, G2_dox, lw=2, label=DrugB_name)
+  plot!(tim, G2_com, lw=2, label="combin")
+  ylims!((0.0, 40.0))
+
+  p3 = plot(tim, G1_lap .+ G2_lap, lw=2, label=DrugA_name, xlabel="time [hr]", ylabel="total cell number")
+  plot!(tim, G1_dox .+ G2_dox, lw=2, label=DrugB_name)
+  plot!(tim, G1_com .+ G2_com, lw=2, label="combin")
+  ylims!((0.0, 40.0))
+
+  p4 = plot(tim, G1_lap./(G1_lap .+ G2_lap), lw=2, ylabel="%G1", xlabel="time [hr]", label=DrugA_name)
+  plot!(tim, G1_dox./(G1_dox .+ G2_dox), lw=2, label=DrugB_name)
+  plot!(tim, G1_com./(G1_com .+ G2_com), lw=2, label="combin.")
+  ylims!((0.0, 1.0))
+  plot(p1, p2, p3, p4, layout=(2,2), size=(700, 700))
+
+end
 ```
 
 # Lapatinib 100 nM with Doxorubicin 20 nM
+
 ```julia
-function plot_combin_time()
-
-
-end
-bliss_comb = DrugResponseModel.fullCombinationParam(efcs[:, :, 1], efcs[:, :, 2], efcs, 8)
-lap100_dox20 = bliss_comb[:, 6, 4]
-G1_lap, G2_lap = predict(efcs[:, 6, 1], g0, tim)
-G1_dox, G2_dox = predict(efcs[:, 4, 2], g0, tim)
-G1_com, G2_com = predict(lap100_dox20, g0, tim)
-p1 = plot(tim, G1_lap, lw=2, label="lap. 100", xlabel="time [hr]", ylabel="G1 cell number")
-plot!(tim, G1_dox, lw=2, label="dox. 20")
-plot!(tim, G1_com, lw=2, label="combin")
-ylims!((0.0, 30.0))
-
-p2 = plot(tim, G2_lap, lw=2, label="lap. 100", xlabel="time [hr]", ylabel="G2 cell number")
-plot!(tim, G2_dox, lw=2, label="dox. 20")
-plot!(tim, G2_com, lw=2, label="combin")
-ylims!((0.0, 30.0))
-
-p3 = plot(tim, G1_lap .+ G2_lap, lw=2, label="lap. 100", xlabel="time [hr]", ylabel="total cell number")
-plot!(tim, G1_dox .+ G2_dox, lw=2, label="dox. 20")
-plot!(tim, G1_com .+ G2_com, lw=2, label="combin")
-ylims!((0.0, 30.0))
-
-p4 = plot(tim, G1_lap./(G1_lap .+ G2_lap), lw=2, ylabel="%G1", xlabel="time [hr]", label="lap.")
-plot!(tim, G1_dox./(G1_dox .+ G2_dox), lw=2, label="dox.")
-plot!(tim, G1_com./(G1_com .+ G2_com), lw=2, label="combin.")
-ylims!((0.0, 1.0))
-plot(p1, p2, p3, p4, layout=(2,2), size=(700, 700))
+plot_combin_time(1, 2, efcs, "lap.", "dox.", 6, 4)
 ```
 
 # Lapatinib 100 nM with Gemcitabine 30 nM
+
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(efcs[:, :, 1], efcs[:, :, 3], efcs, 8)
-lap100_gem30 = bliss_comb[:, 6, 7]
-G1_lap, G2_lap = predict(efcs[:, 6, 1], g0, tim)
-G1_gem, G2_gem= predict(efcs[:, 7, 3], g0, tim)
-G1_com, G2_com = predict(lap100_gem30, g0, tim)
-p1 = plot(tim, G1_lap, lw=2, label="lap. 100", xlabel="time [hr]", ylabel="G1 cell number")
-plot!(tim, G1_gem, lw=2, label="gem. 30")
-plot!(tim, G1_com, lw=2, label="combin")
-ylims!((0.0, 30.0))
-
-p2 = plot(tim, G2_lap, lw=2, label="lap. 100", xlabel="time [hr]", ylabel="G2 cell number")
-plot!(tim, G2_gem, lw=2, label="gem. 30")
-plot!(tim, G2_com, lw=2, label="combin")
-ylims!((0.0, 30.0))
-
-p3 = plot(tim, G1_lap .+ G2_lap, lw=2, label="lap. 100", xlabel="time [hr]", ylabel="total cell number")
-plot!(tim, G1_gem .+ G2_gem, lw=2, label="gem. 30")
-plot!(tim, G1_com .+ G2_com, lw=2, label="combin")
-ylims!((0.0, 30.0))
-
-p4 = plot(tim, G1_lap./(G1_lap .+ G2_lap), lw=2, ylabel="%G1", xlabel="time [hr]", label="lap.")
-plot!(tim, G1_gem./(G1_gem .+ G2_gem), lw=2, label="gem.")
-plot!(tim, G1_com./(G1_com .+ G2_com), lw=2, label="combin.")
-ylims!((0.0, 1.0))
-plot(p1, p2, p3, p4, layout=(2,2), size=(700, 700))
+plot_combin_time(1, 3, efcs, "lap.", "gem.", 6, 7)
 ```
 
 # Lapatinib 250 nM with Palbociclib 50 nM
+
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(efcs[:, :, 1], efcs[:, :, 5], efcs, 8)
-lap250_palbo50 = bliss_comb[:, 7, 5]
-G1_lap, G2_lap = predict(efcs[:, 5, 1], g0, tim)
-G1_palb, G2_palb= predict(efcs[:, 5, 5], g0, tim)
-G1_com, G2_com = predict(lap250_palbo50, g0, tim)
-p1 = plot(tim, G1_lap, lw=2, label="lap. 250", xlabel="time [hr]", ylabel="G1 cell number")
-plot!(tim, G1_palb, lw=2, label="palb. 50")
-plot!(tim, G1_com, lw=2, label="combin")
-ylims!((0.0, 40.0))
-
-p2 = plot(tim, G2_lap, lw=2, label="lap. 100", xlabel="time [hr]", ylabel="G2 cell number")
-plot!(tim, G2_palb, lw=2, label="palb. 50")
-plot!(tim, G2_com, lw=2, label="combin")
-ylims!((0.0, 40.0))
-
-p3 = plot(tim, G1_lap .+ G2_lap, lw=2, label="lap. 100", xlabel="time [hr]", ylabel="total cell number")
-plot!(tim, G1_palb .+ G2_palb, lw=2, label="palb. 50")
-plot!(tim, G1_com .+ G2_com, lw=2, label="combin")
-ylims!((0.0, 40.0))
-
-p4 = plot(tim, G1_lap./(G1_lap .+ G2_lap), lw=2, ylabel="%G1", xlabel="time [hr]", label="lap.")
-plot!(tim, G1_palb./(G1_palb .+ G2_palb), lw=2, label="palb.")
-plot!(tim, G1_com./(G1_com .+ G2_com), lw=2, label="combin.")
-ylims!((0.0, 1.0))
-plot(p1, p2, p3, p4, layout=(2,2), size=(700, 700))
+plot_combin_time(1, 5, efcs, "lap.", "palbo.", 7, 5)
 ```
 
 # Paclitaxel 2 nM with Doxorubicin 20 nM
+
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(efcs[:, :, 4], efcs[:, :, 2], efcs, 8)
-taxol2_dox20 = bliss_comb[:, 4, 4]
-G1_tax, G2_tax = predict(efcs[:, 4, 4], g0, tim)
-G1_dox, G2_dox = predict(efcs[:, 4, 2], g0, tim)
-G1_com, G2_com = predict(taxol2_dox20, g0, tim)
-p1 = plot(tim, G1_tax, lw=2, label="tax. 2", xlabel="time [hr]", ylabel="G1 cell number")
-plot!(tim, G1_dox, lw=2, label="dox. 20")
-plot!(tim, G1_com, lw=2, label="combin")
-ylims!((0.0, 40.0))
-
-p2 = plot(tim, G2_tax, lw=2, label="tax. 2", xlabel="time [hr]", ylabel="G2 cell number")
-plot!(tim, G2_dox, lw=2, label="dox. 20")
-plot!(tim, G2_com, lw=2, label="combin")
-ylims!((0.0, 40.0))
-
-p3 = plot(tim, G1_tax .+ G2_tax, lw=2, label="tax. 2", xlabel="time [hr]", ylabel="total cell number")
-plot!(tim, G1_dox .+ G2_dox, lw=2, label="dox. 20")
-plot!(tim, G1_com .+ G2_com, lw=2, label="combin")
-ylims!((0.0, 40.0))
-
-p4 = plot(tim, G1_tax./(G1_tax .+ G2_tax), lw=2, ylabel="%G1", xlabel="time [hr]", label="tax.")
-plot!(tim, G1_dox./(G1_dox .+ G2_dox), lw=2, label="dox.")
-plot!(tim, G1_com./(G1_com .+ G2_com), lw=2, label="combin.")
-ylims!((0.0, 1.0))
-plot(p1, p2, p3, p4, layout=(2,2), size=(700, 700))
+plot_combin_time(4, 2, efcs, "tax.", "dox.", 4, 4)
 ```
 
 # Paclitaxel 2 nM with Gemcitabine 10 nM
+
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(efcs[:, :, 4], efcs[:, :, 3], efcs, 8)
-taxol2_gem10 = bliss_comb[:, 4, 6]
-G1_tax, G2_tax = predict(efcs[:, 4, 4], g0, tim)
-G1_gem, G2_gem = predict(efcs[:, 6, 3], g0, tim)
-G1_com, G2_com = predict(taxol2_gem10, g0, tim)
-p1 = plot(tim, G1_tax, lw=2, label="tax. 2", xlabel="time [hr]", ylabel="G1 cell number")
-plot!(tim, G1_gem, lw=2, label="gem. 10")
-plot!(tim, G1_com, lw=2, label="combin")
-ylims!((0.0, 40.0))
-
-p2 = plot(tim, G2_tax, lw=2, label="tax. 2", xlabel="time [hr]", ylabel="G2 cell number")
-plot!(tim, G2_gem, lw=2, label="gem. 10")
-plot!(tim, G2_com, lw=2, label="combin")
-ylims!((0.0, 40.0))
-
-p3 = plot(tim, G1_tax .+ G2_tax, lw=2, label="tax. 2", xlabel="time [hr]", ylabel="total cell number")
-plot!(tim, G1_gem .+ G2_gem, lw=2, label="gem. 10")
-plot!(tim, G1_com .+ G2_com, lw=2, label="combin")
-ylims!((0.0, 40.0))
-
-p4 = plot(tim, G1_tax./(G1_tax .+ G2_tax), lw=2, ylabel="%G1", xlabel="time [hr]", label="tax.")
-plot!(tim, G1_gem./(G1_gem .+ G2_gem), lw=2, label="gem.")
-plot!(tim, G1_com./(G1_com .+ G2_com), lw=2, label="combin.")
-ylims!((0.0, 1.0))
-plot(p1, p2, p3, p4, layout=(2,2), size=(700, 700))
+plot_combin_time(4, 3, efcs, "tax.", "gem.", 4, 6)
 ```
 
 # Gemcitabine 5 nM with Doxorubicin 20 nM
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(efcs[:, :, 3], efcs[:, :, 2], efcs, 8)
-gem5_dox20 = bliss_comb[:, 5, 4]
-G1_gem, G2_gem = predict(efcs[:, 4, 4], g0, tim)
-G1_dox, G2_dox = predict(efcs[:, 4, 2], g0, tim)
-G1_com, G2_com = predict(gem5_dox20, g0, tim)
-p1 = plot(tim, G1_gem, lw=2, label="gem. 5", xlabel="time [hr]", ylabel="G1 cell number")
-plot!(tim, G1_dox, lw=2, label="dox. 20")
-plot!(tim, G1_com, lw=2, label="combin")
-ylims!((0.0, 40.0))
-
-p2 = plot(tim, G2_gem, lw=2, label="gem. 5", xlabel="time [hr]", ylabel="G2 cell number")
-plot!(tim, G2_dox, lw=2, label="dox. 20")
-plot!(tim, G2_com, lw=2, label="combin")
-ylims!((0.0, 40.0))
-
-p3 = plot(tim, G1_gem .+ G2_gem, lw=2, label="gem. 5", xlabel="time [hr]", ylabel="total cell number")
-plot!(tim, G1_dox .+ G2_dox, lw=2, label="dox. 20")
-plot!(tim, G1_com .+ G2_com, lw=2, label="combin")
-ylims!((0.0, 40.0))
-
-p4 = plot(tim, G1_gem./(G1_gem .+ G2_gem), lw=2, ylabel="%G1", xlabel="time [hr]", label="gem.")
-plot!(tim, G1_dox./(G1_dox .+ G2_dox), lw=2, label="dox.")
-plot!(tim, G1_com./(G1_com .+ G2_com), lw=2, label="combin.")
-ylims!((0.0, 1.0))
-plot(p1, p2, p3, p4, layout=(2,2), size=(700, 700))
+plot_combin_time(3, 2, efcs, "gem.", "dox.", 4, 4)
 ```
 
 # Palbociclib 100 nM with Gemcitabine 10 nM
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(efcs[:, :, 5], efcs[:, :, 3], efcs, 8)
-palbo100_gem10 = bliss_comb[:, 6, 6]
-G1_palbo, G2_palbo = predict(efcs[:, 6, 5], g0, tim)
-G1_gem, G2_gem = predict(efcs[:, 6, 3], g0, tim)
-G1_com, G2_com = predict(palbo100_gem10, g0, tim)
-p1 = plot(tim, G1_palbo, lw=2, label="palbo. 100", xlabel="time [hr]", ylabel="G1 cell number")
-plot!(tim, G1_gem, lw=2, label="gem. 10")
-plot!(tim, G1_com, lw=2, label="combin")
-ylims!((0.0, 30.0))
-
-p2 = plot(tim, G2_palbo, lw=2, label="palbo. 100", xlabel="time [hr]", ylabel="G2 cell number")
-plot!(tim, G2_gem, lw=2, label="gem. 10")
-plot!(tim, G2_com, lw=2, label="combin")
-ylims!((0.0, 30.0))
-
-p3 = plot(tim, G1_palbo .+ G2_palbo, lw=2, label="palbo. 100", xlabel="time [hr]", ylabel="total cell number")
-plot!(tim, G1_gem .+ G2_gem, lw=2, label="gem. 10")
-plot!(tim, G1_com .+ G2_com, lw=2, label="combin")
-ylims!((0.0, 30.0))
-
-p4 = plot(tim, G1_palbo./(G1_palbo .+ G2_palbo), lw=2, ylabel="%G1", xlabel="time [hr]", label="palbo.")
-plot!(tim, G1_gem./(G1_gem .+ G2_gem), lw=2, label="gem.")
-plot!(tim, G1_com./(G1_com .+ G2_com), lw=2, label="combin.")
-ylims!((0.0, 1.0))
-plot(p1, p2, p3, p4, layout=(2,2), size=(700, 700))
+plot_combin_time(5, 3, efcs, "palbo.", "gem.", 6, 6)
 ```
