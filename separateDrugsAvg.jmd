@@ -10,6 +10,7 @@ import Pkg; Pkg.instantiate()
 Pkg.activate(".")
 using DrugResponseModel
 using Plots, LinearAlgebra
+Plots.scalefontsizes(0.7)
 
 concs, populations1, g1s1, g2s1 = load(189, 1);
 concs, populations2, g1s2, g2s2 = load(189, 2);
