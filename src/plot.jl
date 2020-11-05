@@ -38,7 +38,7 @@ function plot_parameters(conc_l, parameters, stdn)
         color = [:black :gray],
         line = (:dot, 1),
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "G1 progression rate",
+        ylabel = "G1 progression rate [1/hr]",
     )
     ylims!(0.0, 1.0)
 
@@ -53,7 +53,7 @@ function plot_parameters(conc_l, parameters, stdn)
         color = [:black :gray],
         line = (:dot, 1),
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "G2 progression rate",
+        ylabel = "G2 progression rate [1/hr]",
     )
     ylims!(0.0, 1.0)
 
@@ -70,7 +70,7 @@ function plot_parameters(conc_l, parameters, stdn)
         color = [:black :gray],
         line = (:dot, 1),
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "G1 death rate",
+        ylabel = "G1 death rate [1/hr]",
     )
     ylims!(0.0, 1.0)
 
@@ -85,7 +85,7 @@ function plot_parameters(conc_l, parameters, stdn)
         color = [:black :gray],
         line = (:dot, 1),
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "G2 death rate",
+        ylabel = "G2 death rate [1/hr]",
     )
     ylims!(0.0, 1.0)
     plot(p1, p2, p3, p4)
@@ -126,8 +126,8 @@ function plotavg(G1, G2, g1m, g2m, i, leg, conc)
         title = string(conc, "nM"),
         titlefontsize = 8,
         color = "green",
-        markersize = 1.5,
-        markerstrokewidth = 0,
+        markersize = 1.0,
+        markerstrokewidth = 0.0,
         legend = leg,
         label = "data G1",
         xlabel = "time [hr]",
@@ -135,10 +135,10 @@ function plotavg(G1, G2, g1m, g2m, i, leg, conc)
         xguidefontsize = 8,
         yguidefontsize = 8,
         legendfontsize = 6,
-        alpha = 0.5,
+        alpha = 0.25,
     )
     plot!(time, G1[:, i], label = "model G1", color = "darkgreen")
-    scatter!(time, g2m[:, i], color = "sienna", label = "data G2", markerstrokewidth = 0, markersize = 1.5, alpha = 0.5)
+    scatter!(time, g2m[:, i], color = "sienna", label = "data G2", markerstrokewidth = 0.0, markersize = 1.0, alpha = 0.25)
     plot!(time, G2[:, i], label = "model G2", color = "darkorange")
     ylims!((0.0, 45))
 end
