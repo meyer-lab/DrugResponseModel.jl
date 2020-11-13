@@ -1,0 +1,53 @@
+---
+weave_options:
+  error: true
+  echo: false
+---
+
+Representation of the three replicates.
+```julia
+import Pkg; Pkg.instantiate()
+Pkg.activate(".")
+using DrugResponseModel
+using Plots
+
+concs, populations1, g1s1, g2s1 = load(189, 1);
+concs, populations2, g1s2, g2s2 = load(189, 2);
+concs, populations3, g1s3, g2s3 = load(189, 3);
+
+""" plots all the three simulated trials. Along with avg and std of data. """
+function plot_avgstd_data(g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, conc, i, j)
+    time = LinRange(0.0, 95.0, 189)
+    meang1 = zeros(189, 8, 5)
+    meang2 = zeros(189, 8, 5)
+    stdg1 = zeros(189, 8, 5)
+    stdg2 = zeros(189, 8, 5)
+    for k = 1:5
+        meang1[:, :, k], meang2[:, :, k], stdg1[:, :, k], stdg2[:, :, k] =
+            DrugResponseModel.mean_std_data(g1s1[:, :, k], g1s2[:, :, k], g1s3[:, :, k], g2s1[:, :, k], g2s2[:, :, k], g2s3[:, :, k])
+    end
+    plot(
+        time,
+        meang1[:, i, j];
+        ribbon = stdg1[:, i, j],
+        title = string(conc[i], "nM"),
+        color = 6,
+        label = "G1",
+        xlabel = "time [hr]",
+        ylabel = "cell number",
+        alpha = 0.1,
+    )
+    plot!(time, meang2[:, i, j]; ribbon = stdg2[:, i, j], color = 7, label = "G2", alpha = 0.1)
+    ylims!((0.0, 45))
+end
+```
+
+# lapatinib
+
+```julia
+p1 = plot_avgstd_data(g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[:, 1], 2, 1)
+p2 = plot_avgstd_data(g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[:, 1], 5, 1)
+p3 = plot_avgstd_data(g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[:, 1], 8, 1)
+plot(p1, p2, p3)
+```
+
