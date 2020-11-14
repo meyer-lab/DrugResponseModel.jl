@@ -9,9 +9,7 @@ using Plots
 using Measures
 using BlackBoxOptim
 using LinearAlgebra
-using Base.Threads
 using Statistics
-import Calculus
 using DSP: conv
 using Optim
 using ExponentialUtilities
