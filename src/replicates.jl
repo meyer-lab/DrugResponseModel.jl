@@ -45,35 +45,16 @@ function numcells(params, g0)
 end
 
 
-""" A Function to find mean and std of data in G1 and G2 separately. """
-function mean_std_data(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3)
-
-    meanG1 = ones(189, 8)
-    meanG2 = ones(189, 8)
-    stdG1 = ones(189, 8)
-    stdG2 = ones(189, 8)
-    for j = 1:8
-        for k = 1:189
-            meanG1[k, j] = mean([G1_1[k, j], G1_2[k, j], G1_3[k, j]])
-            meanG2[k, j] = mean([G2_1[k, j], G2_2[k, j], G2_3[k, j]])
-            stdG1[k, j] = std([G1_1[k, j], G1_2[k, j], G1_3[k, j]])
-            stdG2[k, j] = std([G2_1[k, j], G2_2[k, j], G2_3[k, j]])
-        end
-    end
-    return meanG1, meanG2, stdG1, stdG2
-end
-
 """ plots all the three simulated trials. Along with avg and std of data. """
 function plot2(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3, g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, conc, i, j)
     time = LinRange(0.0, 95.0, 189)
-    meang1 = zeros(189, 8, 5)
-    meang2 = zeros(189, 8, 5)
-    stdg1 = zeros(189, 8, 5)
-    stdg2 = zeros(189, 8, 5)
-    for k = 1:5
-        meang1[:, :, k], meang2[:, :, k], stdg1[:, :, k], stdg2[:, :, k] =
-            mean_std_data(g1s1[:, :, k], g1s2[:, :, k], g1s3[:, :, k], g2s1[:, :, k], g2s2[:, :, k], g2s3[:, :, k])
-    end
+    G1 = cat(g1s1, g1s2, g1s3, dims=4)
+    G2 = cat(g2s1, g2s2, g2s3, dims=4)
+    meang1 = mean(G1, dims=4)
+    meang2 = mean(G2, dims=4)
+    stdg1 = std(G1, dims=4)
+    stdg2 = std(G2, dims=4)
+
     plot(
         time,
         meang1[:, i, j];

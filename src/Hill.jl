@@ -25,17 +25,25 @@ function optimize_hill(conc_l::Vector, g1::Matrix, g2::Matrix; maxstep = 1E5)
 
     low = [minimum(conc_l), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.25, 3, 5, 0, 0]
     high = [maximum(conc_l), 1.0, 1.0, 10.0, 1.0, 1.0, 3.0, 3.0, 0.75, 50, 50, 50, 50]
+    initial_x = low + (high - low) / 2.0
 
-    results_ode = bboptimize(
-        hillCost;
-        SearchRange = collect(zip(low, high)),
-        NumDimensions = length(low),
-        TraceMode = :verbose,
-        TraceInterval = 100,
-        MaxSteps = maxstep,
-    )
+    function g!(G, hillParams)
+        ForwardDiff.gradient!(G, hillCost, hillParams)
+        costCenter = hillCost(hillParams)
 
-    return best_fitness(results_ode), best_candidate(results_ode)
+        # Handle the integer-valued parameters
+        for ii = 10:13
+            pp = copy(hillParams)
+            pp[ii] += 1.0
+            G[ii] = hillCost(pp) - costCenter
+        end
+    end
+
+    ls = LineSearches.BackTracking()
+    options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = 3)
+    results = optimize(hillCost, g!, low, high, initial_x, Fminbox(LBFGS(linesearch = ls)), options)
+
+    return Optim.minimum(results), Optim.minimizer(results)
 end
 
 """ A function to convert the estimated hill parameters back to ODE parameters. """
