@@ -48,12 +48,12 @@ end
 """ plots all the three simulated trials. Along with avg and std of data. """
 function plot2(G1_1, G1_2, G1_3, G2_1, G2_2, G2_3, g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, conc, i, j)
     time = LinRange(0.0, 95.0, 189)
-    G1 = cat(g1s1, g1s2, g1s3, dims=4)
-    G2 = cat(g2s1, g2s2, g2s3, dims=4)
-    meang1 = mean(G1, dims=4)
-    meang2 = mean(G2, dims=4)
-    stdg1 = std(G1, dims=4)
-    stdg2 = std(G2, dims=4)
+    G1 = cat(g1s1, g1s2, g1s3, dims = 4)
+    G2 = cat(g2s1, g2s2, g2s3, dims = 4)
+    meang1 = mean(G1, dims = 4)
+    meang2 = mean(G2, dims = 4)
+    stdg1 = std(G1, dims = 4)
+    stdg2 = std(G2, dims = 4)
 
     plot(
         time,
