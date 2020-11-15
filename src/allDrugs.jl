@@ -34,26 +34,26 @@ function getODEparamsAll(p::Array{Float64,1}, concentrations::Array{Float64,2})
 end
 
 
-function residHillAll(hillParams::Vector, concentrations::Matrix, g1::Array, g2::Array)
+function residHillAll(hP::Vector, concentrations::Matrix, g1::Array, g2::Array)
     res = 0.0
 
     # Solve for all drugs
     t = 1
     for j = 1:5
         hill = [
-            hillParams[t],
-            hillParams[36],
-            hillParams[t+2],
-            hillParams[t+1],
-            hillParams[37],
-            hillParams[t+3],
-            hillParams[t+4],
-            hillParams[t+5],
-            hillParams[t+6],
-            hillParams[38],
-            hillParams[39],
-            hillParams[40],
-            hillParams[41],
+            hP[t],
+            hP[36],
+            hP[t+2],
+            hP[t+1],
+            hP[37],
+            hP[t+3],
+            hP[t+4],
+            hP[t+5],
+            hP[t+6],
+            hP[38],
+            hP[39],
+            hP[40],
+            hP[41],
         ]
         t += 7
         res += residHill(hill, concentrations[:, j], g1[:, :, j], g2[:, :, j])
@@ -64,44 +64,20 @@ end
 
 
 function optim_all(concs::Array{Float64,2}, g1::Array{Float64,3}, g2::Array{Float64,3})
-    f(hillParams) = residHillAll(hillParams, concs, g1, g2)
-
-    function g!(G, hillParams)
-        ForwardDiff.gradient!(G, f, hillParams)
-        costCenter = f(hillParams)
-
-        # Handle the integer-valued parameters
-        for ii = 37:40
-            pp = copy(hillParams)
-            pp[ii] += 1.0
-            costPlus = f(pp)
-            pp[ii] -= 2.0
-            costMin = f(pp)
-            pt = floor(hillParams[ii])
-            poly = fit([pt-1, pt, pt+1], [costMin, costCenter, costPlus])
-            polyD = derivative(poly)
-            G[ii] = polyD(hillParams[ii])
-        end
-
-        println(G)
-    end
+    f(params) = residHillAll(params, concs, g1, g2)
+    g!(G, params) = grad_helper!(G, f, 37:40, params)
 
     lP = [minimum(concs), 0.01, 0.05, 0.05, 0.00001, 0.00001, 0.3]
     low = vcat(lP, lP, lP, lP, lP, 1e-9, 1e-9, 3, 3, 2, 2)
     hP = [maximum(concs), 1.0, 1.0, 1.0, 0.1, 0.1, 0.7]
     high = vcat(hP, hP, hP, hP, hP, 1.0, 1.0, 10, 25, 50, 50)
-    initial_x = low + (high - low) / 2.0
 
-    ls = LineSearches.BackTracking()
-    options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = 20)
-    results = optimize(f, g!, low, high, initial_x, Fminbox(LBFGS(linesearch = ls)), options)
-
-    return Optim.minimum(results), Optim.minimizer(results)
+    return optimize_helper(f, g!, low, high)
 end
 
 """ To find IC50 or IC90 for each drug, separately."""
 function find_IC(population, which)
     population = abs.(population[189, :, :] .- which * population[189, 1, :])
-    IC = argmin(population, dims=2)
+    IC = argmin(population, dims = 2)
     return IC[1], IC[2], IC[3], IC[4], IC[5] # returns the argument
 end
