@@ -78,7 +78,7 @@ function predict(p, g_0, t)
         # Some assumptions
         @assert t[1] == 0.0
         rmul!(A, t[2])
-        A = LinearAlgebra.exp!(A)
+        A = ExponentialUtilities.exp_generic(A)
 
         G1 = Vector{eltype(p)}(undef, length(t))
         G2 = Vector{eltype(p)}(undef, length(t))
