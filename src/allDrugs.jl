@@ -40,39 +40,25 @@ function residHillAll(hP::Vector, concentrations::Matrix, g1::Array, g2::Array)
     # Solve for all drugs
     t = 1
     for j = 1:5
-        hill = [
-            hP[t],
-            hP[36],
-            hP[t+2],
-            hP[t+1],
-            hP[37],
-            hP[t+3],
-            hP[t+4],
-            hP[t+5],
-            hP[t+6],
-            hP[38],
-            hP[39],
-            hP[40],
-            hP[41],
-        ]
-        t += 7
+        hill = hP[[t, 36, t+2, t+1, 37, t+3, t+4, t+5, t+6, 38, 39, 40, 41]]
         res += residHill(hill, concentrations[:, j], g1[:, :, j], g2[:, :, j])
+        t += 7
     end
 
     return res
 end
 
 
-function optim_all(concs::Array{Float64,2}, g1::Array{Float64,3}, g2::Array{Float64,3})
-    f(params) = residHillAll(params, concs, g1, g2)
-    g!(G, params) = grad_helper!(G, f, 37:40, params)
+function optim_all(concs::Array{Float64,2}, g1::Array{Float64,3}, g2::Array{Float64,3}, maxiter = 100000)
+    f(x) = residHillAll(x, concs, g1, g2)
+    g!(G, x) = grad_helper!(G, f, 38:41, x)
 
     lP = [minimum(concs), 0.01, 0.05, 0.05, 0.00001, 0.00001, 0.3]
     low = vcat(lP, lP, lP, lP, lP, 1e-9, 1e-9, 3, 3, 2, 2)
     hP = [maximum(concs), 1.0, 1.0, 1.0, 0.1, 0.1, 0.7]
     high = vcat(hP, hP, hP, hP, hP, 1.0, 1.0, 10, 25, 50, 50)
 
-    return optimize_helper(f, g!, low, high)
+    return optimize_helper(f, g!, low, high, maxiter)
 end
 
 """ To find IC50 or IC90 for each drug, separately."""

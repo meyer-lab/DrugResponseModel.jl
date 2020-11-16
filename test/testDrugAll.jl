@@ -3,8 +3,6 @@
     p = ones(41)
     effects = DrugResponseModel.getODEparamsAll(p, concs)
 
-    # TODO: Profile residHillAll
-
     # test the local optimization function
-    params = DrugResponseModel.optim_all(concs, g1s, g2s)
+    params = DrugResponseModel.optim_all(concs, g1s, g2s, maxiter = 3)
 end

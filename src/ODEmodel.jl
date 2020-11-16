@@ -43,8 +43,15 @@ function ODEjac(p::Vector{T}, nG1::Int, nG2::Int, nD1::Int, nD2::Int) where {T}
 end
 
 
+function vTOg(v, nG1::Int, nG2::Int, nD1::Int, nD2::Int)
+    G1 = sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
+    G2 = sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
+    return G1, G2
+end
+
+
 """ Predicts the model given a set of parametrs. """
-function predict(p, g_0, t)
+function predict(p, g_0, t, g1data = nothing, g2data = nothing)
     # Convert parameters to phase numbers
     nG1 = Int(floor(p[6]))
     nG2 = Int(floor(p[7]))
@@ -72,36 +79,39 @@ function predict(p, g_0, t)
     if t isa Real
         v = ExponentialUtilities.expv(t, A, v)
 
-        G1 = sum(v[1:nG1]) + sum(v[(nG1 + nG2 + 1):(nG1 + nG2 + nD1)])
-        G2 = sum(v[(nG1 + 1):(nG1 + nG2)]) + sum(v[(nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)])
+        G1, G2 = vTOg(v, nG1, nG2, nD1, nD2)
     else
         # Some assumptions
         @assert t[1] == 0.0
         rmul!(A, t[2])
         A = ExponentialUtilities.exp_generic(A)
 
-        G1 = Vector{eltype(p)}(undef, length(t))
-        G2 = Vector{eltype(p)}(undef, length(t))
+        if g1data === nothing
+            G1 = Vector{eltype(p)}(undef, length(t))
+            G2 = Vector{eltype(p)}(undef, length(t))
 
-        for ii = 1:length(G1)
-            G1[ii] = sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
-            G2[ii] = sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
+            for ii = 1:length(t)
+                G1[ii], G2[ii] = vTOg(v, nG1, nG2, nD1, nD2)
 
-            v = A * v
+                v = A * v
+            end
+        else
+            cost = 0.0
+
+            for ii = 1:length(t)
+                G1, G2 = vTOg(v, nG1, nG2, nD1, nD2)
+                cost += norm(G1 - g1data[ii]) + norm(G2 - g2data[ii])
+
+                v = A * v
+            end
+
+            return cost, v
         end
     end
 
     return G1, G2, v
 end
 
-
-""" Calculates the cost function for a given set of parameters. """
-function cost(p, g1, g2)
-    t = LinRange(0.0, 0.5 * length(g1), length(g1))
-    G1, G2 = predict(p, g1[1] + g2[1], t)
-
-    return norm(G1 - g1) + norm(G2 - g2)
-end
 
 """ Given estimated parameters for each trial, solve the DDE model plot the predicted curve 
     for number of cells in G1, G2, or total, along with their corresponding real data,

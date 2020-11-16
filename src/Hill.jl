@@ -5,15 +5,15 @@ This file fits Hill function to the parameters
 """ This functions takes in hill parameters for all the concentrations and calculates
 DDE parameters, passes them to residual function and based off of these, optimizes the model
 and estimates hill parameters. """
-function residHill(hillParams::Vector, concentrations::Vector, g1::Matrix, g2::Matrix)
+function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
     res = 0.0
-    params = getODEparams(hillParams, concentrations)
+    params = getODEparams(x, conc)
+    t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
+    g0 = g1[1, :] + g2[1, :]
 
     # Solve each concentration separately
-    for ii = 1:length(concentrations)
-        resTemp = cost(params[1:9, ii], g1[:, ii], g2[:, ii])
-
-        res += resTemp
+    for ii = 1:length(conc)
+        res += predict(params[1:9, ii], g0[ii], t, g1[:, ii], g2[:, ii])[1]
     end
 
     return res
@@ -39,26 +39,28 @@ function grad_helper!(G, f, range, params)
 end
 
 
-function optimize_helper(f, g!, low, high)
+function optimize_helper(f, g!, low::Vector, high::Vector, maxstep::Int)
     initial_x = low + (high - low) / 2.0
 
     ls = LineSearches.BackTracking()
-    options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = 3)
+    options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = maxstep)
     results = optimize(f, g!, low, high, initial_x, Fminbox(LBFGS(linesearch = ls)), options)
+
+    println(results)
 
     return Optim.minimum(results), Optim.minimizer(results)
 end
 
 
 """ Hill optimization function. """
-function optimize_hill(conc_l::Vector, g1::Matrix, g2::Matrix; maxstep = 1E5)
-    f(hillParams) = residHill(hillParams, conc_l, g1, g2)
-    g!(G, params) = grad_helper!(G, f, 10:13, params)
+function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 100000)
+    f(x) = residHill(x, conc, g1, g2)
+    g!(G, x) = grad_helper!(G, f, 10:13, x)
 
-    low = [minimum(conc_l), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.25, 3, 5, 0, 0]
-    high = [maximum(conc_l), 1.0, 1.0, 10.0, 1.0, 1.0, 3.0, 3.0, 0.75, 50, 50, 50, 50]
+    low = [minimum(conc), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.25, 3, 5, 0, 0]
+    high = [maximum(conc), 1.0, 1.0, 10.0, 1.0, 1.0, 3.0, 3.0, 0.75, 50, 50, 50, 50]
 
-    return optimize_helper(f, g!, low, high)
+    return optimize_helper(f, g!, low, high, maxstep)
 end
 
 """ A function to convert the estimated hill parameters back to ODE parameters. """
