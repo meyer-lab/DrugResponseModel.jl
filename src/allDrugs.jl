@@ -1,42 +1,33 @@
 """ In this file we fit all the drugs att once. """
 
 """ This function """
-function getODEparamsAll(p::Array{Float64, 1}, concentrations::Array{Float64, 2})
+function getODEparamsAll(p::Array{Float64,1}, concentrations::Array{Float64,2})
     effects = zeros(9, length(concentrations[:, 1]), 5)
 
     k = 1
     # Scaled drug effect
     for i = 1:5
-        xx = 1.0 ./ (1.0 .+ (p[k] ./ concentrations[:, i]) .^ p[k + 1])
+        xx = 1.0 ./ (1.0 .+ (p[k] ./ concentrations[:, i]) .^ p[k+1])
+        effects[3, :, i] = p[k+4] .* xx # G1 death rate
+        effects[4, :, i] = p[k+5] .* xx # G2 death rate
 
         if length(p) == 41
-            effects[1, :, i] = p[36] .+ (p[k + 2] - p[36]) .* xx # G1 prog. rate
-            effects[2, :, i] = p[37] .+ (p[k + 3] - p[37]) .* xx # G2 prog. rate
-            effects[3, :, i] = p[k + 4] .* xx # G1 death rate
-            effects[4, :, i] = p[k + 5] .* xx # G2 death rate
-            effects[5, :, i] .= p[k + 6] # percentage in G1
+            effects[1, :, i] = p[36] .+ (p[k+2] - p[36]) .* xx # G1 prog. rate
+            effects[2, :, i] = p[37] .+ (p[k+3] - p[37]) .* xx # G2 prog. rate
+            effects[5, :, i] .= p[k+6] # percentage in G1
             k += 7
         elseif length(p) == 37
-            effects[1, :, i] = p[31] .+ (p[k + 2] - p[31]) .* xx
-            effects[2, :, i] = p[32] .+ (p[k + 3] - p[32]) .* xx
-            effects[3, :, i] = p[k + 4] .* xx
-            effects[4, :, i] = p[k + 5] .* xx
+            effects[1, :, i] = p[31] .+ (p[k+2] - p[31]) .* xx
+            effects[2, :, i] = p[32] .+ (p[k+3] - p[32]) .* xx
             k += 6
         end
     end
 
     if length(p) == 41
-        effects[6, :, :] .= p[38]
-        effects[7, :, :] .= p[39]
-        effects[8, :, :] .= p[40]
-        effects[9, :, :] .= p[41]
-
+        effects[6:9, :, :] .= p[38:41, CartesianIndex(), CartesianIndex()]
     elseif length(p) == 37
-        effects[5, :, :] .= p[33] #percentage in G1
-        effects[6, :, :] .= p[34] #nG1
-        effects[7, :, :] .= p[35] #nG2
-        effects[8, :, :] .= p[36] #nD1
-        effects[9, :, :] .= p[37] #nD2
+        # percentage in G1, nG1, nG2, nD1, nD2
+        effects[5:9, :, :] .= p[33:37, CartesianIndex(), CartesianIndex()]
     end
 
     return effects
