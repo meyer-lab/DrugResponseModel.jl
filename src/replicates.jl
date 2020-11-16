@@ -9,7 +9,7 @@ function predict_replicates(p1, p2, p3, g0)
 
     for i = 1:size(ps, 2) # concentration number
         for j = 1:size(ps, 3)
-            G1[:, i, j], G2[:, i, j], _ = predict(p1[:, i, j], g0, t)
+            G1[:, i, j], G2[:, i, j], _ = predict(ps[:, i, j], g0, t)
         end
     end
 
