@@ -49,7 +49,7 @@ function residHillAll(hP::Vector, concentrations::Matrix, g1::Array, g2::Array)
 end
 
 
-function optim_all(concs::Array{Float64,2}, g1::Array{Float64,3}, g2::Array{Float64,3}, maxiter = 100000)
+function optim_all(concs::Array{Float64,2}, g1::Array{Float64,3}, g2::Array{Float64,3}; maxiter = 100000)
     f(x) = residHillAll(x, concs, g1, g2)
     g!(G, x) = grad_helper!(G, f, 38:41, x)
 
