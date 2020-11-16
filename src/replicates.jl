@@ -13,7 +13,7 @@ function predict_replicates(p1, p2, p3, g0)
         end
     end
 
-    return G1[:, :, 1], G1[:, :, 2], G1[:, :, 3], G2[:, :, 1], G2[:, :, 2], G2[:, :, 3] # all simulation
+    return G1[:, :, 1], G2[:, :, 1], G1[:, :, 2], G2[:, :, 2], G1[:, :, 3], G2[:, :, 3] # all simulation
 end
 
 """ A function to calculate std and mean of ODE parameters for each drug. """
