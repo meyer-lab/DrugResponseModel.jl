@@ -1,36 +1,25 @@
 """ This file includes functions to calculate values related to replicates. """
 
 ### A function to predict G1 and G2 for the three replicates.###
-function predict_replicates(p1, p2, p3, concs1, g0)
-
+function predict_replicates(p1, p2, p3, g0)
     t = LinRange(0.0, 95.0, 189)
-    G1_1 = ones(189, 8)
-    G2_1 = ones(189, 8)
-    G1_2 = ones(189, 8)
-    G2_2 = ones(189, 8)
-    G1_3 = ones(189, 8)
-    G2_3 = ones(189, 8)
+    ps = cat(p1, p2, p3, dims = 3)
+    G1 = ones(189, 8, 3)
+    G2 = ones(189, 8, 3)
 
-    for i = 1:8 # concentration number
-        G1_1[:, i], G2_1[:, i], _ = predict(p1[:, i], g0, t)
-        G1_2[:, i], G2_2[:, i], _ = predict(p2[:, i], g0, t)
-        G1_3[:, i], G2_3[:, i], _ = predict(p3[:, i], g0, t)
+    for i = 1:size(ps, 2) # concentration number
+        for j = 1:size(ps, 3)
+            G1[:, i, j], G2[:, i, j], _ = predict(p1[:, i, j], g0, t)
+        end
     end
 
-    return G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 # all simulation
+    return G1[:, :, 1], G1[:, :, 2], G1[:, :, 3], G2[:, :, 1], G2[:, :, 2], G2[:, :, 3] # all simulation
 end
 
 """ A function to calculate std and mean of ODE parameters for each drug. """
 function mean_std_params(effs1, effs2, effs3)
-    meann = ones(9, 8)
-    stdd = ones(9, 8)
-    for i = 1:8
-        for j = 1:9
-            meann[j, i] = mean([effs1[j, i], effs2[j, i], effs3[j, i]])
-            stdd[j, i] = std([effs1[j, i], effs2[j, i], effs3[j, i]])
-        end
-    end
-    return meann, stdd
+    eff = cat(effs1, effs2, effs3, dims = 3)
+    return mean(eff, dims = 3), std(eff, dims = 3)
 end
 
 """ Calculate the # of cells in G1 for a set of parameters and T """

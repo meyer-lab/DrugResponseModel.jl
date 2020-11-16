@@ -51,7 +51,7 @@ G2_1 = zeros(189, 8, 5)
 G2_2 = zeros(189, 8, 5)
 G2_3 = zeros(189, 8, 5)
 for i=1:5
-    G1_1[:, :, i], G2_1[:, :, i], G1_2[:, :, i], G2_2[:, :, i], G1_3[:, :, i], G2_3[:, :, i] = DrugResponseModel.predict_replicates(ef1[:, :, i], ef2[:, :, i], ef3[:, :, i], concs[:,i], g0)
+    G1_1[:, :, i], G2_1[:, :, i], G1_2[:, :, i], G2_2[:, :, i], G1_3[:, :, i], G2_3[:, :, i] = DrugResponseModel.predict_replicates(ef1[:, :, i], ef2[:, :, i], ef3[:, :, i], g0)
 end
 
 j=1

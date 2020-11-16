@@ -31,7 +31,7 @@ effects3 = getODEparams(ps3, concs[:, 1]);
 ```
 
 ```julia
-G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, concs[:, 1], g0); # for lapatinib
+G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, g0); # for lapatinib
 ```
 
 ## Lapatinib
@@ -73,7 +73,7 @@ effects3 = getODEparams(p3, concs[:, 2]);
 ```
 
 ```julia
-G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, concs[:, 2], g0); # for doxorubicin
+G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, g0); # for doxorubicin
 ```
 
 ```julia
@@ -116,7 +116,7 @@ effects3 = getODEparams(p3, concs[:, 3]);
 ```
 
 ```julia
-G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, concs[:, 3], g0); # for Gemcitabine
+G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, g0); # for Gemcitabine
 ```
 
 ```julia
@@ -155,7 +155,7 @@ effects3 = getODEparams(p3, concs[:, 4]);
 ```
 
 ```julia
-G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, concs[:, 4], g0); # for Paclitaxel
+G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, g0); # for Paclitaxel
 ```
 
 ```julia
@@ -194,7 +194,7 @@ effects3 = getODEparams(p3, concs[:, 5]);
 ```
 
 ```julia
-G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, concs[:, 2], g0); # for Palbociclib
+G1_1, G2_1, G1_2, G2_2, G1_3, G2_3 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, g0); # for Palbociclib
 ```
 
 ```julia
