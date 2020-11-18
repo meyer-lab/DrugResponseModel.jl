@@ -54,7 +54,7 @@ DrugResponseModel.plot_parameters(concs[:,1], meann, stdd)
 
 ```julia
 result, paramRanges = DrugResponseModel.allSensitivity([pps1[1:9]; [12, 12, 12, 12]], concs[:, 1], g1s1[:, :, 1], g2s1[:, :, 1]);
-pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], ps1[i], i) for i=1:11]
+pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], ps1[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
 ```
@@ -97,7 +97,7 @@ DrugResponseModel.plot_parameters(concs[:,2], meann, stdd)
 
 ```julia
 result, paramRanges = DrugResponseModel.allSensitivity([pps1[1:9]; [12, 12, 12, 12]], concs[:, 2], g1s1[:, :, 2], g2s1[:, :, 2]);
-pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
+pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
 ```
@@ -136,7 +136,7 @@ DrugResponseModel.plot_parameters(concs[:,3], meann, stdd)
 
 ```julia
 result, paramRanges = DrugResponseModel.allSensitivity([pps1[1:9]; [12, 12, 12, 12]], concs[:, 3], g1s1[:, :, 3], g2s1[:, :, 3])
-pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
+pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
 ```
@@ -175,7 +175,7 @@ DrugResponseModel.plot_parameters(concs[:,4], meann, stdd)
 
 ```julia
 result, paramRanges = DrugResponseModel.allSensitivity([pps1[1:9]; [12, 12, 12, 12]], concs[:, 4], g1s1[:, :, 4], g2s1[:, :, 4])
-pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
+pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
 ```
@@ -214,7 +214,7 @@ DrugResponseModel.plot_parameters(concs[:,5], meann, stdd)
 
 ```julia
 result, paramRanges = DrugResponseModel.allSensitivity([pps1[1:9]; [12, 12, 12, 12]], concs[:, 5], g1s1[:, :, 5], g2s1[:, :, 5])
-pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
+pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
 ```
