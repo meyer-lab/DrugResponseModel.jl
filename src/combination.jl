@@ -76,6 +76,7 @@ end
 This is to compare the traditional way of representing the combination effect, compare to the way we do in our model."""
 function blissCellNum(g1s, g2s; n = 8)
     gs = g1s[end, :, :] + g2s[end, :, :]
+    num = zeros(n, 5)
 
     for i = 1:5
         # num is a 8 x 5 matrix, holding scaled cell numbers for 5 drugs, in 8 concentrations, for a specific time point.
