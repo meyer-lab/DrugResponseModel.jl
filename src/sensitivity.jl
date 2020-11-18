@@ -16,6 +16,8 @@ function allSensitivity(params::Vector, conc_l::Vector, g1::Matrix, g2::Matrix)
     for (indx, val) in b[10:13]
         if val < 2
             b[indx] = 2
+        end
+    end
     
     convRange = 10 .^ range(-1, stop = 1, length = 101)
     results = zeros(length(convRange), 11)
