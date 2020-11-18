@@ -1,5 +1,5 @@
 
-all: time_combin.pdf Bliss.pdf notebookPlots.pdf replicatesAtOnce.pdf combination.pdf avgRepsAllDrugs.pdf separateDrugsAvg.pdf
+all: $(patsubst %.jmd, %.pdf, $(wildcard *.jmd))
 
 %.pdf: %.jmd
 	julia -e 'using Pkg; Pkg.add("IJulia"); Pkg.add("Weave"); Pkg.precompile()'
