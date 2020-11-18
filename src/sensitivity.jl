@@ -11,7 +11,12 @@ end
 
 """ Calculate the sensitivity to all parameters. """
 function allSensitivity(params::Vector, conc_l::Vector, g1::Matrix, g2::Matrix)
+    @assert length(params) == 13
     b = copy(params)
+    for (indx, val) in b[10:13]
+        if val < 2
+            b[indx] = 2
+    
     convRange = 10 .^ range(-1, stop = 1, length = 101)
     results = zeros(length(convRange), 11)
     paramRanges = zeros(length(convRange), 11)
@@ -21,6 +26,7 @@ function allSensitivity(params::Vector, conc_l::Vector, g1::Matrix, g2::Matrix)
         results[:, k] = sensitivity(b, paramRanges[:, k], conc_l, k, g1, g2)
     end
 
+    @assert all(x -> x >= 1, paramRange[:, 10:13])
     return results, paramRanges
 end
 
