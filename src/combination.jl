@@ -77,8 +77,10 @@ This is to compare the traditional way of representing the combination effect, c
 function blissCellNum(g1s, g2s; n = 8)
     gs = g1s[end, :, :] + g2s[end, :, :]
 
-    # num is a 8 x 5 matrix, holding scaled cell numbers for 5 drugs, in 8 concenntration, for a specific time point.
-    num = 1.0 .- (gs ./ gs[1, :])
+    for i = 1:5
+        # num is a 8 x 5 matrix, holding scaled cell numbers for 5 drugs, in 8 concentrations, for a specific time point.
+        num[:, i] = 1.0 .- (gs[:, i] ./ gs[1, i])
+    end
 
     combined = zeros(n, n, 10)
     x = 1
