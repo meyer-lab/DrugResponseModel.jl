@@ -13,22 +13,15 @@ end
 function allSensitivity(params::Vector, conc_l::Vector, g1::Matrix, g2::Matrix)
     @assert length(params) == 13
     b = copy(params)
-    for (indx, val) in b[10:13]
-        if val < 2
-            b[indx] = 2
-        end
-    end
     
     convRange = 10 .^ range(-1, stop = 1, length = 101)
-    results = zeros(length(convRange), 11)
-    paramRanges = zeros(length(convRange), 11)
+    results = zeros(length(convRange), length(params))
+    paramRanges = zeros(length(convRange), length(params))
 
-    for k = 1:11
+    for k = 1:length(params)
         paramRanges[:, k] = b[k] .* convRange
         results[:, k] = sensitivity(b, paramRanges[:, k], conc_l, k, g1, g2)
     end
-
-    @assert all(x -> x >= 1, paramRange[:, 10:13])
     return results, paramRanges
 end
 
