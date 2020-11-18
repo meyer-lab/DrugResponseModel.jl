@@ -13,7 +13,7 @@ function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
 
     # Solve each concentration separately
     for ii = 1:length(conc)
-        res += predict(params[1:9, ii], g0[ii], t, g1[:, ii], g2[:, ii])[1]
+        res += predict(params[1:9, ii], g0[ii], t, g1data=g1[:, ii], g2data=g2[:, ii])[1]
     end
 
     return res
