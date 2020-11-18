@@ -7,12 +7,14 @@ using CSV
 using DataFrames
 using Plots
 using Measures
-using BlackBoxOptim
 using LinearAlgebra
 using Statistics
 using DSP: conv
 using Optim
-using ExponentialUtilities
+import ForwardDiff
+import ExponentialUtilities
+import LineSearches
+using Polynomials
 
 include("importData.jl")
 include("ODEmodel.jl")
@@ -33,7 +35,6 @@ export setup_data,
     ODEplot_allPerc,
     numcells,
     getODEparamsAll,
-    optimize_hillAll,
     numcells,
     CombinationParam,
     fullCombinationParam,
