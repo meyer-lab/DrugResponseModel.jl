@@ -40,7 +40,7 @@ function residHillAll(hP::Vector, concentrations::Matrix, g1::Array, g2::Array)
     # Solve for all drugs
     t = 1
     for j = 1:5
-        hill = hP[[t, 36, t+2, t+1, 37, t+3, t+4, t+5, t+6, 38, 39, 40, 41]]
+        hill = hP[[t, 36, t + 2, t + 1, 37, t + 3, t + 4, t + 5, t + 6, 38, 39, 40, 41]]
         res += residHill(hill, concentrations[:, j], g1[:, :, j], g2[:, :, j])
         t += 7
     end
@@ -49,7 +49,7 @@ function residHillAll(hP::Vector, concentrations::Matrix, g1::Array, g2::Array)
 end
 
 
-function optim_all(concs::Array{Float64,2}, g1::Array{Float64,3}, g2::Array{Float64,3}; maxiter = 100000)
+function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 100000)
     f(x) = residHillAll(x, concs, g1, g2)
     g!(G, x) = grad_helper!(G, f, 38:41, x)
 
