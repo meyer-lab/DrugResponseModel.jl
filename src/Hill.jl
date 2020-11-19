@@ -25,14 +25,14 @@ function grad_helper!(G, f, range, params)
     costCenter = f(params)
 
     # Handle the integer-valued parameters
-    for ii = range
+    for ii in range
         pp = copy(params)
         pp[ii] += 1.0
         costPlus = f(pp)
         pp[ii] -= 2.0
         costMin = f(pp)
         pt = floor(params[ii])
-        poly = fit([pt-1, pt, pt+1], [costMin, costCenter, costPlus])
+        poly = fit([pt - 1, pt, pt + 1], [costMin, costCenter, costPlus])
         polyD = derivative(poly)
         G[ii] = polyD(params[ii])
     end
