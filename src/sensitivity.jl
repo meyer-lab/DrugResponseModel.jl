@@ -55,9 +55,11 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
     ylims!((1E2, 1E5))
 end
 
-""" This function calculates the sensisitivity """
-function Bliss_sensitivity(p)
-
-
-
+""" This function calculates the simulated cell number for a pair of drugs  """
+function calc_cellNum(pDr1, pDr2, g_0Dr1, g_0Dr2)
+    Dr1CellNum = predict(pDr1, g_0Dr1, 96.0)
+    Dr2CellNum = predict(pDr2, g_0Dr2, 96.0)
+    normNum = 1.0 .- [Dr1CellNum/g_0Dr1, Dr2CellNum/g_0Dr2]
+    combin = -((normNum[1] + normNum[2] - normNum[1] * normNum[2]) .- 1.0) * (g_0Dr2 + g_0Dr1) / 2
+    return combin
 end
