@@ -14,9 +14,6 @@ function plot_parameters(conc_l, parameters, stdn)
         xlabel = "log drug conc. [nM]",
         label = "",
         ribbon = stdn[1, :],
-        lw = 2.0,
-        alpha = 0.6,
-        color = [:black :gray],
         line = (:dot, 1),
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "G1 progression rate [1/hr]",
@@ -29,9 +26,6 @@ function plot_parameters(conc_l, parameters, stdn)
         xlabel = "log drug conc. [nM]",
         label = "",
         ribbon = stdn[2, :],
-        lw = 2.0,
-        alpha = 0.6,
-        color = [:black :gray],
         line = (:dot, 1),
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "G2 progression rate [1/hr]",
@@ -46,9 +40,6 @@ function plot_parameters(conc_l, parameters, stdn)
         xlabel = "log drug conc. [nM]",
         label = "",
         ribbon = stdn[3, :],
-        lw = 2.0,
-        alpha = 0.6,
-        color = [:black :gray],
         line = (:dot, 1),
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "G1 death rate [1/hr]",
@@ -61,15 +52,12 @@ function plot_parameters(conc_l, parameters, stdn)
         xlabel = "log drug conc. [nM]",
         label = "",
         ribbon = stdn[4, :],
-        lw = 2.0,
-        alpha = 0.6,
-        color = [:black :gray],
         line = (:dot, 1),
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
         ylabel = "G2 death rate [1/hr]",
     )
     ylims!(0.0, 1.0)
-    plot(p1, p2, p3, p4)
+    plot(p1, p2, p3, p4, alpha = 0.6, lw = 2.0, color = [:black :gray])
 end
 
 """ plot the percentage of cells in G2 phase over time for all concentrations on top of each other. Depending on the g2 you pass to it, it could plot for the data or simulation. """
