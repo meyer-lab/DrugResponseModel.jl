@@ -37,7 +37,7 @@ end
 
 """ To output the full ODE params for plotting the cell number. """
 function fullCombinationParam(origP1::Array{Float64, 2}, origP2::Array{Float64, 2}, origFullParam::Array{Float64, 3}, n::Int)
-    """ Here we assume the base is origP1, and we just want to get the params of EC50 from origP2. """
+    """ Here we assume the base is origP1. """
     combined = CombinationParam(origP1, origP2, n)
     fullparam = zeros(9, n, n)
     fullparam[5:9, :, :] .= origFullParam[5:9, 1, 1]

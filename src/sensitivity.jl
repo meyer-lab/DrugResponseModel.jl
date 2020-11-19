@@ -55,11 +55,30 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
     ylims!((1E2, 1E5))
 end
 
-""" This function calculates the simulated cell number for a pair of drugs  """
-function calc_cellNum(pDr1, pDr2, g_0Dr1, g_0Dr2)
-    Dr1CellNum = predict(pDr1, g_0Dr1, 96.0)
-    Dr2CellNum = predict(pDr2, g_0Dr2, 96.0)
-    normNum = 1.0 .- [Dr1CellNum/g_0Dr1, Dr2CellNum/g_0Dr2]
-    combin = -((normNum[1] + normNum[2] - normNum[1] * normNum[2]) .- 1.0) * (g_0Dr2 + g_0Dr1) / 2
+""" This function calculates the simulated cell number for a pair of drugs in their exact concentration.  """
+function calc_cellNum(pDr1, pDr2, g0)
+    Dr1CellNum = predict(pDr1, g0, 96.0)
+    Dr2CellNum = predict(pDr2, g0, 96.0)
+    normNum = 1.0 .- [Dr1CellNum/g0, Dr2CellNum/g0]
+    combin = -((normNum[1] + normNum[2] - normNum[1] * normNum[2]) .- 1.0) * g0 
     return combin
 end
+
+function calc_diff(combin, Dr1, Dr2, effs)
+    bliss_comb = DrugResponseModel.fullCombinationParam(Dr1, Dr2, effs, 8, conc1_indx, conc2_indx)
+    bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)[conc1_indx, conc2_indx]
+    return combin - bliss_comb_cellnum
+end
+
+# """ This function calculates the simulated cell numbers for all drugs all concentrations. """
+# function calc_cellNum(effs, g0s)
+#     tim = 0.0:2:88.0
+#     G1s = zeros((length(tim), 8, 5))
+#     G2s = zeros((length(tim), 8, 5))
+#     for j in range(5)
+#         for i in range(8)
+#             G1s[:, i, j], G2s[:, i, j], _ = predict(effs[:, i, j], g0s[j], tim)
+#         end
+#     end
+#     return blissCellNum(G1s, G2s)
+# end
