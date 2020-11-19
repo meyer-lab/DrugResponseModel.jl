@@ -35,7 +35,7 @@ end
 
 
 """ plots all the three simulated trials. Along with avg and std of data. """
-function plot2(G1, G2, g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, conc, i, j)
+function plot2(G1, G2, g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, conc::Float64, i::Int, j::Int)
     time = LinRange(0.0, 95.0, 189)
     G1s = cat(g1s1, g1s2, g1s3, dims = 4)
     G2s = cat(g2s1, g2s2, g2s3, dims = 4)

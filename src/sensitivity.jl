@@ -11,16 +11,17 @@ end
 
 """ Calculate the sensitivity to all parameters. """
 function allSensitivity(params::Vector, conc_l::Vector, g1::Matrix, g2::Matrix)
+    @assert length(params) == 13
     b = copy(params)
-    convRange = 10 .^ (range(-1, stop = 1, length = 101))
-    results = zeros(length(convRange), 11)
-    paramRanges = zeros(length(convRange), 11)
 
-    for k = 1:11
+    convRange = 10 .^ range(-1, stop = 1, length = 101)
+    results = zeros(length(convRange), length(params))
+    paramRanges = zeros(length(convRange), length(params))
+
+    for k = 1:length(params)
         paramRanges[:, k] = b[k] .* convRange
         results[:, k] = sensitivity(b, paramRanges[:, k], conc_l, k, g1, g2)
     end
-
     return results, paramRanges
 end
 
@@ -51,7 +52,7 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
         yaxis = :log10,
     )
     plot!([realParam], seriestype = "vline", margin = 0.3cm, legend = :false)
-    ylims!((1E2, 1E4))
+    ylims!((1E2, 1E5))
 end
 
 """ This function calculates the sensisitivity """
