@@ -1,6 +1,6 @@
 ---
 weave_options:
-  error: true
+  error: false
   echo: false
 ---
 

@@ -41,15 +41,12 @@ function fullCombinationParam(origP1::Array{Float64, 2}, origP2::Array{Float64, 
     combined = CombinationParam(origP1, origP2, n)
     fullparam = zeros(9, n, n)
     fullparam[5:9, :, :] .= origFullParam[5:9, 1, 1]
-    for i = 1:4
-        fullparam[i, :, :] .= combined[:, :, i]
-    end
+    fullparam[1:4, :, :] .= permutedims(combined[:, :, 1:4], (3, 1, 2))
     return fullparam
 end
 
 """ This function calculates cell number for parameter sets that are the result of Bliss on prog. rates. """
 function BlissModelComb(bliss_comb, g0)
-
     bliss_comb_cellnum = zeros(8, 8)
     for i = 1:8 # param1 is changing
         for j = 1:8 # param2 is changing
@@ -78,49 +75,28 @@ end
 """ In this function, we apply the Bliss synergy to the cell numbers. 
 This is to compare the traditional way of representing the combination effect, compare to the way we do in our model."""
 function blissCellNum(g1s, g2s; n = 8)
+    gs = g1s[end, :, :] + g2s[end, :, :]
     num = zeros(n, 5)
 
     for i = 1:5
-        # num is a 8 x 5 matrix, holding scaled cell numbers for 5 drugs, in 8 concenntration, for a specific time point.
-        num[:, i] = 1.0 .- ((g1s[end, :, i] .+ g2s[end, :, i]) ./ (g1s[end, 1, i] + g2s[end, 1, i]))
-    end
-    combined = zeros(n, n, 10)
-    for j = 1:n
-        # the base case for either of combinations is the average of drugA and drugB to scale the cell numbers back.
-        # columns are drugA and rows are drug 2, and the third dimension shows which pair of drugs were combined.
-        combined[:, j, 1] =
-            -(num[:, 1] .+ num[j, 2] .- (num[:, 1] .* num[j, 2]) .- 1.0) .* ((g1s[end, 1, 1] + g2s[end, 1, 1]) + (g1s[end, 1, 2] + g2s[end, 1, 2])) /
-            2 # lap w/ dox; meaning dox changes with rows and lap changes with columns
-        combined[:, j, 2] =
-            -(num[:, 1] .+ num[j, 3] .- (num[:, 1] .* num[j, 3]) .- 1.0) .* ((g1s[end, 1, 1] + g2s[end, 1, 1]) + (g1s[end, 1, 3] + g2s[end, 1, 3])) /
-            2 # lap w/ gem
-        combined[:, j, 3] =
-            -(num[:, 1] .+ num[j, 4] .- (num[:, 1] .* num[j, 4]) .- 1.0) .* ((g1s[end, 1, 1] + g2s[end, 1, 1]) + (g1s[end, 1, 4] + g2s[end, 1, 4])) /
-            2 # lap w/ pac
-        combined[:, j, 4] =
-            -(num[:, 1] .+ num[j, 5] .- (num[:, 1] .* num[j, 5]) .- 1.0) .* ((g1s[end, 1, 1] + g2s[end, 1, 1]) + (g1s[end, 1, 5] + g2s[end, 1, 5])) /
-            2# lap w/ palb
-        combined[:, j, 5] =
-            -(num[:, 2] .+ num[j, 3] .- (num[:, 2] .* num[j, 3]) .- 1.0) .* ((g1s[end, 1, 2] + g2s[end, 1, 2]) + (g1s[end, 1, 3] + g2s[end, 1, 3])) /
-            2 # dox w/ gem
-        combined[:, j, 6] =
-            -(num[:, 2] .+ num[j, 4] .- (num[:, 2] .* num[j, 4]) .- 1.0) .* ((g1s[end, 1, 2] + g2s[end, 1, 2]) + (g1s[end, 1, 4] + g2s[end, 1, 4])) /
-            2 # dox w/ pac
-        combined[:, j, 7] =
-            -(num[:, 2] .+ num[j, 5] .- (num[:, 2] .* num[j, 5]) .- 1.0) .* ((g1s[end, 1, 2] + g2s[end, 1, 2]) + (g1s[end, 1, 5] + g2s[end, 1, 5])) /
-            2 # dox w/ palb
-        combined[:, j, 8] =
-            -(num[:, 3] .+ num[j, 4] .- (num[:, 3] .* num[j, 4]) .- 1.0) .* ((g1s[end, 1, 3] + g2s[end, 1, 3]) + (g1s[end, 1, 4] + g2s[end, 1, 4])) /
-            2 # gem w/ pac
-        combined[:, j, 9] =
-            -(num[:, 3] .+ num[j, 5] .- (num[:, 3] .* num[j, 5]) .- 1.0) .* ((g1s[end, 1, 3] + g2s[end, 1, 3]) + (g1s[end, 1, 5] + g2s[end, 1, 5])) /
-            2 # gem w/ palb
-        combined[:, j, 10] =
-            -(num[:, 4] .+ num[j, 5] .- (num[:, 4] .* num[j, 5]) .- 1.0) .* ((g1s[end, 1, 4] + g2s[end, 1, 4]) + (g1s[end, 1, 5] + g2s[end, 1, 5])) /
-            2 # pac w/ palb
+        # num is a 8 x 5 matrix, holding scaled cell numbers for 5 drugs, in 8 concentrations, for a specific time point.
+        num[:, i] = 1.0 .- (gs[:, i] ./ gs[1, i])
     end
 
-    @assert(all(combined .>= 0.0))
+    combined = zeros(n, n, 10)
+    x = 1
+    for i = 1:4
+        for k = (i + 1):5
+            # the base case for either of combinations is the average of drugA and drugB to scale the cell numbers back.
+            # columns are drugA and rows are drug 2, and the third dimension shows which pair of drugs were combined.
+            for j = 1:n
+                combined[:, j, x] = -(num[:, i] .+ num[j, k] .- (num[:, i] .* num[j, k]) .- 1.0) .* (gs[1, i] + gs[1, k]) / 2
+            end
+            x += 1
+        end
+    end
+
+    @assert all(combined .>= 0.0)
     return combined
 end
 

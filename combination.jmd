@@ -1,6 +1,6 @@
 ---
 weave_options:
-  error: true
+  error: false
   echo: false
 ---
 upper Bliss based on Cell cycle model. Lower Bliss based on pure data

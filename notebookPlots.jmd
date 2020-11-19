@@ -1,6 +1,6 @@
 ---
 weave_options:
-  error: true
+  error: false
   echo: false
 ---
 
@@ -22,6 +22,7 @@ g0 = g1s1[1,1,1]+g2s1[1,1,1];
 ps1 = [43.1206, 0.449396, 0.0303203, 1.1369, 0.129443, 0.247119, 0.00670847, 0.0282733, 0.54388, 11.962, 5.79151, 0.50114, 2.88369];
 ps2 = [40.6872, 2.86227, 0.269785, 1.09613, 0.325584, 0.486925, 0.00875771, 0.0160585, 0.547325, 56.4052, 9.85358, 0.605113, 30.0822];
 ps3 = [58.0924, 2.9926, 5.86566e-5, 0.80401, 0.194562, 0.429042, 0.00835781, 0.0226857, 0.546504, 64.1723, 7.33377, 0.550209, 3.3554];
+pps1 = copy(ps1)
 ```
 
 ```julia
@@ -38,7 +39,7 @@ G1, G2 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, g0);
 ### Plotting the time-series simulations compared to the actual data for three replicates.
 
 ```julia
-pl = [DrugResponseModel.plot2(G1[:, i, :], G2[:, i, :], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, 1) for i=1:8]
+pl = [DrugResponseModel.plot2(G1[:, i, :], G2[:, i, :], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[i, 1], i, 1) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
@@ -52,8 +53,8 @@ DrugResponseModel.plot_parameters(concs[:,1], meann, stdd)
 ### Sensitivity analysis
 
 ```julia
-result, paramRanges = allSensitivity(ps1, concs[:, 1], g1s1[:, :, 1], g2s1[:, :, 1]);
-pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], ps1[i], i) for i=1:11]
+result, paramRanges = DrugResponseModel.allSensitivity([pps1[1:9]; [12, 12, 12, 12]], concs[:, 1], g1s1[:, :, 1], g2s1[:, :, 1]);
+pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], ps1[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
 ```
@@ -77,12 +78,8 @@ G1, G2 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, g0);
 ```
 
 ```julia
-pl = [DrugResponseModel.plot2(G1[:, i, :], G2[:, i, :], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, 2) for i=1:8]
+pl = [DrugResponseModel.plot2(G1[:, i, :], G2[:, i, :], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[i, 2], i, 2) for i=1:8]
 plot(pl..., size=(1000,700))
-```
-
-```julia
-DrugResponseModel.plot_parameters(concs[:, 2], avgs[:, :, 2], stds[:, :, 2])
 ```
 
 ### Plot the parameters over concentration; these are known as the drug effects
@@ -95,8 +92,8 @@ DrugResponseModel.plot_parameters(concs[:,2], meann, stdd)
 ### Sensitivity analysis
 
 ```julia
-result, paramRanges = allSensitivity(p1, concs[:, 2], g1s1[:, :, 2], g2s1[:, :, 2]);
-pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
+result, paramRanges = DrugResponseModel.allSensitivity([pps1[1:9]; [12, 12, 12, 12]], concs[:, 2], g1s1[:, :, 2], g2s1[:, :, 2]);
+pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
 ```
@@ -120,7 +117,7 @@ G1, G2 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, g0);
 ```
 
 ```julia
-pl = [DrugResponseModel.plot2(G1[:, i, :], G2[:, i, :], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, 3) for i=1:8]
+pl = [DrugResponseModel.plot2(G1[:, i, :], G2[:, i, :], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[i, 3], i, 3) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
@@ -134,8 +131,8 @@ DrugResponseModel.plot_parameters(concs[:,3], meann, stdd)
 ### Sensitivity analysis
 
 ```julia
-result, paramRanges = allSensitivity(p1, concs[:, 3], g1s1[:, :, 3], g2s1[:, :, 3])
-pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
+result, paramRanges = DrugResponseModel.allSensitivity([pps1[1:9]; [12, 12, 12, 12]], concs[:, 3], g1s1[:, :, 3], g2s1[:, :, 3])
+pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
 ```
@@ -159,7 +156,7 @@ G1, G2 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, g0);
 ```
 
 ```julia
-pl = [DrugResponseModel.plot2(G1[:, i, :], G2[:, i, :], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, 4) for i=1:8]
+pl = [DrugResponseModel.plot2(G1[:, i, :], G2[:, i, :], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[i, 4], i, 4) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
@@ -173,8 +170,8 @@ DrugResponseModel.plot_parameters(concs[:,4], meann, stdd)
 ### Sensitivity analysis
 
 ```julia
-result, paramRanges = allSensitivity(p1, concs[:, 4], g1s1[:, :, 4], g2s1[:, :, 4])
-pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
+result, paramRanges = DrugResponseModel.allSensitivity([pps1[1:9]; [12, 12, 12, 12]], concs[:, 4], g1s1[:, :, 4], g2s1[:, :, 4])
+pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
 ```
@@ -198,7 +195,7 @@ G1, G2 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, g0);
 ```
 
 ```julia
-pl = [DrugResponseModel.plot2(G1[:, i, :], G2[:, i, :], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, i, 5) for i=1:8]
+pl = [DrugResponseModel.plot2(G1[:, i, :], G2[:, i, :], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[i, 5], i, 5) for i=1:8]
 plot(pl..., size=(1000,700))
 ```
 
@@ -212,8 +209,8 @@ DrugResponseModel.plot_parameters(concs[:,5], meann, stdd)
 ### Sensitivity analysis
 
 ```julia
-result, paramRanges = allSensitivity(p1, concs[:, 5], g1s1[:, :, 5], g2s1[:, :, 5])
-pl = [plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
+result, paramRanges = DrugResponseModel.allSensitivity([pps1[1:9]; [12, 12, 12, 12]], concs[:, 5], g1s1[:, :, 5], g2s1[:, :, 5])
+pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
 ```
