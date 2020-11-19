@@ -53,3 +53,10 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
     plot!([realParam], seriestype = "vline", margin = 0.3cm, legend = :false)
     ylims!((1E2, 1E4))
 end
+
+""" This function calculates the sensisitivity """
+function Bliss_sensitivity(p)
+
+
+
+end
