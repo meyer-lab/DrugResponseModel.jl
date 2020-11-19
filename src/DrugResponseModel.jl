@@ -28,7 +28,6 @@ include("sensitivity.jl")
 export setup_data,
     load,
     plotIt,
-    correlationPlot,
     plot_all,
     optimize_hill,
     getODEparams,
