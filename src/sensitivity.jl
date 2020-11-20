@@ -76,5 +76,5 @@ end
 function get_derivative(x, combin, concs, Dr1_indx, Dr2_indx, k)
     # "k" is the index of the parameter we want to calculate the derivative of diff with respect to it.
     fd(x) = calc_diff(x, combin, concs, Dr1_indx, Dr2_indx)
-    return ForwardDiff.gradient!(calc_diff, x[k], x)
+    return ForwardDiff.gradient!(fd, x[k], x)
 end
