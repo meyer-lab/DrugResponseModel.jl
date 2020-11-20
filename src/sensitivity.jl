@@ -71,11 +71,9 @@ function calc_diff(Dr1_params, Dr2_params, effs, combin, concs, conc1_indx, conc
     return combin - bliss_comb_cellnum
 end
 
-fd(x) = calc_diff(x, Dr2_params, effs, combin, concs, conc1_indx, conc2_indx, g0)
-
-function get_derivative(x, combin, concs, Dr1_indx, Dr2_indx, k)
+function get_derivative(x, Dr2_params, effs, combin, concs, conc1_indx, conc2_indx, g0)
     # "k" is the index of the parameter we want to calculate the derivative of diff with respect to it.
-    fd(x) = calc_diff(x, combin, concs, Dr1_indx, Dr2_indx) # closure?
-    out = DiffResults.DiffRresult(x[k])
-    return ForwardDiff.derivative(out, fd, x[k])
+    fd(x) = calc_diff(x, combin, concs, Dr1_indx, Dr2_indx, g0) # closure?
+    out = DiffResults.DiffRresult(x)
+    return ForwardDiff.derivative!(out, fd, x)
 end
