@@ -62,7 +62,7 @@ function load(max, repi)
     concentrations = zeros(8, 5)
     drugs = ["Lapatinib", "Doxorubicin", "Gemcitabine", "Paclitaxel", "Palbociclib"]
 
-    for i in 1:5
+    for i = 1:5
         concentrations[:, i], g2s[:, :, i], g1s[:, :, i] = setup_data(string(drugs[i], repi))
     end
 
