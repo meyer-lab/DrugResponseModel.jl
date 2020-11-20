@@ -64,17 +64,18 @@ function calc_cellNum(pDr1, pDr2, g0)
     return combin
 end
 
-function calc_diff(Hillp, combin, concs, Dr1_indx, Dr2_indx)
-    effs = getODEparamsAll(Hillp, concs)
-    bliss_comb = DrugResponseModel.fullCombinationParam(effs[:, :, Dr1_indx], effs[:, :, Dr2_indx], effs, 8, conc1_indx, conc2_indx)
+""" Calculates the difference between the bliss_cell number and bliss_params. """
+function calc_diff(Dr1_params, Dr2_params, effs, combin, concs, conc1_indx, conc2_indx, g0)
+    bliss_comb = DrugResponseModel.fullCombinationParam(Dr1_params, Dr2_params, effs, 8, conc1_indx, conc2_indx)
     bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)[conc1_indx, conc2_indx]
     return combin - bliss_comb_cellnum
 end
 
+fd(x) = calc_diff(x, Dr2_params, effs, combin, concs, conc1_indx, conc2_indx, g0)
 
-""" calculates the derivative of the diff functions """
 function get_derivative(x, combin, concs, Dr1_indx, Dr2_indx, k)
     # "k" is the index of the parameter we want to calculate the derivative of diff with respect to it.
-    fd(x) = calc_diff(x, combin, concs, Dr1_indx, Dr2_indx)
-    return ForwardDiff.gradient!(fd, x[k], x)
+    fd(x) = calc_diff(x, combin, concs, Dr1_indx, Dr2_indx) # closure?
+    out = DiffResults.DiffRresult(x[k])
+    return ForwardDiff.derivative(out, fd, x[k])
 end

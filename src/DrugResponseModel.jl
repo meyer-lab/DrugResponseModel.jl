@@ -15,6 +15,7 @@ import ForwardDiff
 import ExponentialUtilities
 import LineSearches
 using Polynomials
+using DiffResults
 
 include("importData.jl")
 include("ODEmodel.jl")
