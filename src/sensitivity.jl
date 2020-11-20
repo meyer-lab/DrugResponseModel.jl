@@ -57,9 +57,9 @@ end
 
 """ This function calculates the simulated cell number for a pair of drugs in their exact concentration.  """
 function calc_cellNum(pDr1, pDr2, g0)
-    Dr1CellNum = predict(pDr1, g0, 96.0)
-    Dr2CellNum = predict(pDr2, g0, 96.0)
-    normNum = 1.0 .- [Dr1CellNum/g0, Dr2CellNum/g0]
+    g1d1, g2d1, _ = predict(pDr1, g0, 96.0)
+    g1d2, g2d2, _ = predict(pDr2, g0, 96.0)
+    normNum = 1.0 .- [(g1d1 + g2d1)/g0, (g1d2 + g2d2)/g0]
     combin = -((normNum[1] + normNum[2] - normNum[1] * normNum[2]) .- 1.0) * g0 
     return combin
 end
@@ -74,6 +74,6 @@ end
 function get_derivative(x, Dr2_params, effs, combin, concs, conc1_indx, conc2_indx, g0)
     # "k" is the index of the parameter we want to calculate the derivative of diff with respect to it.
     fd(x) = calc_diff(x, combin, concs, Dr1_indx, Dr2_indx, g0) # closure?
-    out = DiffResults.DiffRresult(x)
-    return ForwardDiff.derivative!(out, fd, x)
+    out = DiffResults.DiffResult(x)
+    return ForwardDiff.derivative.(out, fd, x)
 end
