@@ -75,5 +75,5 @@ function get_derivative(x, Dr2_params, effs, combin, concs, conc1_indx, conc2_in
     # "k" is the index of the parameter we want to calculate the derivative of diff with respect to it.
     fd(x) = calc_diff(x, combin, concs, Dr1_indx, Dr2_indx, g0) # closure?
     out = DiffResults.DiffResult(x)
-    return ForwardDiff.derivative.(out, fd, x)
+    return ForwardDiff.gradient(fd, x)
 end
