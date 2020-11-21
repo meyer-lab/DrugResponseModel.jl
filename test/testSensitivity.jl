@@ -8,8 +8,7 @@
         0.734513, 0.375555, 16.8387, 12.3945, 30.176, 14.5352]
     g0 = 20.0
     effs = getODEparamsAll(p, concs);
-    combin = DrugResponseModel.calc_cellNum(effs[:, 2, 1], effs[:, 3, 2], g0)
     # Check that these at least run
-    der = DrugResponseModel.get_derivative(effs[:, 2, 1], effs[:, 3, 2], effs, combin, concs, 1, 2, g0)
+    der = DrugResponseModel.get_derivative(effs[:, 1, 1], effs[:, 2, 2], effs, 1, 2, 1, 2, g0)
 
 end
