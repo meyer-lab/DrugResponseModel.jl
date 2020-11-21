@@ -54,3 +54,27 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
     plot!([realParam], seriestype = "vline", margin = 0.3cm, legend = :false)
     ylims!((1E2, 1E5))
 end
+
+""" This function calculates the simulated cell number for a pair of drugs in their exact concentration.  """
+function calc_cellNum(pDr1, pDr2, g0)
+    tt = 0.0:1.0:96.0
+    g1d1, g2d1, _ = predict(pDr1, g0, tt)
+    g1d2, g2d2, _ = predict(pDr2, g0, tt)
+    normNum = 1.0 .- [(g1d1[end] + g2d1[end])/g0, (g1d2[end] + g2d2[end])/g0]
+    combin = -((normNum[1] + normNum[2] - normNum[1] * normNum[2]) .- 1.0) * g0 
+    return combin
+end
+
+""" Calculates the difference between the bliss_cell number and bliss_params. """
+function calc_diff(Dr1_params, Dr2_params, effs, Dr1Ind, Dr2Ind, conc1_indx, conc2_indx, g0)
+    # Dr1_params/Dr2_params is a 9 x 1 Array, including the 9 parameters of ODE model. 
+    combin = calc_cellNum(Dr1_params, Dr2_params, g0)
+    bliss_comb = DrugResponseModel.fullCombinationParam(effs[:, :, Dr1Ind], effs[:, :, Dr2Ind], effs, 8)
+    bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)[conc1_indx, conc2_indx]
+    return combin - bliss_comb_cellnum
+end
+
+function get_derivative(x, Dr2_params, effs, Dr1Ind, Dr2Ind, conc1_indx, conc2_indx, g0)
+    fd(x) = calc_diff(x, Dr2_params, effs, Dr1Ind, Dr2Ind, conc1_indx, conc2_indx, g0) # is this closure?
+    return ForwardDiff.gradient(fd, x)
+end
