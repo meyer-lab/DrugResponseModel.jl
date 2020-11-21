@@ -1,0 +1,166 @@
+---
+weave_options:
+  error: false
+  echo: false
+---
+
+```julia
+import Pkg; Pkg.instantiate()
+
+Pkg.activate(".")
+using DrugResponseModel
+using ExponentialUtilities
+using Plots
+Plots.scalefontsizes(0.7)
+```
+
+To show the sensitivity of cell number difference predicted by combination.
+
+```julia
+concs, _, _, _ = load(189, 1)
+p = [97.7434, 1.41726, 0.0501761, 0.930205, 0.111494, 0.123604, 0.552216, 
+        92.9045, 1.40024, 0.996396, 0.0513087, 0.521831, 0.6535, 0.566578, 
+        15.5317, 2.3689, 0.592433, 0.999986, 0.0283363, 0.286975, 0.503328, 
+        3.96929, 4.62768, 0.0512281, 0.307528, 0.549714, 0.378717, 0.50959, 
+        63.4248, 0.976052, 0.16582, 0.740009, 0.0572609, 0.0776912, 0.534201, 
+        0.734513, 0.375555, 16.8387, 12.3945, 30.176, 14.5352]
+    g0 = 20.0
+    effs = getODEparamsAll(p, concs);
+    # Check that these at least run
+
+function plot_der(ii, ind_concX, xaxisDr_ind, Dr_const_ind, drugx_name, drug_const_name)
+    der = zeros(9, 8)
+    for j=1:8
+        der[:, j] = DrugResponseModel.get_derivative(effs[:, ind_concX, Dr_const_ind], effs[:, j, xaxisDr_ind], effs, Dr_const_ind, xaxisDr_ind, j, ind_concX, g0)
+    end
+    if ii==1
+        txt = "G1 prog."
+    elseif ii==2
+        txt = "G2 prog."
+    elseif ii==3
+        txt = "G1 death"
+    elseif ii==4
+        txt = "G2 death"
+    end
+    plot(concs[:, xaxisDr_ind], der[ii,:], title=string(drug_const_name, " with increasing ",drugx_name), ylabel=string("d{diff}/d{", txt, " rate}"), xlabel=string(drugx_name, " cons [nM]"))
+end
+```
+
+# lapatinib 50 nM with all doxorubicins
+
+```julia
+pl = [plot_der(ii, 5, 2, 1, "dox", "lap") for ii=1:4]
+plot(pl...)
+```
+
+# lapatinib 250 nM with all doxorubicins
+```julia
+pl = [plot_der(ii, 7, 2, 1, "dox", "lap") for ii=1:4]
+plot(pl...)
+```
+
+# lapatinib 50 nM with all gemcitabines
+```julia
+pl = [plot_der(ii, 5, 3, 1, "gemc", "lap") for ii=1:4]
+plot(pl...)
+```
+
+# lapatinib 250 nM with all gemcitabines
+```julia
+pl = [plot_der(ii, 7, 3, 1, "gemc", "lap") for ii=1:4]
+plot(pl...)
+```
+
+# lapatinib 50 nM with all paclitaxels
+```julia
+pl = [plot_der(ii, 5, 4, 1, "taxol", "lap") for ii=1:4]
+plot(pl...)
+```
+
+# lapatinib 250 nM with all paclitaxels
+```julia
+pl = [plot_der(ii, 7, 4, 1, "taxol", "lap") for ii=1:4]
+plot(pl...)
+```
+# lapatinib 50 nM with all palbociclibs
+```julia
+pl = [plot_der(ii, 5, 5, 1, "palbo", "lap") for ii=1:4]
+plot(pl...)
+```
+# lapatinib 250 nM with all palbociclibs
+```julia
+pl = [plot_der(ii, 7, 5, 1, "palbo", "lap") for ii=1:4]
+plot(pl...)
+```
+
+# Doxorubicin 50 nM with all gemcitabines 
+```julia
+pl = [plot_der(ii, 4, 3, 2, "gemc", "dox") for ii=1:4]
+plot(pl...)
+```
+
+# Doxorubicin 250 nM with all gemcitabine 
+```julia
+pl = [plot_der(ii, 7, 3, 2, "gemc", "dox") for ii=1:4]
+plot(pl...)
+```
+
+# Doxorubicin 50 nM with all taxol 
+```julia
+pl = [plot_der(ii, 5, 4, 2, "taxol", "dox") for ii=1:4]
+plot(pl...)
+```
+
+# Doxorubicin 250 nM with all taxol 
+```julia
+pl = [plot_der(ii, 7, 4, 2, "taxol", "dox") for ii=1:4]
+plot(pl...)
+```
+
+# Doxorubicin 50 nM with all palbociclib 
+```julia
+pl = [plot_der(ii, 5, 5, 2, "palbo", "dox") for ii=1:4]
+plot(pl...)
+```
+
+# Doxorubicin 250 nM with all palbociclib 
+```julia
+pl = [plot_der(ii, 7, 5, 2, "palbo", "dox") for ii=1:4]
+plot(pl...)
+```
+
+# Gemcitabine 5 nM with all paclitaxel 
+```julia
+pl = [plot_der(ii, 5, 4, 3, "taxol", "gem") for ii=1:4]
+plot(pl...)
+```
+
+# Gemcitabine 30 nM with all paclitxel 
+```julia
+pl = [plot_der(ii, 7, 4, 3, "taxol", "gem") for ii=1:4]
+plot(pl...)
+```
+
+# Gemcitabine 5 nM with all palbociclib 
+```julia
+pl = [plot_der(ii, 5, 5, 3, "palbo", "gem") for ii=1:4]
+plot(pl...)
+```
+
+# Gemcitabine 30 nM with all palbociclib 
+```julia
+pl = [plot_der(ii, 7, 5, 3, "palbo", "gem") for ii=1:4]
+plot(pl...)
+```
+
+# Paclitaxel 3 nM with all palbociclib 
+```julia
+pl = [plot_der(ii, 5, 5, 4, "palbo", "taxol") for ii=1:4]
+plot(pl...)
+```
+
+# Gemcitabine 7.5 nM with all palbociclib 
+```julia
+pl = [plot_der(ii, 7, 5, 4, "palbo", "taxol") for ii=1:4]
+plot(pl...)
+```
