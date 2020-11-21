@@ -1,5 +1,5 @@
 @testset "Sensitivity tests" begin
-    concs, _, _, _ = load(189, 1);
+    concs, _, _, _ = load(189, 1)
     p = [97.7434, 1.41726, 0.0501761, 0.930205, 0.111494, 0.123604, 0.552216, 
         92.9045, 1.40024, 0.996396, 0.0513087, 0.521831, 0.6535, 0.566578, 
         15.5317, 2.3689, 0.592433, 0.999986, 0.0283363, 0.286975, 0.503328, 
@@ -10,5 +10,7 @@
     effs = getODEparamsAll(p, concs);
     # Check that these at least run
     der = DrugResponseModel.get_derivative(effs[:, 1, 1], effs[:, 2, 2], effs, 1, 2, 1, 2, g0)
+    @assert(all(der .>= -100000.0))
+    @assert(all(der .<= 100000.0))
 
 end
