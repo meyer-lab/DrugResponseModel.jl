@@ -57,9 +57,10 @@ end
 
 """ This function calculates the simulated cell number for a pair of drugs in their exact concentration.  """
 function calc_cellNum(pDr1, pDr2, g0)
-    g1d1, g2d1, _ = predict(pDr1, g0, 96.0)
-    g1d2, g2d2, _ = predict(pDr2, g0, 96.0)
-    normNum = 1.0 .- [(g1d1 + g2d1)/g0, (g1d2 + g2d2)/g0]
+    tt = 0.0:1.0:96.0
+    g1d1, g2d1, _ = predict(pDr1, g0, tt)
+    g1d2, g2d2, _ = predict(pDr2, g0, tt)
+    normNum = 1.0 .- [(g1d1[end] + g2d1[end])/g0, (g1d2[end] + g2d2[end])/g0]
     combin = -((normNum[1] + normNum[2] - normNum[1] * normNum[2]) .- 1.0) * g0 
     return combin
 end
@@ -68,7 +69,7 @@ end
 function calc_diff(Dr1_params, Dr2_params, effs, Dr1Ind, Dr2Ind, conc1_indx, conc2_indx, g0)
     # Dr1_params/Dr2_params is a 9 x 1 Array, including the 9 parameters of ODE model. 
     combin = calc_cellNum(Dr1_params, Dr2_params, g0)
-    bliss_comb = DrugResponseModel.fullCombinationParam(effs[:, :, Dr1Ind], effs[:, :, Dr2Ind], effs, 8, conc1_indx, conc2_indx)
+    bliss_comb = DrugResponseModel.fullCombinationParam(effs[:, :, Dr1Ind], effs[:, :, Dr2Ind], effs, 8)
     bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)[conc1_indx, conc2_indx]
     return combin - bliss_comb_cellnum
 end
