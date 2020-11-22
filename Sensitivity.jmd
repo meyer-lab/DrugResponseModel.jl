@@ -13,11 +13,22 @@ using ExponentialUtilities
 using Plots
 Plots.scalefontsizes(0.7)
 ```
-
 To show the sensitivity of cell number difference predicted by combination.
 
 ```julia
-concs, _, _, _ = load(189, 1)
+concs, populations1, g1s1, g2s1 = load(189, 1);
+concs, populations2, g1s2, g2s2 = load(189, 2);
+concs, populations3, g1s3, g2s3 = load(189, 3);
+g0 = g1s1[1,1,1]+g2s1[1,1,1];
+
+g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
+g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
+popavg = g1avg .+ g2avg;
+IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal = DrugResponseModel.find_IC(popavg, 0.5);
+ic50s = [IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal]
+```
+
+```julia
 p = [97.7434, 1.41726, 0.0501761, 0.930205, 0.111494, 0.123604, 0.552216, 
         92.9045, 1.40024, 0.996396, 0.0513087, 0.521831, 0.6535, 0.566578, 
         15.5317, 2.3689, 0.592433, 0.999986, 0.0283363, 0.286975, 0.503328, 
@@ -28,139 +39,37 @@ p = [97.7434, 1.41726, 0.0501761, 0.930205, 0.111494, 0.123604, 0.552216,
     effs = getODEparamsAll(p, concs);
     # Check that these at least run
 
-function plot_der(ii, ind_concX, xaxisDr_ind, Dr_const_ind, drugx_name, drug_const_name)
-    der = zeros(9, 8)
-    for j=1:8
-        der[:, j] = DrugResponseModel.get_derivative(effs[:, ind_concX, Dr_const_ind], effs[:, j, xaxisDr_ind], effs, Dr_const_ind, xaxisDr_ind, j, ind_concX, g0)
+xaxis = ["lpt+dox", "lpt+gem", "lpt+tax", "lpt+plb", "dox+gem", "dox+tax", "dox+plb", "gem+tax", "gem+plb", "tax+plb"]
+function calc_ders(effs, ic50s, g0)
+    deriv = zeros(9,10)
+    q = 1
+    for i=1:4
+        for j=(i+1):5
+            deriv[:, q] = DrugResponseModel.get_derivative(effs[:, ic50s[i], i], effs[:, ic50s[j], j], effs, i, j, ic50s[i], ic50s[j], g0)
+            q += 1
+        end
     end
-    if ii==1
-        txt = "G1 prog."
-    elseif ii==2
-        txt = "G2 prog."
-    elseif ii==3
-        txt = "G1 death"
-    elseif ii==4
-        txt = "G2 death"
-    end
-    plot(concs[:, xaxisDr_ind], der[ii,:], title=string(drug_const_name, " with increasing ",drugx_name), ylabel=string("d{diff}/d{", txt, " rate}"), xlabel=string(drugx_name, " cons [nM]"))
+    return deriv
 end
 ```
 
-# lapatinib 50 nM with all doxorubicins
-
+# G1 prog. rate 
 ```julia
-pl = [plot_der(ii, 5, 2, 1, "dox", "lap") for ii=1:4]
-plot(pl...)
+deriv = calc_ders(effs, ic50s, g0)
+bar(xaxis, deriv[1, :], title = "G1 prog. rate", ylabel ="d{diff}/d{g1 prog. rate}")
 ```
 
-# lapatinib 250 nM with all doxorubicins
+# G2 prog rate
 ```julia
-pl = [plot_der(ii, 7, 2, 1, "dox", "lap") for ii=1:4]
-plot(pl...)
+bar(xaxis, deriv[2, :], title = "G2 prog. rate", ylabel ="d{diff}/d{g2 prog. rate}")
 ```
 
-# lapatinib 50 nM with all gemcitabines
-```julia
-pl = [plot_der(ii, 5, 3, 1, "gemc", "lap") for ii=1:4]
-plot(pl...)
+# G1 death rate
+```julia 
+bar(xaxis, deriv[3, :], title = "G1 death rate", ylabel ="d{diff}/d{g1 death rate}")
 ```
 
-# lapatinib 250 nM with all gemcitabines
+# G2 death rate
 ```julia
-pl = [plot_der(ii, 7, 3, 1, "gemc", "lap") for ii=1:4]
-plot(pl...)
-```
-
-# lapatinib 50 nM with all paclitaxels
-```julia
-pl = [plot_der(ii, 5, 4, 1, "taxol", "lap") for ii=1:4]
-plot(pl...)
-```
-
-# lapatinib 250 nM with all paclitaxels
-```julia
-pl = [plot_der(ii, 7, 4, 1, "taxol", "lap") for ii=1:4]
-plot(pl...)
-```
-# lapatinib 50 nM with all palbociclibs
-```julia
-pl = [plot_der(ii, 5, 5, 1, "palbo", "lap") for ii=1:4]
-plot(pl...)
-```
-# lapatinib 250 nM with all palbociclibs
-```julia
-pl = [plot_der(ii, 7, 5, 1, "palbo", "lap") for ii=1:4]
-plot(pl...)
-```
-
-# Doxorubicin 50 nM with all gemcitabines 
-```julia
-pl = [plot_der(ii, 4, 3, 2, "gemc", "dox") for ii=1:4]
-plot(pl...)
-```
-
-# Doxorubicin 250 nM with all gemcitabine 
-```julia
-pl = [plot_der(ii, 7, 3, 2, "gemc", "dox") for ii=1:4]
-plot(pl...)
-```
-
-# Doxorubicin 50 nM with all taxol 
-```julia
-pl = [plot_der(ii, 5, 4, 2, "taxol", "dox") for ii=1:4]
-plot(pl...)
-```
-
-# Doxorubicin 250 nM with all taxol 
-```julia
-pl = [plot_der(ii, 7, 4, 2, "taxol", "dox") for ii=1:4]
-plot(pl...)
-```
-
-# Doxorubicin 50 nM with all palbociclib 
-```julia
-pl = [plot_der(ii, 5, 5, 2, "palbo", "dox") for ii=1:4]
-plot(pl...)
-```
-
-# Doxorubicin 250 nM with all palbociclib 
-```julia
-pl = [plot_der(ii, 7, 5, 2, "palbo", "dox") for ii=1:4]
-plot(pl...)
-```
-
-# Gemcitabine 5 nM with all paclitaxel 
-```julia
-pl = [plot_der(ii, 5, 4, 3, "taxol", "gem") for ii=1:4]
-plot(pl...)
-```
-
-# Gemcitabine 30 nM with all paclitxel 
-```julia
-pl = [plot_der(ii, 7, 4, 3, "taxol", "gem") for ii=1:4]
-plot(pl...)
-```
-
-# Gemcitabine 5 nM with all palbociclib 
-```julia
-pl = [plot_der(ii, 5, 5, 3, "palbo", "gem") for ii=1:4]
-plot(pl...)
-```
-
-# Gemcitabine 30 nM with all palbociclib 
-```julia
-pl = [plot_der(ii, 7, 5, 3, "palbo", "gem") for ii=1:4]
-plot(pl...)
-```
-
-# Paclitaxel 3 nM with all palbociclib 
-```julia
-pl = [plot_der(ii, 5, 5, 4, "palbo", "taxol") for ii=1:4]
-plot(pl...)
-```
-
-# Gemcitabine 7.5 nM with all palbociclib 
-```julia
-pl = [plot_der(ii, 7, 5, 4, "palbo", "taxol") for ii=1:4]
-plot(pl...)
+bar(xaxis, deriv[4, :], title = "G2 death rate", ylabel ="d{diff}/d{g2 death rate}")
 ```
