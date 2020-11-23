@@ -39,15 +39,16 @@ p = [97.7434, 1.41726, 0.0501761, 0.930205, 0.111494, 0.123604, 0.552216,
 
 function decide_index(Dr1Ind)
     if Dr1Ind == 1
-        indexes1 = 1:4
+        indexes1 = 1:6
     elseif Dr1Ind == 2
-        indexes1 = 8:11
+        indexes1 = 8:13
     elseif Dr1Ind == 3
-        indexes1 = 15:18
+        indexes1 = 15:20
     elseif Dr1Ind == 4
-        indexes1 = 22:25
+        indexes1 = 22:27
     elseif Dr1Ind == 5
-        indexes1 = 29:32 
+        indexes1 = 29:34 
+    end
     return indexes1
 end
 function make_bar(p, Dr1Ind, Dr2Ind, ic50s, concs, g0)
@@ -56,9 +57,9 @@ function make_bar(p, Dr1Ind, Dr2Ind, ic50s, concs, g0)
     lpDX = derivatives = DrugResponseModel.get_derivative(p, Dr1Ind, Dr2Ind, conc1_indx, conc2_indx, concs, g0)
     indx1 = decide_index(Dr1Ind)
     indx2 = decide_index(Dr2Ind)
-
-    p1 = bar(["EC50", "steepness", "G1_prog_max", "G2_prog_max"], lpDX[indx1], title=DR1_name)
-    p2 = bar(["EC50", "steepness", "G1_prog_max", "G2_prog_max"], lpDX[indx2], title=DR2_name)
+    xaxis = ["EC50", "steepness", "G1_prog_max", "G2_prog_max", "G1_death_max", "G2_death_max"]
+    p1 = bar(xaxis, lpDX[indx1], title=DR1_name)
+    p2 = bar(xaxis, lpDX[indx2], title=DR2_name)
     plot(p1, p2)
 end
 ```
