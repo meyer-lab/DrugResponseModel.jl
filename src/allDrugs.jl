@@ -2,7 +2,7 @@
 
 """ This function """
 function getODEparamsAll(p, concentrations::Array{Float64, 2})
-    effects = zeros(9, length(concentrations[:, 1]), 5)
+    effects = zeros(eltype(p), 9, length(concentrations[:, 1]), 5)
 
     k = 1
     # Scaled drug effect
@@ -34,7 +34,7 @@ function getODEparamsAll(p, concentrations::Array{Float64, 2})
 end
 
 
-function residHillAll(hP::Vector, concentrations::Matrix, g1::Array, g2::Array)
+function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array)
     res = 0.0
 
     # Solve for all drugs

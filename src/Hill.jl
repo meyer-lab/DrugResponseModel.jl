@@ -5,7 +5,7 @@ This file fits Hill function to the parameters
 """ This functions takes in hill parameters for all the concentrations and calculates
 DDE parameters, passes them to residual function and based off of these, optimizes the model
 and estimates hill parameters. """
-function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
+function residHill(x, conc::Vector, g1::Matrix, g2::Matrix)
     res = 0.0
     params = getODEparams(x, conc)
     t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
