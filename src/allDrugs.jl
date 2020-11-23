@@ -1,7 +1,7 @@
 """ In this file we fit all the drugs att once. """
 
 """ This function """
-function getODEparamsAll(p::Array{Float64, 1}, concentrations::Array{Float64, 2})
+function getODEparamsAll(p::Vector, concentrations::Array{Float64, 2})
     effects = zeros(9, length(concentrations[:, 1]), 5)
 
     k = 1

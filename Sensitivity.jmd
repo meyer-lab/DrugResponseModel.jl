@@ -36,40 +36,98 @@ p = [97.7434, 1.41726, 0.0501761, 0.930205, 0.111494, 0.123604, 0.552216,
         63.4248, 0.976052, 0.16582, 0.740009, 0.0572609, 0.0776912, 0.534201, 
         0.734513, 0.375555, 16.8387, 12.3945, 30.176, 14.5352]
     g0 = 20.0
-    effs = getODEparamsAll(p, concs);
-    # Check that these at least run
 
-xaxis = ["lpt+dox", "lpt+gem", "lpt+tax", "lpt+plb", "dox+gem", "dox+tax", "dox+plb", "gem+tax", "gem+plb", "tax+plb"]
-function calc_ders(effs, ic50s, g0)
-    deriv = zeros(9,10)
-    q = 1
-    for i=1:4
-        for j=(i+1):5
-            deriv[:, q] = DrugResponseModel.get_derivative(effs[:, ic50s[i], i], effs[:, ic50s[j], j], effs, i, j, ic50s[i], ic50s[j], g0)
-            q += 1
-        end
-    end
-    return deriv
+function decide_index(Dr1Ind)
+    if Dr1Ind == 1
+        indexes1 = 1:4
+    elseif Dr1Ind == 2
+        indexes1 = 8:11
+    elseif Dr1Ind == 3
+        indexes1 = 15:18
+    elseif Dr1Ind == 4
+        indexes1 = 22:25
+    elseif Dr1Ind == 5
+        indexes1 = 29:32 
+    return indexes1
+end
+function make_bar(p, Dr1Ind, Dr2Ind, ic50s, concs, g0)
+    conc1_indx = ic50s[Dr1Ind]
+    conc2_indx = ic50s[Dr2Ind]
+    lpDX = derivatives = DrugResponseModel.get_derivative(p, Dr1Ind, Dr2Ind, conc1_indx, conc2_indx, concs, g0)
+    indx1 = decide_index(Dr1Ind)
+    indx2 = decide_index(Dr2Ind)
+
+    p1 = bar(["EC50", "steepness", "G1_prog_max", "G2_prog_max"], lpDX[indx1], title=DR1_name)
+    p2 = bar(["EC50", "steepness", "G1_prog_max", "G2_prog_max"], lpDX[indx2], title=DR2_name)
+    plot(p1, p2)
 end
 ```
-
-# G1 prog. rate 
+# LPT and DOX
 ```julia
-deriv = calc_ders(effs, ic50s, g0)
-bar(xaxis, deriv[1, :], title = "G1 prog. rate", ylabel ="d{diff}/d{g1 prog. rate}")
+Dr1Ind = 1
+Dr2Ind = 2
+make_bar(p, Dr1Ind, Dr2Ind, ic50s, concs, g0)
 ```
 
-# G2 prog rate
+# LPT and GEM
 ```julia
-bar(xaxis, deriv[2, :], title = "G2 prog. rate", ylabel ="d{diff}/d{g2 prog. rate}")
+Dr1Ind = 1
+Dr2Ind = 3
+make_bar(p, Dr1Ind, Dr2Ind, ic50s, concs, g0)
 ```
 
-# G1 death rate
-```julia 
-bar(xaxis, deriv[3, :], title = "G1 death rate", ylabel ="d{diff}/d{g1 death rate}")
+# LPT and TXL
+```julia
+Dr1Ind = 1
+Dr2Ind = 4
+make_bar(p, Dr1Ind, Dr2Ind, ic50s, concs, g0)
 ```
 
-# G2 death rate
+# LPT and PLB
 ```julia
-bar(xaxis, deriv[4, :], title = "G2 death rate", ylabel ="d{diff}/d{g2 death rate}")
+Dr1Ind = 1
+Dr2Ind = 5
+make_bar(p, Dr1Ind, Dr2Ind, ic50s, concs, g0)
+```
+
+# DOX and GEM
+```julia
+Dr1Ind = 2
+Dr2Ind = 3
+make_bar(p, Dr1Ind, Dr2Ind, ic50s, concs, g0)
+```
+
+# DOX and TXL
+```julia
+Dr1Ind = 2
+Dr2Ind = 4
+make_bar(p, Dr1Ind, Dr2Ind, ic50s, concs, g0)
+```
+
+# DOX and PLB
+```julia
+Dr1Ind = 2
+Dr2Ind = 5
+make_bar(p, Dr1Ind, Dr2Ind, ic50s, concs, g0)
+```
+
+# GEM and TXL
+```julia
+Dr1Ind = 3
+Dr2Ind = 4
+make_bar(p, Dr1Ind, Dr2Ind, ic50s, concs, g0)
+```
+
+# GEM and PLB
+```julia
+Dr1Ind = 3
+Dr2Ind = 5
+make_bar(p, Dr1Ind, Dr2Ind, ic50s, concs, g0)
+```
+
+# TXL and PLB
+```julia
+Dr1Ind = 4
+Dr2Ind = 5
+make_bar(p, Dr1Ind, Dr2Ind, ic50s, concs, g0)
 ```
