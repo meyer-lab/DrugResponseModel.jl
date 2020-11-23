@@ -3,7 +3,7 @@
 """
 
 """ Make the transition matrix. """
-function ODEjac(p, nG1::Int, nG2::Int, nD1::Int, nD2::Int) where {T}
+function ODEjac(p::Vector{T}, nG1::Int, nG2::Int, nD1::Int, nD2::Int) where {T}
     # p = [alpha, beta, gamma1, gamma2, nG1, nG2, nD1, nD2]
     v1 = [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2])]
     v2 = [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]]
@@ -38,7 +38,7 @@ function ODEjac(p, nG1::Int, nG2::Int, nD1::Int, nD2::Int) where {T}
 end
 
 
-function vTOg(v::Vector, nG1::Int, nG2::Int, nD1::Int, nD2::Int)
+function vTOg(v, nG1::Int, nG2::Int, nD1::Int, nD2::Int)
     G1 = sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
     G2 = sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
     return G1, G2
@@ -63,7 +63,6 @@ function predict(p, g_0, t, g1data = nothing, g2data = nothing)
     A = ODEjac(p, nG1, nG2, nD1, nD2)
 
     if t isa Real
-        v = Vector{eltype(p)}
         v = ExponentialUtilities.expv(t, A, v)
 
         G1, G2 = vTOg(v, nG1, nG2, nD1, nD2)

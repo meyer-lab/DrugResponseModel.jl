@@ -56,8 +56,8 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
 end
 
 """ This function calculates the simulated cell number for a pair of drugs in their exact concentration.  """
-function calc_cellNum(Hillp, dr1_ind, dr2_ind, g0, concs)
-    effs = getODEparamsAll(Hillp, concs)
+function calc_cellNum(Hillp::Vector{T}, dr1_ind, dr2_ind, g0, concs) where {T}
+    effs = getODEparamsAll(Hillp, concs) where {T}
     pDr1 = effs[:, :, dr1_ind]
     pDr2 = effs[:, :, dr2_ind]
 
@@ -69,9 +69,9 @@ function calc_cellNum(Hillp, dr1_ind, dr2_ind, g0, concs)
 end
 
 """ Calculates the difference between the bliss_cell number and bliss_params. """
-function calc_diff(Hillp, Dr1Ind, Dr2Ind, conc1_indx, conc2_indx, concs, g0)
-    effs = getODEparamsAll(Hillp, concs)
-    combin = calc_cellNum(Hillp, Dr1Ind, Dr2Ind, g0, concs)
+function calc_diff(Hillp::Vector{T}, Dr1Ind, Dr2Ind, conc1_indx, conc2_indx, concs, g0) where {T}
+    effs = T[getODEparamsAll(Hillp, concs)]
+    combin = T[calc_cellNum(Hillp, Dr1Ind, Dr2Ind, g0, concs)]
     bliss_comb = DrugResponseModel.fullCombinationParam(effs[:, :, Dr1Ind], effs[:, :, Dr2Ind], effs, 8)
     bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)[conc1_indx, conc2_indx]
     return combin - bliss_comb_cellnum
