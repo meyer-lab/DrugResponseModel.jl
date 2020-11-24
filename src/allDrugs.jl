@@ -57,6 +57,7 @@ function Hill_p_eachDr(p)
         HillP[:, i] .= p[j:(j+5)]
         j += 7
     HillP
+    end
 end
 
 function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 100000)
