@@ -1,14 +1,14 @@
 """ This file contains all the functions related to Bliss combinations. """
 
 ######---------------- Functions for Bliss combination ----------------########
-function CombinationParam(p1::Array{Float64, 2}, p2::Array{Float64, 2}, n::Int)
+function CombinationParam(p1, p2, n::Int)
     """ A function to calculate Bliss independence for drug combination assuming
     the two drugs hit different pathways and they effect independently. """
 
     pprime1 = copy(p1)
     pprime2 = copy(p2)
-    param1 = zeros(4, 8)
-    param2 = zeros(4, 8)
+    param1 = Matrix{eltype(p1)}(undef, 4, 8)
+    param2 = Matrix{eltype(p2)}(undef, 4, 8)
     # drug A
     param1[1:2, :] .= 1.0 .- (pprime1[1:2, :] ./ pprime1[1:2, 1]) # g1 and g2 prog. rates
     param1[3:4, :] .= pprime1[3:4, :]                             # g1 and g2 death rates
@@ -19,8 +19,8 @@ function CombinationParam(p1::Array{Float64, 2}, p2::Array{Float64, 2}, n::Int)
     # make sure normalized correctly; the prog. rates in control condition must be zero in both drugs.
     @assert param1[1, 1] == param1[2, 1] == param2[1, 1] == param2[2, 1] == 0.0
 
-    """ For 8x8 combination of drug concentrations for G1 progression rate, G2 progression rate, and death rates in G1 and G2, respectively. """
-    combined = zeros(n, n, 4)
+    # For 8x8 combination of drug concentrations for G1 progression rate, G2 progression rate, and death rates in G1 and G2, respectively.
+    combined = Matrix{eltype(p1)}(undef, n, n, 4)
     for j = 1:n
         for k = 1:n # param2 is changing, param1 is constant
             combined[j, k, 1:2] .=
@@ -36,7 +36,7 @@ end
 
 
 """ To output the full ODE params for plotting the cell number. """
-function fullCombinationParam(origP1::Array{Float64, 2}, origP2::Array{Float64, 2}, origFullParam::Array{Float64, 3}, n::Int)
+function fullCombinationParam(origP1, origP2, origFullParam, n::Int)
     """ Here we assume the base is origP1. """
     combined = CombinationParam(origP1, origP2, n)
     fullparam = zeros(9, n, n)
