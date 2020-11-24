@@ -59,8 +59,8 @@ function make_bar(p, Dr1Ind, Dr2Ind, ic50s, concs, g0)
     indx2 = decide_index(Dr2Ind)
     names = ["LPT", "DOX", "GEM", "TAX", "PLB"]
     xaxis = ["EC50", "steepness", "G1_prog_max", "G2_prog_max", "G1_death_max", "G2_death_max"]
-    p1 = bar(xaxis, lpDX[indx1], title=names[Dr1Ind])
-    p2 = bar(xaxis, lpDX[indx2], title=names[Dr2Ind])
+    p1 = bar(xaxis, lpDX[indx1], title=names[Dr1Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
+    p2 = bar(xaxis, lpDX[indx2], title=names[Dr2Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
     plot(p1, p2)
 end
 ```
