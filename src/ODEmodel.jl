@@ -38,7 +38,7 @@ function ODEjac(p::Vector{T}, nG1::Int, nG2::Int, nD1::Int, nD2::Int) where {T}
 end
 
 
-function vTOg(v, nG1::Int, nG2::Int, nD1::Int, nD2::Int)
+function vTOg(v::Vector, nG1::Int, nG2::Int, nD1::Int, nD2::Int)
     G1 = sum(view(v, 1:nG1)) + sum(view(v, (nG1 + nG2 + 1):(nG1 + nG2 + nD1)))
     G2 = sum(view(v, (nG1 + 1):(nG1 + nG2))) + sum(view(v, (nG1 + nG2 + nD1 + 1):(nG1 + nG2 + nD1 + nD2)))
     return G1, G2
