@@ -30,8 +30,8 @@ efcs = getODEparamsAll(paramAvg, concs);
 tim = 0.0:1.0:96.0;
 
 """ To avoid repetition. """
-function plot_combin_time(idA, idB, efcts, DrugA_name, DrugB_name, concA, concB)
-  bliss_comb = DrugResponseModel.fullCombinationParam(efcts[:, :, idA], efcts[:, :, idB], efcts, 8)
+function plot_combin_time(paramAvg, idA, idB, DrugA_name, DrugB_name, concA, concB)
+  bliss_comb =  DrugResponseModel.CombinationParam(paramAvg, idA, idB)
   combb = bliss_comb[:, concA, concB]
   G1_lap, G2_lap = predict(efcs[:, concA, idA], g0, tim)
   G1_dox, G2_dox = predict(efcs[:, concA, idB], g0, tim)

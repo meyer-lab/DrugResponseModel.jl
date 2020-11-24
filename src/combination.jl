@@ -1,7 +1,27 @@
 """ This file contains all the functions related to Bliss combinations. """
 
 ######---------------- Functions for Bliss combination ----------------########
-function CombinationParam(p1, p2, n::Int)
+
+""" Unit function to calculate the bliss for 2 drugs at one specific concentration. """
+function Bliss_params_unit(pp1, pp2, control)
+    p1 = copy(pp1)
+    p2 = copy(pp2)
+    # normalization
+    p1[1:2] .= 1.0 .- (pp1[1:2] ./ control[1:2, 1]) # g1 and g2 prog. rates
+    p1[3:4] .= pp1[3:4]                          # g1 and g2 death rates
+    # drug B
+    p2[1:2] .= 1.0 .- (pp2[1:2] ./ control[1:2, 2])
+    p2[3:4] .= pp2[3:4]
+
+    c = Array{eltype(pp1), 1}(undef, 9)
+    c[1:2] .= (1.0 .- (p1[1:2] .+ p2[1:2] .- p1[1:2] .* p2[1:2])) .* ((control[1:2, 1] .+ control[1:2, 2]) ./ 2)
+    c[3:4] .= p1[3:4] .+ p2[3:4]
+ 
+    c[5:9] .= pp1[5:9]
+    return c
+end
+
+function CombinationParam(p1, p2)
     """ A function to calculate Bliss independence for drug combination assuming
     the two drugs hit different pathways and they effect independently. """
 
@@ -22,8 +42,8 @@ function CombinationParam(p1, p2, n::Int)
     combined = Array{eltype(param1), 3}(undef, 8, 8, 4)
 
     # For 8x8 combination of drug concentrations for G1 progression rate, G2 progression rate, and death rates in G1 and G2, respectively.
-    for j = 1:n
-        for k = 1:n # param2 is changing, param1 is constant
+    for j = 1:8
+        for k = 1:8 # param2 is changing, param1 is constant
             combined[j, k, 1:2] .=
                 (1.0 .- (param1[1:2, j] .+ param2[1:2, k] .- param1[1:2, j] .* param2[1:2, k])) .* ((p1[1:2, 1] .+ p2[1:2, 1]) ./ 2)
             combined[j, k, 3:4] .= param1[3:4, j] .+ param2[3:4, k]
@@ -37,10 +57,10 @@ end
 
 
 """ To output the full ODE params for plotting the cell number. """
-function fullCombinationParam(origP1, origP2, origFullParam, n::Int)
+function fullCombinationParam(origP1, origP2, origFullParam)
     """ Here we assume the base is origP1. """
-    combined = CombinationParam(origP1, origP2, n)
-    fullparam = Array{eltype(origP1), 3}(undef, 9, n, n)
+    combined = CombinationParam(origP1, origP2)
+    fullparam = Array{eltype(origP1), 3}(undef, 9, 8, 8)
     fullparam[5:9, :, :] .= origFullParam[5:9, 1, 1]
     fullparam[1:4, :, :] .= permutedims(combined[:, :, 1:4], (3, 1, 2))
     return fullparam

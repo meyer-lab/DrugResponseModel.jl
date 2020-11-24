@@ -36,15 +36,14 @@ p = [97.7434, 1.41726, 0.0501761, 0.930205, 0.111494, 0.123604, 0.552216,
 
 
 function make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
-
-    lpDX = DrugResponseModel.get_derivative(p, Dr1Ind, Dr2Ind, conc1_indx, conc2_indx, concs, g0)
-    twoDHillp = DrugResponseModel.Hill_p_eachDr(lpDX)
-
-    names = ["LPT", "DOX", "GEM", "TAX", "PLB"]
-    xaxis = ["EC50", "steepness", "G1_prog_max", "G2_prog_max", "G1_death_max", "G2_death_max"]
-    p1 = bar(xaxis, twoDHillp[:, Dr1Ind], title=names[Dr1Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
-    p2 = bar(xaxis, twoDHillp[:, Dr2Ind], title=names[Dr2Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
-    plot(p1, p2)
+  
+  lpDX = DrugResponseModel.get_derivative(p, Dr1Ind, Dr2Ind, concs, g0)
+  twoDHillp = DrugResponseModel.Hill_p_eachDr(lpDX)
+  names = ["LPT", "DOX", "GEM", "TAX", "PLB"]
+  xaxis = ["EC50", "steepness", "G1_prog_max", "G2_prog_max", "G1_death_max", "G2_death_max", "%G1"]
+  p1 = bar(xaxis, twoDHillp[:, Dr1Ind], title=names[Dr1Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
+  p2 = bar(xaxis, twoDHillp[:, Dr2Ind], title=names[Dr2Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
+  plot(p1, p2)
 end
 ```
 # LPT and DOX

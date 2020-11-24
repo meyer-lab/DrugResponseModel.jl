@@ -52,7 +52,7 @@ BlissOnData = DrugResponseModel.blissCellNum(g1avg, g2avg; n = 8); # includes ar
 # Lapatinib and doxorubicin
 
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(lapat, dox, effs, 8)
+bliss_comb = DrugResponseModel.fullCombinationParam(lapat, dox, effs)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 diff = bliss_comb_cellnum .- BlissOnData[:, :, 1]
 frac = bliss_comb_cellnum ./ BlissOnData[:, :, 1]
@@ -72,7 +72,7 @@ plot(p3, p4, size=(400, 550), layout=(2, 1))
 # Lapatinib and gemcitabine
 
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(lapat, gemc, effs, 8)
+bliss_comb = DrugResponseModel.fullCombinationParam(lapat, gemc, effs)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 diff = bliss_comb_cellnum .- BlissOnData[:, :, 2]
 frac = bliss_comb_cellnum ./ BlissOnData[:, :, 2]
@@ -92,7 +92,7 @@ plot(p3, p4, size=(400, 550), layout=(2, 1))
 # Lapatinib and paclitaxel
 
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(lapat, pac, effs, 8)
+bliss_comb = DrugResponseModel.fullCombinationParam(lapat, pac, effs)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 diff = bliss_comb_cellnum .- BlissOnData[:, :, 3]
 frac = bliss_comb_cellnum ./ BlissOnData[:, :, 3]
@@ -112,7 +112,7 @@ plot(p3, p4, size=(400, 550), layout=(2, 1))
 # Lapatinib and palbociclib
 
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(lapat, pal, effs, 8)
+bliss_comb = DrugResponseModel.fullCombinationParam(lapat, pal, effs)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 diff = bliss_comb_cellnum .- BlissOnData[:, :, 4]
 frac = bliss_comb_cellnum ./ BlissOnData[:, :, 4]
@@ -131,7 +131,7 @@ plot(p3, p4, size=(400, 550), layout=(2, 1))
 
 # Doxorubicin and gemcitabine
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(dox, gemc, effs, 8)
+bliss_comb = DrugResponseModel.fullCombinationParam(dox, gemc, effs)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 diff = bliss_comb_cellnum .- BlissOnData[:, :, 5]
 frac = bliss_comb_cellnum ./ BlissOnData[:, :, 5]
@@ -150,7 +150,7 @@ plot(p3, p4, size=(400, 550), layout=(2, 1))
 
 # Doxorubicin and paclitaxel
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(dox, pac, effs, 8)
+bliss_comb = DrugResponseModel.fullCombinationParam(dox, pac, effs)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 diff = bliss_comb_cellnum .- BlissOnData[:, :, 6]
 frac = bliss_comb_cellnum ./ BlissOnData[:, :, 6]
@@ -170,7 +170,7 @@ plot(p3, p4, size=(400, 550), layout=(2, 1))
 
 # Doxorubicin and palbociclib
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(dox, pal, effs, 8)
+bliss_comb = DrugResponseModel.fullCombinationParam(dox, pal, effs)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 diff = bliss_comb_cellnum .- BlissOnData[:, :, 7]
 frac = bliss_comb_cellnum ./ BlissOnData[:, :, 7]
@@ -190,7 +190,7 @@ plot(p3, p4, size=(400, 550), layout=(2, 1))
 
 # Gemcitabine and paclitaxel
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(gemc, pac, effs, 8)
+bliss_comb = DrugResponseModel.fullCombinationParam(gemc, pac, effs)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 diff = bliss_comb_cellnum .- BlissOnData[:, :, 8]
 frac = bliss_comb_cellnum ./ BlissOnData[:, :, 8]
@@ -209,7 +209,7 @@ plot(p3, p4, size=(400, 550), layout=(2, 1))
 
 # Gemcitabine and palbociclib
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(gemc, pal, effs, 8)
+bliss_comb = DrugResponseModel.fullCombinationParam(gemc, pal, effs)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 diff = bliss_comb_cellnum .- BlissOnData[:, :, 9]
 frac = bliss_comb_cellnum ./ BlissOnData[:, :, 9]
@@ -228,7 +228,7 @@ plot(p3, p4, size=(400, 550), layout=(2, 1))
 
 # Paclitaxel and palbociclib
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(pac, pal, effs, 8)
+bliss_comb = DrugResponseModel.fullCombinationParam(pac, pal, effs)
 bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
 diff = bliss_comb_cellnum .- BlissOnData[:, :, 10]
 frac = bliss_comb_cellnum ./ BlissOnData[:, :, 10]
