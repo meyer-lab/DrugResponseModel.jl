@@ -48,6 +48,16 @@ function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array)
     return res
 end
 
+""" Organize Hill parameters for each drug in a 2D array. """
+function Hill_p_eachDr(p)
+    HillP = zeros(5, 5)
+    # each column: [EC50, steepness, max_g1_prog., max_g2_prog., max_g1_death, max_g2_death]
+    j = 1
+    for i=1:5
+        HillP[:, i] .= p[j:(j+5)]
+        j += 7
+    HillP
+end
 
 function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 100000)
     f(x) = residHillAll(x, concs, g1, g2)

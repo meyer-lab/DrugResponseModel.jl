@@ -9,6 +9,7 @@ function sensitivity(params::Vector, paramRange::Vector, conc::Vector, i::Int, g
     return result
 end
 
+
 """ Calculate the sensitivity to all parameters. """
 function allSensitivity(params::Vector, conc_l::Vector, g1::Matrix, g2::Matrix)
     @assert length(params) == 13

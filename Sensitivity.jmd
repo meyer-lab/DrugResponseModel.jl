@@ -23,7 +23,6 @@ g0 = g1s1[1,1,1]+g2s1[1,1,1];
 g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
 g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
 popavg = g1avg .+ g2avg;
-IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal = DrugResponseModel.find_IC(popavg, 0.5);
 ic50s = [IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal]
 ```
 
@@ -36,30 +35,17 @@ p = [97.7434, 1.41726, 0.0501761, 0.930205, 0.111494, 0.123604, 0.552216,
         0.734513, 0.375555, 16.8387, 12.3945, 30.176, 14.5352]
     g0 = 20.0
 
-function decide_index(Dr1Ind)
-    if Dr1Ind == 1
-        indexes1 = 1:6
-    elseif Dr1Ind == 2
-        indexes1 = 8:13
-    elseif Dr1Ind == 3
-        indexes1 = 15:20
-    elseif Dr1Ind == 4
-        indexes1 = 22:27
-    elseif Dr1Ind == 5
-        indexes1 = 29:34 
-    end
-    return indexes1
-end
-function make_bar(p, Dr1Ind, Dr2Ind, ic50s, concs, g0)
+
+function make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
     conc1_indx = ic50s[Dr1Ind]
     conc2_indx = ic50s[Dr2Ind]
-    lpDX = derivatives = DrugResponseModel.get_derivative(p, Dr1Ind, Dr2Ind, conc1_indx, conc2_indx, concs, g0)
-    indx1 = decide_index(Dr1Ind)
-    indx2 = decide_index(Dr2Ind)
+    lpDX = DrugResponseModel.get_derivative(p, Dr1Ind, Dr2Ind, conc1_indx, conc2_indx, concs, g0)
+    twoDHillp = DrugResponseModel.Hill_p_eachDr(lpDX)
+
     names = ["LPT", "DOX", "GEM", "TAX", "PLB"]
     xaxis = ["EC50", "steepness", "G1_prog_max", "G2_prog_max", "G1_death_max", "G2_death_max"]
-    p1 = bar(xaxis, lpDX[indx1], title=names[Dr1Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
-    p2 = bar(xaxis, lpDX[indx2], title=names[Dr2Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
+    p1 = bar(xaxis, twoDHillp[:, Dr1Ind], title=names[Dr1Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
+    p2 = bar(xaxis, twoDHillp[:, Dr2Ind], title=names[Dr2Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
     plot(p1, p2)
 end
 ```
