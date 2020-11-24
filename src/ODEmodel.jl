@@ -63,7 +63,13 @@ function predict(p, g_0, t, g1data = nothing, g2data = nothing)
     A = ODEjac(p, nG1, nG2, nD1, nD2)
 
     if t isa Real
-        v = ExponentialUtilities.expv(t, A, v)
+        if eltype(p) === Float64
+            v = ExponentialUtilities.expv(t, A, v)
+        else
+            rmul!(A, t)
+            A = ExponentialUtilities.exp_generic(A)
+            v = A * v
+        end
 
         G1, G2 = vTOg(v, nG1, nG2, nD1, nD2)
     else
