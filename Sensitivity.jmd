@@ -9,7 +9,6 @@ import Pkg; Pkg.instantiate()
 
 Pkg.activate(".")
 using DrugResponseModel
-using ExponentialUtilities
 using Plots
 Plots.scalefontsizes(0.7)
 ```
