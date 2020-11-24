@@ -19,7 +19,7 @@ function CombinationParam(p1, p2, n::Int)
 
     # make sure normalized correctly; the prog. rates in control condition must be zero in both drugs.
     @assert param1[1, 1] == param1[2, 1] == param2[1, 1] == param2[2, 1] == 0.0
-    combined = Matrix{eltype(p1)}(undef, n, n, 4)
+    combined = Array{eltype(param1), 3}(undef, 8, 8, 4)
 
     # For 8x8 combination of drug concentrations for G1 progression rate, G2 progression rate, and death rates in G1 and G2, respectively.
     for j = 1:n
@@ -40,7 +40,7 @@ end
 function fullCombinationParam(origP1, origP2, origFullParam, n::Int)
     """ Here we assume the base is origP1. """
     combined = CombinationParam(origP1, origP2, n)
-    fullparam = Matrix{eltype(origP1)}(undef, 9, n, n)
+    fullparam = Array{eltype(origP1), 3}(undef, 9, n, n)
     fullparam[5:9, :, :] .= origFullParam[5:9, 1, 1]
     fullparam[1:4, :, :] .= permutedims(combined[:, :, 1:4], (3, 1, 2))
     return fullparam
@@ -48,7 +48,7 @@ end
 
 """ This function calculates cell number for parameter sets that are the result of Bliss on prog. rates. """
 function BlissModelComb(bliss_comb, g0)
-    bliss_comb_cellnum = zeros(8, 8)
+    bliss_comb_cellnum = Matrix{eltype(bliss_comb)}(undef, 8, 8)
     for i = 1:8 # param1 is changing
         for j = 1:8 # param2 is changing
             g1, g2, _ = predict(bliss_comb[:, i, j], g0, 96.0)
