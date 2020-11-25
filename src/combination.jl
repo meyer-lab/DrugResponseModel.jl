@@ -4,6 +4,7 @@
 
 """ Unit function to calculate the bliss for 2 drugs at one specific concentration. """
 function Bliss_params_unit(pp1, pp2, control)
+    # pp1 and pp2 are 1D arrays of size 9, including 9 parameters for a single concentration.
     p1 = copy(pp1)
     p2 = copy(pp2)
     # normalization
@@ -18,53 +19,24 @@ function Bliss_params_unit(pp1, pp2, control)
     c[3:4] .= p1[3:4] .+ p2[3:4]
  
     c[5:9] .= pp1[5:9]
-    return c
+    c
 end
 
-function CombinationParam(p1, p2)
-    """ A function to calculate Bliss independence for drug combination assuming
-    the two drugs hit different pathways and they effect independently. """
+""" Using the unit function to find all combinations of parameters. """
+function AllBliss_params(pp1, pp2)
+    # pp1 and pp2 are 2D arrays [9 x 8] each includes the parameters fo all concentrations of a drug. 
 
-    pprime1 = copy(p1)
-    pprime2 = copy(p2)
-    param1 = Matrix{eltype(p1)}(undef, 4, 8)
-    param2 = Matrix{eltype(p2)}(undef, 4, 8)
-
-    # drug A
-    param1[1:2, :] .= 1.0 .- (pprime1[1:2, :] ./ pprime1[1:2, 1]) # g1 and g2 prog. rates
-    param1[3:4, :] .= pprime1[3:4, :]                             # g1 and g2 death rates
-    # drug B
-    param2[1:2, :] .= 1.0 .- (pprime2[1:2, :] ./ pprime2[1:2, 1])
-    param2[3:4, :] .= pprime2[3:4, :]
-
-    # make sure normalized correctly; the prog. rates in control condition must be zero in both drugs.
-    @assert param1[1, 1] == param1[2, 1] == param2[1, 1] == param2[2, 1] == 0.0
-    combined = Array{eltype(param1), 3}(undef, 8, 8, 4)
-
-    # For 8x8 combination of drug concentrations for G1 progression rate, G2 progression rate, and death rates in G1 and G2, respectively.
-    for j = 1:8
-        for k = 1:8 # param2 is changing, param1 is constant
-            combined[j, k, 1:2] .=
-                (1.0 .- (param1[1:2, j] .+ param2[1:2, k] .- param1[1:2, j] .* param2[1:2, k])) .* ((p1[1:2, 1] .+ p2[1:2, 1]) ./ 2)
-            combined[j, k, 3:4] .= param1[3:4, j] .+ param2[3:4, k]
+    combined = Array{eltype(pp1), 3}(undef, 9, 8, 8)
+    for i=1:8
+        for j=1:8
+            combined[:, i, j] .= Bliss_params_unit(pp1[:, i], pp2[:, j], hcat(pp1[:, 1], pp2[:, 1]))
         end
     end
-    @assert(all(combined .>= 0.0))
-    @assert(all(combined .<= 5.0))
-
-    return combined
+    @assert(all(combined[1:4, :, :] .>= 0.0))
+    @assert(all(combined[1:4, :, :] .<= 5.0))
+    combined
 end
 
-
-""" To output the full ODE params for plotting the cell number. """
-function fullCombinationParam(origP1, origP2, origFullParam)
-    """ Here we assume the base is origP1. """
-    combined = CombinationParam(origP1, origP2)
-    fullparam = Array{eltype(origP1), 3}(undef, 9, 8, 8)
-    fullparam[5:9, :, :] .= origFullParam[5:9, 1, 1]
-    fullparam[1:4, :, :] .= permutedims(combined[:, :, 1:4], (3, 1, 2))
-    return fullparam
-end
 
 """ This function calculates cell number for parameter sets that are the result of Bliss on prog. rates. """
 function BlissModelComb(bliss_comb, g0)
@@ -119,25 +91,4 @@ function blissCellNum(g1s, g2s; n = 8)
 
     @assert all(combined .>= 0.0)
     return combined
-end
-
-""" This function calculates parameter values at their EC50 for all drugs given estimated parameters from AllDrugAtOnce fitting. """
-function paramsAtEC50(p)
-    ps = zeros(9, 5) # num_parameters x number of drugs.
-    k = 1
-    for i = 1:5
-        ps[:, i] = [
-            0.5 * (p[36] + p[k + 2]),
-            0.5 * (p[37] + p[k + 3]),
-            0.5 * p[k + 4],
-            0.5 * p[k + 5],
-            p[k + 6],
-            floor(p[38]),
-            floor(p[39]),
-            floor(p[40]),
-            floor(p[41]),
-        ]
-        k += 7
-    end
-    return ps
 end
