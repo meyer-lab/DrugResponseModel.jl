@@ -10,30 +10,21 @@ import Pkg; Pkg.instantiate()
 
 Pkg.activate(".")
 using DrugResponseModel
-using ExponentialUtilities
 using Plots
 Plots.scalefontsizes(0.7)
 
-concs, populations1, g1s1, g2s1 = load(189, 1);
-concs, populations2, g1s2, g2s2 = load(189, 2);
-concs, populations3, g1s3, g2s3 = load(189, 3);
+concs, _, g1s1, g2s1 = load(189, 1);
+_, _, g1s2, g2s2 = load(189, 2);
+_, _, g1s3, g2s3 = load(189, 3);
 g0 = g1s1[1,1,1]+g2s1[1,1,1];
 
 g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
 g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
-popavg = g1avg .+ g2avg;
+g0 = g1s1[1,1,1]+g2s1[1,1,1];
 
 # this is the optimum estimated parameters for all drugs at once, and considers % in G1 separately for drugs. ==> 41 parameters
-p = [97.7434, 1.41726, 0.0501761, 0.930205, 0.111494, 0.123604, 0.552216, 
-     92.9045, 1.40024, 0.996396, 0.0513087, 0.521831, 0.6535, 0.566578, 
-     15.5317, 2.3689, 0.592433, 0.999986, 0.0283363, 0.286975, 0.503328, 
-     3.96929, 4.62768, 0.0512281, 0.307528, 0.549714, 0.378717, 0.50959, 
-     63.4248, 0.976052, 0.16582, 0.740009, 0.0572609, 0.0776912, 0.534201, 
-     0.734513, 0.375555, 16.8387, 12.3945, 30.176, 14.5352];
+p = DrugResponseModel.return_param41()
 
-IC50_lap, IC50_dox, IC50_gem, IC50_tax, IC50_pal = DrugResponseModel.find_IC(popavg, 0.5);
-println("IC50s from the data: \n lpt ", concs[IC50_lap,1], " dox ", concs[IC50_dox,2], " gem ", concs[IC50_gem,3], " tax ", concs[IC50_tax,4], " pal ", concs[IC50_pal,5])
-println("\n IC50s from the model: \n lpt ", p[1], " dox ", p[8], " gem ", p[15], " tax ", p[22], " pal ", p[29])
 effs = getODEparamsAll(p, concs);
 lapat = effs[:, :, 1];
 dox = effs[:, :, 2];
@@ -52,195 +43,71 @@ BlissOnData = DrugResponseModel.blissCellNum(g1avg, g2avg; n = 8); # includes ar
 # Lapatinib and doxorubicin
 
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(lapat, dox, effs)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
-diff = bliss_comb_cellnum .- BlissOnData[:, :, 1]
-frac = bliss_comb_cellnum ./ BlissOnData[:, :, 1]
+function plt_heatmap_combin(drug1_ind, drug2_ind, effs, g0, concs, BlissData)
+  names = ["Lpt", "Dox", "Gem", "Tax", "Palb"]
+  bliss_comb = DrugResponseModel.fullCombinationParam(effs[:, :, drug1_ind], effs[:, :, drug2_ind], effs)
+  bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+  diff = bliss_comb_cellnum .- BlissData
+  frac = bliss_comb_cellnum ./ BlissData
 
-p1=Heatmap(concs, bliss_comb_cellnum, 1, 2, "Lpt", "Dox", "Bliss Cell Cycle Model")
-p2=Heatmap(concs, BlissOnData[:, :, 1], 1, 2, "Lpt", "Dox", "Bliss Data")
-p3=Heatmap(concs, diff, 1, 2, "Lpt", "Dox", "model - data", clim_min = -10.0, clim_max = 15.0)
-p4=Heatmap(concs, frac, 1, 2, "Lpt", "Dox", "model / data", clim_min = 0.0, clim_max = 2.0)
+  p1=Heatmap(concs, bliss_comb_cellnum, drug1_ind, drug2_ind, names[drug1_ind], names[drug2_ind], "Bliss Cell Cycle Model")
+  p2=Heatmap(concs, BlissData, drug1_ind, drug2_ind, names[drug1_ind], names[drug2_ind], "Bliss Data")
+  p3=Heatmap(concs, diff, drug1_ind, drug2_ind, names[drug1_ind], names[drug2_ind], "model - data", clim_min = -10.0, clim_max = 15.0)
+  p4=Heatmap(concs, frac, drug1_ind, drug2_ind, names[drug1_ind], names[drug2_ind], "model / data", clim_min = 0.0, clim_max = 2.0)
 
-plot(p1, p2, size=(400, 550), layout=(2, 1))
-```
-## differences
-```julia
-plot(p3, p4, size=(400, 550), layout=(2, 1))
+  return plot(p1, p2, p3, p4, layout=(2, 2))
+end
+
+plt_heatmap_combin(1, 2, effs, g0, concs, BlissOnData[:, :, 1])
 ```
 
 # Lapatinib and gemcitabine
 
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(lapat, gemc, effs)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
-diff = bliss_comb_cellnum .- BlissOnData[:, :, 2]
-frac = bliss_comb_cellnum ./ BlissOnData[:, :, 2]
-
-p1=Heatmap(concs, bliss_comb_cellnum, 1, 3, "Lpt", "Gem", "Bliss Cell Cycle Model")
-p2=Heatmap(concs, BlissOnData[:, :, 2], 1, 3, "Lpt", "Gem", "Bliss Data")
-p3=Heatmap(concs, diff, 1, 3, "Lpt", "Gem", "model - data", clim_min = -10.0, clim_max = 15.0)
-p4=Heatmap(concs, frac, 1, 3, "Lpt", "Gem", "model / data", clim_min = 0.0, clim_max = 2.0)
-plot(p1, p2, size=(400, 550), layout=(2, 1))
-```
-## differences
-```julia
-plot(p3, p4, size=(400, 550), layout=(2, 1))
+plt_heatmap_combin(1, 3, effs, g0, concs, BlissOnData[:, :, 2])
 ```
 
 
 # Lapatinib and paclitaxel
 
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(lapat, pac, effs)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
-diff = bliss_comb_cellnum .- BlissOnData[:, :, 3]
-frac = bliss_comb_cellnum ./ BlissOnData[:, :, 3]
-
-p1=Heatmap(concs, bliss_comb_cellnum, 1, 4, "Lpt", "Tax", "Bliss Cell Cycle Model")
-p2=Heatmap(concs, BlissOnData[:, :, 3], 1, 4, "Lpt", "Tax", "Bliss Data")
-p3=Heatmap(concs, diff, 1, 4, "Lpt", "Tax", "model - data", clim_min = -10.0, clim_max = 15.0)
-p4=Heatmap(concs, frac, 1, 4, "Lpt", "Tax", "model / data", clim_min = 0.0, clim_max = 2.0)
-
-plot(p1, p2, size=(400, 550), layout=(2, 1))
-```
-## differences
-```julia
-plot(p3, p4, size=(400, 550), layout=(2, 1))
+plt_heatmap_combin(1, 4, effs, g0, concs, BlissOnData[:, :, 3])
 ```
 
 # Lapatinib and palbociclib
 
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(lapat, pal, effs)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
-diff = bliss_comb_cellnum .- BlissOnData[:, :, 4]
-frac = bliss_comb_cellnum ./ BlissOnData[:, :, 4]
-
-p1=Heatmap(concs, bliss_comb_cellnum, 1, 5, "Lpt", "Palbo", "Bliss Cell Cycle Model")
-p2=Heatmap(concs, BlissOnData[:, :, 4], 1, 5, "Lpt", "Palbo", "Bliss Data")
-p3=Heatmap(concs, diff, 1, 5, "Lpt", "Palbo", "model - data", clim_min = -10.0, clim_max = 15.0)
-p4=Heatmap(concs, frac, 1, 5, "Lpt", "Palbo", "model / data", clim_min = 0.0, clim_max = 2.0)
-
-plot(p1, p2, size=(400, 550), layout=(2, 1))
-```
-## differences
-```julia
-plot(p3, p4, size=(400, 550), layout=(2, 1))
+plt_heatmap_combin(1, 5, effs, g0, concs, BlissOnData[:, :, 4])
 ```
 
 # Doxorubicin and gemcitabine
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(dox, gemc, effs)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
-diff = bliss_comb_cellnum .- BlissOnData[:, :, 5]
-frac = bliss_comb_cellnum ./ BlissOnData[:, :, 5]
-
-p1=Heatmap(concs, bliss_comb_cellnum, 2, 3, "Dox", "Gem", "Bliss Cell Cycle Model")
-p2=Heatmap(concs, BlissOnData[:, :, 5], 2, 3, "Dox", "Gem", "Bliss Data")
-p3=Heatmap(concs, diff, 2, 3, "Dox", "Gem", "model - data", clim_min = -10.0, clim_max = 15.0)
-p4=Heatmap(concs, frac, 2, 3, "Dox", "Gem", "model / data", clim_min = 0.0, clim_max = 2.0)
-
-plot(p1, p2, size=(400, 550), layout=(2, 1))
-```
-## differences
-```julia
-plot(p3, p4, size=(400, 550), layout=(2, 1))
+plt_heatmap_combin(2, 3, effs, g0, concs, BlissOnData[:, :, 5])
 ```
 
 # Doxorubicin and paclitaxel
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(dox, pac, effs)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
-diff = bliss_comb_cellnum .- BlissOnData[:, :, 6]
-frac = bliss_comb_cellnum ./ BlissOnData[:, :, 6]
-
-p1=Heatmap(concs, bliss_comb_cellnum, 2, 4, "Dox", "Tax", "Bliss Cell Cycle Model")
-p2=Heatmap(concs, BlissOnData[:, :, 6], 2, 4, "Dox", "Tax", "Bliss Data")
-p3=Heatmap(concs, diff, 2, 4, "Dox", "Tax", "model - data", clim_min = -10.0, clim_max = 15.0)
-p4=Heatmap(concs, frac, 2, 4, "Dox", "Tax", "model / data", clim_min = 0.0, clim_max = 2.0)
-
-plot(p1, p2, size=(400, 550), layout=(2, 1))
-```
-## differences
-```julia
-plot(p3, p4, size=(400, 550), layout=(2, 1))
+plt_heatmap_combin(2, 4, effs, g0, concs, BlissOnData[:, :, 6])
 ```
 
 
 # Doxorubicin and palbociclib
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(dox, pal, effs)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
-diff = bliss_comb_cellnum .- BlissOnData[:, :, 7]
-frac = bliss_comb_cellnum ./ BlissOnData[:, :, 7]
-
-p1=Heatmap(concs, bliss_comb_cellnum, 2, 5, "Dox", "Palbo", "Bliss Cell Cycle Model")
-p2=Heatmap(concs, BlissOnData[:, :, 7], 2, 5, "Dox", "Palbo", "Bliss Data")
-p3=Heatmap(concs, diff, 2, 5, "Dox", "Palbo", "model - data", clim_min = -10.0, clim_max = 15.0)
-p4=Heatmap(concs, frac, 2, 5, "Dox", "Palbo", "model / data", clim_min = 0.0, clim_max = 2.0)
-
-plot(p1, p2, size=(400, 550), layout=(2, 1))
-```
-## differences
-```julia
-plot(p3, p4, size=(400, 550), layout=(2, 1))
+plt_heatmap_combin(2, 5, effs, g0, concs, BlissOnData[:, :, 7])
 ```
 
 
 # Gemcitabine and paclitaxel
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(gemc, pac, effs)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
-diff = bliss_comb_cellnum .- BlissOnData[:, :, 8]
-frac = bliss_comb_cellnum ./ BlissOnData[:, :, 8]
-
-p1=Heatmap(concs, bliss_comb_cellnum, 3, 4, "Gem", "Tax", "Bliss Cell Cycle Model")
-p2=Heatmap(concs, BlissOnData[:, :, 8], 3, 4, "Gem", "Tax", "Bliss Data")
-p3=Heatmap(concs, diff, 3, 4, "Gem", "Tax", "model - data", clim_min = -10.0, clim_max = 15.0)
-p4=Heatmap(concs, frac, 3, 4, "Gem", "Tax", "model / data", clim_min = 0.0, clim_max = 2.0)
-
-plot(p1, p2, size=(400, 550), layout=(2, 1))
-```
-## differences
-```julia
-plot(p3, p4, size=(400, 550), layout=(2, 1))
+plt_heatmap_combin(3, 4, effs, g0, concs, BlissOnData[:, :, 8])
 ```
 
 # Gemcitabine and palbociclib
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(gemc, pal, effs)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
-diff = bliss_comb_cellnum .- BlissOnData[:, :, 9]
-frac = bliss_comb_cellnum ./ BlissOnData[:, :, 9]
-
-p1=Heatmap(concs, bliss_comb_cellnum, 3, 5, "Gem", "Palbo", "Bliss Cell Cycle Model")
-p2=Heatmap(concs, BlissOnData[:, :, 9], 3, 5, "Gem", "Palbo", "Bliss Data")
-p3=Heatmap(concs, diff, 3, 5, "Gem", "Palbo", "model - data", clim_min = -10.0, clim_max = 15.0)
-p4=Heatmap(concs, frac, 3, 5, "Gem", "Palbo", "model / data", clim_min = 0.0, clim_max = 2.0)
-
-plot(p1, p2, size=(400, 550), layout=(2, 1))
-```
-## differences
-```julia
-plot(p3, p4, size=(400, 550), layout=(2, 1))
+plt_heatmap_combin(3, 5, effs, g0, concs, BlissOnData[:, :, 9])
 ```
 
 # Paclitaxel and palbociclib
 ```julia
-bliss_comb = DrugResponseModel.fullCombinationParam(pac, pal, effs)
-bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
-diff = bliss_comb_cellnum .- BlissOnData[:, :, 10]
-frac = bliss_comb_cellnum ./ BlissOnData[:, :, 10]
-
-p1=Heatmap(concs, bliss_comb_cellnum, 4, 5, "Tax", "Palbo", "Bliss Cell Cycle Model")
-p2=Heatmap(concs, BlissOnData[:, :, 10], 4, 5, "Tax", "Palbo", "Bliss Data")
-p3=Heatmap(concs, diff, 4, 5, "Tax", "Palbo", "model - data", clim_min = -10.0, clim_max = 15.0)
-p4=Heatmap(concs, frac, 4, 5, "Tax", "Palbo", "model / data", clim_min = 0.0, clim_max = 2.0)
-
-plot(p1, p2, size=(400, 550), layout=(2, 1))
-```
-## differences
-```julia
-plot(p3, p4, size=(400, 550), layout=(2, 1))
+plt_heatmap_combin(4, 5, effs, g0, concs, BlissOnData[:, :, 10])
 ```
