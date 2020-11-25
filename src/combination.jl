@@ -4,6 +4,7 @@
 
 """ Unit function to calculate the bliss for 2 drugs at one specific concentration. """
 function Bliss_params_unit(pp1, pp2, control)
+    # pp1 and pp2 are 1D arrays of size 9, including 9 parameters for a single concentration.
     p1 = copy(pp1)
     p2 = copy(pp2)
     # normalization
@@ -18,7 +19,22 @@ function Bliss_params_unit(pp1, pp2, control)
     c[3:4] .= p1[3:4] .+ p2[3:4]
  
     c[5:9] .= pp1[5:9]
-    return c
+    c
+end
+
+""" Using the unit function to find all combinations of parameters. """
+function AllBliss_params(pp1, pp2)
+    # pp1 and pp2 are 2D arrays [9 x 8] each includes the parameters fo all concentrations of a drug. 
+
+    combined = Array{eltype(pp1), 3}(undef, 9, 8, 8)
+    for i=1:8
+        for j=1:8
+            combined[:, i, j] .= Bliss_params_unit(pp1[:, i], pp2[:, j], hcat(pp1[:, 1], pp2[:, 1]))
+        end
+    end
+    @assert(all(combined[1:4, :, :] .>= 0.0))
+    @assert(all(combined[1:4, :, :] .<= 5.0))
+    combined
 end
 
 function CombinationParam(p1, p2)
