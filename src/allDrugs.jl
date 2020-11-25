@@ -1,8 +1,8 @@
 """ In this file we fit all the drugs att once. """
 
 """ This function """
-function getODEparamsAll(p::Array{Float64, 1}, concentrations::Array{Float64, 2})
-    effects = zeros(9, length(concentrations[:, 1]), 5)
+function getODEparamsAll(p, concentrations::Array{Float64, 2})
+    effects = zeros(eltype(p), 9, length(concentrations[:, 1]), 5)
 
     k = 1
     # Scaled drug effect
@@ -34,7 +34,7 @@ function getODEparamsAll(p::Array{Float64, 1}, concentrations::Array{Float64, 2}
 end
 
 
-function residHillAll(hP::Vector, concentrations::Matrix, g1::Array, g2::Array)
+function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array)
     res = 0.0
 
     # Solve for all drugs
@@ -48,6 +48,17 @@ function residHillAll(hP::Vector, concentrations::Matrix, g1::Array, g2::Array)
     return res
 end
 
+""" Organize Hill parameters for each drug in a 2D array. """
+function Hill_p_eachDr(p)
+    HillP = Matrix{eltype(p)}(undef, 7, 5)
+    # each column: [EC50, steepness, max_g1_prog., max_g2_prog., max_g1_death, max_g2_death, %G1]
+    j = 1
+    for i=1:5
+        HillP[:, i] .= p[j:(j+6)]
+        j += 7
+    end
+    HillP
+end
 
 function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 100000)
     f(x) = residHillAll(x, concs, g1, g2)

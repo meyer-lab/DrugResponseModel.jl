@@ -1,0 +1,111 @@
+---
+weave_options:
+  error: false
+  echo: false
+---
+
+```julia
+import Pkg; Pkg.instantiate()
+
+Pkg.activate(".")
+using DrugResponseModel
+using Plots
+Plots.scalefontsizes(0.7)
+```
+To show the sensitivity of cell number difference predicted by combination.
+
+```julia
+concs, _, g1s1, g2s1 = load(189, 1);
+g0 = g1s1[1,1,1]+g2s1[1,1,1];
+```
+
+```julia
+p = [97.7434, 1.41726, 0.0501761, 0.930205, 0.111494, 0.123604, 0.552216, 
+        92.9045, 1.40024, 0.996396, 0.0513087, 0.521831, 0.6535, 0.566578, 
+        15.5317, 2.3689, 0.592433, 0.999986, 0.0283363, 0.286975, 0.503328, 
+        3.96929, 4.62768, 0.0512281, 0.307528, 0.549714, 0.378717, 0.50959, 
+        63.4248, 0.976052, 0.16582, 0.740009, 0.0572609, 0.0776912, 0.534201, 
+        0.734513, 0.375555, 16.8387, 12.3945, 30.176, 14.5352]
+    g0 = 20.0
+
+
+function make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+  
+  lpDX = DrugResponseModel.get_derivative(p, Dr1Ind, Dr2Ind, concs, g0)
+  twoDHillp = DrugResponseModel.Hill_p_eachDr(lpDX)
+  names = ["LPT", "DOX", "GEM", "TAX", "PLB"]
+  xaxis = ["EC50", "steepness", "G1_prog_max", "G2_prog_max", "G1_death_max", "G2_death_max", "%G1"]
+  p1 = bar(xaxis, twoDHillp[:, Dr1Ind], title=names[Dr1Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
+  p2 = bar(xaxis, twoDHillp[:, Dr2Ind], title=names[Dr2Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
+  plot(p1, p2)
+end
+```
+# LPT and DOX
+```julia
+Dr1Ind = 1
+Dr2Ind = 2
+make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+```
+
+# LPT and GEM
+```julia
+Dr1Ind = 1
+Dr2Ind = 3
+make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+```
+
+# LPT and TXL
+```julia
+Dr1Ind = 1
+Dr2Ind = 4
+make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+```
+
+# LPT and PLB
+```julia
+Dr1Ind = 1
+Dr2Ind = 5
+make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+```
+
+# DOX and GEM
+```julia
+Dr1Ind = 2
+Dr2Ind = 3
+make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+```
+
+# DOX and TXL
+```julia
+Dr1Ind = 2
+Dr2Ind = 4
+make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+```
+
+# DOX and PLB
+```julia
+Dr1Ind = 2
+Dr2Ind = 5
+make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+```
+
+# GEM and TXL
+```julia
+Dr1Ind = 3
+Dr2Ind = 4
+make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+```
+
+# GEM and PLB
+```julia
+Dr1Ind = 3
+Dr2Ind = 5
+make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+```
+
+# TXL and PLB
+```julia
+Dr1Ind = 4
+Dr2Ind = 5
+make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+```

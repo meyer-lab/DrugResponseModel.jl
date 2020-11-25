@@ -12,7 +12,7 @@
     p2[2, 2:end] .= 0.5     # g2 prog. rate in all other concentrations
     p2[1, 1] = 0.6          # g1 prog. rate in control
     p2[1, 2:end] .= 0.3     # g1 prog. rate in all other concentrations
-    combination = DrugResponseModel.CombinationParam(p1, p2, 8)
+    combination = DrugResponseModel.CombinationParam(p1, p2)
     @assert(all(combination[1:2, 2:end, 2] .>= 0.3))
     @assert(all(combination[1:2, 2:end, 2] .<= 0.5))
 end
@@ -24,7 +24,7 @@ end
     p1 = DrugResponseModel.getODEparams(gem_before, concs[:, 3])
     p2 = DrugResponseModel.getODEparams(dox_before, concs[:, 2])
 
-    cmb = DrugResponseModel.CombinationParam(p1, p2, 8)
+    cmb = DrugResponseModel.CombinationParam(p1, p2)
     print(cmb[1, :, end])
     @assert(all(cmb[1, :, end] .>= 0.0))
     @assert(all(cmb[1, :, end] .<= 0.2))
