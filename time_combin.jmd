@@ -12,14 +12,9 @@ Pkg.activate(".")
 using DrugResponseModel
 using Plots, LinearAlgebra
 
-concs, populations1, g1s1, g2s1 = load(189, 1);
-concs, populations2, g1s2, g2s2 = load(189, 2);
-concs, populations3, g1s3, g2s3 = load(189, 3);
+concs, _, g1s1, g2s1 = load(189, 1);
 g0 = g1s1[1,1,1]+g2s1[1,1,1];
 
-g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
-g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
-popavg = g1avg .+ g2avg
 paramAvg = [97.7434, 1.41726, 0.0501761, 0.930205, 0.111494, 0.123604, 0.552216, 
      92.9045, 1.40024, 0.996396, 0.0513087, 0.521831, 0.6535, 0.566578, 
      15.5317, 2.3689, 0.592433, 0.999986, 0.0283363, 0.286975, 0.503328, 
@@ -30,8 +25,8 @@ efcs = getODEparamsAll(paramAvg, concs);
 tim = 0.0:1.0:96.0;
 
 """ To avoid repetition. """
-function plot_combin_time(paramAvg, idA, idB, DrugA_name, DrugB_name, concA, concB)
-  bliss_comb =  DrugResponseModel.CombinationParam(paramAvg, idA, idB)
+function plot_combin_time(idA, idB, efcts, DrugA_name, DrugB_name, concA, concB)
+  bliss_comb = DrugResponseModel.fullCombinationParam(efcts[:, :, idA], efcts[:, :, idB], efcts)
   combb = bliss_comb[:, concA, concB]
   G1_lap, G2_lap = predict(efcs[:, concA, idA], g0, tim)
   G1_dox, G2_dox = predict(efcs[:, concA, idB], g0, tim)
