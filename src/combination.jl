@@ -17,7 +17,7 @@ function Bliss_params_unit(pp1, pp2, control)
     c = Array{eltype(pp1), 1}(undef, 9)
     c[1:2] .= (1.0 .- (p1[1:2] .+ p2[1:2] .- p1[1:2] .* p2[1:2])) .* ((control[1:2, 1] .+ control[1:2, 2]) ./ 2)
     c[3:4] .= p1[3:4] .+ p2[3:4]
- 
+
     c[5:9] .= pp1[5:9]
     c
 end
@@ -27,8 +27,8 @@ function AllBliss_params(pp1, pp2)
     # pp1 and pp2 are 2D arrays [9 x 8] each includes the parameters fo all concentrations of a drug. 
 
     combined = Array{eltype(pp1), 3}(undef, 9, 8, 8)
-    for i=1:8
-        for j=1:8
+    for i = 1:8
+        for j = 1:8
             combined[:, i, j] .= Bliss_params_unit(pp1[:, i], pp2[:, j], hcat(pp1[:, 1], pp2[:, 1]))
         end
     end
