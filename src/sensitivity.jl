@@ -62,8 +62,8 @@ function calc_cellNum(pDr1, pDr2, g0)
     # that is the result of each drug on ec50 separately.
     g1d1, g2d1, _ = predict(pDr1, g0, 96.0)
     g1d2, g2d2, _ = predict(pDr2, g0, 96.0)
-    normNum = 1.0 .- [(g1d1 + g2d1)/g0, (g1d2 + g2d2)/g0]
-    combin = -((normNum[1] + normNum[2] - normNum[1] * normNum[2]) .- 1.0) * g0 
+    normNum = 1.0 .- [(g1d1 + g2d1) / g0, (g1d2 + g2d2) / g0]
+    combin = -((normNum[1] + normNum[2] - normNum[1] * normNum[2]) .- 1.0) * g0
     return combin
 end
 
