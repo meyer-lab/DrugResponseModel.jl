@@ -75,17 +75,27 @@ function EC50_params(p, i)
 end
 
 """ Calculates the difference between the bliss_cell number and bliss_params. """
-function calc_diff(Hillp, Dr1Ind, Dr2Ind, concs, g0)
+function calc_diff(Hillp, Dr1Ind, Dr2Ind, concs, g0, whichone)
     effs = getODEparamsAll(Hillp, concs)
     ec501 = EC50_params(Hillp, Dr1Ind)
     ec502 = EC50_params(Hillp, Dr2Ind)
-    combin = calc_cellNum(ec501, ec502, g0)
+    if whichone == Dr1Ind
+        ppp = ec501
+    elseif whichone == Dr2Ind
+        ppp = ec502
+    end
+    # combin = calc_cellNum(ec501, ec502, g0)
+    g1_c, g2_c, _ = predict(ppp, g0, 96.0)
+
     bliss_comb = DrugResponseModel.Bliss_params_unit(ec501, ec502, hcat(effs[:, 1, Dr1Ind], effs[:, 1, Dr2Ind]))
     g1, g2, _ = predict(bliss_comb, g0, 96.0)
-    return combin - (g1 + g2)
+    return (g1_c + g2_c) - (g1 + g2)
 end
 
 function get_derivative(x, Dr1Ind, Dr2Ind, concs, g0)
-    fd(x) = calc_diff(x, Dr1Ind, Dr2Ind, concs, g0)
-    return ForwardDiff.gradient(fd, x)
+    fd1(x) = calc_diff(x, Dr1Ind, Dr2Ind, concs, g0, Dr1Ind)
+    fd2(x) = calc_diff(x, Dr1Ind, Dr2Ind, concs, g0, Dr2Ind)
+    diff1 = ForwardDiff.gradient(fd1, x)
+    diff2 = ForwardDiff.gradient(fd2, x)
+    return diff1, diff2
 end
