@@ -28,9 +28,9 @@ function make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
   
   lpDX1, lpDX2 = DrugResponseModel.get_derivative(p, Dr1Ind, Dr2Ind, concs, g0)
   d1 = DrugResponseModel.Hill_p_eachDr(lpDX1)
-  d1[5:6] .= d1[5:6] ./ p[40:41]
+  d1[5:6, :] .= d1[5:6, :] ./ p[40:41]
   d2 = DrugResponseModel.Hill_p_eachDr(lpDX2)
-  d2[5:6] .= d2[5:6] ./ p[40:41]
+  d2[5:6, :] .= d2[5:6, :] ./ p[40:41]
 
   names = ["LPT", "DOX", "GEM", "TAX", "PLB"]
   xaxis = ["G1_prog_max", "G2_prog_max", "G1_death_max", "G2_death_max"]
