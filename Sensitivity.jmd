@@ -37,6 +37,7 @@ function make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
   p1 = bar(xaxis, d1[3:6, Dr1Ind], title=names[Dr1Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
   p2 = bar(xaxis, d2[3:6, Dr2Ind], title=names[Dr2Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
   plot(p1, p2)
+  ylims!((-8.0, 8.0))
 end
 ```
 # LPT and DOX
