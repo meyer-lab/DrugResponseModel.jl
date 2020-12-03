@@ -45,7 +45,7 @@ BlissOnData = DrugResponseModel.blissCellNum(g1avg, g2avg; n = 8); # includes ar
 ```julia
 function plt_heatmap_combin(drug1_ind, drug2_ind, effs, g0, concs, BlissData)
   names = ["Lpt", "Dox", "Gem", "Tax", "Palb"]
-  bliss_comb = DrugResponseModel.fullCombinationParam(effs[:, :, drug1_ind], effs[:, :, drug2_ind], effs)
+  bliss_comb = DrugResponseModel.AllBliss_params(effs[:, :, drug1_ind], effs[:, :, drug2_ind])
   bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
   diff = bliss_comb_cellnum .- BlissData
   frac = bliss_comb_cellnum ./ BlissData
