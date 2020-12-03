@@ -46,8 +46,10 @@
     g0 = 20.0
     effs = getODEparamsAll(p, concs)
     # Check that these at least run
-    der = DrugResponseModel.get_derivative(p, 1, 2, concs, g0)
-    @assert(all(der .>= -1000.0))
-    @assert(all(der .<= 1000.0))
+    der1, der2 = DrugResponseModel.get_derivative(p, 1, 2, concs, g0)
+    @assert(all(der1 .>= -100.0))
+    @assert(all(der1 .<= 100.0))
+    @assert(all(der2 .>= -100.0))
+    @assert(all(der2 .<= 100.0))
 
 end
