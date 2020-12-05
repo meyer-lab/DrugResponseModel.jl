@@ -16,6 +16,7 @@ import ExponentialUtilities
 import LineSearches
 using Polynomials
 using DiffResults
+using WebIO
 
 include("importData.jl")
 include("ODEmodel.jl")
