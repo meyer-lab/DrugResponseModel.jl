@@ -62,16 +62,9 @@ function calc_cellNum(pDr1, pDr2, g0)
     # that is the result of each drug on ec50 separately.
     g1d1, g2d1, _ = predict(pDr1, g0, 96.0)
     g1d2, g2d2, _ = predict(pDr2, g0, 96.0)
-    normNum = 1.0 .- [(g1d1 + g2d1)/g0, (g1d2 + g2d2)/g0]
-    combin = -((normNum[1] + normNum[2] - normNum[1] * normNum[2]) .- 1.0) * g0 
+    normNum = 1.0 .- [(g1d1 + g2d1) / g0, (g1d2 + g2d2) / g0]
+    combin = -((normNum[1] + normNum[2] - normNum[1] * normNum[2]) .- 1.0) * g0
     return combin
-end
-
-""" Takes in the 41 long Hill params, outputs the 9 long params at EC50. """
-function EC50_params(p, i)
-    d = DrugResponseModel.Hill_p_eachDr(p)
-    # returns the following at EC50: [g1_prog., g2_prog, g1_death, g2_death, g1%, nG1, nG2, nD1, nD2]
-    return append!([p[36] + (d[3, i] - p[36])/2, p[37] + (d[4, i] - p[37])/2, d[5, i]/2, d[6, i]/2, d[7, i]], p[38:41])
 end
 
 """ Calculates the difference between the bliss_cell number and bliss_params. """
@@ -80,7 +73,7 @@ function calc_diff(Hillp, Dr1Ind, Dr2Ind, concs, g0)
     ec501 = EC50_params(Hillp, Dr1Ind)
     ec502 = EC50_params(Hillp, Dr2Ind)
     combin = calc_cellNum(ec501, ec502, g0)
-    bliss_comb = DrugResponseModel.Bliss_params_unit(ec501, ec502, hcat(effs[:, 1, Dr1Ind], effs[:, 1, Dr2Ind]))
+    bliss_comb = Bliss_params_unit(ec501, ec502, hcat(effs[:, 1, Dr1Ind], effs[:, 1, Dr2Ind]))
     g1, g2, _ = predict(bliss_comb, g0, 96.0)
     return combin - (g1 + g2)
 end
