@@ -10,12 +10,12 @@ Time series simulation for a pair of drugs in their EC50 concentration based on 
 import Pkg; Pkg.instantiate()
 Pkg.activate(".")
 using DrugResponseModel
-using Plots, LinearAlgebra
+using Plots
 Plots.scalefontsizes(0.7)
 
-concs, populations1, g1s1, g2s1 = load(189, 1);
-concs, populations2, g1s2, g2s2 = load(189, 2);
-concs, populations3, g1s3, g2s3 = load(189, 3);
+concs, _, g1s1, g2s1 = load(189, 1);
+_, _, g1s2, g2s2 = load(189, 2);
+_, _, g1s3, g2s3 = load(189, 3);
 g0 = g1s1[1,1,1]+g2s1[1,1,1];
 
 g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
@@ -29,16 +29,9 @@ efcs = getODEparamsAll(paramAvg, concs);
 EC50s = [round(paramAvg[1], digits=1), round(paramAvg[8], digits=1), round(paramAvg[15], digits=1), round(paramAvg[22], digits=1), round(paramAvg[29], digits=1)]
 
 ### Our way of Bliss combination:
-
-params = DrugResponseModel.paramsAtEC50(paramAvg)
-
-function BlissUnit(p1, p2)
-    # p1 and p2 are Arrays 9x1 and are assumed to be from the EC50 concentration.
-    combin = similar(p1)
-    combin[1:2] .= p1[1:2] .+ p2[1:2] .- p1[1:2] .* p2[1:2]
-    combin[3:4] .= p1[3:4] .+ p2[3:4]
-    combin[5:end] .= p1[5:end]
-    return combin
+params = zeros(9, 5)
+for i=1:5
+  params[:, i] = DrugResponseModel.EC50_params(paramAvg, i)
 end
 
 tim = 0.0:2:88.0
@@ -48,7 +41,7 @@ tim = 0.0:2:88.0
 # Lapatinib and Dox
 ```julia
 
-combin = BlissUnit(params[:, 1], params[:, 2]) # lpt and dox
+combin = Bliss_params_unit(params[:, 1], params[:, 2], hcat(efcs[:, 1, 1], efcs[:, 1, 2])) # lpt and dox
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
@@ -61,7 +54,7 @@ plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr
 # Lpt and Gemc
 ```julia
 
-combin = BlissUnit(params[:, 1], params[:, 3]) # lpt and gmc
+combin = Bliss_params_unit(params[:, 1], params[:, 3], hcat(efcs[:, 1, 1], efcs[:, 1, 3])) # lpt and gmc
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
@@ -73,7 +66,7 @@ plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr
 # Lpt and tax
 ```julia
 
-combin = BlissUnit(params[:, 1], params[:, 4]) # lpt and tax
+combin = Bliss_params_unit(params[:, 1], params[:, 4], hcat(efcs[:, 1, 1], efcs[:, 1, 4])) # lpt and tax
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
@@ -85,7 +78,7 @@ plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr
 # Lpt and Palbo
 ```julia
 
-combin = BlissUnit(params[:, 1], params[:, 5]) # lpt and palbo
+combin = Bliss_params_unit(params[:, 1], params[:, 5], hcat(efcs[:, 1, 1], efcs[:, 1, 5])) # lpt and palbo
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
@@ -97,7 +90,7 @@ plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr
 # Dox and Gemc
 ```julia
 
-combin = BlissUnit(params[:, 2], params[:, 3]) # dox and gmc
+combin = Bliss_params_unit(params[:, 2], params[:, 3], hcat(efcs[:, 1, 2], efcs[:, 1, 3])) # dox and gmc
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
@@ -109,7 +102,7 @@ plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr
 # Dox and Tax
 ```julia
 
-combin = BlissUnit(params[:, 2], params[:, 4]) # dox and tax
+combin = Bliss_params_unit(params[:, 2], params[:, 4], hcat(efcs[:, 1, 2], efcs[:, 1, 4])) # dox and tax
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
@@ -121,7 +114,7 @@ plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr
 # Dox and Palbo
 ```julia
 
-combin = BlissUnit(params[:, 2], params[:, 5]) # dox and palbo
+combin = Bliss_params_unit(params[:, 2], params[:, 5], hcat(efcs[:, 1, 2], efcs[:, 1, 5])) # dox and palbo
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
@@ -132,7 +125,7 @@ plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr
 # Gem and Tax
 ```julia
 
-combin = BlissUnit(params[:, 3], params[:, 4]) # gem and tax
+combin = Bliss_params_unit(params[:, 3], params[:, 4], hcat(efcs[:, 1, 3], efcs[:, 1, 4])) # gem and tax
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
@@ -144,7 +137,7 @@ plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr
 # Gem and Palbo
 ```julia
 
-combin = BlissUnit(params[:, 3], params[:, 5]) # gem and palbo
+combin = Bliss_params_unit(params[:, 3], params[:, 5], hcat(efcs[:, 1, 3], efcs[:, 1, 5])) # gem and palbo
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
@@ -156,7 +149,7 @@ plot!(tim, G1 .+ G2, label="total", lw=2, ylabel="cell number", xlabel="time [hr
 # Tax and Palbo
 ```julia
 
-combin = BlissUnit(params[:, 4], params[:, 5]) # tax and palbo
+combin = Bliss_params_unit(params[:, 4], params[:, 5], hcat(efcs[:, 1, 4], efcs[:, 1, 5])) # tax and palbo
 
 G1, G2 = predict(combin, g1avg[1] + g2avg[1], tim)
 
