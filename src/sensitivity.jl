@@ -57,28 +57,37 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
 end
 
 """ This function calculates the simulated cell number for a pair of drugs in their exact concentration.  """
-function calc_cellNum(pDr1, pDr2, g0)
+function calc_cellNum(pDr1, pDr2, g0, controld1, controld2)
     # here we are saying: if the parameters are in their EC50s, what is the Bliss applied to the cell numbers
     # that is the result of each drug on ec50 separately.
     g1d1, g2d1, _ = predict(pDr1, g0, 96.0)
     g1d2, g2d2, _ = predict(pDr2, g0, 96.0)
-    normNum = 1.0 .- [(g1d1 + g2d1) / g0, (g1d2 + g2d2) / g0]
-    combin = -((normNum[1] + normNum[2] - normNum[1] * normNum[2]) .- 1.0) * g0
+    normD1 = 1.0 - (g1d1 + g2d1) / (controld1)
+    normD2 = 1.0 - (g1d2 + g2d2) / (controld2)
+    combin = -(normD1 + normD2 - (normD1 * normD2) - 1.0) * (controld1 + controld2) / 2
+    print("this is combin", combin)
+    @assert combin >= 0.0
+    
     return combin
 end
 
-""" Calculates the difference between the bliss_cell number and bliss_params. """
-function calc_diff(Hillp, Dr1Ind, Dr2Ind, concs, g0)
+""" Calculates the difference between the combination and single cell effect. """
+function calc_diff(Hillp, Dr1Ind, Dr2Ind, concs, g0, oneortwo)
     effs = getODEparamsAll(Hillp, concs)
     ec501 = EC50_params(Hillp, Dr1Ind)
     ec502 = EC50_params(Hillp, Dr2Ind)
-    combin = calc_cellNum(ec501, ec502, g0)
     bliss_comb = Bliss_params_unit(ec501, ec502, hcat(effs[:, 1, Dr1Ind], effs[:, 1, Dr2Ind]))
     g1, g2, _ = predict(bliss_comb, g0, 96.0)
-    return combin - (g1 + g2)
+    if oneortwo == 1
+        g1_d1, g2_d1, _ = predict(ec501, g0, 96.0)
+        return (g1_d1 + g2_d1) - (g1 + g2)
+    else
+        g1_d2, g2_d2, _ = predict(ec502, g0, 96.0)
+        return (g1_d2 + g2_d2) - (g1 + g2)
+    end
 end
 
-function get_derivative(x, Dr1Ind, Dr2Ind, concs, g0)
-    fd(x) = calc_diff(x, Dr1Ind, Dr2Ind, concs, g0)
+function get_derivative(x, Dr1Ind, Dr2Ind, concs, g0, oneortwo)
+    fd(x) = calc_diff(x, Dr1Ind, Dr2Ind, concs, g0, oneortwo)
     return ForwardDiff.gradient(fd, x)
 end
