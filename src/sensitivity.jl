@@ -78,10 +78,10 @@ function calc_diff(Hillp, Dr1Ind, Dr2Ind, concs, g0, oneortwo)
     ec502 = EC50_params(Hillp, Dr2Ind)
     bliss_comb = Bliss_params_unit(ec501, ec502, hcat(effs[:, 1, Dr1Ind], effs[:, 1, Dr2Ind]))
     g1, g2, _ = predict(bliss_comb, g0, 96.0)
-    if oneortwo == 1
+    if oneortwo == 1 # drug 1
         g1_d1, g2_d1, _ = predict(ec501, g0, 96.0)
         return (g1_d1 + g2_d1) - (g1 + g2)
-    else
+    else # drug 2
         g1_d2, g2_d2, _ = predict(ec502, g0, 96.0)
         return (g1_d2 + g2_d2) - (g1 + g2)
     end
