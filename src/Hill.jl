@@ -42,9 +42,8 @@ end
 function optimize_helper(f, g!, low::Vector, high::Vector, maxstep::Int)
     initial_x = low + (high - low) / 2.0
 
-    ls = LineSearches.BackTracking()
     options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = maxstep)
-    results = optimize(f, g!, low, high, initial_x, Fminbox(LBFGS(linesearch = ls)), options)
+    results = optimize(f, g!, low, high, initial_x, Fminbox(LBFGS()), options)
 
     println(results)
 
