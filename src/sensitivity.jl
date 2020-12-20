@@ -68,7 +68,7 @@ function calc_cellNum(pDr1, pDr2, g0, controld1, controld2)
     combin = -(normD1 + normD2 - (normD1 * normD2) - 1.0) * (controld1 + controld2) / 2
     print("this is combin", combin)
     @assert combin >= 0.0
-    
+
     return combin
 end
 
