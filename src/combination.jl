@@ -41,10 +41,11 @@ end
 """ This function calculates cell number for parameter sets that are the result of Bliss on prog. rates. """
 function BlissModelComb(bliss_comb, g0)
     bliss_comb_cellnum = Matrix{eltype(bliss_comb)}(undef, 8, 8)
+    t = LinRange(0.0, 95.0, 189)
     for i = 1:8 # param1 is changing
         for j = 1:8 # param2 is changing
-            g1, g2, _ = predict(bliss_comb[:, i, j], g0, 96.0)
-            bliss_comb_cellnum[i, j] = g1 + g2
+            g1, g2, _ = predict(bliss_comb[:, i, j], g0, t)
+            bliss_comb_cellnum[i, j] = g1[end] + g2[end]
         end
     end
     return bliss_comb_cellnum
