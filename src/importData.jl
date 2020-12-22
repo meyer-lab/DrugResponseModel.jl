@@ -1,5 +1,5 @@
 """
-        Imports data works for both ODE and DDE model
+        Imports data works for the ODE model
 """
 function get_data(path_g2::String, path_total::String; max = 189)
     # Import data all the trials for each drug
