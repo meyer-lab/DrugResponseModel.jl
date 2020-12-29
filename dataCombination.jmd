@@ -13,7 +13,7 @@ using DrugResponseModel
 using Plots
 Plots.scalefontsizes(0.7)
 
-gt1, gt2 = import_combination("AU01001");
+gt1, gt2 = DrugResponseModel.import_combination("AU01001");
 t = LinRange(0.0, 96, 193);
 ```
 
