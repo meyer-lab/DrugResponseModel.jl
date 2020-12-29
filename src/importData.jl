@@ -26,7 +26,33 @@ function get_data(path_g2::String, path_total::String; max = 189)
     return gs
 end
 
-""" This function takes in the drug name which is a string and must be among this list: ["lapatinib", "doxorubicin", "paclitaxel", "gemcitabine"]. It returns the cnocentrations, population, cell, and initial cell number for that drug."""
+function import_combination(filename::String)
+    basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data")
+    path_g2 = string("/", basePath, "/", filename, "_CYCLE.csv")
+    path_total = string("/", basePath, "/", filename, "_CELL.csv")
+    perc = DataFrame(CSV.File(path_g2))
+    total = DataFrame(CSV.File(path_total))
+
+    # Clip to data of interest
+    perc = convert(Array{Float64, 2}, perc)
+    total = convert(Array{Float64, 2}, total)
+    init_cells = 20.0
+
+    # rescaling the experimental data assuming we have 20 initial cells for each trial
+    gs = zeros(2, size(perc, 1), size(perc, 2))
+    population = init_cells * total
+    gs[1, :, :] = 0.01 * population .* perc
+    gs[2, :, :] = population - gs[1, :, :]
+
+    # removing the peaks
+    for i = 1:size(perc, 2)
+        gs[1, :, i] = DrugResponseModel.savitzky_golay_filter(gs[1, :, i], 41, 3)
+        gs[2, :, i] = DrugResponseModel.savitzky_golay_filter(gs[2, :, i], 41, 3)
+    end
+
+    return gs[:, :, 2:25], gs[:, :, 27:50]
+end
+
 function setup_data(drug_name::String)
     basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data")
 
