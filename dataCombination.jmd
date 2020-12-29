@@ -1,0 +1,96 @@
+---
+weave_options:
+  error: false
+  echo: false
+---
+
+Time series simulation for a combination of a pair of drugs from the experiments. The data is shown for 3 replicates as a mean and standard deviation.
+
+```julia;
+import Pkg; Pkg.instantiate()
+Pkg.activate(".")
+using DrugResponseModel
+using Plots, Statistics
+Plots.scalefontsizes(0.7)
+
+gt1, gt2 = DrugResponseModel.import_combination("AU01001");
+gt1_2, gt2_2 = DrugResponseModel.import_combination("AU01101");
+gt1_3, gt2_3 = DrugResponseModel.import_combination("AU00901");
+t = LinRange(0.0, 96, 193);
+
+GS1 = cat(gt1, gt1_2, gt1_3, dims = 4);
+GS2 = cat(gt2, gt2_2, gt2_3, dims = 4);
+meanGS1 = mean(GS1, dims = 4);
+meanGS2 = mean(GS2, dims = 4);
+stdGS1 = std(GS1, dims = 4);
+stdGS2 = std(GS2, dims = 4);
+```
+palbociclib 50 nM alone and with other drugs.
+in plate 2: [3:6] is the combo with lapatinibs
+in plate 2: [21:24] is the combo with gemcitabines
+in plate 1: [8] is alone.
+
+
+```julia;
+p1 = plot(t, meanGS1[1, :, 8], ribbon = stdGS1[1, :, 8], label="alone", title="palbo 50 nM with lapatinib", ylabel = "G1 cell number", xlabel="time [hr]", lw=2)
+plot!(t, meanGS2[1, :, 3:6], ribbon = stdGS2[1, :, 3:6], lw=2, label=["lap 25 nM" "lap 50 nM" "lap 100 nM" "lap 250 nM"])
+
+p2 = plot(t, meanGS1[1, :, 8], ribbon = stdGS1[1, :, 8], label="alone", title="palbo 50 with gemcitabine", ylabel = "G1 cell number", xlabel="time [hr]", lw=2)
+plot!(t, meanGS2[1, :, 21:24], ribbon = stdGS2[1, :, 21:24], lw=2, label=["gem 5 nM" "gem 10 nM" "gem 17 nM" "gem 30 nM"])
+
+plot(p1, p2, size=(900, 400))
+ylims!((0.0, 25.0))
+```
+gem 10 nM with lapatinib
+gem 10 alone in plate 1 [20]
+gem 10 with lapatinib in plate 2 [9:13]
+
+```julia;
+p1 = plot(t, meanGS1[1, :, 20], ribbon = stdGS1[1, :, 20], label="alone", title="gem 10 nM with palbo", ylabel = "G1 cell number", xlabel="time [hr]", lw=2)
+plot!(t, meanGS1[1, :, 18], ribbon = stdGS1[1, :, 18], lw=2, label="palbo 25 nM")
+plot!(t, meanGS1[1, :, 23:24], ribbon = stdGS1[1, :, 23:24], lw=2, label=["palbo 100 nM" "palbo 250 nM"])
+
+p2 = plot(t, meanGS1[1, :, 8], ribbon = stdGS1[1, :, 8], label="alone", title="gem 10 with lapatinib", ylabel = "G1 cell number", xlabel="time [hr]", lw=2)
+plot!(t, meanGS2[1, :, 9:12], ribbon = stdGS2[1, :, 9:12], lw=2, label=["lap 25 nM" "lap 50 nM" "lap 100 nM" "lap 250 nM"])
+
+plot(p1, p2, size=(900, 400))
+ylims!((0.0, 25.0))
+```
+
+dox 20 nM
+alone: plate 1 [6]
+with gem. plate2: [15:18]
+
+```julia;
+plot(t, meanGS1[1, :, 6], ribbon = stdGS1[1, :, 6], label="alone", title="dox 20 nM with gem", ylabel = "G1 cell number", xlabel="time [hr]", lw=2)
+plot!(t, meanGS2[1, :, 15:18], ribbon = stdGS2[1, :, 15:18], lw=2, label=["gem 5 nM" "gem 10 nM" "gem 17 nM" "gem 30 nM"])
+ylims!((0.0, 25.0))
+```
+
+taxol 2 nM
+alone: plate 1 [13]
+with palbo, dox, lap, gem [14:17]
+
+```julia;
+plot(t, meanGS1[1, :, 13:17], ribbon = stdGS1[1, :, 13:17], title="taxol 2 nM with others", ylabel = "G1 cell number", xlabel="time [hr]", lw=2, label=["alone" "palbo 50 nM" "dox 20 nM" "lap 100 nM" "gem 10 nM"])
+plot!(t, meanGS2[1, :, 2], ribbon = stdGS2[1, :, 2], label = "lap 50 nM", lw=2)
+ylims!((0.0, 25.0))
+```
+
+lap 100 nM
+alone: plate 1 [4]
+with gem: plate 2 [7, 13, 19]
+with palbo: plate 2 [8, 14,20]
+
+```julia;
+p1 = plot(t, meanGS1[1, :, 4], ribbon = stdGS1[1, :, 4], title="lap 100 nM with gem", ylabel = "G1 cell number", xlabel="time [hr]", lw=2, label="alone")
+plot!(t, meanGS2[1, :, 7], ribbon = stdGS2[1, :, 7],  lw=2,label = "gem 5 nM")
+plot!(t, meanGS2[1, :, 13], ribbon = stdGS2[1, :, 13], lw=2, label="gem 17 nM")
+plot!(t, meanGS2[1, :, 19], ribbon = stdGS2[1, :, 19], lw=2,label = "gem 30 nM")
+p2 = plot(t, meanGS1[1, :, 4], ribbon = stdGS1[1, :, 4], title="lap 100 nM with gem", ylabel = "G1 cell number", xlabel="time [hr]", lw=2, label="alone")
+plot!(t, meanGS2[1, :, 8], ribbon = stdGS2[1, :, 8], lw=2, label = "25")
+plot!(t, meanGS2[1, :, 14], ribbon = stdGS2[1, :, 14], lw=2, label = "100")
+plot!(t, meanGS2[1, :, 20], ribbon = stdGS2[1, :, 20], lw=2, label = "250")
+plot(p1, p2, size=(900, 400))
+ylims!((0.0, 25.0))
+```
