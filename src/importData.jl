@@ -41,8 +41,8 @@ function import_combination(filename::String)
     # rescaling the experimental data assuming we have 20 initial cells for each trial
     gs = zeros(3, size(perc, 1), size(perc, 2))
     population = init_cells * total
-    gs[1, :, :] = 0.01 * population .* perc
-    gs[2, :, :] = population - gs[1, :, :]
+    gs[2, :, :] = 0.01 * population .* perc
+    gs[1, :, :] = population - gs[2 :, :]
     gs[3, :, :] = gs[1, :, :] + gs[2, :, :]
 
     # removing the peaks
