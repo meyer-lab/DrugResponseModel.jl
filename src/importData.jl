@@ -39,17 +39,15 @@ function import_combination(filename::String)
     init_cells = 20.0
 
     # rescaling the experimental data assuming we have 20 initial cells for each trial
-    gs = zeros(3, size(perc, 1), size(perc, 2))
+    gs = zeros(2, size(perc, 1), size(perc, 2))
     population = init_cells * total
     gs[1, :, :] = 0.01 * population .* perc
     gs[2, :, :] = population - gs[1, :, :]
-    gs[3, :, :] = gs[1, :, :] + gs[2, :, :]
 
     # removing the peaks
     for i = 1:size(perc, 2)
         gs[1, :, i] = DrugResponseModel.savitzky_golay_filter(gs[1, :, i], 41, 3)
         gs[2, :, i] = DrugResponseModel.savitzky_golay_filter(gs[2, :, i], 41, 3)
-        gs[3, :, i] = DrugResponseModel.savitzky_golay_filter(gs[3, :, i], 41, 3)
     end
 
     return gs[:, :, 2:25], gs[:, :, 27:50]

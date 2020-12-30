@@ -41,6 +41,7 @@ plot!(t, meanGS2[1, :, 21:24], ribbon = stdGS2[1, :, 21:24], lw=2, label=["gem 5
 plot(p1, p2, size=(900, 400))
 ylims!((0.0, 25.0))
 ```
+
 gem 10 nM with palbo and lapatinib
 gem 10 alone in plate 1 [20]
 gem 10 with lapatinib in plate 2 [9:13]
