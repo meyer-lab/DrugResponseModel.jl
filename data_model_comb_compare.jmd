@@ -27,7 +27,9 @@ meanGS1 = mean(GS1, dims = 4);
 meanGS2 = mean(GS2, dims = 4);
 stdGS1 = std(GS1, dims = 4);
 stdGS2 = std(GS2, dims = 4);
-meanTot = mean
+
+meanGS2[:, :, 19] .= mean(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims=3), dims=3)[:, :, 1]
+stdGS2[:, :, 19] .= std(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims=3), dims=3)[:, :, 1]
 p = DrugResponseModel.return_param41();
 efcs = getODEparamsAll(p, concs);
 t = LinRange(0.0, 96.0, 193)
