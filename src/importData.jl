@@ -42,7 +42,7 @@ function import_combination(filename::String)
     gs = zeros(3, size(perc, 1), size(perc, 2))
     population = init_cells * total
     gs[2, :, :] = 0.01 * population .* perc
-    gs[1, :, :] = population - gs[2 :, :]
+    gs[1, :, :] = population - gs[2, :, :]
     gs[3, :, :] = gs[1, :, :] + gs[2, :, :]
 
     # removing the peaks
