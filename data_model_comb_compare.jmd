@@ -12,17 +12,21 @@ Pkg.activate(".")
 using DrugResponseModel
 using Plots, Statistics
 Plots.scalefontsizes(0.7)
-concs, _, _, _ = load(189, 1);
 
-gt1, gt2, _, _ = DrugResponseModel.import_combination("AU01001");
-gt1_2, gt2_2, _, _ = DrugResponseModel.import_combination("AU01101");
-gt1_3, gt2_3, _, _ = DrugResponseModel.import_combination("AU00901");
+gt1, gt2 = DrugResponseModel.import_combination("AU01001");
+gt1_2, gt2_2 = DrugResponseModel.import_combination("AU01101");
+gt1_3, gt2_3 = DrugResponseModel.import_combination("AU00901");
 t = LinRange(0.0, 96.0, 193);
 
 GS1 = cat(gt1, gt1_2, gt1_3, dims = 4);
 GS2 = cat(gt2, gt2_2, gt2_3, dims = 4);
 
 g0 = 20.0
+concs, _, _, _ = load(189, 1);
+meanGS1 = mean(GS1, dims = 4);
+meanGS2 = mean(GS2, dims = 4);
+stdGS1 = std(GS1, dims = 4);
+stdGS2 = std(GS2, dims = 4);
 
 meanGS2[:, :, 19] .= mean(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims=3), dims=3)[:, :, 1]
 stdGS2[:, :, 19] .= std(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims=3), dims=3)[:, :, 1]
