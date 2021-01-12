@@ -1,0 +1,236 @@
+---
+weave_options:
+  error: false
+  echo: false
+---
+
+This file shows how much the simulations from the model and the experimental data agree for drug combination.
+
+```julia;
+import Pkg; Pkg.instantiate()
+Pkg.activate(".")
+using DrugResponseModel
+using Plots, Statistics
+Plots.scalefontsizes(0.7)
+concs, _, _, _ = load(189, 1);
+
+_, _, perc1, total1 = DrugResponseModel.import_combination("AU01001");
+_, _, perc2,total2 = DrugResponseModel.import_combination("AU01101");
+_, _, perc3, total3 = DrugResponseModel.import_combination("AU00901");
+t = LinRange(0.0, 96.0, 193);
+```
+
+calculate
+
+```julia;
+## percentage
+perc_ = cat(perc1, perc2, perc3, dims = 4);
+total_ = cat(total1, total2, total3, dims = 4);
+meanPerc = mean(perc_, dims = 4); # (193, 50, 1, 1)
+stdPerc = std(perc_, dims = 4);
+meanTotal = mean(total_, dims = 4);
+stdTotal = std(total_, dims = 4);
+
+mean_perc = zeros(size(meanPerc, 1), 24, 2);
+std_perc = zeros(size(stdPerc, 1), 24, 2);
+mean_total = zeros(size(meanPerc, 1), 24, 2);
+std_total = zeros(size(stdPerc, 1), 24, 2);
+mean_perc[:, :, 1] = meanPerc[:, 2:25];
+mean_perc[:, :, 2] = meanPerc[:, 27:50];
+std_perc[:, :, 1] = stdPerc[:, 2:25];
+std_perc[:, :, 2] = stdPerc[:, 27:50];
+mean_total[:, :, 1] = meanTotal[:, 2:25];
+mean_total[:, :, 2] = meanTotal[:, 27:50];
+std_total[:, :, 1] = stdTotal[:, 2:25];
+std_total[:, :, 2] = stdTotal[:, 27:50];
+```
+
+part 2
+
+```julia;
+mean_perc[:, 19, 2] .= mean(cat(perc1[:, 19], perc2[:, 19], dims=2), dims=2)[:, 1]
+std_perc[:, 19, 2] .= std(cat(perc1[:, 19], perc2[:, 19], dims=2), dims=2)[:, 1]
+mean_total[:, 19, 2] .= mean(cat(total1[:, 19], total2[:, 19], dims=2), dims=2)[:, 1]
+std_total[:, 19, 2] .= std(cat(total1[:, 19], total2[:, 19], dims=2), dims=2)[:, 1]
+p = DrugResponseModel.return_param41();
+efcs = getODEparamsAll(p, concs);
+```
+
+part3
+
+```julia;
+hill(p, c) = p[2] + (p[3] - p[2]) / (1 + ((p[1]/c) ^ p[4]))
+gemc_hillParams = zeros(4, 4) # [alpha, beta, death1, death2] x [EC50, min, max, k]
+gemc_hillParams[:, 1] .= p[15] # ec50
+gemc_hillParams[:, 4] .= p[16] # k
+gemc_hillParams[1, 2] = p[36]
+gemc_hillParams[2, 2] = p[37]
+gemc_hillParams[3:4, 2] .= 0.0
+gemc_hillParams[1:2, 3] .= p[17:18]
+gemc_hillParams[3:4, 3] .= p[19:20]
+gem_ps = zeros(9)
+for i=1:4
+    gem_ps[i] = hill(gemc_hillParams[i, :], 17.0)
+end
+gem_ps[5] = p[21]
+gem_ps[6:9] .= p[38:41]
+
+function easierPlot(plateNum, idx, titles, g1, lg)
+    plot(t, mean_perc[:, idx, plateNum], ribbon = std_perc[:, idx, plateNum], label = "G1", alpha = 0.1, color = 6, legend = lg, title = titles, ylabel = "G1 percentage", xlabel="time [hr]")
+    plot!(t, g1, lw=2, color = 5, label = "G1 sim")
+    ylims!((0.0, 100.0))
+end
+```
+
+## Palbociclib 50 nM + lapatinibs
+
+```julia;
+function make_it_easy(ps)
+    t = LinRange(0.0, 96.0, 193);
+    a, b, _ = predict(ps, 20.0, t)
+    g1_perc = (a ./ (a .+ b)) .* 100.0
+    tot = (a .+ b) ./ (a[1] + b[1])
+    return g1_perc, tot
+end
+palboLap_params = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 5])
+gnum1, gnum2 = make_it_easy(palboLap_params[:, 1, 5])
+nums = zeros(193, 4, 2) # 193 data points, 4 conditions, 2 phases
+
+nums[:, 1, 1], nums[:, 1, 2] = make_it_easy(palboLap_params[:, 4, 5])
+nums[:, 2, 1], nums[:, 2, 2] = make_it_easy(palboLap_params[:, 5, 5])
+nums[:, 3, 1], nums[:, 3, 2] = make_it_easy(palboLap_params[:, 6, 5])
+nums[:, 4, 1], nums[:, 4, 2] = make_it_easy(palboLap_params[:, 7, 5])
+p1 = easierPlot(1, 8, "palbo 50 nM", gnum1, false)
+p2 = easierPlot(2, 3, "palbo 50 + lap 25 nM", nums[:, 1, 1], false)
+p3 = easierPlot(2, 4, "palbo 50 + lap 50 nM", nums[:, 2, 1], false)
+p4 = easierPlot(2, 5, "palbo 50 + lap 100 nM", nums[:, 3, 1], false)
+p5 = easierPlot(2, 6, "palbo 50 + lap 250 nM", nums[:, 4, 1], true)
+plot(p1, p2, p3, p4, p5)
+```
+
+## Palbociclib 50 nM + Gemcitabines.
+
+```julia;
+palboGem_params = DrugResponseModel.AllBliss_params(efcs[:, :, 3], efcs[:, :, 5])
+controls = cat(efcs[:, 1, 3], efcs[:, 1, 5], dims=2)
+gem17_palb50 = DrugResponseModel.Bliss_params_unit(gem_ps, efcs[:, 5, 5], controls)
+nums[:, 1, 1], nums[:, 1, 2] = make_it_easy(palboGem_params[:, 5, 5])
+nums[:, 2, 1], nums[:, 2, 2] = make_it_easy(palboGem_params[:, 6, 5])
+nums[:, 3, 1], nums[:, 3, 2] = make_it_easy(gem17_palb50)
+nums[:, 4, 1], nums[:, 4, 2] = make_it_easy(palboGem_params[:, 7, 5])
+
+p1 = easierPlot(1, 8, "palbo 50 nM", gnum1, false)
+p2 = easierPlot(2, 21, "palbo 50 + gem 5 nM", nums[:, 1, 1], false)
+p3 = easierPlot(2, 22, "palbo 50 + gem 10 nM", nums[:, 2, 1], false)
+p4 = easierPlot(2, 23, "palbo 50 + gem 17 nM", nums[:, 3, 1], false)
+p5 = easierPlot(2, 24, "palbo 50 + gem 30 nM", nums[:, 4, 1], true)
+plot(p1, p2, p3, p4, p5)
+```
+
+## Gemcitabine 10 nM + palbociclibs.
+
+```julia;
+gnum1, gnum2 = make_it_easy(palboGem_params[:, 6, 1])
+nums[:, 1, 1], nums[:, 1, 2] = make_it_easy(palboGem_params[:, 6, 4])
+nums[:, 2, 1], nums[:, 2, 2] = make_it_easy(palboGem_params[:, 6, 5])
+nums[:, 3, 1], nums[:, 3, 2] = make_it_easy(palboGem_params[:, 6, 6])
+
+p1 = easierPlot(1, 20, "gem 10 nM", gnum1, false)
+p2 = easierPlot(1, 18, "gem 10 + palbo 25 nM", nums[:, 1, 1], false)
+p3 = easierPlot(1, 23, "gem 10 + palbo 100 nM", nums[:, 2, 1], false)
+p4 = easierPlot(1, 24, "gem 10 + palbo 250 nM", nums[:, 3, 1], true)
+plot(p1, p2, p3, p4)
+```
+
+## Gemcitabine 10 nM + lapatinibs.
+
+```julia;
+gemLap_params = DrugResponseModel.AllBliss_params(efcs[:, :, 3], efcs[:, :, 1])
+nums[:, 1, 1], nums[:, 1, 2] = make_it_easy(gemLap_params[:, 6, 4])
+nums[:, 2, 1], nums[:, 2, 2] = make_it_easy(gemLap_params[:, 6, 5])
+nums[:, 3, 1], nums[:, 3, 2] = make_it_easy(gemLap_params[:, 6, 6])
+nums[:, 4, 1], nums[:, 4, 2] = make_it_easy(gemLap_params[:, 6, 7])
+
+p1 = easierPlot(1, 20, "gem 10 nM", gnum1, false)
+p2 = easierPlot(2, 9, "gem 10 + lap 25 nM", nums[:, 1, 1], false)
+p3 = easierPlot(2, 10, "gem 10 + lap 50 nM", nums[:, 2, 1], false)
+p4 = easierPlot(2, 11, "gem 10 + lap 100 nM", nums[:, 3, 1], false)
+p5 = easierPlot(2, 12, "gem 10 + lap 250 nM", nums[:, 4, 1], true)
+plot(p1, p2, p3, p4, p5)
+```
+
+## Dox 20 nM + gemcitabines.
+
+```julia;
+doxGem_params = DrugResponseModel.AllBliss_params(efcs[:, :, 2], efcs[:, :, 3])
+gnum1, gnum2 = make_it_easy(doxGem_params[:, 4, 1])
+controlss = cat(efcs[:, 1, 2], efcs[:, 1, 3], dims=2)
+gem17_dox20 = DrugResponseModel.Bliss_params_unit(efcs[:, 4, 2], gem_ps, controlss)
+nums[:, 1, 1], nums[:, 1, 2] = make_it_easy(doxGem_params[:, 4, 5])
+nums[:, 2, 1], nums[:, 2, 2] = make_it_easy(doxGem_params[:, 4, 6])
+nums[:, 3, 1], nums[:, 3, 2] = make_it_easy(gem17_dox20)
+nums[:, 4, 1], nums[:, 4, 2] = make_it_easy(doxGem_params[:, 4, 7])
+
+p1 = easierPlot(1, 6, "dox 20 nM", gnum1, false)
+p2 = easierPlot(2, 15, "dox 20 + gem 5 nM", nums[:, 1, 1], false)
+p3 = easierPlot(2, 16, "dox 20 + gem 10 nM", nums[:, 2, 1], false)
+p4 = easierPlot(2, 17, "dox 20 + gem 17 nM", nums[:, 3, 1], false)
+p5 = easierPlot(2, 18, "dox 20 + gem 30 nM", nums[:, 4, 1], true)
+plot(p1, p2, p3, p4, p5)
+```
+
+## taxol 2 nM + different drugs
+```julia;
+gnum1, gnum2 = make_it_easy(efcs[:, 4, 4])
+nums = zeros(193, 6, 2)
+controls = cat(efcs[:, 1, 5], efcs[:, 1, 4], dims=2)
+p1 = DrugResponseModel.Bliss_params_unit(efcs[:, 5, 5], efcs[:, 4, 4], controls)
+p2 = DrugResponseModel.Bliss_params_unit(efcs[:, 4, 2], efcs[:, 4, 4], controls)
+p3 = DrugResponseModel.Bliss_params_unit(efcs[:, 6, 1], efcs[:, 4, 4], controls)
+p4 = DrugResponseModel.Bliss_params_unit(efcs[:, 6, 3], efcs[:, 4, 4], controls)
+p5 = DrugResponseModel.Bliss_params_unit(efcs[:, 5, 1], efcs[:, 4, 4], controls)
+
+nums[:, 1, 1], nums[:, 1, 2] = make_it_easy(p1)
+nums[:, 2, 1], nums[:, 2, 2] = make_it_easy(p2)
+nums[:, 3, 1], nums[:, 3, 2] = make_it_easy(p3)
+nums[:, 4, 1], nums[:, 4, 2] = make_it_easy(p4)
+nums[:, 5, 1], nums[:, 5, 2] = make_it_easy(p5)
+
+p1 = easierPlot(1, 13, "tax 2 nM", gnum1, false)
+p2 = easierPlot(1, 14, "tax 2 + palbo 50 nM", nums[:, 1, 1], false)
+p3 = easierPlot(1, 15, "tax 2 + dox 20 nM", nums[:, 2, 1], false)
+p4 = easierPlot(1, 16, "tax 2 + lap 100 nM", nums[:, 3, 1], false)
+p5 = easierPlot(1, 17, "tax 2 + gem 10 nM", nums[:, 4, 1], false)
+p6 = easierPlot(2, 2, "tax 2 + lap 50 nM", nums[:, 5, 1], true)
+plot(p1, p2, p3, p4, p5, p6)
+```
+
+## Lap 100 nM + gemcitabines.
+```julia;
+gnum1, gnum2 = make_it_easy(efcs[:, 6, 1])
+controlsss = cat(efcs[:, 1, 3], efcs[:, 1, 1], dims=2)
+gem17_lap100 = DrugResponseModel.Bliss_params_unit(gem_ps, efcs[:, 6, 1], controlsss)
+nums[:, 1, 1], nums[:, 1, 2] = make_it_easy(gemLap_params[:, 5, 6])
+nums[:, 2, 1], nums[:, 2, 2] = make_it_easy(gem17_lap100)
+nums[:, 3, 1], nums[:, 3, 2] = make_it_easy(gemLap_params[:, 7, 6])
+
+p1 = easierPlot(1, 4, "lap 100 nM", gnum1, false)
+p2 = easierPlot(2, 17, "lap 100 + gem 5 nM", nums[:, 1, 1], false)
+p3 = easierPlot(2, 13, "lap 100 + gem 17 nM", nums[:, 2, 1], false)
+p4 = easierPlot(2, 19, "lap 100 + gem 30 nM", nums[:, 3, 1], true)
+plot(p1, p2, p3, p4)
+```
+
+## Lap 100 nM + palbociclibs.
+```julia;
+gnum1, gnum2 = make_it_easy(palboLap_params[:, 6, 1])
+nums[:, 1, 1], nums[:, 1, 2] = make_it_easy(palboLap_params[:, 6, 4])
+nums[:, 2, 1], nums[:, 2, 2] = make_it_easy(palboLap_params[:, 6, 6])
+nums[:, 3, 1], nums[:, 3, 2] = make_it_easy(palboLap_params[:, 6, 7])
+
+p1 = easierPlot(1, 4, "lap 100 nM", gnum1, false)
+p2 = easierPlot(2, 8, "lap 100 + palbo 25 nM", nums[:, 1, 1], false)
+p3 = easierPlot(2, 14, "lap 100 + palbo 100 nM", nums[:, 2, 1], false)
+p4 = easierPlot(2, 20, "lap 100 + palbo 250 nM", nums[:, 3, 1], true)
+plot(p1, p2, p3, p4)
+```
