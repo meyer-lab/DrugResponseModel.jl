@@ -32,7 +32,6 @@ meanGS2[:, :, 19] .= mean(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims=3), dims=3)[:
 stdGS2[:, :, 19] .= std(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims=3), dims=3)[:, :, 1]
 p = DrugResponseModel.return_param41();
 efcs = getODEparamsAll(p, concs);
-t = LinRange(0.0, 96.0, 193)
 
 hill(p, c) = p[2] + (p[3] - p[2]) / (1 + ((p[1]/c) ^ p[4]))
 gemc_hillParams = zeros(4, 4) # [alpha, beta, death1, death2] x [EC50, min, max, k]
@@ -220,30 +219,6 @@ p1 = easierPlot(1, 4, "lap 100 nM", gnum1, gnum2, false)
 p2 = easierPlot(2, 8, "lap 100 + palbo 25 nM", nums[:, 1, 1], nums[:, 1, 2], false)
 p3 = easierPlot(2, 14, "lap 100 + palbo 100 nM", nums[:, 2, 1], nums[:, 2, 2], false)
 p4 = easierPlot(2, 20, "lap 100 + palbo 250 nM", nums[:, 3, 1], nums[:, 3, 2], true)
-plot(p1, p2, p3, p4)
-ylims!((0.0, 35.0))
-```
-
-```julia;
-
-function easierPlots(plateNum, idx, titles)
-    if plateNum == 1
-        means = meanGS1
-        stds = stdGS1
-    elseif plateNum == 2
-        means = meanGS2
-        stds = stdGS2
-    end
-    p = plot(t, means[1, :, idx], ribbon = stds[1, :, idx], label = "G1", alpha = 0.1, color = 6, title = titles, ylabel = "cell number", xlabel="time [hr]")
-    plot!(t, means[2, :, idx], color = 7, ribbon = stds[2, :, idx], label = "G2", alpha = 0.1)
-    plot!(t, means[3, :, idx], color = 8, ribbon = stds[3, :, idx], label = "total", alpha = 0.1)
-    p 
-end
-
-p1 = easierPlots(1, 4, "lap 100 nM")
-p2 = easierPlots(2, 17, "lap 100 + gem 5 nM")
-p3 = easierPlots(2, 13, "lap 100 + gem 17 nM")
-p4 = easierPlots(2, 19, "lap 100 + gem 30 nM")
 plot(p1, p2, p3, p4)
 ylims!((0.0, 35.0))
 ```
