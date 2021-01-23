@@ -20,7 +20,7 @@ function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
 end
 
 
-function grad_helper!(G, f, range, params)
+function grad_helper!(params, G, f, range)
     ForwardDiff.gradient!(G, f, params)
     costCenter = f(params)
 
@@ -42,10 +42,17 @@ end
 function optimize_helper(f, g!, low::Vector, high::Vector, maxstep::Int)
     initial_x = low + (high - low) / 2.0
 
+    function my_func(x, grad)
+        grad[:] = g!
+        f(x)
+    end
     P = MinimizationProblem(f, low, high)
-    local_method = NLoptLocalMethod(NLopt.LN_BOBYQA)
+    opt = Opt(:LD_MMA, 20)
+    opt.min_objective = my_func
+    opt.xtol_rel = 1e-4
+    # local_method = NLoptLocalMethod(NLopt.LD_MMA)
     multistart_method = TikTak(100)
-    p = multistart_minimization(multistart_method, local_method, P)
+    p = multistart_minimization(multistart_method, opt, P)
 
     return p.location, p.value
     
@@ -60,8 +67,9 @@ end
 
 """ Hill optimization function. """
 function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 100000)
+
     f(x) = residHill(x, conc, g1, g2)
-    g!(G, x) = grad_helper!(G, f, 10:13, x)
+    g!(x, G) = grad_helper!(x, G, f, 10:13)
 
     low = [minimum(conc), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.25, 3, 5, 0, 0]
     high = [maximum(conc), 1.0, 1.0, 10.0, 1.0, 1.0, 3.0, 3.0, 0.75, 50, 50, 50, 50]
