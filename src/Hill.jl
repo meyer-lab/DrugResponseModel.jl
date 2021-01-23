@@ -59,6 +59,10 @@ function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix, initial; maxstep = 
     return optimize_helper(f, g!, low, high, initial, maxstep)
 end
 
+function _keep_lowest(xs, N)
+    @argcheck 1 ≤ N ≤ 20
+    partialsort(xs, 1:N, by = p -> p.value)
+end
 
 function Multistart_Minimization(multistart_method::TikTak,
                                  conc, g1, g2, low, high)
@@ -66,7 +70,7 @@ function Multistart_Minimization(multistart_method::TikTak,
     minimization_problem = MinimizationProblem(f, low, high)
     @unpack quasirandom_N, initial_N, θ_min, θ_max, θ_pow = multistart_method
     quasirandom_points = MultistartOptimization.sobol_starting_points(minimization_problem, quasirandom_N)
-    initial_points = MultistartOptimization._keep_lowest(quasirandom_points, initial_N)
+    initial_points = _keep_lowest(quasirandom_points, initial_N)
 
     function _step(visited_minimum, (i, initial_point))
         θ = MultistartOptimization._weight_parameter(multistart_method, i)

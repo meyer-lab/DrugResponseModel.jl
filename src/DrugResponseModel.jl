@@ -15,6 +15,7 @@ import ForwardDiff
 import ExponentialUtilities
 using MultistartOptimization
 using Parameters: @unpack
+using ArgCheck: @argcheck
 using Sobol: SobolSeq, Sobol
 using Base.Threads: @spawn, fetch
 using NLopt
