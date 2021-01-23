@@ -42,25 +42,26 @@ end
 function optimize_helper(f, g!, low::Vector, high::Vector, maxstep::Int)
     initial_x = low + (high - low) / 2.0
 
-    function my_func(x, grad)
-        grad[:] = g!
-        f(x)
-    end
-    P = MinimizationProblem(f, low, high)
-    opt = Opt(:LD_MMA, 20)
-    opt.min_objective = my_func
-    opt.xtol_rel = 1e-4
-    # local_method = NLoptLocalMethod(NLopt.LD_MMA)
-    multistart_method = TikTak(100)
-    p = multistart_minimization(multistart_method, opt, P)
+    # function my_func(x, grad)
+    #     grad[:] = g!
+    #     f(x)
+    # end
+    # P = MinimizationProblem(f, low, high)
+    # opt = Opt(:LD_MMA, 20)
+    # opt.min_objective = my_func
+    # opt.xtol_rel = 1e-4
+    # # local_method = NLoptLocalMethod(NLopt.LD_MMA)
+    # multistart_method = TikTak(100)
+    # p = multistart_minimization(multistart_method, opt, P)
 
-    return p.location, p.value
+    # return p.location, p.value
     
-    # options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = maxstep)
-    # results = optimize(f, g!, low, high, initial_x, Fminbox(LBFGS()), options)
+    options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = maxstep)
+    results = optimize(f, g!, low, high, initial_x, Fminbox(LBFGS()), options)
 
-    # println(results)
+    println(results)
 
+    return results
     # return Optim.minimum(results), Optim.minimizer(results)
 end
 
