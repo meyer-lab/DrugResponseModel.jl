@@ -14,6 +14,9 @@ using Optim
 import ForwardDiff
 import ExponentialUtilities
 using MultistartOptimization
+using Parameters: @unpack
+using Sobol: SobolSeq, Sobol
+using Base.Threads: @spawn, fetch
 using NLopt
 using Polynomials
 

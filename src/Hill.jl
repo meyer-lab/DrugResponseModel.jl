@@ -38,36 +38,7 @@ function grad_helper!(params, G, f, range)
     end
 end
 
-
-function optimize_helper(f, g!, low::Vector, high::Vector, maxstep::Int)
-    initial_x = low + (high - low) / 2.0
-
-    # function my_func(x, grad)
-    #     grad[:] = g!
-    #     f(x)
-    # end
-    # P = MinimizationProblem(f, low, high)
-    # opt = Opt(:LD_MMA, 20)
-    # opt.min_objective = my_func
-    # opt.xtol_rel = 1e-4
-    # # local_method = NLoptLocalMethod(NLopt.LD_MMA)
-    # multistart_method = TikTak(100)
-    # p = multistart_minimization(multistart_method, opt, P)
-
-    # return p.location, p.value
-    
-    options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = maxstep)
-    results = optimize(f, g!, low, high, initial_x, Fminbox(LBFGS()), options)
-
-    println(results)
-
-    return results
-    # return Optim.minimum(results), Optim.minimizer(results)
-end
-
-
-""" Hill optimization function. """
-function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 100000)
+function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix, initial; maxstep = 100000)
 
     f(x) = residHill(x, conc, g1, g2)
     g!(x, G) = grad_helper!(x, G, f, 10:13)
@@ -75,8 +46,28 @@ function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 100000)
     low = [minimum(conc), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.25, 3, 5, 0, 0]
     high = [maximum(conc), 1.0, 1.0, 10.0, 1.0, 1.0, 3.0, 3.0, 0.75, 50, 50, 50, 50]
 
-    return optimize_helper(f, g!, low, high, maxstep)
+    return optimize_helper(f, g!, low, high, initial, maxstep)
 end
+
+
+function Multistart_Minimization(multistart_method::TikTak,
+                                 conc, g1, g2, low, high)
+    f(x) = residHill(x, conc, g1, g2)
+    minimization_problem = MinimizationProblem(f, low, high)
+    @unpack quasirandom_N, initial_N, θ_min, θ_max, θ_pow = multistart_method
+    quasirandom_points = MultistartOptimization.sobol_starting_points(minimization_problem, quasirandom_N)
+    initial_points = MultistartOptimization._keep_lowest(quasirandom_points, initial_N)
+
+    function _step(visited_minimum, (i, initial_point))
+        θ = MultistartOptimization._weight_parameter(multistart_method, i)
+        x = @. (1 - θ) * initial_point.location + θ * Optim.minimizer(visited_minimum)
+        results = optimize_hill(conc, g1, g2, x)
+        Optim.minimum(results) < Optim.minimum(visited_minimum) ? results : visited_minimum
+    end
+
+    foldl(_step, enumerate(initial_points); init = first(initial_points))
+end
+
 
 """ A function to convert the estimated hill parameters back to ODE parameters. """
 function getODEparams(p::Vector, concentrations::Vector{Float64})
