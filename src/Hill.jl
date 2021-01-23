@@ -2,6 +2,8 @@
 This file fits Hill function to the parameters
 """
 
+using Base.Threads
+
 """ This functions takes in hill parameters for all the concentrations and calculates
 DDE parameters, passes them to residual function and based off of these, optimizes the model
 and estimates hill parameters. """
@@ -11,12 +13,14 @@ function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
     t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
     g0 = g1[1, :] + g2[1, :]
 
+    res = zeros(eltype(x), length(conc))
+
     # Solve each concentration separately
-    for ii = 1:length(conc)
-        res += predict(params[1:9, ii], g0[ii], t, g1[:, ii], g2[:, ii])[1]
+    @threads for ii = 1:length(conc)
+        res[ii] = predict(params[1:9, ii], g0[ii], t, g1[:, ii], g2[:, ii])[1]
     end
 
-    return res
+    return sum(res)
 end
 
 
@@ -38,10 +42,16 @@ function grad_helper!(params, G, f, range)
     end
 end
 
+import LineSearches
 function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix, initial; maxstep = 100000)
 
     f(x) = residHill(x, conc, g1, g2)
     g!(x, G) = grad_helper!(x, G, f, 10:13)
+
+    method = Fminbox(LBFGS(linesearch = LineSearches.BackTracking()))
+
+    options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = maxstep)
+    results = optimize(f, g!, low, high, initial_x, method, options)
 
     low = [minimum(conc), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.25, 3, 5, 0, 0]
     high = [maximum(conc), 1.0, 1.0, 10.0, 1.0, 1.0, 3.0, 3.0, 0.75, 50, 50, 50, 50]
