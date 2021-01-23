@@ -64,17 +64,24 @@ function _keep_lowest(xs, N)
     partialsort(xs, 1:N, by = p -> p.value)
 end
 
+function sobol_starting_points(minimization_problem::MinimizationProblem, N::Integer)
+    @unpack objective, lower_bounds, upper_bounds = minimization_problem
+    s = SobolSeq(lower_bounds, upper_bounds)
+    skip(s, N)                  # better uniformity
+    map(fetch, map(x -> @spawn(LocationValue(x, objective(x))), Iterators.take(s, N)))
+end
+
 function Multistart_Minimization(multistart_method::TikTak,
                                  conc, g1, g2, low, high)
     f(x) = residHill(x, conc, g1, g2)
     minimization_problem = MinimizationProblem(f, low, high)
     @unpack quasirandom_N, initial_N, θ_min, θ_max, θ_pow = multistart_method
-    quasirandom_points = MultistartOptimization.sobol_starting_points(minimization_problem, quasirandom_N)
+    quasirandom_points = sobol_starting_points(minimization_problem, quasirandom_N)
     initial_points = _keep_lowest(quasirandom_points, initial_N)
 
     function _step(visited_minimum, (i, initial_point))
         θ = MultistartOptimization._weight_parameter(multistart_method, i)
-        x = @. (1 - θ) * initial_point.location + θ * Optim.minimizer(visited_minimum)
+        x = @. (1 - θ) * Optim.minimizer(initial_point) + θ * Optim.minimizer(visited_minimum)
         results = optimize_hill(conc, g1, g2, x)
         Optim.minimum(results) < Optim.minimum(visited_minimum) ? results : visited_minimum
     end
