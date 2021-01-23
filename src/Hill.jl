@@ -42,12 +42,19 @@ end
 function optimize_helper(f, g!, low::Vector, high::Vector, maxstep::Int)
     initial_x = low + (high - low) / 2.0
 
-    options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = maxstep)
-    results = optimize(f, g!, low, high, initial_x, Fminbox(LBFGS()), options)
+    P = MinimizationProblem(f, low, high)
+    local_method = NLoptLocalMethod(NLopt.LN_BOBYQA)
+    multistart_method = TikTak(100)
+    p = multistart_minimization(multistart_method, local_method, P)
 
-    println(results)
+    return p.location, p.value
+    
+    # options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = maxstep)
+    # results = optimize(f, g!, low, high, initial_x, Fminbox(LBFGS()), options)
 
-    return Optim.minimum(results), Optim.minimizer(results)
+    # println(results)
+
+    # return Optim.minimum(results), Optim.minimizer(results)
 end
 
 

@@ -13,6 +13,8 @@ using DSP: conv
 using Optim
 import ForwardDiff
 import ExponentialUtilities
+using MultistartOptimization
+using NLopt
 using Polynomials
 
 include("importData.jl")
