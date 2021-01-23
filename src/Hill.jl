@@ -2,6 +2,8 @@
 This file fits Hill function to the parameters
 """
 
+using Base.Threads
+
 """ This functions takes in hill parameters for all the concentrations and calculates
 DDE parameters, passes them to residual function and based off of these, optimizes the model
 and estimates hill parameters. """
@@ -11,12 +13,14 @@ function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
     t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
     g0 = g1[1, :] + g2[1, :]
 
+    res = zeros(eltype(x), length(conc))
+
     # Solve each concentration separately
-    for ii = 1:length(conc)
-        res += predict(params[1:9, ii], g0[ii], t, g1[:, ii], g2[:, ii])[1]
+    @threads for ii = 1:length(conc)
+        res[ii] = predict(params[1:9, ii], g0[ii], t, g1[:, ii], g2[:, ii])[1]
     end
 
-    return res
+    return sum(res)
 end
 
 
@@ -38,12 +42,16 @@ function grad_helper!(G, f, range, params)
     end
 end
 
+import LineSearches
+
 
 function optimize_helper(f, g!, low::Vector, high::Vector, maxstep::Int)
-    initial_x = low + (high - low) / 2.0
+    initial_x = low + (high - low) / 3.0
+
+    method = Fminbox(LBFGS(linesearch = LineSearches.BackTracking()))
 
     options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = maxstep)
-    results = optimize(f, g!, low, high, initial_x, Fminbox(LBFGS()), options)
+    results = optimize(f, g!, low, high, initial_x, method, options)
 
     println(results)
 
