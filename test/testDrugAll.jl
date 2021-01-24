@@ -4,5 +4,5 @@
     effects = DrugResponseModel.getODEparamsAll(p, concs)
 
     # test the local optimization function
-    params = DrugResponseModel.optim_all(concs, g1s, g2s, maxiter = 20)
+    params = DrugResponseModel.optim_all(concs, g1s, g2s, maxiter = 2)
 end
