@@ -68,7 +68,7 @@ function sobol_starting_points(minimization_problem::MinimizationProblem, N::Int
     @unpack objective, lower_bounds, upper_bounds = minimization_problem
     s = SobolSeq(lower_bounds, upper_bounds)
     skip(s, N)                  # better uniformity
-    map(fetch, map(x -> @spawn(LocationValue(x, objective(x))), Iterators.take(s, N)))
+    map(x -> LocationValue(x, objective(x)), Iterators.take(s, N))
 end
 
 function Multistart_Minimization(multistart_method::TikTak,
