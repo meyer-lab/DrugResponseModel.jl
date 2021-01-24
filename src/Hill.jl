@@ -62,13 +62,14 @@ function optimize_helper(f, g!, low::Vector, high::Vector, maxstep::Int)
     s = SobolSeq(low, high)
     skip(s, sobolPoints)
 
-    minn, minX = optimize_helper(f, g!, low, high, Iterators.take(s, 1), maxstep)
+    minn, minX = optimize_helper(f, g!, low, high, next!(s), maxstep)
 
     for ii in 1:sobolPoints
-        curMin, curX = optimize_helper(f, g!, low, high, Iterators.take(s, 1), maxstep)
+        curMin, curX = optimize_helper(f, g!, low, high, next!(s), maxstep)
 
         if curMin < minn
             minn, minX = curMin, curX
+        end
     end
 
     return minn, minX
