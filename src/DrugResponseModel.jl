@@ -13,8 +13,7 @@ using DSP: conv
 using Optim
 import ForwardDiff
 import ExponentialUtilities
-using Sobol: SobolSeq, Sobol
-using NLopt
+using Sobol: SobolSeq
 using Polynomials
 
 include("importData.jl")

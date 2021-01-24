@@ -24,7 +24,7 @@ function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
 end
 
 
-function grad_helper!(params, G, f, range)
+function grad_helper!(G, f, range, params)
     ForwardDiff.gradient!(G, f, params)
     costCenter = f(params)
 
@@ -43,52 +43,48 @@ function grad_helper!(params, G, f, range)
 end
 
 import LineSearches
-function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix, initial; maxstep = 100000)
 
-    f(x) = residHill(x, conc, g1, g2)
-    g!(x, G) = grad_helper!(x, G, f, 10:13)
 
+function optimize_helper(f, g!, low::Vector, high::Vector, x0::Vector, maxstep::Int)
     method = Fminbox(LBFGS(linesearch = LineSearches.BackTracking()))
 
     options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = maxstep)
-    results = optimize(f, g!, low, high, initial_x, method, options)
+    results = optimize(f, g!, low, high, x0, method, options)
+
+    println(results)
+
+    return Optim.minimum(results), Optim.minimizer(results)
+end
+
+
+function optimize_helper(f, g!, low::Vector, high::Vector, maxstep::Int)
+    sobolPoints = 10
+    s = SobolSeq(low, high)
+    skip(s, sobolPoints)
+
+    minn, minX = optimize_helper(f, g!, low, high, Iterators.take(s, 1), maxstep)
+
+    for ii in 1:sobolPoints
+        curMin, curX = optimize_helper(f, g!, low, high, Iterators.take(s, 1), maxstep)
+
+        if curMin < minn
+            minn, minX = curMin, curX
+    end
+
+    return minn, minX
+end
+
+
+""" Hill optimization function. """
+function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 100000)
+    f(x) = residHill(x, conc, g1, g2)
+    g!(G, x) = grad_helper!(G, f, 10:13, x)
 
     low = [minimum(conc), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.25, 3, 5, 0, 0]
     high = [maximum(conc), 1.0, 1.0, 10.0, 1.0, 1.0, 3.0, 3.0, 0.75, 50, 50, 50, 50]
 
-    return optimize_helper(f, g!, low, high, initial, maxstep)
+    return optimize_helper(f, g!, low, high, maxstep)
 end
-
-function _keep_lowest(xs, N)
-    @argcheck 1 ≤ N ≤ 20
-    partialsort(xs, 1:N, by = p -> p.value)
-end
-
-function sobol_starting_points(minimization_problem::MinimizationProblem, N::Integer)
-    @unpack objective, lower_bounds, upper_bounds = minimization_problem
-    s = SobolSeq(lower_bounds, upper_bounds)
-    skip(s, N)                  # better uniformity
-    map(x -> LocationValue(x, objective(x)), Iterators.take(s, N))
-end
-
-function Multistart_Minimization(multistart_method::TikTak,
-                                 conc, g1, g2, low, high)
-    f(x) = residHill(x, conc, g1, g2)
-    minimization_problem = MinimizationProblem(f, low, high)
-    @unpack quasirandom_N, initial_N, θ_min, θ_max, θ_pow = multistart_method
-    quasirandom_points = sobol_starting_points(minimization_problem, quasirandom_N)
-    initial_points = _keep_lowest(quasirandom_points, initial_N)
-
-    function _step(visited_minimum, (i, initial_point))
-        θ = MultistartOptimization._weight_parameter(multistart_method, i)
-        x = @. (1 - θ) * Optim.minimizer(initial_point) + θ * Optim.minimizer(visited_minimum)
-        results = optimize_hill(conc, g1, g2, x)
-        Optim.minimum(results) < Optim.minimum(visited_minimum) ? results : visited_minimum
-    end
-
-    foldl(_step, enumerate(initial_points); init = first(initial_points))
-end
-
 
 """ A function to convert the estimated hill parameters back to ODE parameters. """
 function getODEparams(p::Vector, concentrations::Vector{Float64})
