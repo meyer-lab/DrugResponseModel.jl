@@ -14,9 +14,9 @@ version = "3.1.0"
 
 [[ArrayInterface]]
 deps = ["LinearAlgebra", "Requires", "SparseArrays"]
-git-tree-sha1 = "91f95e873f0e53d8f5e6603516fa8ec3dc312859"
+git-tree-sha1 = "a2a1884863704e0414f6f164a1f6f4a2a62faf4e"
 uuid = "4fba245c-0d91-5ea0-9b3e-6abc04ee57a9"
-version = "2.14.14"
+version = "2.14.17"
 
 [[Artifacts]]
 deps = ["Pkg"]
@@ -702,6 +702,12 @@ deps = ["Dates", "Grisu"]
 git-tree-sha1 = "ee010d8f103468309b8afac4abb9be2e18ff1182"
 uuid = "992d4aef-0814-514b-bc4d-f2e9a6c4116f"
 version = "0.3.2"
+
+[[Sobol]]
+deps = ["DelimitedFiles", "Random"]
+git-tree-sha1 = "c267048df70f47d47d5272fe1a63a66c51c53014"
+uuid = "ed01d8cd-4d21-5b2a-85b4-cc3bdc58bad4"
+version = "1.4.0"
 
 [[Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
