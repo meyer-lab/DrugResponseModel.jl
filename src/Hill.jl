@@ -64,7 +64,7 @@ function optimize_helper(f, g!, low::Vector, high::Vector, maxstep::Int)
 
     minn, minX = optimize_helper(f, g!, low, high, next!(s), maxstep)
 
-    for ii in 1:sobolPoints
+    for ii = 1:sobolPoints
         curMin, curX = optimize_helper(f, g!, low, high, next!(s), maxstep)
 
         if curMin < minn
