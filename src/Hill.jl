@@ -48,8 +48,8 @@ import LineSearches
 function optimize_helper(f, g!, low::Vector, high::Vector, x0::Vector, maxstep::Int)
     method = Fminbox(LBFGS(linesearch = LineSearches.BackTracking()))
 
-    options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = maxstep)
-    results = optimize(f, g!, low, high, x0, method, options)
+    options = Optim.Options(outer_iterations = 1, show_trace = true, show_every = 10, iterations = maxstep)
+    results = optimize(f, g!, low / 200.0, high * 200.0, x0, method, options)
 
     println(results)
 
@@ -70,6 +70,9 @@ function optimize_helper(f, g!, low::Vector, high::Vector, maxstep::Int)
         if curMin < minn
             minn, minX = curMin, curX
         end
+
+        println(minn)
+        println(minX)
     end
 
     return minn, minX
