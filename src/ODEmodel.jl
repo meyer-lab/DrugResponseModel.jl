@@ -64,7 +64,7 @@ function predict(p, g_0, t, g1data = nothing, g2data = nothing)
 
     if t isa Real
         rmul!(A, t)
-        A = ExponentialUtilities.exp_generic(A)
+        A = LinearAlgebra.exp!(A)
 
         v = A * v
         G1, G2 = vTOg(v, nG1, nG2, nD1, nD2)
@@ -73,7 +73,7 @@ function predict(p, g_0, t, g1data = nothing, g2data = nothing)
         @assert t[1] == 0.0
         rmul!(A, t[2])
 
-        A = ExponentialUtilities.exp_generic(A)
+        A = LinearAlgebra.exp!(A)
 
         if g1data === nothing
             G1 = Vector{eltype(p)}(undef, length(t))
