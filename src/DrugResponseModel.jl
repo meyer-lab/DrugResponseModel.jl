@@ -15,6 +15,7 @@ import ForwardDiff
 import ExponentialUtilities
 using Sobol
 using Polynomials
+using BlackBoxOptim
 
 include("importData.jl")
 include("ODEmodel.jl")
@@ -24,6 +25,7 @@ include("allDrugs.jl")
 include("combination.jl")
 include("replicates.jl")
 include("sensitivity.jl")
+include("DrugPairs.jl")
 
 export setup_data,
     load,
