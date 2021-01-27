@@ -10,11 +10,6 @@ using Measures
 using LinearAlgebra
 using Statistics
 using DSP: conv
-using Optim
-import ForwardDiff
-import ExponentialUtilities
-using Sobol
-using Polynomials
 
 include("importData.jl")
 include("ODEmodel.jl")
