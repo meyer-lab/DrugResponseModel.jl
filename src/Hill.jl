@@ -45,34 +45,9 @@ end
 import LineSearches
 
 
-function optimize_helper(f, g!, low::Vector, high::Vector, x0::Vector, maxstep::Int)
-    method = Fminbox(LBFGS(linesearch = LineSearches.BackTracking()))
+function optimize_helper()
+    
 
-    options = Optim.Options(outer_iterations = 2, show_trace = true, iterations = maxstep)
-    results = optimize(f, g!, low, high, x0, method, options)
-
-    println(results)
-
-    return Optim.minimum(results), Optim.minimizer(results)
-end
-
-
-function optimize_helper(f, g!, low::Vector, high::Vector, maxstep::Int)
-    sobolPoints = 10
-    s = SobolSeq(low, high)
-    skip(s, sobolPoints)
-
-    minn, minX = optimize_helper(f, g!, low, high, next!(s), maxstep)
-
-    for ii in 1:sobolPoints
-        curMin, curX = optimize_helper(f, g!, low, high, next!(s), maxstep)
-
-        if curMin < minn
-            minn, minX = curMin, curX
-        end
-    end
-
-    return minn, minX
 end
 
 
