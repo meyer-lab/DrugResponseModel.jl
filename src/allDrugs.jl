@@ -48,6 +48,48 @@ function return_param41()
     p
 end
 
+
+
+
+function getODEparamsPairs(p, conc)
+    effects = zeros(eltype(p), 9, length(conc[:, 1]), 2)
+    k = 1
+    # Scaled drug effect
+    for i = 1:2
+        xx = 1.0 ./ (1.0 .+ (p[k] ./ conc[:, i]) .^ p[k + 1])
+        effects[1, :, i] = p[k + 2] .+ (p[k + 3] - p[k + 2]) .* xx # G1 prog. rate
+        effects[2, :, i] = p[k + 4] .+ (p[k + 5] - p[k + 4]) .* xx # G2 prog. rate
+        effects[3, :, i] = p[k + 6] .* xx # G1 death rate
+        effects[4, :, i] = p[k + 7] .* xx # G2 death rate
+        effects[5, :, i] .= p[k + 8] # percentage in G1
+        effects[6, :, i] .= p[k + 9]
+        effects[7, :, i] .= p[k + 10]
+        effects[8, :, i] .= p[k + 11]
+        effects[9, :, i] .= p[k + 12]
+        
+        k += 13
+    end
+    return effects
+end
+
+function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array, v, u)
+    res = 0.0
+
+    # Solve for all drugs
+    t = 1
+    k = v
+    for j = 1:2
+        hill = hP[[t, t + 2, t + 3, t + 1, t + 4, t + 5, t + 6, t+ 7, t + 8, t+ 9, t + 10, t + 11, t + 12]]
+        res += DrugResponseModel.residHill(hill, concentrations[:, k], g1[:, :, k], g2[:, :, k])
+        t += 13
+        k = u
+    end
+
+    return res
+end
+
+
+
 """ This function """
 function getODEparamsAll(p, concentrations::Array{Float64, 2})
     effects = zeros(eltype(p), 9, length(concentrations[:, 1]), 5)
