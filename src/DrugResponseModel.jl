@@ -10,7 +10,6 @@ using Measures
 using LinearAlgebra
 using Statistics
 using DSP: conv
-import ExponentialUtilities
 using BlackBoxOptim
 
 include("importData.jl")
