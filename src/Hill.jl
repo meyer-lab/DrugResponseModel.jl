@@ -28,6 +28,9 @@ function optimize_helper(f, low::Vector, high::Vector, maxstep::Int)
         NumDimensions = length(low),
         TraceMode = :verbose,
         TraceInterval = 100,
+        NThreads=18,
+        Method =:dxnes,
+        Workers = workers(),
         MaxSteps = maxstep,
     )
 
