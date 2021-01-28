@@ -87,7 +87,9 @@ function calc_diff(Hillp, Dr1Ind, Dr2Ind, concs, g0, oneortwo)
     end
 end
 
+import Calculus
+
 function get_derivative(x, Dr1Ind, Dr2Ind, concs, g0, oneortwo)
     fd(x) = calc_diff(x, Dr1Ind, Dr2Ind, concs, g0, oneortwo)
-    return ForwardDiff.gradient(fd, x)
+    return Calculus.gradient(fd, x)
 end
