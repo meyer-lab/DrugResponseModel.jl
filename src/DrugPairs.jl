@@ -48,18 +48,8 @@ end
 
 """ Function to optimize pairs of drugs. """
 function BBoptim_DrugPairs(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}, case_num::Int, i::Int, j::Int; maxiter = 100000)
-
     hillCostAll(hillParams) = residHillAll(hillParams, concs, g1, g2, i, j, case_num)
     low, high = optim_helper(concs, case_num, i, j)
 
-    results_ode = bboptimize(
-        hillCostAll;
-        SearchRange = collect(zip(low, high)),
-        NumDimensions = length(low),
-        TraceMode = :verbose,
-        TraceInterval = 100,
-        MaxSteps = maxiter,
-    )
-
-    return best_fitness(results_ode), best_candidate(results_ode)
+    return optimize_helper(hillCostAll, low, high, maxiter)
 end
