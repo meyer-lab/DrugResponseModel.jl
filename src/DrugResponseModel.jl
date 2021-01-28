@@ -11,6 +11,7 @@ using LinearAlgebra
 using Statistics
 using DSP: conv
 using BlackBoxOptim
+using Distributed
 
 include("importData.jl")
 include("ODEmodel.jl")
