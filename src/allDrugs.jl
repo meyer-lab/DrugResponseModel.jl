@@ -152,14 +152,13 @@ end
 
 function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 100000)
     f(x) = residHillAll(x, concs, g1, g2)
-    g!(G, x) = grad_helper!(G, f, 38:41, x)
 
     lP = [minimum(concs), 0.01, 0.05, 0.05, 0.00001, 0.00001, 0.3]
     low = vcat(lP, lP, lP, lP, lP, 1e-9, 1e-9, 3, 3, 2, 2)
     hP = [maximum(concs), 1.0, 1.0, 1.0, 0.1, 0.1, 0.7]
     high = vcat(hP, hP, hP, hP, hP, 1.0, 1.0, 10, 25, 50, 50)
 
-    return optimize_helper(f, g!, low, high, maxiter)
+    return optimize_helper(f, low, high, maxiter)
 end
 
 """ Takes in the 41 long Hill params and the index corresponding to the drug of interest, outputs the 9 long params at EC50. """
