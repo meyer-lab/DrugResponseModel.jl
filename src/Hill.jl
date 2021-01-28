@@ -20,11 +20,18 @@ function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
 end
 
 
+""" Generic setup for optimization. """
 function optimize_helper(f, low::Vector, high::Vector, maxstep::Int)
-    # TODO: Stub
-    minn, minX = 1.0, 1.0
+    results_ode = bboptimize(
+        f;
+        SearchRange = collect(zip(low, high)),
+        NumDimensions = length(low),
+        TraceMode = :verbose,
+        TraceInterval = 100,
+        MaxSteps = maxstep,
+    )
 
-    return minn, minX
+    return best_fitness(results_ode), best_candidate(results_ode)
 end
 
 
