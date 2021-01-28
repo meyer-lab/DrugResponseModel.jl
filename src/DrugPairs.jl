@@ -8,15 +8,15 @@ function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array, v::Int, 
     k = v
     for j = 1:2
         if case_num == 1
-            hill = hP[[t, t + 2, t + 3, t + 1, t + 4, t + 5, t + 6, t+ 7, t + 8, t+ 9, t + 10, t + 11, t + 12]]
+            hill = hP[[t, t + 2, t + 3, t + 1, t + 4, t + 5, t + 6, t + 7, t + 8, t + 9, t + 10, t + 11, t + 12]]
             res += DrugResponseModel.residHill(hill, concentrations[:, k], g1[:, :, k], g2[:, :, k])
             t += 13
         elseif case_num == 2
-            hill = hP[[t, t + 2, t + 3, t + 1, t + 4, t + 5, t + 6, t+ 7, t + 8, 19, 20, 21, 22]]
+            hill = hP[[t, t + 2, t + 3, t + 1, t + 4, t + 5, t + 6, t + 7, t + 8, 19, 20, 21, 22]]
             res += DrugResponseModel.residHill(hill, concentrations[:, k], g1[:, :, k], g2[:, :, k])
             t += 9
         elseif case_num == 3
-            hill = hP[[t, 23, t + 2, t + 1, 24, t + 3, t + 4, t + 5, t + 6, t+ 7, t + 8, t + 9, t + 10]]
+            hill = hP[[t, 23, t + 2, t + 1, 24, t + 3, t + 4, t + 5, t + 6, t + 7, t + 8, t + 9, t + 10]]
             res += DrugResponseModel.residHill(hill, concentrations[:, k], g1[:, :, k], g2[:, :, k])
             t += 11
         end
@@ -27,7 +27,7 @@ function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array, v::Int, 
 end
 
 function optim_helper(concs, case_num::Int, i::Int, j::Int)
-    low_piece = [1.0, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 0.25, 2, 2, 2, 2] 
+    low_piece = [1.0, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 0.25, 2, 2, 2, 2]
     high_piece = [5.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 0.75, 50, 50, 50, 50]
 
     if case_num == 1 # all parameters separated, nothing shared
@@ -52,7 +52,7 @@ function BBoptim_DrugPairs(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::
     hillCostAll(hillParams) = residHillAll(hillParams, concs, g1, g2, i, j, case_num)
     low, high = optim_helper(concs, case_num, i, j)
 
-results_ode = bboptimize(
+    results_ode = bboptimize(
         hillCostAll;
         SearchRange = collect(zip(low, high)),
         NumDimensions = length(low),
