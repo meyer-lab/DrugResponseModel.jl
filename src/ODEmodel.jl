@@ -54,8 +54,7 @@ function predict(p, g_0, t, g1data = nothing, g2data = nothing)
     end
 
     A = ODEjac(p, nG1, nG2, nD1, nD2)
-    println(cond(A))
-    Ks = arnoldi(A, v; m=15)
+    Ks = arnoldi(A, v)
 
     # Collapse down the Krylov subspace
     VV = Ks.V
@@ -72,9 +71,10 @@ function predict(p, g_0, t, g1data = nothing, g2data = nothing)
         GG = Matrix{eltype(p)}(undef, 2, length(t))
 
         for ii = 1:length(t)
-            expv!(GG[:, ii], t[ii], Ks)
+            @views expv!(GG[:, ii], t[ii], Ks)
         end
 
+        @assert all(isfinite.(GG))
         G1 = GG[1, :]
         G2 = GG[2, :]
     else
