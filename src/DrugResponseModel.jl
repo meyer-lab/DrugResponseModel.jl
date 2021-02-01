@@ -3,8 +3,7 @@ module DrugResponseModel
 
 ENV["GKSwstype"] = "100"
 
-using CSV
-using DataFrames
+using DelimitedFiles
 using Plots
 using Measures
 using LinearAlgebra
