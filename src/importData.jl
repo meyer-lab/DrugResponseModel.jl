@@ -3,8 +3,8 @@
 """
 function get_data(path_g2::String, path_total::String; max = 189)
     # Import data all the trials for each drug
-    perc = readdlm(path_g2, ','; skipstart=1)
-    total = readdlm(path_total, ','; skipstart=1)
+    perc = readdlm(path_g2, ','; skipstart = 1)
+    total = readdlm(path_total, ','; skipstart = 1)
 
     # Clip to data of interest
     perc = convert(Array, perc[1:max, 2:9])
@@ -30,8 +30,8 @@ function import_combination(filename::String)
     basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data")
     path_g2 = string("/", basePath, "/", filename, "_CYCLE.csv")
     path_total = string("/", basePath, "/", filename, "_CELL.csv")
-    perc = readdlm(path_g2, ','; skipstart=1)
-    total = readdlm(path_total, ','; skipstart=1)
+    perc = readdlm(path_g2, ','; skipstart = 1)
+    total = readdlm(path_total, ','; skipstart = 1)
 
     # Clip to data of interest
     perc = convert(Array{Float64, 2}, perc)
@@ -74,7 +74,7 @@ function setup_data(drug_name::String)
     end
 
     #----------- import concentrations
-    concentration = readdlm(joinpath(basePath, "concentrations.csv"), ','; skipstart=1)
+    concentration = readdlm(joinpath(basePath, "concentrations.csv"), ','; skipstart = 1)
     conc_l = [Float64(concentration[idx, col]) for col = 2:9]
     conc_l[1] = 0.05
 
