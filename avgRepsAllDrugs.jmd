@@ -10,7 +10,8 @@ This file plots (1) time series simulations for average of 3 replicates on top o
 import Pkg; Pkg.instantiate()
 Pkg.activate(".")
 using DrugResponseModel
-using Plots, LinearAlgebra
+using Plots, LinearAlgebra, Statistics
+Plots.scalefontsizes(0.7)
 
 concs, _, g1s1, g2s1 = load(189, 1);
 _, _, g1s2, g2s2 = load(189, 2);
@@ -18,6 +19,8 @@ _, _, g1s3, g2s3 = load(189, 3);
 g0 = g1s1[1,1,1]+g2s1[1,1,1];
 g1m = (g1s1 .+ g1s2 .+ g1s3) ./ 3;
 g2m = (g2s1 .+ g2s2 .+ g2s3) ./ 3;
+G1S = cat(g1s1, g1s2, g1s3, dims=4);
+G2S = cat(g2s1, g2s2, g2s3, dims=4);
 
 # Simulating only 7 concentrations to help improving the fit
 newconcs = concs[1:7,:];
@@ -58,6 +61,33 @@ for i=1:5
     err[i] = norm(G1[:, :, i] - g1m[:, 1:7, i]) + norm(G2[:, :, i] - g2m[:, 1:7, i])
 end
 print("lapatinib: ", err[1], ", doxorubicin: ", err[2], ", gemcitabine: ", err[3], ", paclitaxel: ", err[4], ", palbociclib: ", err[5])
+
+g1m = mean(G1S, dims = 4);
+g2m = mean(G2S, dims = 4);
+g1s = std(G1S, dims = 4);
+g2s = std(G2S, dims = 4);
+
+function plot_ribbon(conc, g1m, g2m, g1s, g2s, G1, G2, i, leg)
+    time = LinRange(0.0, 95.0, 189)
+
+    plot(
+        time,
+        g1m[:, i],
+        ribbon= g1s[:, i],
+        title = string(conc, "nM"),
+        titlefontsize = 8,
+        color = 6,
+        legend=leg,
+        label = "G1",
+        xlabel = "time [hr]",
+        ylabel = "cell number",
+        alpha = 0.1,
+    )
+    plot!(time, G1[:, i], label = "G1 sim", color = 6, lw=1)
+    plot!(time, g2m[:, i], ribbon=g2s[:, i], color = 7, label = "G2", alpha = 0.1)
+    plot!(time, G2[:, i], label = "G2 sim", color = 7, lw=1)
+    ylims!((0.0, 35))
+end
 ```
 
 ### Lapatinib
@@ -65,8 +95,10 @@ print("lapatinib: ", err[1], ", doxorubicin: ", err[2], ", gemcitabine: ", err[3
 time series plot
 
 ```julia
-p1 = DrugResponseModel.plotavg(G1[:, :, 1], G2[:, :, 1], g1m[:, :, 1], g2m[:, :, 1], 1, :false, concs[1, 1])
-p =[DrugResponseModel.plotavg(G1[:, :, 1], G2[:, :, 1], g1m[:, :, 1], g2m[:, :, 1], i, :false, concs[i, 1]) for i=2:7]
+p1 = plot_ribbon(concs[1, 1], g1m[:, :, 1], g2m[:, :, 1], g1s[:, :, 1], g2s[:, :, 1], G1[:, :, 1], G2[:, :, 1], 1, true)
+p = [plot_ribbon(concs[i, 1], g1m[:, :, 1], g2m[:, :, 1], g1s[:, :, 1], g2s[:, :, 1], G1[:, :, 1], G2[:, :, 1], i, false) for i=2:7]
+#p1 = DrugResponseModel.plotavg(G1[:, :, 1], G2[:, :, 1], g1m[:, :, 1], g2m[:, :, 1], 1, :false, concs[1, 1])
+#p =[DrugResponseModel.plotavg(G1[:, :, 1], G2[:, :, 1], g1m[:, :, 1], g2m[:, :, 1], i, :false, concs[i, 1]) for i=2:7]
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
@@ -89,8 +121,10 @@ DrugResponseModel.plot_parameters(concs[:, 1], efcs[:, :, 1], zeros(4,7))
 time series plot
 
 ```julia
-p1 = DrugResponseModel.plotavg(G1[:, :, 2], G2[:, :, 2], g1m[:, :, 2], g2m[:, :, 2], 1, :false, concs[1, 2])
-p =[DrugResponseModel.plotavg(G1[:, :, 2], G2[:, :, 2], g1m[:, :, 2], g2m[:, :, 2], i, :false, concs[i, 2]) for i=2:7]
+p1 = plot_ribbon(concs[1, 2], g1m[:, :, 2], g2m[:, :, 2], g1s[:, :, 2], g2s[:, :, 2], G1[:, :, 2], G2[:, :, 2], 1, true)
+p = [plot_ribbon(concs[i, 2], g1m[:, :, 2], g2m[:, :, 2], g1s[:, :, 2], g2s[:, :, 2], G1[:, :, 2], G2[:, :, 2], i, false) for i=2:7]
+#p1 = DrugResponseModel.plotavg(G1[:, :, 2], G2[:, :, 2], g1m[:, :, 2], g2m[:, :, 2], 1, :false, concs[1, 2])
+#p =[DrugResponseModel.plotavg(G1[:, :, 2], G2[:, :, 2], g1m[:, :, 2], g2m[:, :, 2], i, :false, concs[i, 2]) for i=2:7]
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
@@ -113,8 +147,10 @@ DrugResponseModel.plot_parameters(concs[:, 2], efcs[:, :, 2], zeros(4,7))
 time series plot
 
 ```julia
-p1 = DrugResponseModel.plotavg(G1[:, :, 3], G2[:, :, 3], g1m[:, :, 3], g2m[:, :, 3], 1, :false, concs[1, 3])
-p =[DrugResponseModel.plotavg(G1[:, :, 3], G2[:, :, 3], g1m[:, :, 3], g2m[:, :, 3], i, :false, concs[i, 3]) for i=2:7]
+p1 = plot_ribbon(concs[1, 3], g1m[:, :, 3], g2m[:, :, 3], g1s[:, :, 3], g2s[:, :, 3], G1[:, :, 3], G2[:, :, 3], 1, true)
+p = [plot_ribbon(concs[i, 3], g1m[:, :, 3], g2m[:, :, 3], g1s[:, :, 3], g2s[:, :, 3], G1[:, :, 3], G2[:, :, 3], i, false) for i=2:7]
+#p1 = DrugResponseModel.plotavg(G1[:, :, 3], G2[:, :, 3], g1m[:, :, 3], g2m[:, :, 3], 1, :false, concs[1, 3])
+#p =[DrugResponseModel.plotavg(G1[:, :, 3], G2[:, :, 3], g1m[:, :, 3], g2m[:, :, 3], i, :false, concs[i, 3]) for i=2:7]
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
@@ -137,8 +173,10 @@ DrugResponseModel.plot_parameters(concs[:, 3], efcs[:, :, 3], zeros(4,7))
 time series plot
 
 ```julia
-p1 = DrugResponseModel.plotavg(G1[:, :, 4], G2[:, :, 4], g1m[:, :, 4], g2m[:, :, 4], 1, :false, concs[1, 4])
-p =[DrugResponseModel.plotavg(G1[:, :, 4], G2[:, :, 4], g1m[:, :, 4], g2m[:, :, 4], i, :false, concs[i, 4]) for i=2:7]
+p1 = plot_ribbon(concs[1, 4], g1m[:, :, 4], g2m[:, :, 4], g1s[:, :, 4], g2s[:, :, 4], G1[:, :, 4], G2[:, :, 4], 1, true)
+p = [plot_ribbon(concs[i, 4], g1m[:, :, 4], g2m[:, :, 4], g1s[:, :, 4], g2s[:, :, 4], G1[:, :, 4], G2[:, :, 4], i, false) for i=2:7]
+#p1 = DrugResponseModel.plotavg(G1[:, :, 4], G2[:, :, 4], g1m[:, :, 4], g2m[:, :, 4], 1, :false, concs[1, 4])
+#p =[DrugResponseModel.plotavg(G1[:, :, 4], G2[:, :, 4], g1m[:, :, 4], g2m[:, :, 4], i, :false, concs[i, 4]) for i=2:7]
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
@@ -161,8 +199,10 @@ DrugResponseModel.plot_parameters(concs[:, 4], efcs[:, :, 4], zeros(4,7))
 time series plot
 
 ```julia
-p1 = DrugResponseModel.plotavg(G1[:, :, 5], G2[:, :, 5], g1m[:, :, 5], g2m[:, :, 5], 1, :false, concs[1, 5])
-p =[DrugResponseModel.plotavg(G1[:, :, 5], G2[:, :, 5], g1m[:, :, 5], g2m[:, :, 5], i, :false, concs[i, 5]) for i=2:7]
+p1 = plot_ribbon(concs[1, 5], g1m[:, :, 5], g2m[:, :, 5], g1s[:, :, 5], g2s[:, :, 5], G1[:, :, 5], G2[:, :, 5], 1, true)
+p = [plot_ribbon(concs[i, 5], g1m[:, :, 5], g2m[:, :, 5], g1s[:, :, 5], g2s[:, :, 5], G1[:, :, 5], G2[:, :, 5], i, false) for i=2:7]
+#p1 = DrugResponseModel.plotavg(G1[:, :, 5], G2[:, :, 5], g1m[:, :, 5], g2m[:, :, 5], 1, :false, concs[1, 5])
+#p =[DrugResponseModel.plotavg(G1[:, :, 5], G2[:, :, 5], g1m[:, :, 5], g2m[:, :, 5], i, :false, concs[i, 5]) for i=2:7]
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 

@@ -68,8 +68,8 @@ function easierPlot(plateNum, idx, titles, g1, g2, lg)
     plot!(t, g1, lw=2, color = 6, label = "G1 sim")
     plot!(t, means[2, :, idx], color = 7, ribbon = stds[2, :, idx], label = "G2", alpha = 0.1)
     plot!(t, g2, lw=2, color = 7, label = "G2 sim")
-    plot!(t, means[3, :, idx], color = 8, ribbon = stds[3, :, idx], label = "total", alpha = 0.1)
-    plot!(t, g1 .+ g2, lw=2, color = 8, label = "total sim")
+#    plot!(t, means[3, :, idx], color = 8, ribbon = stds[3, :, idx], label = "total", alpha = 0.1)
+#    plot!(t, g1 .+ g2, lw=2, color = 8, label = "total sim")
     p
 end
 
