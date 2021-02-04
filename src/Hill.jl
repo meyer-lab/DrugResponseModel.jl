@@ -13,7 +13,7 @@ function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
 
     # Solve each concentration separately
     for ii = 1:length(conc)
-        res += predict(params[1:9, ii], g0[ii], t, g1[:, ii], g2[:, ii])[1]
+        res += predict(params[:, ii], g0[ii], t, g1[:, ii], g2[:, ii])[1]
     end
 
     return res
@@ -39,8 +39,9 @@ end
 function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 100000)
     f(x) = residHill(x, conc, g1, g2)
 
-    low = [minimum(conc), 1e-9, 1e-9, 0.1, 1e-9, 1e-9, 0.0, 0.0, 0.25, 3, 5, 0, 0]
-    high = [maximum(conc), 1.0, 1.0, 10.0, 1.0, 1.0, 3.0, 3.0, 0.75, 50, 50, 50, 50]
+    # [EC50, k, min_a1, max_a1, min_a2, max_a2, min_b1, max_b1, min_b2, max_b2, max_g11, max_g12, max_g21, max_g22, min%G1]
+    low = [minimum(conc), 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 0.25]
+    high = [2*maximum(conc), 10.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 0.75]
 
     return optimize_helper(f, low, high, maxstep)
 end
@@ -50,18 +51,18 @@ function getODEparams(p::Vector, concentrations::Vector{Float64})
     effects = Matrix{eltype(p)}(undef, 9, length(concentrations))
 
     # Scaled drug effect
-    xx = 1.0 ./ (1.0 .+ (p[1] ./ (concentrations .+ eps())) .^ p[4])
+    xx = 1.0 ./ (1.0 .+ (p[1] ./ (concentrations .+ eps())) .^ p[2])
 
     # [EC50, left, right, steepness]
-    effects[1, :] = p[2] .+ (p[3] - p[2]) .* xx
+    effects[1, :] = p[3] .+ (p[4] - p[3]) .* xx
     effects[2, :] = p[5] .+ (p[6] - p[5]) .* xx
-    effects[3, :] = p[7] .* xx
-    effects[4, :] = p[8] .* xx
-    effects[5, :] .= p[9]
-    effects[6, :] .= floor(p[10])
-    effects[7, :] .= floor(p[11])
-    effects[8, :] .= floor(p[12])
-    effects[9, :] .= floor(p[13])
+    effects[3, :] = p[7] .+ (p[8] - p[7]) .* xx
+    effects[4, :] = p[9] .+ (p[10] - p[9]) .* xx
+    effects[5, :] = p[11] .* xx
+    effects[6, :] = p[12] .* xx
+    effects[7, :] = p[13] .* xx
+    effects[8, :] = p[14] .* xx
+    effects[9, :] .= p[15]
 
     return effects
 end
