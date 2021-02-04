@@ -8,7 +8,7 @@ const nG2 = 5
 const nSp = nG1 + nG2
 
 """ Make the transition matrix. """
-function ODEjac(p::Vector{T}, t::Real) where {T}
+function ODEjac(p::AbstractVector{T}, t::Real) where {T <: Real}
     # p = [alpha, beta, gamma1, gamma2]
     v1 = [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2])]
     v2 = [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]]
@@ -20,6 +20,19 @@ function ODEjac(p::Vector{T}, t::Real) where {T}
     A = exp(A * t)
 
     return A
+end
+
+
+""" Find the starting vector from the steady-state of the control condition. """
+function startV(p::AbstractVector{T})::AbstractVector{T} where {T <: Real}
+    _, _, v = predict(p, 1.0, 100.0)
+
+    for ii in 1:100
+        v /= sum(v)
+        _, _, v = predict(p, v, 100.0)
+    end
+
+    return v / sum(v)
 end
 
 
