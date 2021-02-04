@@ -10,6 +10,7 @@ using LinearAlgebra
 using Statistics
 using DSP: conv
 using BlackBoxOptim
+using StaticArrays
 
 include("importData.jl")
 include("ODEmodel.jl")

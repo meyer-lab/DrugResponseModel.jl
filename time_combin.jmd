@@ -17,7 +17,7 @@ g0 = g1s1[1,1,1]+g2s1[1,1,1];
 
 paramAvg = DrugResponseModel.return_param41()
 efcs = getODEparamsAll(paramAvg, concs);
-tim = 0.0:1.0:96.0;
+tim = LinRange(0.0, 96.0, 96)
 
 """ To avoid repetition. """
 function plot_combin_time(idA, idB, efcts, DrugA_name, DrugB_name, concA, concB)
