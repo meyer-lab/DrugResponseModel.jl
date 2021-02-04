@@ -34,7 +34,7 @@ for i=1:5
   params[:, i] = DrugResponseModel.EC50_params(paramAvg, i)
 end
 
-tim = 0.0:2:88.0
+tim = LinRange(0.0, 88.0, 44)
 ```
 
 
