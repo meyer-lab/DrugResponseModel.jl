@@ -8,6 +8,7 @@ const nSp = nG1 + nG2
 
 """ Make the transition matrix. """
 function ODEjac(p::AbstractVector{T}, t::Real) where {T <: Real}
+    print("entered function")
     # p = [alpha1, alpha2, beta1, beta2, gamma11, gamma12, gamma21, gamma22]
     v1 = [-ones(Int(nG1/2)) * (p[5] + p[1]); -ones(Int(nG1/2)) * (p[2] + p[6]); -ones(Int(nG2/2)) * (p[3] + p[7]); -ones(Int(nG2/2)) * (p[4] + p[8])]
     v2 = [ones(Int(nG1/2)) * p[1]; ones(Int(nG1/2)) * p[2]; ones(Int(nG2/2 - 1)) * p[3]; ones(Int(nG2/2 - 1)) * p[4]]
