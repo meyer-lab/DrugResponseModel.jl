@@ -27,7 +27,7 @@ end
 function startV(p::AbstractVector{T})::AbstractVector{T} where {T <: Real}
     _, _, v = predict(p, 1.0, 100.0)
 
-    for ii in 1:100
+    for ii = 1:100
         v /= sum(v)
         _, _, v = predict(p, v, 100.0)
     end
