@@ -45,7 +45,7 @@ function optim_helper(case_num::Int)
     elseif case_num == 3 # only control condition is shared
         low = vcat(low_piece[1:2], low_piece[4], low_piece[6:end], low_piece[1:2], low_piece[4], low_piece[6:end], 1e-9, 1e-9)
         high = vcat(high_piece[1:2], high_piece[4], high_piece[6:end], high_piece[1:2], high_piece[4], high_piece[6:end], 3.0, 3.0)
-    
+
     elseif case_num == 4
         low = vcat(low_piece[1:2], low_piece[4], low_piece[6:9], low_piece[1:2], low_piece[4], low_piece[6:9], 1e-9, 1e-9, low_piece[10:13])
         high = vcat(high_piece[1:2], high_piece[4], high_piece[6:9], high_piece[1:2], high_piece[4], high_piece[6:9], 3.0, 3.0, high_piece[10:13])
