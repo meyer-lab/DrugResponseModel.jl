@@ -23,6 +23,7 @@ function optim_helper()
 
     low = vcat(low_piece, low_piece, 1e-9, 1e-9, 1e-9, 1e-9) # 26 params
     high = vcat(high_piece, high_piece, 3.0, 3.0, 3.0, 3.0)
+
     return low, high
 end
 
