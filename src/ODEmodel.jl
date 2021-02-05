@@ -13,10 +13,11 @@ function ODEjac(p::AbstractVector{T}, t::Real) where {T <: Real}
     v2 = [ones(Int(nG1/2)) * p[1]; ones(Int(nG1/2)) * p[2]; ones(Int(nG2/2 - 1)) * p[3]; ones(Int(nG2/2 - 1)) * p[4]]
     A = diagm(0 => v1, -1 => v2)
     A[1, nSp] = 2 * p[2]
-    A[nSp, end-1] = p[4]
+    A[nSp, nSp-1] = p[4]
 
     A = SMatrix{nSp, nSp}(A)
     A = exp(A * t)
+    print(A, "there it is")
 
     return A
 end
@@ -25,7 +26,6 @@ end
 """ Find the starting vector from the steady-state of the control condition. """
 function startV(p::AbstractVector{T})::AbstractVector{T} where {T <: Real}
     _, _, v = predict(p, 1.0, 100.0)
-
     for ii in 1:100
         v /= sum(v)
         _, _, v = predict(p, v, 100.0)
