@@ -3,12 +3,12 @@
     number of cells in G1 or G2 phase of the cell cycle 
 """
 
-const nG1 = 5
-const nG2 = 5
+const nG1 = 6
+const nG2 = 6
 const nSp = nG1 + nG2
 
 """ Make the transition matrix. """
-function ODEjac(p::AbstractVector{T}, t::Real) where {T <: Real}
+function ODEjac(p::AbstractVector{T}, t::Real)::Matrix{T} where {T <: Real}
     # p = [alpha, beta, gamma1, gamma2]
     v1 = [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2])]
     v2 = [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]]
@@ -16,10 +16,8 @@ function ODEjac(p::AbstractVector{T}, t::Real) where {T <: Real}
     A = diagm(0 => v1, -1 => v2)
     A[1, nSp] = 2 * p[2]
 
-    A = SMatrix{nSp, nSp}(A)
-    A = exp(A * t)
-
-    return A
+    lmul!(t, A)
+    return LinearAlgebra.exp!(A)
 end
 
 
