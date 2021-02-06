@@ -18,16 +18,16 @@ end
 
 function optim_helper()
     # sharing control condition (min_a1, min_a2, min_b1,min_b2)
-    low_piece = [0.5, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 0.25]
-    high_piece = [1000.0, 10.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 0.75]
+    low_piece = [1.0, 0.01, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 0.35]
+    high_piece = [500.0, 10.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 0.65]
 
     low = vcat(low_piece, low_piece, 1e-9, 1e-9, 1e-9, 1e-9) # 26 params
-    high = vcat(high_piece, high_piece, 3.0, 3.0, 3.0, 3.0)
+    high = vcat(high_piece, high_piece, 2.0, 2.0, 2.0, 2.0)
     return low, high
 end
 
 """ Function to optimize pairs of drugs. """
-function BBoptim_DrugPairs(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}, i::Int, j::Int; maxiter = 100000)
+function BBoptim_DrugPairs(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}, i::Int, j::Int; maxiter = 200000)
     hillCostAll(hillParams) = residHillAll(hillParams, concs, g1, g2, i, j)
     low, high = optim_helper()
 
@@ -42,15 +42,15 @@ function getODEparamspairs(p, conc)
         xx = 1.0 ./ (1.0 .+ (p[k] ./ conc[:, i]) .^ p[k + 1])
 
         # [EC50, left, right, steepness]
-        effects[1, :] = p[23] .+ (p[k + 2] - p[23]) .* xx
-        effects[2, :] = p[24] .+ (p[k + 3] - p[24]) .* xx
-        effects[3, :] = p[25] .+ (p[k + 4] - p[25]) .* xx
-        effects[4, :] = p[26] .+ (p[k + 5] - p[26]) .* xx
-        effects[5, :] = p[k + 6] .* xx
-        effects[6, :] = p[k + 7] .* xx
-        effects[7, :] = p[k + 8] .* xx
-        effects[8, :] = p[k + 9] .* xx
-        effects[9, :] .= p[k + 10]
+        effects[1, :, i] = p[23] .+ (p[k + 2] - p[23]) .* xx
+        effects[2, :, i] = p[24] .+ (p[k + 3] - p[24]) .* xx
+        effects[3, :, i] = p[25] .+ (p[k + 4] - p[25]) .* xx
+        effects[4, :, i] = p[26] .+ (p[k + 5] - p[26]) .* xx
+        effects[5, :, i] = p[k + 6] .* xx
+        effects[6, :, i] = p[k + 7] .* xx
+        effects[7, :, i] = p[k + 8] .* xx
+        effects[8, :, i] = p[k + 9] .* xx
+        effects[9, :, i] .= p[k + 10]
         
         k += 11
     end

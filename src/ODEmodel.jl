@@ -2,25 +2,22 @@
     In this file we want to estimate parameters of an ODE model describing the
     number of cells in G1 or G2 phase of the cell cycle 
 """
-const nG1 = 8
+const nG1 = 6
 const nG2 = 24
 const nSp = nG1 + nG2
 
 """ Make the transition matrix. """
 function ODEjac(p::AbstractVector{T}, t::Real) where {T <: Real}
-    print("entered function")
-    # p = [alpha1, alpha2, beta1, beta2, gamma11, gamma12, gamma21, gamma22]
+    # p = [alpha1, alpha2, beta1, beta2, gamma11, gamma12, gamma21, gamma22, %G1]
     v1 = [-ones(Int(nG1/2)) * (p[5] + p[1]); -ones(Int(nG1/2)) * (p[2] + p[6]); -ones(Int(nG2/2)) * (p[3] + p[7]); -ones(Int(nG2/2)) * (p[4] + p[8])]
     v2 = [ones(Int(nG1/2)) * p[1]; ones(Int(nG1/2)) * p[2]; ones(Int(nG2/2 - 1)) * p[3]; ones(Int(nG2/2 - 1)) * p[4]]
     A = diagm(0 => v1, -1 => v2)
     A[1, nSp] = 2 * p[2]
     A[nSp, nSp-1] = p[4]
 
-    A = SMatrix{nSp, nSp}(A)
-    A = exp(A * t)
-    print(A, "there it is")
+    lmul!(t, A)
 
-    return A
+    return return LinearAlgebra.exp!(A)
 end
 
 
@@ -40,7 +37,6 @@ function vTOg(v::AbstractVector)
     G2 = sum(view(v, (nG1 + 1):nSp))
     return G1, G2
 end
-
 
 """ Predicts the model given a set of parametrs. """
 function predict(p, g_0, t::Union{Real, LinRange}, g1data = nothing, g2data = nothing)
