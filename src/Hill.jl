@@ -54,15 +54,15 @@ function getODEparams(p::Vector, concentrations::Vector{Float64})
     xx = 1.0 ./ (1.0 .+ (p[1] ./ (concentrations .+ eps())) .^ p[2])
 
     # [EC50, left, right, steepness]
-    effects[1, :] = p[3] .+ (p[4] - p[3]) .* xx
-    effects[2, :] = p[5] .+ (p[6] - p[5]) .* xx
-    effects[3, :] = p[7] .+ (p[8] - p[7]) .* xx
-    effects[4, :] = p[9] .+ (p[10] - p[9]) .* xx
-    effects[5, :] = p[11] .* xx
-    effects[6, :] = p[12] .* xx
-    effects[7, :] = p[13] .* xx
-    effects[8, :] = p[14] .* xx
-    effects[9, :] .= p[15]
+    effects[1, :] = p[3] .+ (p[4] - p[3]) .* xx # a1
+    effects[2, :] = p[5] .+ (p[6] - p[5]) .* xx # a2
+    effects[3, :] = p[7] .+ (p[8] - p[7]) .* xx # b1
+    effects[4, :] = p[9] .+ (p[10] - p[9]) .* xx # b2
+    effects[5, :] = p[11] .* xx # death in a1
+    effects[6, :] = p[12] .* xx # death in a2
+    effects[7, :] = p[13] .* xx # death in b1
+    effects[8, :] = p[14] .* xx # death in b2
+    effects[9, :] .= p[15] # %G1
 
     return effects
 end
