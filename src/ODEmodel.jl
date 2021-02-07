@@ -41,7 +41,16 @@ function vTOg(v::AbstractVector)
 end
 
 
-""" Predicts the model given a set of parametrs. """
+""" Predicts the model given a set of parameters. """
+function newPredict(p, pControl, t::Union{Real, LinRange}, g1data = nothing, g2data = nothing)
+    vStart = startV(pControl)
+    # Note that vStart is always scaled so the starting cell number is 1.0
+
+    return predict(p, vStart, t, g1data, g2data)
+end
+
+
+""" Predicts the model given a set of parameters. """
 function predict(p, g_0, t::Union{Real, LinRange}, g1data = nothing, g2data = nothing)
 
     if g_0 isa Real
