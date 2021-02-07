@@ -57,26 +57,17 @@ function getODEparamsAll(p, concentrations::Array{Float64, 2})
     # Scaled drug effect
     for i = 1:5
         xx = 1.0 ./ (1.0 .+ (p[k] ./ concentrations[:, i]) .^ p[k + 1])
-        effects[3, :, i] = p[k + 4] .* xx # G1 death rate
-        effects[4, :, i] = p[k + 5] .* xx # G2 death rate
-
-        if length(p) == 41
-            effects[1, :, i] = p[36] .+ (p[k + 2] - p[36]) .* xx # G1 prog. rate
-            effects[2, :, i] = p[37] .+ (p[k + 3] - p[37]) .* xx # G2 prog. rate
-            effects[5, :, i] .= p[k + 6] # percentage in G1
-            k += 7
-        elseif length(p) == 37
-            effects[1, :, i] = p[31] .+ (p[k + 2] - p[31]) .* xx
-            effects[2, :, i] = p[32] .+ (p[k + 3] - p[32]) .* xx
-            k += 6
-        end
-    end
-
-    if length(p) == 41
-        effects[6:9, :, :] .= p[38:41, CartesianIndex(), CartesianIndex()]
-    elseif length(p) == 37
-        # percentage in G1, nG1, nG2, nD1, nD2
-        effects[5:9, :, :] .= p[33:37, CartesianIndex(), CartesianIndex()]
+        effects[1, :, i] = p[56] .+ (p[k + 2] - p[56]) .* xx
+        effects[2, :, i] = p[57] .+ (p[k + 3] - p[57]) .* xx
+        effects[3, :, i] = p[58] .+ (p[k + 4] - p[58]) .* xx
+        effects[4, :, i] = p[59] .+ (p[k + 5] - p[59]) .* xx
+        effects[5, :, i] = p[k + 6] .* xx
+        effects[6, :, i] = p[k + 7] .* xx
+        effects[7, :, i] = p[k + 8] .* xx
+        effects[8, :, i] = p[k + 9] .* xx
+        effects[9, :, i] .= p[k + 10]
+        
+        k += 11
     end
 
     return effects
@@ -89,9 +80,9 @@ function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array)
     # Solve for all drugs
     t = 1
     for j = 1:5
-        hill = hP[[t, 36, t + 2, t + 1, 37, t + 3, t + 4, t + 5, t + 6, 38, 39, 40, 41]]
+        hill = hP[[t, t + 1, 56, t + 2, 57, t + 3, 58, t + 4, 59, t + 5, t + 6, t + 7, t + 8, t + 9, t + 10]]
         res += residHill(hill, concentrations[:, j], g1[:, :, j], g2[:, :, j])
-        t += 7
+        t += 11
     end
 
     return res
@@ -112,10 +103,10 @@ end
 function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 100000)
     f(x) = residHillAll(x, concs, g1, g2)
 
-    lP = [minimum(concs), 0.01, 0.05, 0.05, 0.00001, 0.00001, 0.3]
-    low = vcat(lP, lP, lP, lP, lP, 1e-9, 1e-9, 3, 3, 2, 2)
-    hP = [maximum(concs), 1.0, 1.0, 1.0, 0.1, 0.1, 0.7]
-    high = vcat(hP, hP, hP, hP, hP, 1.0, 1.0, 10, 25, 50, 50)
+    lP = [minimum(concs), 0.01, 0.05, 0.05, 0.05, 0.05, 0.00001, 0.00001, 0.00001, 0.00001, 0.3]
+    low = vcat(lP, lP, lP, lP, lP, 1e-9, 1e-9, 1e-9, 1e-9)
+    hP = [maximum(concs), 10.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.7]
+    high = vcat(hP, hP, hP, hP, hP, 1.0, 1.0, 1.0, 1.0)
 
     return optimize_helper(f, low, high, maxiter)
 end

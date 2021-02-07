@@ -8,17 +8,17 @@ function Bliss_params_unit(pp1, pp2, control)
     p1 = copy(pp1)
     p2 = copy(pp2)
     # normalization
-    p1[1:2] .= 1.0 .- (pp1[1:2] ./ control[1:2, 1]) # g1 and g2 prog. rates
-    p1[3:4] .= pp1[3:4]                          # g1 and g2 death rates
+    p1[1:4] .= 1.0 .- (pp1[1:4] ./ control[1:4, 1]) # g1 and g2 prog. rates
+    p1[5:8] .= pp1[5:8]                          # g1 and g2 death rates
     # drug B
-    p2[1:2] .= 1.0 .- (pp2[1:2] ./ control[1:2, 2])
-    p2[3:4] .= pp2[3:4]
+    p2[1:4] .= 1.0 .- (pp2[1:4] ./ control[1:4, 2])
+    p2[5:8] .= pp2[5:8]
 
     c = Array{eltype(pp1), 1}(undef, 9)
-    c[1:2] .= (1.0 .- (p1[1:2] .+ p2[1:2] .- p1[1:2] .* p2[1:2])) .* ((control[1:2, 1] .+ control[1:2, 2]) ./ 2)
-    c[3:4] .= p1[3:4] .+ p2[3:4]
+    c[1:4] .= (1.0 .- (p1[1:4] .+ p2[1:4] .- p1[1:4] .* p2[1:4])) .* ((control[1:4, 1] .+ control[1:4, 2]) ./ 2)
+    c[5:8] .= p1[5:8] .+ p2[5:8]
 
-    c[5:9] .= pp1[5:9]
+    c[9] = pp1[9]
     c
 end
 
