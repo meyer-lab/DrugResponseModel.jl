@@ -9,11 +9,24 @@ function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
     res = 0.0
     params = getODEparams(x, conc)
     t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
-    g0 = g1[1, :] + g2[1, :]
+    function residue(p, g1, g2)
+        g00 = g1[1, 1] + g2[1, 1]
+        return predict(p, g00, t, g1[:, 1], g2[:, 1])[1]
+    end
+
+    function optims(g1, g2)
+        smin = [1e-4, 1e-4, 1e-4, 1e-4, 1e-4, 1e-4, 1e-4, 1e-4, 0.35];
+        smax = [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 0.65];
+        f(x) = residue(x, g1, g2)
+        return DrugResponseModel.optimize_helper(f, smin, smax, 100000)
+    end
+
+    _, control = optims(g1[:, 1], g2[:, 1])
+    g0 = DrugResponseModel.startV(control)
 
     # Solve each concentration separately
     for ii = 1:length(conc)
-        res += predict(params[:, ii], g0[ii], t, g1[:, ii], g2[:, ii])[1]
+        res += predict(params[:, ii], g0, t, g1[:, ii], g2[:, ii])[1]
     end
 
     return res
