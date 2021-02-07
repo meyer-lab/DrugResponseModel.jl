@@ -10,10 +10,14 @@ const nSp = nG1 + nG2
 """ Make the transition matrix. """
 function ODEjac(p::AbstractVector{T}, t::Real)::Matrix{T} where {T <: Real}
     # p = [alpha, beta, gamma1, gamma2]
-    v1 = [-ones(nG1) * (p[3] + p[1]); -ones(nG2) * (p[4] + p[2])]
-    v2 = [ones(nG1) * p[1]; ones(nG2 - 1) * p[2]]
+    A = zeros(nSp, nSp)
 
-    A = diagm(0 => v1, -1 => v2)
+    A[diagind(A, 0)[1:nG1]] .= -(p[3] + p[1])
+    A[diagind(A, 0)[(nG1+1):end]] .= -(p[4] + p[2])
+
+    A[diagind(A, -1)[1:nG1]] .= p[1]
+    A[diagind(A, -1)[(nG1+1):end]] .= p[2]
+
     A[1, nSp] = 2 * p[2]
 
     lmul!(t, A)
@@ -43,9 +47,10 @@ end
 
 """ Predicts the model given a set of parametrs. """
 function predict(p, g_0, t::Union{Real, LinRange}, g1data = nothing, g2data = nothing)
-
     if g_0 isa Real
-        v = SVector{nSp}([ones(nG1) * p[5] * g_0 / nG1; ones(nG2) * (1.0 - p[5]) * g_0 / nG2])
+        v = Vector{eltype(p)}(undef, nSp)
+        v[1:nG1] .= p[5] * g_0 / nG1
+        v[(nG1+1):end] .= (1.0 - p[5]) * g_0 / nG2
     else
         v = g_0
     end
@@ -59,6 +64,7 @@ function predict(p, g_0, t::Union{Real, LinRange}, g1data = nothing, g2data = no
         # Some assumptions
         @assert t.start == 0.0
         A = ODEjac(p, t[2])
+        u = similar(v)
 
         if g1data === nothing
             G1 = Vector{eltype(p)}(undef, length(t))
@@ -67,7 +73,8 @@ function predict(p, g_0, t::Union{Real, LinRange}, g1data = nothing, g2data = no
             for ii = 1:length(t)
                 G1[ii], G2[ii] = vTOg(v)
 
-                v = A * v
+                mul!(u, A, v)
+                copyto!(v, u)
             end
         else
             cost = 0.0
@@ -76,7 +83,8 @@ function predict(p, g_0, t::Union{Real, LinRange}, g1data = nothing, g2data = no
                 G1, G2 = vTOg(v)
                 cost += norm(G1 - g1data[ii]) + norm(G2 - g2data[ii])
 
-                v = A * v
+                mul!(u, A, v)
+                copyto!(v, u)
             end
 
             return cost, v
