@@ -32,18 +32,20 @@ function AllBliss_params(pp1, pp2)
             combined[:, i, j] .= Bliss_params_unit(pp1[:, i], pp2[:, j], hcat(pp1[:, 1], pp2[:, 1]))
         end
     end
-    @assert(all(combined[1:4, :, :] .>= 0.0))
-    @assert(all(combined[1:4, :, :] .<= 5.0))
+    # TODO: remember to uncomment this assertion after estimating correct set of parameters
+    # @assert(all(combined[1:4, :, :] .>= 0.0))
+    # @assert(all(combined[1:4, :, :] .<= 5.0))
     combined
 end
 
 
 """ This function calculates cell number for parameter sets that are the result of Bliss on prog. rates. """
-function BlissModelComb(bliss_comb, g0)
+function BlissModelComb(bliss_comb, pCtr)
     bliss_comb_cellnum = Matrix{eltype(bliss_comb)}(undef, 8, 8)
+
     for i = 1:8 # param1 is changing
         for j = 1:8 # param2 is changing
-            g1, g2, _ = predict(bliss_comb[:, i, j], g0, 96.0)
+            g1, g2, _ = newPredict(bliss_comb[:, i, j], pCtr, 96.0)
             bliss_comb_cellnum[i, j] = g1 + g2
         end
     end

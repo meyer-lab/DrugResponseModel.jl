@@ -21,8 +21,8 @@ end
     concs, _, _, _ = load(189, 1)
     gem_before = [10.0, 0.9, 0.9, 0.3, 1.8, 1.0, 0.2, 0.3, 0.4, 0.1, 0.5, 0.00593379, 0.110279, 0.01, 0.5]
     dox_before = [100.0, 0.1, 0.04, 0.5, 0.5, 0.5, 0.5, 0.8, 0.16, 0.0, 0.01, 0.1, 0.0720467, 0.14468, 0.5]
-    p1 = DrugResponseModel.getODEparams(gem_before, concs[:, 3])
-    p2 = DrugResponseModel.getODEparams(dox_before, concs[:, 2])
+    p1 = DrugResponseModel.getODEparams(gem_before, concs[:, 3], 1)
+    p2 = DrugResponseModel.getODEparams(dox_before, concs[:, 2], 1)
 
     cmb = DrugResponseModel.Bliss_params_unit(p1[:, 2], p2[:, 3], hcat(p1[:, 1], p2[:, 1]))
     # @assert(all(cmb[1, :, end] .>= 0.4))

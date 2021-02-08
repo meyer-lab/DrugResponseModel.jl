@@ -7,13 +7,13 @@ DDE parameters, passes them to residual function and based off of these, optimiz
 and estimates hill parameters. """
 function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
 
-    params = getODEparams(x, conc)
+    params = getODEparams(x, conc, 1)
     t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
     res = 0.0
     g00 = g1[1, :] + g2[1, :]
     # Solve each concentration separately
     for ii = 1:length(conc)
-        res += predict(params[:, ii], g00[ii], t, g1[:, ii], g2[:, ii])[1]
+        res += predict(params[:, ii, 1], g00[ii], t, g1[:, ii], g2[:, ii])[1]
     end
 
     return res
@@ -47,23 +47,27 @@ function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 300000)
     return optimize_helper(f, low, high, maxstep)
 end
 
-""" A function to convert the estimated hill parameters back to ODE parameters. """
-function getODEparams(p::Vector, concentrations::Vector{Float64})
-    effects = Matrix{eltype(p)}(undef, 9, length(concentrations))
-
+function getODEparams(p, conc, nMax)
+    effects = zeros(eltype(p), 9, length(conc[:, 1]), nMax)
+    k = 1
+    sizep = 11 # the size of independent parameters, meaning except for control.
+    j = nMax * sizep + 1 # the starting index of "control parameters", according to the number of drugs being fitted at once.
     # Scaled drug effect
-    xx = 1.0 ./ (1.0 .+ (p[1] ./ (concentrations .+ eps())) .^ p[2])
+    for i = 1:nMax
+        xx = 1.0 ./ (1.0 .+ (p[k] ./ conc[:, i]) .^ p[k + 1])
 
-    # [EC50, left, right, steepness]
-    effects[1, :] = p[3] .+ (p[4] - p[3]) .* xx # a1
-    effects[2, :] = p[5] .+ (p[6] - p[5]) .* xx # a2
-    effects[3, :] = p[7] .+ (p[8] - p[7]) .* xx # b1
-    effects[4, :] = p[9] .+ (p[10] - p[9]) .* xx # b2
-    effects[5, :] = p[11] .* xx # death in a1
-    effects[6, :] = p[12] .* xx # death in a2
-    effects[7, :] = p[13] .* xx # death in b1
-    effects[8, :] = p[14] .* xx # death in b2
-    effects[9, :] .= p[15] # %G1
-
+        # [EC50, left, right, steepness]
+        effects[1, :, i] = p[j] .+ (p[k + 2] - p[j]) .* xx
+        effects[2, :, i] = p[j + 1] .+ (p[k + 3] - p[j + 1]) .* xx
+        effects[3, :, i] = p[j + 2] .+ (p[k + 4] - p[j + 2]) .* xx
+        effects[4, :, i] = p[j + 3] .+ (p[k + 5] - p[j + 3]) .* xx
+        effects[5, :, i] = p[k + 6] .* xx
+        effects[6, :, i] = p[k + 7] .* xx
+        effects[7, :, i] = p[k + 8] .* xx
+        effects[8, :, i] = p[k + 9] .* xx
+        effects[9, :, i] .= p[k + 10]
+        
+        k += sizep
+    end
     return effects
 end

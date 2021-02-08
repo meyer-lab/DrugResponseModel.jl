@@ -16,23 +16,21 @@ Plots.scalefontsizes(0.7)
 concs, _, g1s1, g2s1 = load(189, 1);
 _, _, g1s2, g2s2 = load(189, 2);
 _, _, g1s3, g2s3 = load(189, 3);
-g0 = g1s1[1,1,1]+g2s1[1,1,1];
 
 g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
 g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
-g0 = g1s1[1,1,1]+g2s1[1,1,1];
+
 
 # this is the optimum estimated parameters for all drugs at once, and considers % in G1 separately for drugs. ==> 41 parameters
-p = DrugResponseModel.return_param41()
+p = rand(59)
 
-effs = getODEparamsAll(p, concs);
+effs = getODEparams(p, concs, 5);
 lapat = effs[:, :, 1];
 dox = effs[:, :, 2];
 gemc = effs[:, :, 3];
 pac = effs[:, :, 4];
 pal = effs[:, :, 5];
 ```
-
 
 ```julia
 # Bliss on pure cell numbers
@@ -43,10 +41,14 @@ BlissOnData = DrugResponseModel.blissCellNum(g1avg, g2avg; n = 8); # includes ar
 # Lapatinib and doxorubicin
 
 ```julia
-function plt_heatmap_combin(drug1_ind, drug2_ind, effs, g0, concs, BlissData)
+pCntr = zeros(9, 5)
+for iii=1:5
+    _, pCntr[:, iii] = DrugResponseModel.optimise_control(g1avg[:, 1, iii], g2avg[:, 1, iii])
+end
+function plt_heatmap_combin(drug1_ind, drug2_ind, effs, pCtr, concs, BlissData)
   names = ["Lpt", "Dox", "Gem", "Tax", "Palb"]
   bliss_comb = DrugResponseModel.AllBliss_params(effs[:, :, drug1_ind], effs[:, :, drug2_ind])
-  bliss_comb_cellnum = BlissModelComb(bliss_comb, g0)
+  bliss_comb_cellnum = BlissModelComb(bliss_comb, pCtr)
   diff = bliss_comb_cellnum .- BlissData
   frac = bliss_comb_cellnum ./ BlissData
 
@@ -58,56 +60,56 @@ function plt_heatmap_combin(drug1_ind, drug2_ind, effs, g0, concs, BlissData)
   return plot(p1, p2, p3, p4, layout=(2, 2))
 end
 
-plt_heatmap_combin(1, 2, effs, g0, concs, BlissOnData[:, :, 1])
+plt_heatmap_combin(1, 2, effs, pCntr[:, 1], concs, BlissOnData[:, :, 1])
 ```
 
 # Lapatinib and gemcitabine
 
 ```julia
-plt_heatmap_combin(1, 3, effs, g0, concs, BlissOnData[:, :, 2])
+plt_heatmap_combin(1, 3, effs, pCntr[:, 1], concs, BlissOnData[:, :, 2])
 ```
 
 
 # Lapatinib and paclitaxel
 
 ```julia
-plt_heatmap_combin(1, 4, effs, g0, concs, BlissOnData[:, :, 3])
+plt_heatmap_combin(1, 4, effs, pCntr[:, 1], concs, BlissOnData[:, :, 3])
 ```
 
 # Lapatinib and palbociclib
 
 ```julia
-plt_heatmap_combin(1, 5, effs, g0, concs, BlissOnData[:, :, 4])
+plt_heatmap_combin(1, 5, effs, pCntr[:, 1], concs, BlissOnData[:, :, 4])
 ```
 
 # Doxorubicin and gemcitabine
 ```julia
-plt_heatmap_combin(2, 3, effs, g0, concs, BlissOnData[:, :, 5])
+plt_heatmap_combin(2, 3, effs, pCntr[:, 2], concs, BlissOnData[:, :, 5])
 ```
 
 # Doxorubicin and paclitaxel
 ```julia
-plt_heatmap_combin(2, 4, effs, g0, concs, BlissOnData[:, :, 6])
+plt_heatmap_combin(2, 4, effs, pCntr[:, 2], concs, BlissOnData[:, :, 6])
 ```
 
 
 # Doxorubicin and palbociclib
 ```julia
-plt_heatmap_combin(2, 5, effs, g0, concs, BlissOnData[:, :, 7])
+plt_heatmap_combin(2, 5, effs, pCntr[:, 2], concs, BlissOnData[:, :, 7])
 ```
 
 
 # Gemcitabine and paclitaxel
 ```julia
-plt_heatmap_combin(3, 4, effs, g0, concs, BlissOnData[:, :, 8])
+plt_heatmap_combin(3, 4, effs, pCntr[:, 3], concs, BlissOnData[:, :, 8])
 ```
 
 # Gemcitabine and palbociclib
 ```julia
-plt_heatmap_combin(3, 5, effs, g0, concs, BlissOnData[:, :, 9])
+plt_heatmap_combin(3, 5, effs, pCntr[:, 3], concs, BlissOnData[:, :, 9])
 ```
 
 # Paclitaxel and palbociclib
 ```julia
-plt_heatmap_combin(4, 5, effs, g0, concs, BlissOnData[:, :, 10])
+plt_heatmap_combin(4, 5, effs, pCntr[:, 4], concs, BlissOnData[:, :, 10])
 ```

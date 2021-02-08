@@ -49,31 +49,6 @@ function return_param41()
 end
 
 
-""" This function """
-function getODEparamsAll(p, concentrations::Array{Float64, 2})
-    effects = zeros(eltype(p), 9, length(concentrations[:, 1]), 5)
-
-    k = 1
-    # Scaled drug effect
-    for i = 1:5
-        xx = 1.0 ./ (1.0 .+ (p[k] ./ concentrations[:, i]) .^ p[k + 1])
-        effects[1, :, i] = p[56] .+ (p[k + 2] - p[56]) .* xx
-        effects[2, :, i] = p[57] .+ (p[k + 3] - p[57]) .* xx
-        effects[3, :, i] = p[58] .+ (p[k + 4] - p[58]) .* xx
-        effects[4, :, i] = p[59] .+ (p[k + 5] - p[59]) .* xx
-        effects[5, :, i] = p[k + 6] .* xx
-        effects[6, :, i] = p[k + 7] .* xx
-        effects[7, :, i] = p[k + 8] .* xx
-        effects[8, :, i] = p[k + 9] .* xx
-        effects[9, :, i] .= p[k + 10]
-        
-        k += 11
-    end
-
-    return effects
-end
-
-
 function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array)
     res = 0.0
 

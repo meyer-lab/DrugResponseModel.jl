@@ -18,12 +18,12 @@ function unit_plot_params(conc, params, stdn, labelY)
     )
 end
 
-function plot_parameters(concs, parameters, stdns, drugInd)
+function plot_parameters(concs, parameters, stdn)
     labelYs = [" progression rate [1/hr]", " death rate [1/hr]"]
     pre_labels = ["G1,1", "G1,2", "G2,1", "G2,2"]
 
-    p1 = [unit_plot_params(concs[:, drugInd], parameters[i, :], stdn[i, :], string(pre_labels[i], labelY[1])) for i=1:4]
-    p2 = [unit_plot_params(concs[:, drugInd], parameters[i, :], stdn[i, :], string(pre_labels[i], labelY[2])) for i=5:8]
+    p1 = [unit_plot_params(concs, parameters[i, :], stdn[i, :], string(pre_labels[i], labelYs[1])) for i=1:4]
+    p2 = [unit_plot_params(concs, parameters[i, :], stdn[i, :], string(pre_labels[i-4], labelYs[2])) for i=5:8]
 
     plot(p1..., p2..., alpha = 0.6, lw = 2.0, size = (1100, 400), layout = (2,4), color = [:black :gray])
     ylims!(0.0, 2.0)

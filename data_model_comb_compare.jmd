@@ -21,7 +21,10 @@ t = LinRange(0.0, 96.0, 193);
 GS1 = cat(gt1, gt1_2, gt1_3, dims = 4);
 GS2 = cat(gt2, gt2_2, gt2_3, dims = 4);
 
-g0 = 20.0
+# TODO: the g0 is assumed to come from only Lapatinib control. Figure out what you want to do for combination.
+_, pcnt = DrugResponseModel.optimise_control(g1avg[:, 1, 1], g2avg[:, 1, 1])
+g0 = DrugResponseModel.startV(pcnt)
+
 concs, _, _, _ = load(189, 1);
 meanGS1 = mean(GS1, dims = 4);
 meanGS2 = mean(GS2, dims = 4);
@@ -30,8 +33,8 @@ stdGS2 = std(GS2, dims = 4);
 
 meanGS2[:, :, 19] .= mean(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims=3), dims=3)[:, :, 1]
 stdGS2[:, :, 19] .= std(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims=3), dims=3)[:, :, 1]
-p = DrugResponseModel.return_param41();
-efcs = getODEparamsAll(p, concs);
+p = rand(59)
+efcs = getODEparams(p, concs, 5);
 
 hill(p, c) = p[2] + (p[3] - p[2]) / (1 + ((p[1]/c) ^ p[4]))
 gemc_hillParams = zeros(4, 4) # [alpha, beta, death1, death2] x [EC50, min, max, k]
@@ -68,8 +71,8 @@ function easierPlot(plateNum, idx, titles, g1, g2, lg)
     plot!(t, g1, lw=2, color = 6, label = "G1 sim")
     plot!(t, means[2, :, idx], color = 7, ribbon = stds[2, :, idx], label = "G2", alpha = 0.1)
     plot!(t, g2, lw=2, color = 7, label = "G2 sim")
-#    plot!(t, means[3, :, idx], color = 8, ribbon = stds[3, :, idx], label = "total", alpha = 0.1)
-#    plot!(t, g1 .+ g2, lw=2, color = 8, label = "total sim")
+    plot!(t, means[3, :, idx], color = 8, ribbon = stds[3, :, idx], label = "total", alpha = 0.1)
+    plot!(t, g1 .+ g2, lw=2, color = 8, label = "total sim")
     p
 end
 

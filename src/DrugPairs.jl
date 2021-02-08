@@ -34,28 +34,6 @@ function BBoptim_DrugPairs(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::
     return optimize_helper(hillCostAll, low, high, maxiter)
 end
 
-function getODEparamspairs(p, conc)
-    effects = zeros(eltype(p), 9, length(conc[:, 1]), 2)
-    k = 1
-    # Scaled drug effect
-    for i = 1:2
-        xx = 1.0 ./ (1.0 .+ (p[k] ./ conc[:, i]) .^ p[k + 1])
-
-        # [EC50, left, right, steepness]
-        effects[1, :, i] = p[23] .+ (p[k + 2] - p[23]) .* xx
-        effects[2, :, i] = p[24] .+ (p[k + 3] - p[24]) .* xx
-        effects[3, :, i] = p[25] .+ (p[k + 4] - p[25]) .* xx
-        effects[4, :, i] = p[26] .+ (p[k + 5] - p[26]) .* xx
-        effects[5, :, i] = p[k + 6] .* xx
-        effects[6, :, i] = p[k + 7] .* xx
-        effects[7, :, i] = p[k + 8] .* xx
-        effects[8, :, i] = p[k + 9] .* xx
-        effects[9, :, i] .= p[k + 10]
-        
-        k += 11
-    end
-    return effects
-end
 
 """ This function takes in the joint estimated parameters and returns both, individually, in one matrix. """
 function estimated_params(concs, key)
@@ -76,6 +54,6 @@ function estimated_params(concs, key)
     # 9. gem and palbo:
     # 10. tax and palbo:
     dictionary = Dict("1,2" => p1, "1,3" => p2, "1,4" => p3, "1,5" => p4, "2,3" => p5, "2,4" => p6, "2,5" => p7, "3,4" => p8, "3,5"=> p9, "4,5" => p10)
-    return DrugResponesModel.getODEparamspairs(dictionary[key], concs)
+    return DrugResponesModel.getODEparams(dictionary[key], concs, 2)
 
 end

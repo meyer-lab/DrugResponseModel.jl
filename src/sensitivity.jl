@@ -73,7 +73,7 @@ end
 
 """ Calculates the difference between the combination and single cell effect. """
 function calc_diff(Hillp, Dr1Ind, Dr2Ind, concs, g0, oneortwo)
-    effs = getODEparamsAll(Hillp, concs)
+    effs = getODEparams(Hillp, concs, 5)
     ec501 = EC50_params(Hillp, Dr1Ind)
     ec502 = EC50_params(Hillp, Dr2Ind)
     bliss_comb = Bliss_params_unit(ec501, ec502, hcat(effs[:, 1, Dr1Ind], effs[:, 1, Dr2Ind]))
