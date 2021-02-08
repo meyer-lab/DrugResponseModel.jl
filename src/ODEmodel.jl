@@ -13,10 +13,10 @@ function ODEjac(p::AbstractVector{T}, t::Real)::Matrix{T} where {T <: Real}
     A = zeros(nSp, nSp)
 
     A[diagind(A, 0)[1:nG1]] .= -(p[3] + p[1])
-    A[diagind(A, 0)[(nG1+1):end]] .= -(p[4] + p[2])
+    A[diagind(A, 0)[(nG1 + 1):end]] .= -(p[4] + p[2])
 
     A[diagind(A, -1)[1:nG1]] .= p[1]
-    A[diagind(A, -1)[(nG1+1):end]] .= p[2]
+    A[diagind(A, -1)[(nG1 + 1):end]] .= p[2]
 
     A[1, nSp] = 2 * p[2]
 
@@ -50,7 +50,7 @@ function predict(p, g_0, t::Union{Real, LinRange}, g1data = nothing, g2data = no
     if g_0 isa Real
         v = Vector{eltype(p)}(undef, nSp)
         v[1:nG1] .= p[5] * g_0 / nG1
-        v[(nG1+1):end] .= (1.0 - p[5]) * g_0 / nG2
+        v[(nG1 + 1):end] .= (1.0 - p[5]) * g_0 / nG2
     else
         v = g_0
     end
