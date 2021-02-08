@@ -75,7 +75,7 @@ plot(pl..., size=(1000,700))
 ```
 
 ```julia
-DrugResponseModel.plot_parameters(concs[:, 1], avgs[:, :, 1], stds[:, :, 1])
+DrugResponseModel.plot_parameters(concs[:, 1], avgs[:, :, 1], stds[:, :, 1], 1)
 ```
 
 
@@ -88,7 +88,7 @@ plot(pl..., size=(1000,700))
 ```
 
 ```julia
-DrugResponseModel.plot_parameters(concs[:, 2], avgs[:, :, 2], stds[:, :, 2])
+DrugResponseModel.plot_parameters(concs[:, 2], avgs[:, :, 2], stds[:, :, 2], 2)
 ```
 
 ## Gemcitabine
@@ -100,7 +100,7 @@ plot(pl..., size=(1000,700))
 ```
 
 ```julia
-DrugResponseModel.plot_parameters(concs[:, 3], avgs[:, :, 3], stds[:, :, 3])
+DrugResponseModel.plot_parameters(concs[:, 3], avgs[:, :, 3], stds[:, :, 3], 3)
 ```
 
 ## Paclitaxel
@@ -112,7 +112,7 @@ plot(pl..., size=(1000,700))
 ```
 
 ```julia
-DrugResponseModel.plot_parameters(concs[:, 4], avgs[:, :, 4], stds[:, :, 4])
+DrugResponseModel.plot_parameters(concs[:, 4], avgs[:, :, 4], stds[:, :, 4], 4)
 ```
 
 ## Palbociclib
@@ -124,5 +124,5 @@ plot(pl..., size=(1000,700))
 ```
 
 ```julia
-DrugResponseModel.plot_parameters(concs[:, 5], avgs[:, :, 5], stds[:, :, 5])
+DrugResponseModel.plot_parameters(concs[:, 5], avgs[:, :, 5], stds[:, :, 5], 5)
 ```
