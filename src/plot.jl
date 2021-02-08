@@ -25,7 +25,7 @@ function plot_parameters(concs, parameters, stdns, drugInd)
     p1 = [unit_plot_params(concs[:, drugInd], parameters[i, :], stdn[i, :], string(pre_labels[i], labelY[1])) for i=1:4]
     p2 = [unit_plot_params(concs[:, drugInd], parameters[i, :], stdn[i, :], string(pre_labels[i], labelY[2])) for i=5:8]
 
-    plot(p1..., p2..., alpha = 0.6, lw = 2.0, size = (1200, 400), layout = (2,4), color = [:black :gray])
+    plot(p1..., p2..., alpha = 0.6, lw = 2.0, size = (1100, 400), layout = (2,4), color = [:black :gray])
     ylims!(0.0, 2.0)
 end
 
