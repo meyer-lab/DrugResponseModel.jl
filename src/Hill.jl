@@ -5,28 +5,14 @@ This file fits Hill function to the parameters
 """ This functions takes in hill parameters for all the concentrations and calculates
 DDE parameters, passes them to residual function and based off of these, optimizes the model
 and estimates hill parameters. """
-function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
-    res = 0.0
+function residHill(x::Vector, pControl::Vector, conc::Vector, g1::Matrix, g2::Matrix)
+
     params = getODEparams(x, conc)
     t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
-    function residue(p, g1, g2)
-        g00 = g1[1, 1] + g2[1, 1]
-        return predict(p, g00, t, g1[:, 1], g2[:, 1])[1]
-    end
-
-    function optims(g1, g2)
-        smin = [1e-4, 1e-4, 1e-4, 1e-4, 1e-4, 1e-4, 1e-4, 1e-4, 0.35];
-        smax = [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 0.65];
-        f(x) = residue(x, g1, g2)
-        return DrugResponseModel.optimize_helper(f, smin, smax, 100000)
-    end
-
-    _, control = optims(g1[:, 1], g2[:, 1])
-    g0 = DrugResponseModel.startV(control)
-
+    res = 0.0
     # Solve each concentration separately
     for ii = 1:length(conc)
-        res += predict(params[:, ii], g0, t, g1[:, ii], g2[:, ii])[1]
+        res += newPredict(params[:, ii], pControl, t, g1[:, ii], g2[:, ii])[1]
     end
 
     return res
@@ -49,8 +35,9 @@ end
 
 
 """ Hill optimization function. """
-function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 300000)
-    f(x) = residHill(x, conc, g1, g2)
+function optimize_hill(conc::Vector, pControl::Vector, g1::Matrix, g2::Matrix; maxstep = 300000)
+
+    f(x) = residHill(x, pControl, conc, g1, g2)
 
     # [EC50, k, min_a1, max_a1, min_a2, max_a2, min_b1, max_b1, min_b2, max_b2, max_g11, max_g12, max_g21, max_g22, min%G1]
     low = [minimum(conc), 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 0.25]
