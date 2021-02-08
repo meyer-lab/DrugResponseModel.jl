@@ -5,14 +5,15 @@ This file fits Hill function to the parameters
 """ This functions takes in hill parameters for all the concentrations and calculates
 DDE parameters, passes them to residual function and based off of these, optimizes the model
 and estimates hill parameters. """
-function residHill(x::Vector, pControl::Vector, conc::Vector, g1::Matrix, g2::Matrix)
+function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
 
     params = getODEparams(x, conc)
     t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
     res = 0.0
+    g00 = g1[1, :] + g2[1, :]
     # Solve each concentration separately
     for ii = 1:length(conc)
-        res += newPredict(params[:, ii], pControl, t, g1[:, ii], g2[:, ii])[1]
+        res += predict(params[:, ii], g00[ii], t, g1[:, ii], g2[:, ii])[1]
     end
 
     return res
@@ -35,13 +36,13 @@ end
 
 
 """ Hill optimization function. """
-function optimize_hill(conc::Vector, pControl::Vector, g1::Matrix, g2::Matrix; maxstep = 300000)
+function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 300000)
 
-    f(x) = residHill(x, pControl, conc, g1, g2)
+    f(x) = residHill(x, conc, g1, g2)
 
     # [EC50, k, min_a1, max_a1, min_a2, max_a2, min_b1, max_b1, min_b2, max_b2, max_g11, max_g12, max_g21, max_g22, min%G1]
     low = [minimum(conc), 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 0.25]
-    high = [maximum(conc), 10.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 0.75]
+    high = [maximum(conc), 10.0, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0.75]
 
     return optimize_helper(f, low, high, maxstep)
 end

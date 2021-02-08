@@ -3,8 +3,8 @@
     number of cells in G1 or G2 phase of the cell cycle 
 """
 
-const nG1 = 6
-const nG2 = 6
+const nG1 = 8
+const nG2 = 20
 const nSp = nG1 + nG2
 
 """ Make the transition matrix. """

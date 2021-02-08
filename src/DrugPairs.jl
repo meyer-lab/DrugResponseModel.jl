@@ -1,16 +1,16 @@
 """ This file handles functions for pairs of drugs. """
 
-function residHillAll(hP, pControl::Vector, concentrations::Matrix, g1::Array, g2::Array, v::Int, u::Int)
+function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array, v::Int, u::Int)
     res = 0.0
 
     # Solve for all drugs
     t = 1
-    k = v
+    k = v # drug1 index
     for j = 1:2
     hill = hP[[t, t + 1, 23, t + 2, 24, t + 3, 25, t + 4, 26, t + 5, t + 6, t + 7, t + 8, t + 9, t + 10]]
-        res += DrugResponseModel.residHill(hill, pControl, concentrations[:, k], g1[:, :, k], g2[:, :, k])
+        res += DrugResponseModel.residHill(hill, concentrations[:, k], g1[:, :, k], g2[:, :, k])
         t += 11
-        k = u
+        k = u # drug 2 index
     end
 
     return res
@@ -27,8 +27,8 @@ function optim_helper()
 end
 
 """ Function to optimize pairs of drugs. """
-function BBoptim_DrugPairs(concs::Array{Float64, 2}, pControl::Vector, g1::Array{Float64, 3}, g2::Array{Float64, 3}, i::Int, j::Int; maxiter = 200000)
-    hillCostAll(hillParams) = residHillAll(hillParams, pControl, concs, g1, g2, i, j)
+function BBoptim_DrugPairs(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}, i::Int, j::Int; maxiter = 200000)
+    hillCostAll(hillParams) = residHillAll(hillParams, concs, g1, g2, i, j)
     low, high = optim_helper()
 
     return optimize_helper(hillCostAll, low, high, maxiter)
