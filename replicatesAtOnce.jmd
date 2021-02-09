@@ -19,8 +19,8 @@ g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
 g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
 
 # TODO: the g0 is assumed to come from only Lapatinib control. Figure out what you want to do for combination.
-_, pcnt = DrugResponseModel.optimise_control(g1avg[:, 1, 1], g2avg[:, 1, 1])
-g0 = DrugResponseModel.startV(pcnt)
+_, pcnt = DrugResponseModel.optimise_control(g1avg[:, 1, 1], g2avg[:, 1, 1]);
+g0 = DrugResponseModel.startV(pcnt);
 
 
 # TODO: replace these dummy parameters with estimated ones

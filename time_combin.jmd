@@ -17,7 +17,7 @@ g0 = g1s1[1,1,1]+g2s1[1,1,1];
 
 paramAvg = rand(59)
 efcs = getODEparams(paramAvg, concs);
-tim = LinRange(0.0, 96.0, 96)
+tim = LinRange(0.0, 96.0, 96);
 
 """ To avoid repetition. """
 function plot_combin_time(idA, idB, efcts, DrugA_name, DrugB_name, concA, concB)
