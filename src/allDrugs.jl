@@ -65,12 +65,12 @@ end
 
 """ Organize Hill parameters for each drug in a 2D array. """
 function Hill_p_eachDr(p)
-    HillP = Matrix{eltype(p)}(undef, 7, 5)
-    # each column: [EC50, steepness, max_g1_prog., max_g2_prog., max_g1_death, max_g2_death, %G1]
+    HillP = Matrix{eltype(p)}(undef, 11, 5)
+    # each column: [EC50, steepness, max_g1,1_prog., max_g1,2_prog., max_g2,1_prog., max_g2,2_prog., max_g11_death, max_g12_death, max_g21_death, max_g22_death, %G1]
     j = 1
     for i = 1:5
-        HillP[:, i] .= p[j:(j + 6)]
-        j += 7
+        HillP[:, i] .= p[j:(j + 11)]
+        j += 11
     end
     HillP
 end
@@ -89,6 +89,6 @@ end
 """ Takes in the 41 long Hill params and the index corresponding to the drug of interest, outputs the 9 long params at EC50. """
 function EC50_params(p, i)
     d = DrugResponseModel.Hill_p_eachDr(p)
-    # returns the following at EC50: [g1_prog., g2_prog, g1_death, g2_death, g1%, nG1, nG2, nD1, nD2]
-    return append!([p[36] + (d[3, i] - p[36]) / 2, p[37] + (d[4, i] - p[37]) / 2, d[5, i] / 2, d[6, i] / 2, d[7, i]], p[38:41])
+    # returns the following at EC50: [g1_prog., g2_prog, g1_death, g2_death, g1%]
+    return append!([p[56] + (d[3, i] - p[56]) / 2, p[57] + (d[4, i] - p[57]) / 2, p[58] + (d[5, i] - p[58]) / 2, p[59] + (d[6, i] - p[59]) / 2, d[7, i] / 2, d[8, i] / 2, d[9, i] / 2, d[10, i] / 2, d[11, i])
 end

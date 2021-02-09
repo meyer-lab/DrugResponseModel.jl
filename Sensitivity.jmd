@@ -16,25 +16,26 @@ To show the sensitivity of cell number difference predicted by combination.
 
 ```julia
 concs, _, g1s1, g2s1 = load(189, 1);
-g0 = g1s1[1,1,1]+g2s1[1,1,1];
+
+# TODO: the g0 is assumed to come from only Lapatinib control. Figure out what you want to do for combination.
+_, pcnt = DrugResponseModel.optimise_control(g1s1[:, 1, 1], g2s1[:, 1, 1])
+g0 = DrugResponseModel.startV(pcnt)
 ```
 
 ```julia
-p = DrugResponseModel.return_param41()
+p = rand(59)
 
 
 function make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
   
   lpDX1 = DrugResponseModel.get_derivative(p, Dr1Ind, Dr2Ind, concs, g0, 1)
   twoDHillp1 = DrugResponseModel.Hill_p_eachDr(lpDX1)
-  twoDHillp1[5:6, :] .= twoDHillp1[5:6, :] ./ p[40:41]
   lpDX2 = DrugResponseModel.get_derivative(p, Dr1Ind, Dr2Ind, concs, g0, 1)
   twoDHillp2 = DrugResponseModel.Hill_p_eachDr(lpDX2)
-  twoDHillp2[5:6, :] .= twoDHillp2[5:6, :] ./ p[40:41]
   names = ["LPT", "DOX", "GEM", "TAX", "PLB"]
   xaxis = ["G1_prog_max", "G2_prog_max", "G1_death_max", "G2_death_max"]
-  p1 = bar(xaxis, twoDHillp1[3:6, Dr1Ind], title=names[Dr1Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
-  p2 = bar(xaxis, twoDHillp2[3:6, Dr2Ind], title=names[Dr2Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
+  p1 = bar(xaxis, twoDHillp1[3:10, Dr1Ind], title=names[Dr1Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
+  p2 = bar(xaxis, twoDHillp2[3:10, Dr2Ind], title=names[Dr2Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
   plot(p1, p2)
   ylims!((-8.0, 8.0))
 end
