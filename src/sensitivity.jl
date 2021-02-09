@@ -12,7 +12,6 @@ end
 
 """ Calculate the sensitivity to all parameters. """
 function allSensitivity(params::Vector, conc_l::Vector, g1::Matrix, g2::Matrix)
-    @assert length(params) == 13
     b = copy(params)
 
     convRange = 10 .^ range(-1, stop = 1, length = 101)
