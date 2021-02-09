@@ -52,28 +52,30 @@ mean_perc[:, 19, 2] .= mean(cat(perc1[:, 19], perc2[:, 19], dims=2), dims=2)[:, 
 std_perc[:, 19, 2] .= std(cat(perc1[:, 19], perc2[:, 19], dims=2), dims=2)[:, 1]
 mean_total[:, 19, 2] .= mean(cat(total1[:, 19], total2[:, 19], dims=2), dims=2)[:, 1]
 std_total[:, 19, 2] .= std(cat(total1[:, 19], total2[:, 19], dims=2), dims=2)[:, 1]
-p = DrugResponseModel.return_param41();
-efcs = getODEparamsAll(p, concs);
 ```
 
 part3
 
 ```julia;
+p = rand(59)
+efcs = getODEparams(p, concs, 5);
+# Interpolation to find the parameters for 17 nM.
 hill(p, c) = p[2] + (p[3] - p[2]) / (1 + ((p[1]/c) ^ p[4]))
-gemc_hillParams = zeros(4, 4) # [alpha, beta, death1, death2] x [EC50, min, max, k]
-gemc_hillParams[:, 1] .= p[15] # ec50
-gemc_hillParams[:, 4] .= p[16] # k
-gemc_hillParams[1, 2] = p[36]
-gemc_hillParams[2, 2] = p[37]
-gemc_hillParams[3:4, 2] .= 0.0
-gemc_hillParams[1:2, 3] .= p[17:18]
-gemc_hillParams[3:4, 3] .= p[19:20]
+gemc_hillParams = zeros(8, 4) # [a1, a2, b1, b2, d1, d2, d3, d4] x [EC50, min, max, k]
+gemc_hillParams[:, 1] .= p[23] # ec50
+gemc_hillParams[:, 4] .= p[24] # k
+gemc_hillParams[1, 2] = p[56]
+gemc_hillParams[2, 2] = p[57]
+gemc_hillParams[3, 2] = p[58]
+gemc_hillParams[4, 2] = p[59]
+gemc_hillParams[5:8, 2] .= 0.0
+gemc_hillParams[1:4, 3] .= p[25:28]
+gemc_hillParams[5:8, 3] .= p[29:32]
 gem_ps = zeros(9)
-for i=1:4
+for i=1:8
     gem_ps[i] = hill(gemc_hillParams[i, :], 17.0)
 end
-gem_ps[5] = p[21]
-gem_ps[6:9] .= p[38:41]
+gem_ps[9] = p[33]
 
 function easierPlot(plateNum, idx, titles, g1, lg)
     plot(t, mean_perc[:, idx, plateNum], ribbon = std_perc[:, idx, plateNum], label = "G1", alpha = 0.1, color = 6, legend = lg, title = titles, ylabel = "G1 percentage", xlabel="time [hr]")
