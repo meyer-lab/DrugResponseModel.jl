@@ -16,6 +16,12 @@ Plots.scalefontsizes(0.7)
 gt1, gt2 = DrugResponseModel.import_combination("AU01001");
 gt1_2, gt2_2 = DrugResponseModel.import_combination("AU01101");
 gt1_3, gt2_3 = DrugResponseModel.import_combination("AU00901");
+concs, _, g1s1, g2s1 = load(189, 1);
+_, _, g1s2, g2s2 = load(189, 2);
+_, _, g1s3, g2s3 = load(189, 3);
+
+g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
+g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
 t = LinRange(0.0, 96.0, 193);
 
 GS1 = cat(gt1, gt1_2, gt1_3, dims = 4);
@@ -36,21 +42,23 @@ stdGS2[:, :, 19] .= std(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims=3), dims=3)[:, 
 p = rand(59)
 efcs = getODEparams(p, concs, 5);
 
+# Interpolation to find the parameters for 17 nM.
 hill(p, c) = p[2] + (p[3] - p[2]) / (1 + ((p[1]/c) ^ p[4]))
-gemc_hillParams = zeros(4, 4) # [alpha, beta, death1, death2] x [EC50, min, max, k]
-gemc_hillParams[:, 1] .= p[15] # ec50
-gemc_hillParams[:, 4] .= p[16] # k
-gemc_hillParams[1, 2] = p[36]
-gemc_hillParams[2, 2] = p[37]
-gemc_hillParams[3:4, 2] .= 0.0
-gemc_hillParams[1:2, 3] .= p[17:18]
-gemc_hillParams[3:4, 3] .= p[19:20]
+gemc_hillParams = zeros(8, 4) # [a1, a2, b1, b2, d1, d2, d3, d4] x [EC50, min, max, k]
+gemc_hillParams[:, 1] .= p[23] # ec50
+gemc_hillParams[:, 4] .= p[24] # k
+gemc_hillParams[1, 2] = p[56]
+gemc_hillParams[2, 2] = p[57]
+gemc_hillParams[3, 2] = p[58]
+gemc_hillParams[4, 2] = p[59]
+gemc_hillParams[5:8, 2] .= 0.0
+gemc_hillParams[1:4, 3] .= p[25:28]
+gemc_hillParams[5:8, 3] .= p[29:32]
 gem_ps = zeros(9)
-for i=1:4
+for i=1:8
     gem_ps[i] = hill(gemc_hillParams[i, :], 17.0)
 end
-gem_ps[5] = p[21]
-gem_ps[6:9] .= p[38:41]
+gem_ps[9] = p[33]
 ```
 
 ## Palbociclib 50 nM+ lapatinibs.
