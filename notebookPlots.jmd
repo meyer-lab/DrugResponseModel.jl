@@ -33,9 +33,9 @@ pps1 = copy(p1)
 ```
 
 ```julia
-effects1 = getODEparams(p1, concs[:, 1], 1);
-effects2 = getODEparams(p2, concs[:, 1], 1);
-effects3 = getODEparams(p3, concs[:, 1], 1);
+effects1 = getODEparams(p1, concs[:, 1]);
+effects2 = getODEparams(p2, concs[:, 1]);
+effects3 = getODEparams(p3, concs[:, 1]);
 ```
 
 ```julia
@@ -75,9 +75,9 @@ plot!(size=(1200, 800))
 ```
 
 ```julia
-effects1 = getODEparams(p1, concs[:, 2], 1);
-effects2 = getODEparams(p2, concs[:, 2], 1);
-effects3 = getODEparams(p3, concs[:, 2], 1);
+effects1 = getODEparams(p1, concs[:, 2]);
+effects2 = getODEparams(p2, concs[:, 2]);
+effects3 = getODEparams(p3, concs[:, 2]);
 ```
 
 ```julia
@@ -114,9 +114,9 @@ plot!(size=(1200, 800))
 ```
 
 ```julia
-effects1 = getODEparams(p1, concs[:, 3], 1);
-effects2 = getODEparams(p2, concs[:, 3], 1);
-effects3 = getODEparams(p3, concs[:, 3], 1);
+effects1 = getODEparams(p1, concs[:, 3]);
+effects2 = getODEparams(p2, concs[:, 3]);
+effects3 = getODEparams(p3, concs[:, 3]);
 ```
 
 ```julia
@@ -153,9 +153,9 @@ plot!(size=(1200, 800))
 ```
 
 ```julia
-effects1 = getODEparams(p1, concs[:, 4], 1);
-effects2 = getODEparams(p2, concs[:, 4], 1);
-effects3 = getODEparams(p3, concs[:, 4], 1);
+effects1 = getODEparams(p1, concs[:, 4]);
+effects2 = getODEparams(p2, concs[:, 4]);
+effects3 = getODEparams(p3, concs[:, 4]);
 ```
 
 ```julia
@@ -192,9 +192,9 @@ plot!(size=(1200, 800))
 ```
 
 ```julia
-effects1 = getODEparams(p1, concs[:, 5], 1);
-effects2 = getODEparams(p2, concs[:, 5], 1);
-effects3 = getODEparams(p3, concs[:, 5], 1);
+effects1 = getODEparams(p1, concs[:, 5]);
+effects2 = getODEparams(p2, concs[:, 5]);
+effects3 = getODEparams(p3, concs[:, 5]);
 ```
 
 ```julia

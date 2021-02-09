@@ -58,7 +58,7 @@ part3
 
 ```julia;
 p = rand(59)
-efcs = getODEparams(p, concs, 5);
+efcs = getODEparams(p, concs);
 # Interpolation to find the parameters for 17 nM.
 hill(p, c) = p[2] + (p[3] - p[2]) / (1 + ((p[1]/c) ^ p[4]))
 gemc_hillParams = zeros(8, 4) # [a1, a2, b1, b2, d1, d2, d3, d4] x [EC50, min, max, k]

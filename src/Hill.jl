@@ -7,7 +7,7 @@ DDE parameters, passes them to residual function and based off of these, optimiz
 and estimates hill parameters. """
 function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
 
-    params = getODEparams(x, conc, 1)
+    params = getODEparams(x, conc)
     t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
     res = 0.0
     g00 = g1[1, :] + g2[1, :]
@@ -47,7 +47,15 @@ function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 300000)
     return optimize_helper(f, low, high, maxstep)
 end
 
-function getODEparams(p, conc, nMax)
+function getODEparams(p, conc)
+    if length(p) == 59
+        nMax = 5
+    elseif length(p) == 15
+        nMax = 1
+    elseif length(p) == 26
+        nMax = 2
+    end
+
     effects = zeros(eltype(p), 9, length(conc[:, 1]), nMax)
     k = 1
     sizep = 11 # the size of independent parameters, meaning except for control.

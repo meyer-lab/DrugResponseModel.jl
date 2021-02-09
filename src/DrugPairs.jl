@@ -54,6 +54,6 @@ function estimated_params(concs, key)
     # 9. gem and palbo:
     # 10. tax and palbo:
     dictionary = Dict("1,2" => p1, "1,3" => p2, "1,4" => p3, "1,5" => p4, "2,3" => p5, "2,4" => p6, "2,5" => p7, "3,4" => p8, "3,5"=> p9, "4,5" => p10)
-    return DrugResponesModel.getODEparams(dictionary[key], concs, 2)
+    return DrugResponesModel.getODEparams(dictionary[key], concs)
 
 end

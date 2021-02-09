@@ -27,9 +27,9 @@ g0 = DrugResponseModel.startV(pcnt)
 rep1 = rand(59);
 rep2 = rand(59);
 rep3 = rand(59);
-ef1 = getODEparams(rep1, concs, 5);
-ef2 = getODEparams(rep2, concs, 5);
-ef3 = getODEparams(rep3, concs, 5);
+ef1 = getODEparams(rep1, concs);
+ef2 = getODEparams(rep2, concs);
+ef3 = getODEparams(rep3, concs);
 ```
 
 ```julia

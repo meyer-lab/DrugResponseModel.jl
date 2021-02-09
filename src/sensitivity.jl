@@ -72,10 +72,12 @@ end
 
 """ Calculates the difference between the combination and single cell effect. """
 function calc_diff(Hillp, Dr1Ind, Dr2Ind, concs, g0, oneortwo)
-    effs = getODEparams(Hillp, concs, 5)
+    print("Hillp ", Hillp)
+    effs = getODEparams(Hillp, concs)
     ec501 = EC50_params(Hillp, Dr1Ind)
     ec502 = EC50_params(Hillp, Dr2Ind)
     bliss_comb = Bliss_params_unit(ec501, ec502, hcat(effs[:, 1, Dr1Ind], effs[:, 1, Dr2Ind]))
+    print("bliss_comb", length(bliss_comb))
     g1, g2, _ = predict(bliss_comb, g0, 96.0)
     if oneortwo == 1 # drug 1
         g1_d1, g2_d1, _ = predict(ec501, g0, 96.0)
@@ -89,6 +91,7 @@ end
 import Calculus
 
 function get_derivative(x, Dr1Ind, Dr2Ind, concs, g0, oneortwo)
+    print(length(x))
     fd(x) = calc_diff(x, Dr1Ind, Dr2Ind, concs, g0, oneortwo)
     return Calculus.gradient(fd, x)
 end

@@ -16,7 +16,7 @@ concs, _, g1s1, g2s1 = load(189, 1);
 g0 = g1s1[1,1,1]+g2s1[1,1,1];
 
 paramAvg = rand(59)
-efcs = getODEparams(paramAvg, concs, 59);
+efcs = getODEparams(paramAvg, concs);
 tim = LinRange(0.0, 96.0, 96)
 
 """ To avoid repetition. """
