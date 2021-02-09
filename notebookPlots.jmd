@@ -60,7 +60,7 @@ DrugResponseModel.plot_parameters(concs[:,1], meann, stdd)
 ### Sensitivity analysis
 
 ```julia
-result, paramRanges = DrugResponseModel.allSensitivity([pps1; [12, 12, 12, 12]], concs[:, 1], g1s1[:, :, 1], g2s1[:, :, 1]);
+result, paramRanges = DrugResponseModel.allSensitivity(pps1, concs[:, 1], g1s1[:, :, 1], g2s1[:, :, 1]);
 pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
@@ -99,7 +99,7 @@ DrugResponseModel.plot_parameters(concs[:,2], meann, stdd)
 ### Sensitivity analysis
 
 ```julia
-result, paramRanges = DrugResponseModel.allSensitivity([pps1; [12, 12, 12, 12]], concs[:, 2], g1s1[:, :, 2], g2s1[:, :, 2]);
+result, paramRanges = DrugResponseModel.allSensitivity(pps1, concs[:, 2], g1s1[:, :, 2], g2s1[:, :, 2]);
 pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
@@ -138,7 +138,7 @@ DrugResponseModel.plot_parameters(concs[:,3], meann, stdd)
 ### Sensitivity analysis
 
 ```julia
-result, paramRanges = DrugResponseModel.allSensitivity([pps1; [12, 12, 12, 12]], concs[:, 3], g1s1[:, :, 3], g2s1[:, :, 3])
+result, paramRanges = DrugResponseModel.allSensitivity(pps1, concs[:, 3], g1s1[:, :, 3], g2s1[:, :, 3])
 pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
@@ -177,7 +177,7 @@ DrugResponseModel.plot_parameters(concs[:,4], meann, stdd)
 ### Sensitivity analysis
 
 ```julia
-result, paramRanges = DrugResponseModel.allSensitivity([pps1; [12, 12, 12, 12]], concs[:, 4], g1s1[:, :, 4], g2s1[:, :, 4])
+result, paramRanges = DrugResponseModel.allSensitivity(pps1, concs[:, 4], g1s1[:, :, 4], g2s1[:, :, 4])
 pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))
@@ -216,7 +216,7 @@ DrugResponseModel.plot_parameters(concs[:,5], meann, stdd)
 ### Sensitivity analysis
 
 ```julia
-result, paramRanges = DrugResponseModel.allSensitivity([pps1; [12, 12, 12, 12]], concs[:, 5], g1s1[:, :, 5], g2s1[:, :, 5])
+result, paramRanges = DrugResponseModel.allSensitivity(pps1, concs[:, 5], g1s1[:, :, 5], g2s1[:, :, 5])
 pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
 plot(pl...)
 plot!(size=(1200, 800))

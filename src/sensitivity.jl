@@ -64,7 +64,6 @@ function calc_cellNum(pDr1, pDr2, g0, controld1, controld2)
     normD1 = 1.0 - (g1d1 + g2d1) / (controld1)
     normD2 = 1.0 - (g1d2 + g2d2) / (controld2)
     combin = -(normD1 + normD2 - (normD1 * normD2) - 1.0) * (controld1 + controld2) / 2
-    print("this is combin", combin)
     @assert combin >= 0.0
 
     return combin
@@ -72,12 +71,10 @@ end
 
 """ Calculates the difference between the combination and single cell effect. """
 function calc_diff(Hillp, Dr1Ind, Dr2Ind, concs, g0, oneortwo)
-    print("Hillp ", Hillp)
     effs = getODEparams(Hillp, concs)
     ec501 = EC50_params(Hillp, Dr1Ind)
     ec502 = EC50_params(Hillp, Dr2Ind)
     bliss_comb = Bliss_params_unit(ec501, ec502, hcat(effs[:, 1, Dr1Ind], effs[:, 1, Dr2Ind]))
-    print("bliss_comb", length(bliss_comb))
     g1, g2, _ = predict(bliss_comb, g0, 96.0)
     if oneortwo == 1 # drug 1
         g1_d1, g2_d1, _ = predict(ec501, g0, 96.0)
