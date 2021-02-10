@@ -48,19 +48,6 @@ function vTOg(v::AbstractVector)
     return G1, G2
 end
 
-""" To find the initial vector. """
-function residue(p, g1, g2)
-    t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
-    g00 = g1[1, 1] + g2[1, 1]
-    return predict(p, g00, t, g1[:, 1], g2[:, 1])[1]
-end
-
-function optimise_control(g1, g2)
-    smin = [1e-4, 1e-4, 1e-4, 1e-4, 1e-4, 1e-4, 1e-4, 1e-4, 0.25];
-    smax = [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 0.75];
-    f(x) = residue(x, g1, g2)
-    return DrugResponseModel.optimize_helper(f, smin, smax, 100000)
-end
 
 function newPredict(p, pControl, t::Union{Real, LinRange}, g1data = nothing, g2data = nothing)
 

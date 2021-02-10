@@ -10,10 +10,9 @@ function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
     params = getODEparams(x, conc)
     t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
     res = 0.0
-    g00 = g1[1, :] + g2[1, :]
     # Solve each concentration separately
     for ii = 1:length(conc)
-        res += predict(params[:, ii, 1], g00[ii], t, g1[:, ii], g2[:, ii])[1]
+        res += DrugResponseModel.newPredict(params[:, ii, 1], params[:, 1, 1], t, g1[:, ii], g2[:, ii])[1]
     end
 
     return res

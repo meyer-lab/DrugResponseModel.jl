@@ -41,15 +41,11 @@ efcs = getODEparams(p, concs);
 G1 = zeros(189, 7, 5)
 G2 = zeros(189, 7, 5)
 
-pCtr = zeros(9, 5)
-for iii=1:5
-    _, pCtr[:, iii] = DrugResponseModel.optimise_control(g1m[:, 1, iii], g2m[:, 1, iii])
-end
 
 t = LinRange(0.0, 95.0, 189)
 for k=1:5 # drug number
     for i = 1:7 # concentration number
-        G1[:, i, k], G2[:, i, k], _ = DrugResponseModel.newPredict(efcs[:, i, k], pCtr[:, k], t)
+        G1[:, i, k], G2[:, i, k], _ = DrugResponseModel.newPredict(efcs[:, i, k], efcs[:, 1, k], t)
     end
 end
 

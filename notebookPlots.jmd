@@ -14,13 +14,6 @@ using Plots, Statistics
 concs, _, g1s1, g2s1 = load(189, 1);
 _, _, g1s2, g2s2 = load(189, 2);
 _, _, g1s3, g2s3 = load(189, 3);
-
-g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
-g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
-
-# TODO: the g0 is assumed to come from only Lapatinib control. Figure out what you want to do for combination.
-_, pcnt = DrugResponseModel.optimise_control(g1avg[:, 1, 1], g2avg[:, 1, 1]);
-g0 = DrugResponseModel.startV(pcnt);
 ```
 
 ```julia
@@ -39,7 +32,7 @@ effects3 = getODEparams(p3, concs[:, 1]);
 ```
 
 ```julia
-G1, G2 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, g0); # for lapatinib
+G1, G2 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, effects1[:, 1, 1]); # for lapatinib
 ```
 
 ## Lapatinib
@@ -81,7 +74,7 @@ effects3 = getODEparams(p3, concs[:, 2]);
 ```
 
 ```julia
-G1, G2 = DrugResponseModel.predict_replicates(effects1[:, :, 1], effects2[:, :, 1], effects3[:, :, 1], g0); # for doxorubicin
+G1, G2 = DrugResponseModel.predict_replicates(effects1[:, :, 1], effects2[:, :, 1], effects3[:, :, 1], effects3[:, 1, 1]); # for doxorubicin
 ```
 
 ```julia
@@ -120,7 +113,7 @@ effects3 = getODEparams(p3, concs[:, 3]);
 ```
 
 ```julia
-G1, G2 = DrugResponseModel.predict_replicates(effects1[:, :, 1], effects2[:, :, 1], effects3[:, :, 1], g0); # for Gemcitabine
+G1, G2 = DrugResponseModel.predict_replicates(effects1[:, :, 1], effects2[:, :, 1], effects3[:, :, 1], effects3[:, 1, 1]); # for Gemcitabine
 ```
 
 ```julia
@@ -159,7 +152,7 @@ effects3 = getODEparams(p3, concs[:, 4]);
 ```
 
 ```julia
-G1, G2 = DrugResponseModel.predict_replicates(effects1[:, :, 1], effects2[:, :, 1], effects3[:, :, 1], g0); # for Paclitaxel
+G1, G2 = DrugResponseModel.predict_replicates(effects1[:, :, 1], effects2[:, :, 1], effects3[:, :, 1], effects3[:, 1, 1]); # for Paclitaxel
 ```
 
 ```julia
@@ -198,7 +191,7 @@ effects3 = getODEparams(p3, concs[:, 5]);
 ```
 
 ```julia
-G1, G2 = DrugResponseModel.predict_replicates(effects1[:, :, 1], effects2[:, :, 1], effects3[:, :, 1], g0); # for Palbociclib
+G1, G2 = DrugResponseModel.predict_replicates(effects1[:, :, 1], effects2[:, :, 1], effects3[:, :, 1],effects3[:, 1, 1]0); # for Palbociclib
 ```
 
 ```julia

@@ -15,13 +15,6 @@ concs, _, g1s1, g2s1 = load(189, 1);
 _, _, g1s2, g2s2 = load(189, 2);
 _, _, g1s3, g2s3 = load(189, 3);
 
-g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
-g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
-
-# TODO: the g0 is assumed to come from only Lapatinib control. Figure out what you want to do for combination.
-_, pcnt = DrugResponseModel.optimise_control(g1avg[:, 1, 1], g2avg[:, 1, 1]);
-g0 = DrugResponseModel.startV(pcnt);
-
 
 # TODO: replace these dummy parameters with estimated ones
 rep1 = rand(59);
@@ -36,7 +29,7 @@ ef3 = getODEparams(rep3, concs);
 G1 = zeros(189, 8, 3, 5)
 G2 = zeros(189, 8, 3, 5)
 for i=1:5
-    G1[:, :, :, i], G2[:, :, :, i] = DrugResponseModel.predict_replicates(ef1[:, :, i], ef2[:, :, i], ef3[:, :, i], g0)
+    G1[:, :, :, i], G2[:, :, :, i] = DrugResponseModel.predict_replicates(ef1[:, :, i], ef2[:, :, i], ef3[:, :, i], ef1[:, 1, 1])
 end
 
 j=1

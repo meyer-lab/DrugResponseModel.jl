@@ -16,10 +16,6 @@ To show the sensitivity of cell number difference predicted by combination.
 
 ```julia
 concs, _, g1s1, g2s1 = load(189, 1);
-
-# TODO: the g0 is assumed to come from only Lapatinib control. Figure out what you want to do for combination.
-_, pcnt = DrugResponseModel.optimise_control(g1s1[:, 1, 1], g2s1[:, 1, 1]);
-g0 = DrugResponseModel.startV(pcnt);
 ```
 
 ```julia
@@ -44,68 +40,69 @@ end
 ```julia
 Dr1Ind = 1
 Dr2Ind = 2
-make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+odeParams = getODEparams(p, concs)
+make_bar(p, Dr1Ind, Dr2Ind, concs, odeParams[:, 1, 1])
 ```
 
 # LPT and GEM
 ```julia
 Dr1Ind = 1
 Dr2Ind = 3
-make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+make_bar(p, Dr1Ind, Dr2Ind, concs, odeParams[:, 1, 1])
 ```
 
 # LPT and TXL
 ```julia
 Dr1Ind = 1
 Dr2Ind = 4
-make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+make_bar(p, Dr1Ind, Dr2Ind, concs, odeParams[:, 1, 1])
 ```
 
 # LPT and PLB
 ```julia
 Dr1Ind = 1
 Dr2Ind = 5
-make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+make_bar(p, Dr1Ind, Dr2Ind, concs, odeParams[:, 1, 1])
 ```
 
 # DOX and GEM
 ```julia
 Dr1Ind = 2
 Dr2Ind = 3
-make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+make_bar(p, Dr1Ind, Dr2Ind, concs, odeParams[:, 1, 1])
 ```
 
 # DOX and TXL
 ```julia
 Dr1Ind = 2
 Dr2Ind = 4
-make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+make_bar(p, Dr1Ind, Dr2Ind, concs, odeParams[:, 1, 1])
 ```
 
 # DOX and PLB
 ```julia
 Dr1Ind = 2
 Dr2Ind = 5
-make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+make_bar(p, Dr1Ind, Dr2Ind, concs, odeParams[:, 1, 1])
 ```
 
 # GEM and TXL
 ```julia
 Dr1Ind = 3
 Dr2Ind = 4
-make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+make_bar(p, Dr1Ind, Dr2Ind, concs, odeParams[:, 1, 1])
 ```
 
 # GEM and PLB
 ```julia
 Dr1Ind = 3
 Dr2Ind = 5
-make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+make_bar(p, Dr1Ind, Dr2Ind, concs, odeParams[:, 1, 1])
 ```
 
 # TXL and PLB
 ```julia
 Dr1Ind = 4
 Dr2Ind = 5
-make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
+make_bar(p, Dr1Ind, Dr2Ind, concs, odeParams[:, 1, 1])
 ```

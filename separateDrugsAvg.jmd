@@ -15,12 +15,6 @@ Plots.scalefontsizes(0.7)
 concs, _, g1s1, g2s1 = load(189, 1);
 _, _, g1s2, g2s2 = load(189, 2);
 _, _, g1s3, g2s3 = load(189, 3);
-g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
-g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
-
-# TODO: the g0 is assumed to come from only Lapatinib control. Figure out what you want to do for combination.
-_, pcnt = DrugResponseModel.optimise_control(g1avg[:, 1, 1], g2avg[:, 1, 1]);
-g0 = DrugResponseModel.startV(pcnt);
 
 g1m = (g1s1 .+ g1s2 .+ g1s3) ./ 3;
 g2m = (g2s1 .+ g2s2 .+ g2s3) ./ 3;
@@ -37,7 +31,7 @@ G1 = zeros(189, 7)
 G2 = zeros(189, 7)
 t = LinRange(0.0, 95.0, 189)
 for i = 1:7 # concentration number
-    G1[:, i], G2[:, i], _ = predict(efcs[:, i], g0, t)
+    G1[:, i], G2[:, i], _ = DrugResponseModel.newPredict(efcs[:, i], efcs[:, 1], t)
 end
 ```
 
@@ -76,7 +70,7 @@ G1 = zeros(189, 7)
 G2 = zeros(189, 7)
 t = LinRange(0.0, 95.0, 189)
 for i = 1:7 # concentration number
-    G1[:, i], G2[:, i], _ = predict(efcs2[:, i], g0, t)
+    G1[:, i], G2[:, i], _ = newPredict(efcs2[:, i], efcs2[:, 1], t)
 end
 ```
 
@@ -115,7 +109,7 @@ G1 = zeros(189, 7)
 G2 = zeros(189, 7)
 t = LinRange(0.0, 95.0, 189)
 for i = 1:7 # concentration number
-    G1[:, i], G2[:, i], _ = predict(efcs3[:, i], g0, t)
+    G1[:, i], G2[:, i], _ = newPredict(efcs3[:, i], efcs3[:, 1], t)
 end
 ```
 
@@ -154,7 +148,7 @@ G1 = zeros(189, 7)
 G2 = zeros(189, 7)
 t = LinRange(0.0, 95.0, 189)
 for i = 1:7 # concentration number
-    G1[:, i], G2[:, i], _ = predict(efcs4[:, i], g0, t)
+    G1[:, i], G2[:, i], _ = newPredict(efcs4[:, i], efcs4[:, 1], t)
 end
 ```
 
@@ -193,7 +187,7 @@ G1 = zeros(189, 7)
 G2 = zeros(189, 7)
 t = LinRange(0.0, 95.0, 189)
 for i = 1:7 # concentration number
-    G1[:, i], G2[:, i], _ = predict(efcs5[:, i], g0, t)
+    G1[:, i], G2[:, i], _ = newPredict(efcs5[:, i], efcs4[:, 1], t)
 end
 ```
 
