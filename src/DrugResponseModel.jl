@@ -8,6 +8,7 @@ using Plots
 using Measures
 using LinearAlgebra
 using Statistics
+using DSP: conv
 using BlackBoxOptim
 
 include("importData.jl")
