@@ -49,7 +49,7 @@ end
 function getODEparams(p, conc)
     if length(p) == 54
         nMax = 5
-    elseif length(p) == 10
+    elseif length(p) == 14
         nMax = 1
     elseif length(p) == 24
         nMax = 2
