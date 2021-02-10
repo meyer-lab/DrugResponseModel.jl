@@ -38,7 +38,7 @@ end
 
 """ Takes in the Hill params and the index corresponding to the drug of interest, outputs the 9 long params at EC50. """
 function EC50_params(p, i)
-    d = DrugResponseModel.Hill_p_eachDr(p)
+    d = Hill_p_eachDr(p)
     # returns the following at EC50: [g1_prog., g2_prog, g1_death, g2_death, g1%]
     return append!([p[56] + (d[3, i] - p[56]) / 2, p[57] + (d[4, i] - p[57]) / 2, p[58] + (d[5, i] - p[58]) / 2, p[59] + (d[6, i] - p[59]) / 2, d[7, i] / 2, d[8, i] / 2, d[9, i] / 2, d[10, i] / 2, d[11, i]])
 end

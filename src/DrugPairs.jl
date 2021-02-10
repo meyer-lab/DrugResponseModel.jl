@@ -8,7 +8,7 @@ function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array, v::Int, 
     k = v # drug1 index
     for j = 1:2
     hill = hP[[t, t + 1, 23, t + 2, 24, t + 3, 25, t + 4, 26, t + 5, t + 6, t + 7, t + 8, t + 9, t + 10]]
-        res += DrugResponseModel.residHill(hill, concentrations[:, k], g1[:, :, k], g2[:, :, k])
+        res += residHill(hill, concentrations[:, k], g1[:, :, k], g2[:, :, k])
         t += 11
         k = u # drug 2 index
     end
