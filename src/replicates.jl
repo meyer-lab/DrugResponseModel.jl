@@ -9,12 +9,13 @@ function predict_replicates(p1, p2, p3, g0)
 
     for i = 1:size(ps, 2) # concentration number
         for j = 1:size(ps, 3)
-            G1[:, i, j], G2[:, i, j], _ = predict(ps[:, i, j], g0, t)
+            G1[:, i, j], G2[:, i, j], _ = newPredict(ps[:, i, j], g0, t)
         end
     end
 
     return G1, G2 # all simulation
 end
+
 
 """ A function to calculate std and mean of ODE parameters for each drug. """
 function mean_std_params(effs1, effs2, effs3)
