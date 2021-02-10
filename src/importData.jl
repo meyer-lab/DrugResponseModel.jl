@@ -20,8 +20,8 @@ function get_data(path_g2::String, path_total::String; max = 189)
 
     # removing the peaks
     for i = 1:8
-        gs[1, :, i] = savitzky_golay_filter(gs[1, :, i], 41, 3)
-        gs[2, :, i] = savitzky_golay_filter(gs[2, :, i], 41, 3)
+        gs[1, :, i] = svg_filter(gs[1, :, i])
+        gs[2, :, i] = svg_filter(gs[2, :, i])
     end
     return gs
 end
@@ -38,10 +38,10 @@ function import_combination(filename::String)
     total = convert(Array{Float64, 2}, total)
     # removing the peaks
     for i = 1:size(perc, 2)
-        perc[:, i] = DrugResponseModel.savitzky_golay_filter(perc[:, i], 41, 3)
-        perc[:, i] = DrugResponseModel.savitzky_golay_filter(perc[:, i], 41, 3)
-        total[:, i] = DrugResponseModel.savitzky_golay_filter(total[:, i], 41, 3)
-        total[:, i] = DrugResponseModel.savitzky_golay_filter(total[:, i], 41, 3)
+        perc[:, i] = svg_filter(perc[:, i])
+        perc[:, i] = svg_filter(perc[:, i])
+        total[:, i] = svg_filter(total[:, i])
+        total[:, i] = svg_filter(total[:, i])
     end
     init_cells = 20.0
 
@@ -97,39 +97,45 @@ function load(max, repi)
     return concentrations, g1s + g2s, g1s, g2s
 end
 
-function savitzky_golay_filter(y::AbstractVector, window_size::Integer, polynomial_order::Integer)
-    # input validity checks
-    @assert isodd(window_size) "Window size must be an odd integer, i.e. fitting 2m + 1 points around the current value."
-    @assert polynomial_order < window_size "Polynomial order must be less than the window size."
+struct SavitzkyGolayFilter{M,N} end
+@generated function (::SavitzkyGolayFilter{M,N})(data::AbstractVector{T}) where {M, N, T}
+            #Create Jacobian matrix
+            J = zeros(2M+1, N+1)
+            for i=1:2M+1, j=1:N+1
+                J[i, j] = (i-M-1)^(j-1)
+            end
+            e₁ = zeros(N+1)
+            e₁[1] = 1.0
 
-    # window size is 2m + 1 points
-    m = (window_size - 1) ÷ 2
+            #Compute filter coefficients
+            C = J' \ e₁
 
-    # build the Vandermonde design matrix A. Each row corresponds to a point in the fitting window -m:m
-    # and each columns correspond to powers in the range 0:polynomial_order
-    fitting_points = (-m):m
-    A = Matrix{Float64}(undef, window_size, polynomial_order + 1)
-    for i = 1:window_size, j = 1:(polynomial_order + 1)
-        A[i, j] = fitting_points[i]^(j - 1)
-    end
+            #Evaluate filter on data matrix
 
-    # for interpolation we'll want the full pseudo-inverse so we can calculate all the fit values at the edges
-    # Ap = y
-    C = pinv(A)
+            To = typeof(C[1] * one(T)) #Calculate type of output
+            expr = quote
+                n = size(data, 1)
+                smoothed = zeros($To, n)
+                @inbounds for i in eachindex(smoothed)
+                    smoothed[i] += $(C[M+1])*data[i]
+                end
+                smoothed
+            end
 
-    # the filter coefficients are the rows of `C`
-    filter_coeffs = C[1, :] * factorial(0)
+            for j=1:M
+                insert!(expr.args[6].args[3].args[2].args, 1,
+                    :(if i - $j ≥ 1
+                        smoothed[i] += $(C[M+1-j])*data[i-$j]
+                      end)
+                )
+                push!(expr.args[6].args[3].args[2].args,
+                    :(if i + $j ≤ n
+                        smoothed[i] += $(C[M+1+j])*data[i+$j]
+                      end)
+                )
+            end
 
-    # convolve with the filter coefficients with a couple extra steps:
-    # 1. because of convolution will reverse coefficients we flip before
-    # 2. c = conv(a,b) will return a vector of length(c) = length(a) + length(b) - 1 so we chop off the first and last m points
-    smoothed = conv(reverse(filter_coeffs), y)[(m + 1):(end - m)]
-
-    # for interpolation edge handling calculate the full fits
-    # if we are just smoothing then we can use the design and coefficient matrix as is
-    AC = A * C
-    smoothed[1:m] = (AC * y[1:window_size])[1:m]
-    smoothed[(end - m + 1):end] = (AC * y[(end - window_size + 1):end])[(end - m + 1):end]
-
-    return smoothed
+            return expr
 end
+
+svg_filter = SavitzkyGolayFilter{41, 3}()
