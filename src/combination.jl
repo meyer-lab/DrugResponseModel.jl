@@ -4,7 +4,7 @@
 
 """ Unit function to calculate the bliss for 2 drugs at one specific concentration. """
 function Bliss_params_unit(pp1, pp2, control)
-    # pp1 and pp2 are 1D arrays of size 9, including 9 parameters for a single concentration.
+    # pp1 and pp2 are 1D arrays of size 8, including 8 parameters for a single concentration.
     p1 = copy(pp1)
     p2 = copy(pp2)
     # normalization
@@ -18,7 +18,6 @@ function Bliss_params_unit(pp1, pp2, control)
     c[1:4] .= (1.0 .- (p1[1:4] .+ p2[1:4] .- p1[1:4] .* p2[1:4])) .* ((control[1:4, 1] .+ control[1:4, 2]) ./ 2)
     c[5:8] .= p1[5:8] .+ p2[5:8]
 
-    c[9] = pp1[9]
     c
 end
 
@@ -26,7 +25,7 @@ end
 function AllBliss_params(pp1, pp2)
     # pp1 and pp2 are 2D arrays [9 x 8] each includes the parameters fo all concentrations of a drug. 
 
-    combined = Array{eltype(pp1), 3}(undef, 9, 8, 8)
+    combined = Array{eltype(pp1), 3}(undef, 8, 8, 8)
     for i = 1:8
         for j = 1:8
             combined[:, i, j] .= Bliss_params_unit(pp1[:, i], pp2[:, j], hcat(pp1[:, 1], pp2[:, 1]))
