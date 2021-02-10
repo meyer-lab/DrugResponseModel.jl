@@ -41,10 +41,6 @@ BlissOnData = DrugResponseModel.blissCellNum(g1avg, g2avg; n = 8); # includes ar
 # Lapatinib and doxorubicin
 
 ```julia
-pCntr = zeros(9, 5)
-for iii=1:5
-    _, pCntr[:, iii] = DrugResponseModel.optimise_control(g1avg[:, 1, iii], g2avg[:, 1, iii])
-end
 function plt_heatmap_combin(drug1_ind, drug2_ind, effs, pCtr, concs, BlissData)
   names = ["Lpt", "Dox", "Gem", "Tax", "Palb"]
   bliss_comb = DrugResponseModel.AllBliss_params(effs[:, :, drug1_ind], effs[:, :, drug2_ind])
