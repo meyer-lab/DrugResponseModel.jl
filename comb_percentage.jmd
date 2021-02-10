@@ -71,11 +71,10 @@ gemc_hillParams[4, 2] = p[59]
 gemc_hillParams[5:8, 2] .= 0.0
 gemc_hillParams[1:4, 3] .= p[25:28]
 gemc_hillParams[5:8, 3] .= p[29:32]
-gem_ps = zeros(9)
+gem_ps = zeros(8)
 for i=1:8
     gem_ps[i] = hill(gemc_hillParams[i, :], 17.0)
 end
-gem_ps[9] = p[33]
 
 function easierPlot(plateNum, idx, titles, g1, lg)
     plot(t, mean_perc[:, idx, plateNum], ribbon = std_perc[:, idx, plateNum], label = "G1", alpha = 0.1, color = 6, legend = lg, title = titles, ylabel = "G1 percentage", xlabel="time [hr]")
