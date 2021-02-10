@@ -14,7 +14,7 @@ function Bliss_params_unit(pp1, pp2, control)
     p2[1:4] .= 1.0 .- (pp2[1:4] ./ control[1:4, 2])
     p2[5:8] .= pp2[5:8]
 
-    c = Array{eltype(pp1), 1}(undef, 9)
+    c = Array{eltype(pp1), 1}(undef, 8)
     c[1:4] .= (1.0 .- (p1[1:4] .+ p2[1:4] .- p1[1:4] .* p2[1:4])) .* ((control[1:4, 1] .+ control[1:4, 2]) ./ 2)
     c[5:8] .= p1[5:8] .+ p2[5:8]
 
