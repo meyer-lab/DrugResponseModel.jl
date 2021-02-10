@@ -22,17 +22,6 @@ function mean_std_params(effs1, effs2, effs3)
     return mean(eff, dims = 3), std(eff, dims = 3)
 end
 
-""" Calculate the # of cells in G1 for a set of parameters and T """
-function numcells(params, g0)
-    @assert(all(params .>= 0.0), "negative params $params")
-    t = LinRange(0.0, 94.5, 189)
-    G1, G2, _ = predict(params, g0, t)
-
-    @assert(all(G1[2:end] .>= 0.0), "negative cell number in G1 $G1")
-    @assert(all(G2[2:end] .>= 0.0), "negative cell number in G2 $G2")
-    return G1[end] + G2[end]
-end
-
 
 """ plots all the three simulated trials. Along with avg and std of data. """
 function plot2(G1, G2, g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, conc::Float64, i::Int, j::Int)

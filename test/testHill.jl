@@ -4,5 +4,4 @@
 
     # Check that these at least run
     effects = getODEparams(params, conc)
-    num = DrugResponseModel.numcells(effects[:, 3, 1], g1[1] + g2[1])
 end
