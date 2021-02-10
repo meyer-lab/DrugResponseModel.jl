@@ -9,7 +9,7 @@ function predict_replicates(p1, p2, p3, g0)
 
     for i = 1:size(ps, 2) # concentration number
         for j = 1:size(ps, 3)
-            G1[:, i, j], G2[:, i, j], _ = predict(ps[:, i, j], g0, t)
+            G1[:, i, j], G2[:, i, j], _ = newPredict(ps[:, i, j], g0, t)
         end
     end
 
@@ -26,7 +26,7 @@ end
 function numcells(params, g0)
     @assert(all(params .>= 0.0), "negative params $params")
     t = LinRange(0.0, 94.5, 189)
-    G1, G2 = predict(params, g0, t)
+    G1, G2, _ = predict(params, g0, t)
 
     @assert(all(G1[2:end] .>= 0.0), "negative cell number in G1 $G1")
     @assert(all(G2[2:end] .>= 0.0), "negative cell number in G2 $G2")

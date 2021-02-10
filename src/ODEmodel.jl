@@ -3,8 +3,8 @@
     number of cells in G1 or G2 phase of the cell cycle 
 """
 
-const nG1 = 6
-const nG2 = 6
+const nG1 = 8
+const nG2 = 20
 const nSp = nG1 + nG2
 
 """ Make the transition matrix. """
@@ -12,13 +12,17 @@ function ODEjac(p::AbstractVector{T}, t::Real)::Matrix{T} where {T <: Real}
     # p = [alpha, beta, gamma1, gamma2]
     A = zeros(nSp, nSp)
 
-    A[diagind(A, 0)[1:nG1]] .= -(p[3] + p[1])
-    A[diagind(A, 0)[(nG1 + 1):end]] .= -(p[4] + p[2])
+    A[diagind(A, 0)[1:Int(nG1/2)]] .= -(p[5] + p[1])
+    A[diagind(A, 0)[Int(nG1/2 + 1):nG1]] .= -(p[2] + p[6])
+    A[diagind(A, 0)[(nG1 + 1):Int(nG1 + nG2/2)]] .= -(p[3] + p[7])
+    A[diagind(A, 0)[Int(nG1 + nG2/2 + 1):nSp]] .= -(p[4] + p[8])
 
-    A[diagind(A, -1)[1:nG1]] .= p[1]
-    A[diagind(A, -1)[(nG1 + 1):end]] .= p[2]
+    A[diagind(A, -1)[1:Int(nG1/2)]] .= p[1]
+    A[diagind(A, -1)[Int(nG1/2 + 1):nG1]] .= p[2]
+    A[diagind(A, -1)[(nG1 + 1):Int(nG1 + nG2/2)]] .= p[3]
+    A[diagind(A, -1)[Int(nG1 + nG2/2 + 1):(nSp - 1)]] .= p[4]
 
-    A[1, nSp] = 2 * p[2]
+    A[1, nSp] = 2 * p[4]
 
     lmul!(t, A)
     return LinearAlgebra.exp!(A)
@@ -37,7 +41,7 @@ function startV(p::AbstractVector{T})::AbstractVector{T} where {T <: Real}
         copyto!(v, u)
     end
 
-    return v / sum(v)
+    return 20.0 * v / sum(v)
 end
 
 
@@ -48,12 +52,21 @@ function vTOg(v::AbstractVector)
 end
 
 
+function newPredict(p, pControl, t::Union{Real, LinRange}, g1data = nothing, g2data = nothing)
+
+    vStart = startV(pControl)
+    # Note that vStart is always scaled so the starting cell number is 1.0
+
+    return predict(p, vStart, t, g1data, g2data)
+end
+
+
 """ Predicts the model given a set of parametrs. """
 function predict(p, g_0, t::Union{Real, LinRange}, g1data = nothing, g2data = nothing)
     if g_0 isa Real
         v = Vector{eltype(p)}(undef, nSp)
-        v[1:nG1] .= p[5] * g_0 / nG1
-        v[(nG1 + 1):end] .= (1.0 - p[5]) * g_0 / nG2
+        v[1:nG1] .= p[9] * g_0 / nG1
+        v[(nG1+1):end] .= (1.0 - p[9]) * g_0 / nG2
     else
         v = g_0
     end

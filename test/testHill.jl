@@ -1,14 +1,8 @@
 @testset "Hill tests" begin
-    conc, g2, g1 = setup_data("Lapatinib1")
-    params = [10.0, 1.0, 1.0, 1.0, 1.0, 1.0, 10.0, 1.0, 1.0, 30, 30, 10, 10]
+    conc, g2, g1 = load(189, 1)
+    params = [70.0, 1.0, 0.6, 0.03, 1.4, 2.0, 2.0, 0.2, 1.05, 2.0, 0.003, 1.0e-9, 0.06, 0.1, 0.53]
 
     # Check that these at least run
     effects = getODEparams(params, conc)
-    num = DrugResponseModel.numcells(effects[:, 3], g1[1] + g2[1])
-end
-
-@testset "Test function appropriately works for different array dimensions" begin
-    conc, _, _ = setup_data("Lapatinib1")
-    p1 = [10.0, 1.0, 1.0, 1.0, 1.0, 1.0, 10.0, 1.0, 1.0, 30, 30, 0, 0]
-    eff1 = getODEparams(p1, conc)
+    num = DrugResponseModel.numcells(effects[:, 3, 1], g1[1] + g2[1])
 end

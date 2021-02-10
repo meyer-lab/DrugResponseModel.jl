@@ -4,61 +4,31 @@
 
 default(size = (900, 400), margin = 0.4cm, legendfontsize = 5, fmt = :pdf)
 
-
-function plot_parameters(conc_l, parameters, stdn)
-    conc = log.(conc_l)
-    maxProg = maximum(parameters[1:2, :])
-    p1 = plot(
-        conc,
-        parameters[1, :],
+function unit_plot_params(conc, params, stdn, labelY)
+    concL = log.(conc)
+    plot(
+        concL,
+        params,
         xlabel = "log drug conc. [nM]",
         label = "",
-        ribbon = stdn[1, :],
+        ribbon = stdn,
         line = (:dot, 1),
         marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "G1 progression rate [1/hr]",
+        ylabel = labelY,
     )
-    ylims!(0.0, 1.0)
-
-    p2 = plot(
-        conc,
-        parameters[2, :],
-        xlabel = "log drug conc. [nM]",
-        label = "",
-        ribbon = stdn[2, :],
-        line = (:dot, 1),
-        marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "G2 progression rate [1/hr]",
-    )
-    ylims!(0.0, 1.0)
-
-    maxDeath = maximum(parameters[3:4, :])
-
-    p3 = plot(
-        conc,
-        parameters[3, :],
-        xlabel = "log drug conc. [nM]",
-        label = "",
-        ribbon = stdn[3, :],
-        line = (:dot, 1),
-        marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "G1 death rate [1/hr]",
-    )
-    ylims!(0.0, 1.0)
-
-    p4 = plot(
-        conc,
-        parameters[4, :],
-        xlabel = "log drug conc. [nM]",
-        label = "",
-        ribbon = stdn[4, :],
-        line = (:dot, 1),
-        marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = "G2 death rate [1/hr]",
-    )
-    ylims!(0.0, 1.0)
-    plot(p1, p2, p3, p4, alpha = 0.6, lw = 2.0, color = [:black :gray])
 end
+
+function plot_parameters(concs, parameters, stdn)
+    labelYs = [" progression rate [1/hr]", " death rate [1/hr]"]
+    pre_labels = ["G1,1", "G1,2", "G2,1", "G2,2"]
+
+    p1 = [unit_plot_params(concs, parameters[i, :], stdn[i, :], string(pre_labels[i], labelYs[1])) for i=1:4]
+    p2 = [unit_plot_params(concs, parameters[i, :], stdn[i, :], string(pre_labels[i-4], labelYs[2])) for i=5:8]
+
+    plot(p1..., p2..., alpha = 0.6, lw = 2.0, size = (1100, 400), layout = (2,4), color = [:black :gray])
+    ylims!(0.0, 2.0)
+end
+
 
 """ plot the percentage of cells in G2 phase over time for all concentrations on top of each other. Depending on the g2 you pass to it, it could plot for the data or simulation. """
 function plotperc(g2, name, conc, txt)
