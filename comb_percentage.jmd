@@ -131,7 +131,7 @@ plot(p1, p2, p3, p4, p5)
 ## Gemcitabine 10 nM + palbociclibs.
 
 ```julia;
-gnum1, gnum2 = make_it_easy(palboGem_params[:, 6, 1])
+gnum1, gnum2 = make_it_easy(palboGem_params[:, 6, 1], palboGem_params[:, 1, 1])
 nums[:, 1, 1], nums[:, 1, 2] = make_it_easy(palboGem_params[:, 6, 4], palboGem_params[:, 1, 1])
 nums[:, 2, 1], nums[:, 2, 2] = make_it_easy(palboGem_params[:, 6, 5], palboGem_params[:, 1, 1])
 nums[:, 3, 1], nums[:, 3, 2] = make_it_easy(palboGem_params[:, 6, 6], palboGem_params[:, 1, 1])
