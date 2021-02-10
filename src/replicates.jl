@@ -9,28 +9,18 @@ function predict_replicates(p1, p2, p3, g0)
 
     for i = 1:size(ps, 2) # concentration number
         for j = 1:size(ps, 3)
-            G1[:, i, j], G2[:, i, j], _ = newPredict(ps[:, i, j], g0, t)
+            G1[:, i, j], G2[:, i, j], _ = predict(ps[:, i, j], g0, t)
         end
     end
 
     return G1, G2 # all simulation
 end
 
+
 """ A function to calculate std and mean of ODE parameters for each drug. """
 function mean_std_params(effs1, effs2, effs3)
     eff = cat(effs1, effs2, effs3, dims = 3)
     return mean(eff, dims = 3), std(eff, dims = 3)
-end
-
-""" Calculate the # of cells in G1 for a set of parameters and T """
-function numcells(params, g0)
-    @assert(all(params .>= 0.0), "negative params $params")
-    t = LinRange(0.0, 94.5, 189)
-    G1, G2, _ = predict(params, g0, t)
-
-    @assert(all(G1[2:end] .>= 0.0), "negative cell number in G1 $G1")
-    @assert(all(G2[2:end] .>= 0.0), "negative cell number in G2 $G2")
-    return G1[end] + G2[end]
 end
 
 

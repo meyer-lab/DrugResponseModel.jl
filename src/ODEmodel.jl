@@ -52,23 +52,15 @@ function vTOg(v::AbstractVector)
 end
 
 
-function newPredict(p, pControl, t::Union{Real, LinRange}, g1data = nothing, g2data = nothing)
-
-    vStart = startV(pControl)
-    # Note that vStart is always scaled so the starting cell number is 1.0
-
-    return predict(p, vStart, t, g1data, g2data)
-end
-
-
 """ Predicts the model given a set of parametrs. """
-function predict(p, g_0, t::Union{Real, LinRange}, g1data = nothing, g2data = nothing)
-    if g_0 isa Real
-        v = Vector{eltype(p)}(undef, nSp)
-        v[1:nG1] .= p[9] * g_0 / nG1
-        v[(nG1+1):end] .= (1.0 - p[9]) * g_0 / nG2
+function predict(p::AbstractVector, g_0::AbstractVector, t::Union{Real, LinRange}, g1data = nothing, g2data = nothing)
+    @assert length(p) == 8
+
+    if length(g_0) == length(p)
+        v = startV(g_0)
     else
-        v = g_0
+        @assert length(g_0) == nSp
+        v = copy(g_0)
     end
 
     if t isa Real

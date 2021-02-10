@@ -14,7 +14,7 @@ using Plots, LinearAlgebra
 
 concs, _, g1s1, g2s1 = load(189, 1);
 
-paramAvg = rand(59)
+paramAvg = rand(54)
 efcs = getODEparams(paramAvg, concs);
 tim = LinRange(0.0, 96.0, 96);
 
@@ -22,9 +22,11 @@ tim = LinRange(0.0, 96.0, 96);
 function plot_combin_time(idA, idB, efcts, DrugA_name, DrugB_name, concA, concB)
   bliss_comb = DrugResponseModel.AllBliss_params(efcts[:, :, idA], efcts[:, :, idB])
   combb = bliss_comb[:, concA, concB]
-  G1_lap, G2_lap = newPredict(efcs[:, concA, idA], efcs[:, 1, idA], tim)
-  G1_dox, G2_dox = newPredict(efcs[:, concA, idB], efcs[:, 1, idB], tim)
-  G1_com, G2_com = newPredict(combb, efcs[:, 1, idA], tim)
+
+  G1_lap, G2_lap = predict(efcs[:, concA, idA], efcs[:, 1, idA], tim)
+  G1_dox, G2_dox = predict(efcs[:, concA, idB], efcs[:, 1, idB], tim)
+  G1_com, G2_com = predict(combb, efcs[:, 1, idA], tim)
+
   p1 = plot(tim, G1_lap, lw=2, label=DrugA_name, xlabel="time [hr]", ylabel="G1 cell number")
   plot!(tim, G1_dox, lw=2, label=DrugB_name)
   plot!(tim, G1_com, lw=2, label="combin")

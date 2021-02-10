@@ -24,14 +24,14 @@ gdata2 = g2m ./ (g2m .+ g1m);
 
 # Lapatinib
 ```julia
-ps1= rand(15);
+ps1= rand(14);
 efcs = getODEparams(ps1, concs[:, 1]);
 
 G1 = zeros(189, 7)
 G2 = zeros(189, 7)
 t = LinRange(0.0, 95.0, 189)
 for i = 1:7 # concentration number
-    G1[:, i], G2[:, i], _ = DrugResponseModel.newPredict(efcs[:, i], efcs[:, 1], t)
+    G1[:, i], G2[:, i], _ = predict(efcs[:, i], efcs[:, 1], t)
 end
 ```
 
@@ -63,14 +63,14 @@ norm(G1 - g1m[:, 1:7, 1]) + norm(G2 - g2m[:, 1:7, 1])
 
 # Doxorubicin
 ```julia
-ps2 = rand(15);
+ps2 = rand(14);
 efcs2 = getODEparams(ps2, concs[:, 2]);
 
 G1 = zeros(189, 7)
 G2 = zeros(189, 7)
 t = LinRange(0.0, 95.0, 189)
 for i = 1:7 # concentration number
-    G1[:, i], G2[:, i], _ = newPredict(efcs2[:, i], efcs2[:, 1], t)
+    G1[:, i], G2[:, i], _ = predict(efcs2[:, i], efcs2[:, 1], t)
 end
 ```
 
@@ -102,14 +102,14 @@ norm(G1 - g1m[:, 1:7, 2]) + norm(G2 - g2m[:, 1:7, 2])
 
 # Gemcitabine
 ```julia
-ps3 = rand(15);
+ps3 = rand(14);
 efcs3 = getODEparams(ps3, concs[:, 3]);
 
 G1 = zeros(189, 7)
 G2 = zeros(189, 7)
 t = LinRange(0.0, 95.0, 189)
 for i = 1:7 # concentration number
-    G1[:, i], G2[:, i], _ = newPredict(efcs3[:, i], efcs3[:, 1], t)
+    G1[:, i], G2[:, i], _ = predict(efcs3[:, i], efcs3[:, 1], t)
 end
 ```
 
@@ -141,14 +141,14 @@ norm(G1 - g1m[:, 1:7, 3]) + norm(G2 - g2m[:, 1:7, 3])
 
 # Paclitaxel
 ```julia
-ps4 = rand(15);
+ps4 = rand(14);
 efcs4 = getODEparams(ps4, concs[:, 4]);
 
 G1 = zeros(189, 7)
 G2 = zeros(189, 7)
 t = LinRange(0.0, 95.0, 189)
 for i = 1:7 # concentration number
-    G1[:, i], G2[:, i], _ = newPredict(efcs4[:, i], efcs4[:, 1], t)
+    G1[:, i], G2[:, i], _ = predict(efcs4[:, i], efcs4[:, 1], t)
 end
 ```
 
@@ -180,14 +180,14 @@ norm(G1 - g1m[:, 1:7, 4]) + norm(G2 - g2m[:, 1:7, 4])
 
 # Palbociclib
 ```julia
-ps5 = rand(15);
+ps5 = rand(14);
 efcs5 = getODEparams(ps5, concs[:, 5]);
 
 G1 = zeros(189, 7)
 G2 = zeros(189, 7)
 t = LinRange(0.0, 95.0, 189)
 for i = 1:7 # concentration number
-    G1[:, i], G2[:, i], _ = newPredict(efcs5[:, i], efcs4[:, 1], t)
+    G1[:, i], G2[:, i], _ = predict(efcs5[:, i], efcs4[:, 1], t)
 end
 ```
 

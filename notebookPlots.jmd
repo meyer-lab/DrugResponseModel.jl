@@ -19,9 +19,9 @@ _, _, g1s3, g2s3 = load(189, 3);
 ```julia
 # costt, ps1 = optimize_hill(concs[:, 1], g1s1[:, :, 1], g2s1[:, :, 1], maxstep = 1E5)
 # TODO: These are dummy parameters, they should be updated after fitting correctly.
-p1 = rand(15)
-p2 = rand(15)
-p3 = rand(15)
+p1 = rand(14)
+p2 = rand(14)
+p3 = rand(14)
 pps1 = copy(p1);
 ```
 

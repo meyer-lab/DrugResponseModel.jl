@@ -1,6 +1,9 @@
 """
         Imports data works for the ODE model
 """
+
+const init_cells = 20.0
+
 function get_data(path_g2::String, path_total::String; max = 189)
     # Import data all the trials for each drug
     perc = readdlm(path_g2, ','; skipstart = 1)
@@ -9,8 +12,6 @@ function get_data(path_g2::String, path_total::String; max = 189)
     # Clip to data of interest
     perc = convert(Array, perc[1:max, 2:9])
     total = convert(Array, total[1:max, 2:9])
-
-    init_cells = 20.0
 
     # rescaling the experimental data assuming we have 20 initial cells for each trial
     gs = zeros(2, size(perc, 1), 8)
@@ -36,14 +37,12 @@ function import_combination(filename::String)
     # Clip to data of interest
     perc = convert(Array{Float64, 2}, perc)
     total = convert(Array{Float64, 2}, total)
+
     # removing the peaks
     for i = 1:size(perc, 2)
-        perc[:, i] = DrugResponseModel.savitzky_golay_filter(perc[:, i], 41, 3)
-        perc[:, i] = DrugResponseModel.savitzky_golay_filter(perc[:, i], 41, 3)
-        total[:, i] = DrugResponseModel.savitzky_golay_filter(total[:, i], 41, 3)
-        total[:, i] = DrugResponseModel.savitzky_golay_filter(total[:, i], 41, 3)
+        perc[:, i] = savitzky_golay_filter(perc[:, i], 41, 3)
+        total[:, i] = savitzky_golay_filter(total[:, i], 41, 3)
     end
-    init_cells = 20.0
 
     # rescaling the experimental data assuming we have 20 initial cells for each trial
     gs = zeros(3, size(perc, 1), size(perc, 2))

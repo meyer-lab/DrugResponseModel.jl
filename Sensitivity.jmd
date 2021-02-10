@@ -19,7 +19,7 @@ concs, _, g1s1, g2s1 = load(189, 1);
 ```
 
 ```julia
-p = rand(59)
+p = rand(54)
 
 
 function make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
