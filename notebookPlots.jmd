@@ -22,7 +22,7 @@ _, _, g1s3, g2s3 = load(189, 3);
 p1 = rand(15)
 p2 = rand(15)
 p3 = rand(15)
-pps1 = copy(p1)
+pps1 = copy(p1);
 ```
 
 ```julia
@@ -191,7 +191,7 @@ effects3 = getODEparams(p3, concs[:, 5]);
 ```
 
 ```julia
-G1, G2 = DrugResponseModel.predict_replicates(effects1[:, :, 1], effects2[:, :, 1], effects3[:, :, 1],effects3[:, 1, 1]0); # for Palbociclib
+G1, G2 = DrugResponseModel.predict_replicates(effects1[:, :, 1], effects2[:, :, 1], effects3[:, :, 1], effects3[:, 1, 1]); # for Palbociclib
 ```
 
 ```julia
