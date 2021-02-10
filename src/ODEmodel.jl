@@ -27,11 +27,14 @@ end
 
 """ Find the starting vector from the steady-state of the control condition. """
 function startV(p::AbstractVector{T})::AbstractVector{T} where {T <: Real}
-    _, _, v = predict(p, 1.0, 100.0)
+    v = ones(nSp)
+    A = ODEjac(p, 100.0)
+    u = similar(v)
 
     for ii = 1:100
         v /= sum(v)
-        _, _, v = predict(p, v, 100.0)
+        mul!(u, A, v)
+        copyto!(v, u)
     end
 
     return v / sum(v)
