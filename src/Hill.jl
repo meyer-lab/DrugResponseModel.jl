@@ -39,25 +39,25 @@ function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 300000)
 
     f(x) = residHill(x, conc, g1, g2)
 
-    # [EC50, k, min_a1, max_a1, min_a2, max_a2, min_b1, max_b1, min_b2, max_b2, max_g11, max_g12, max_g21, max_g22, min%G1]
-    low = [minimum(conc), 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 0.25]
-    high = [maximum(conc), 10.0, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0.75]
+    # [EC50, k, min_a1, max_a1, min_a2, max_a2, min_b1, max_b1, min_b2, max_b2, max_g11, max_g12, max_g21, max_g22]
+    low = [minimum(conc), 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9]
+    high = [maximum(conc), 10.0, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5]
 
     return optimize_helper(f, low, high, maxstep)
 end
 
 function getODEparams(p, conc)
-    if length(p) == 59
+    if length(p) == 54
         nMax = 5
-    elseif length(p) == 15
+    elseif length(p) == 10
         nMax = 1
-    elseif length(p) == 26
+    elseif length(p) == 24
         nMax = 2
     end
 
-    effects = zeros(eltype(p), 9, length(conc[:, 1]), Int((length(p)-4)/11))
+    effects = zeros(eltype(p), 8, length(conc[:, 1]), Int((length(p)-4)/10))
     k = 1
-    sizep = 11 # the size of independent parameters, meaning except for control.
+    sizep = 10 # the size of independent parameters, meaning except for control.
     j = nMax * sizep + 1 # the starting index of "control parameters", according to the number of drugs being fitted at once.
     # Scaled drug effect
     for i = 1:nMax
@@ -72,7 +72,6 @@ function getODEparams(p, conc)
         effects[6, :, i] = p[k + 7] .* xx
         effects[7, :, i] = p[k + 8] .* xx
         effects[8, :, i] = p[k + 9] .* xx
-        effects[9, :, i] .= p[k + 10]
         
         k += sizep
     end
