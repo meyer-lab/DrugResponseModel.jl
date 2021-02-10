@@ -45,7 +45,7 @@ G2 = zeros(189, 7, 5)
 t = LinRange(0.0, 95.0, 189)
 for k=1:5 # drug number
     for i = 1:7 # concentration number
-        G1[:, i, k], G2[:, i, k], _ = DrugResponseModel.newPredict(efcs[:, i, k], efcs[:, 1, k], t)
+        G1[:, i, k], G2[:, i, k], _ = predict(efcs[:, i, k], efcs[:, 1, k], t)
     end
 end
 

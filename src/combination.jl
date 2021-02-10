@@ -45,7 +45,7 @@ function BlissModelComb(bliss_comb, pCtr)
 
     for i = 1:8 # param1 is changing
         for j = 1:8 # param2 is changing
-            g1, g2, _ = newPredict(bliss_comb[:, i, j], pCtr, 96.0)
+            g1, g2, _ = predict(bliss_comb[:, i, j], pCtr, 96.0)
             bliss_comb_cellnum[i, j] = g1 + g2
         end
     end

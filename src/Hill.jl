@@ -12,7 +12,7 @@ function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
     res = 0.0
     # Solve each concentration separately
     for ii = 1:length(conc)
-        res += DrugResponseModel.newPredict(params[:, ii, 1], params[:, 1, 1], t, g1[:, ii], g2[:, ii])[1]
+        res += predict(params[:, ii, 1], params[:, 1, 1], t, g1[:, ii], g2[:, ii])[1]
     end
 
     return res

@@ -31,7 +31,6 @@ export setup_data,
     blissCellNum,
     Bliss_params_unit,
     predict,
-    newPredict,
     optim_all,
     BlissModelComb,
     Heatmap
