@@ -24,7 +24,7 @@ gdata2 = g2m ./ (g2m .+ g1m);
 
 # Lapatinib
 ```julia
-ps1= rand(14);
+ps1= rand(20);
 efcs = getODEparams(ps1, concs[:, 1]);
 
 G1 = zeros(189, 7)
@@ -63,7 +63,7 @@ norm(G1 - g1m[:, 1:7, 1]) + norm(G2 - g2m[:, 1:7, 1])
 
 # Doxorubicin
 ```julia
-ps2 = rand(14);
+ps2 = rand(20);
 efcs2 = getODEparams(ps2, concs[:, 2]);
 
 G1 = zeros(189, 7)
@@ -102,7 +102,7 @@ norm(G1 - g1m[:, 1:7, 2]) + norm(G2 - g2m[:, 1:7, 2])
 
 # Gemcitabine
 ```julia
-ps3 = rand(14);
+ps3 = rand(20);
 efcs3 = getODEparams(ps3, concs[:, 3]);
 
 G1 = zeros(189, 7)
@@ -141,7 +141,7 @@ norm(G1 - g1m[:, 1:7, 3]) + norm(G2 - g2m[:, 1:7, 3])
 
 # Paclitaxel
 ```julia
-ps4 = rand(14);
+ps4 = rand(20);
 efcs4 = getODEparams(ps4, concs[:, 4]);
 
 G1 = zeros(189, 7)
@@ -180,7 +180,7 @@ norm(G1 - g1m[:, 1:7, 4]) + norm(G2 - g2m[:, 1:7, 4])
 
 # Palbociclib
 ```julia
-ps5 = rand(14);
+ps5 = rand(20);
 efcs5 = getODEparams(ps5, concs[:, 5]);
 
 G1 = zeros(189, 7)

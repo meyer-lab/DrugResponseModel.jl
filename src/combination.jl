@@ -8,24 +8,24 @@ function Bliss_params_unit(pp1, pp2, control)
     p1 = copy(pp1)
     p2 = copy(pp2)
     # normalization
-    p1[1:4] .= 1.0 .- (pp1[1:4] ./ control[1:4, 1]) # g1 and g2 prog. rates
-    p1[5:8] .= pp1[5:8]                          # g1 and g2 death rates
+    p1[1:6] .= 1.0 .- (pp1[1:6] ./ control[1:6, 1]) # g1 and g2 prog. rates
+    p1[7:12] .= pp1[7:12]                          # g1 and g2 death rates
     # drug B
-    p2[1:4] .= 1.0 .- (pp2[1:4] ./ control[1:4, 2])
-    p2[5:8] .= pp2[5:8]
+    p2[1:6] .= 1.0 .- (pp2[1:6] ./ control[1:6, 2])
+    p2[7:12] .= pp2[7:12]
 
-    c = Array{eltype(pp1), 1}(undef, 8)
-    c[1:4] .= (1.0 .- (p1[1:4] .+ p2[1:4] .- p1[1:4] .* p2[1:4])) .* ((control[1:4, 1] .+ control[1:4, 2]) ./ 2)
-    c[5:8] .= p1[5:8] .+ p2[5:8]
+    c = Array{eltype(pp1), 1}(undef, 12)
+    c[1:6] .= (1.0 .- (p1[1:6] .+ p2[1:6] .- p1[1:6] .* p2[1:6])) .* ((control[1:6, 1] .+ control[1:6, 2]) ./ 2)
+    c[7:12] .= p1[7:12] .+ p2[7:12]
 
     c
 end
 
 """ Using the unit function to find all combinations of parameters. """
 function AllBliss_params(pp1, pp2)
-    # pp1 and pp2 are 2D arrays [9 x 8] each includes the parameters fo all concentrations of a drug. 
+    # pp1 and pp2 are 2D arrays [12 x 8] each includes the parameters fo all concentrations of a drug. 
 
-    combined = Array{eltype(pp1), 3}(undef, 8, 8, 8)
+    combined = Array{eltype(pp1), 3}(undef, 12, 8, 8)
     for i = 1:8
         for j = 1:8
             combined[:, i, j] .= Bliss_params_unit(pp1[:, i], pp2[:, j], hcat(pp1[:, 1], pp2[:, 1]))

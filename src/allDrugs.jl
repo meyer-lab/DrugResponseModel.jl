@@ -5,9 +5,9 @@ function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array)
     # Solve for all drugs
     t = 1
     for j = 1:5
-        hill = hP[[t, t + 1, 51, t + 2, 52, t + 3, 53, t + 4, 54, t + 5, t + 6, t + 7, t + 8, t + 9]]
+        hill = hP[[t, t + 1, 71, t + 2, 72, t + 3, 73, t + 4, 74, t + 5, 75, t + 6, 76, t + 7, t + 8, t + 9, t + 10, t + 11, t + 12, t + 13]]
         res += residHill(hill, concentrations[:, j], g1[:, :, j], g2[:, :, j])
-        t += 10
+        t += 14
     end
 
     return res
@@ -15,12 +15,12 @@ end
 
 """ Organize Hill parameters for each drug in a 2D array. """
 function Hill_p_eachDr(p)
-    HillP = Matrix{eltype(p)}(undef, 10, 5)
+    HillP = Matrix{eltype(p)}(undef, 14, 5)
     # each column: [EC50, steepness, max_g1,1_prog., max_g1,2_prog., max_g2,1_prog., max_g2,2_prog., max_g11_death, max_g12_death, max_g21_death, max_g22_death]
     j = 1
     for i = 1:5
-        HillP[:, i] .= p[j:(j + 9)]
-        j += 10
+        HillP[:, i] .= p[j:(j + 13)]
+        j += 14
     end
     HillP
 end
@@ -28,10 +28,10 @@ end
 function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 100000)
     f(x) = residHillAll(x, concs, g1, g2)
 
-    lP = [minimum(concs), 0.01, 0.05, 0.05, 0.05, 0.05, 0.00001, 0.00001, 0.00001, 0.00001]
-    low = vcat(lP, lP, lP, lP, lP, 1e-9, 1e-9, 1e-9, 1e-9)
-    hP = [maximum(concs), 10.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
-    high = vcat(hP, hP, hP, hP, hP, 1.0, 1.0, 1.0, 1.0)
+    lP = [minimum(concs), 0.01, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001]
+    low = vcat(lP, lP, lP, lP, lP, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9)
+    hP = [maximum(concs), 10.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    high = vcat(hP, hP, hP, hP, hP, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
 
     return optimize_helper(f, low, high, maxiter)
 end
@@ -40,14 +40,5 @@ end
 function EC50_params(p, i)
     d = Hill_p_eachDr(p)
     # returns the following at EC50: [g1_prog., g2_prog, g1_death, g2_death, g1%]
-    return append!([
-        p[51] + (d[3, i] - p[51]) / 2,
-        p[52] + (d[4, i] - p[52]) / 2,
-        p[53] + (d[5, i] - p[53]) / 2,
-        p[54] + (d[6, i] - p[54]) / 2,
-        d[7, i] / 2,
-        d[8, i] / 2,
-        d[9, i] / 2,
-        d[10, i] / 2,
-    ])
+    return append!([p[71] + (d[3, i] - p[71]) / 2, p[72] + (d[4, i] - p[72]) / 2, p[73] + (d[5, i] - p[73]) / 2, p[74] + (d[6, i] - p[74]) / 2, p[75] + (d[7, i] - p[75]) / 2, p[76] + (d[8, i] - p[76]) / 2, d[9, i] / 2, d[10, i] / 2, d[11, i] / 2, d[12, i] / 2, d[13, i] / 2, d[14, i] / 2])
 end

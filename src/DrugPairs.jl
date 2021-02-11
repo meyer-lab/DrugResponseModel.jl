@@ -7,9 +7,9 @@ function residHillpairs(hP, concentrations::Matrix, g1::Array, g2::Array, v::Int
     t = 1
     k = v # drug1 index
     for j = 1:2
-        hill = hP[[t, t + 1, 21, t + 2, 22, t + 3, 23, t + 4, 24, t + 5, t + 6, t + 7, t + 8, t + 9]]
+    hill = hP[[t, t + 1, 29, t + 2, 30, t + 3, 31, t + 4, 32, t + 5, 33, t + 6, 34, t + 7, t + 8, t + 9, t + 10, t + 11, t + 12, t + 13]]
         res += residHill(hill, concentrations[:, k], g1[:, :, k], g2[:, :, k])
-        t += 10
+        t += 14
         k = u # drug 2 index
     end
 
@@ -18,11 +18,11 @@ end
 
 function optim_helper()
     # sharing control condition (min_a1, min_a2, min_b1,min_b2)
-    low_piece = [1.0, 0.01, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9]
-    high_piece = [500.0, 10.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
+    low_piece = [1.0, 0.01, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9]
+    high_piece = [500.0, 10.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
 
-    low = vcat(low_piece, low_piece, 1e-9, 1e-9, 1e-9, 1e-9) # 26 params
-    high = vcat(high_piece, high_piece, 2.0, 2.0, 2.0, 2.0)
+    low = vcat(low_piece, low_piece, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9) # 26 params
+    high = vcat(high_piece, high_piece, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0)
     return low, high
 end
 
