@@ -55,7 +55,7 @@ function getODEparams(p, conc)
         nMax = 2
     end
 
-    effects = zeros(eltype(p), 8, length(conc[:, 1]), Int((length(p)-4)/10))
+    effects = zeros(eltype(p), 8, length(conc[:, 1]), Int((length(p) - 4) / 10))
     k = 1
     sizep = 10 # the size of independent parameters, meaning except for control.
     j = nMax * sizep + 1 # the starting index of "control parameters", according to the number of drugs being fitted at once.
@@ -72,7 +72,7 @@ function getODEparams(p, conc)
         effects[6, :, i] = p[k + 7] .* xx
         effects[7, :, i] = p[k + 8] .* xx
         effects[8, :, i] = p[k + 9] .* xx
-        
+
         k += sizep
     end
     return effects
