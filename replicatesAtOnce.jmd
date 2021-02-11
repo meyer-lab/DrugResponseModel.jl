@@ -17,9 +17,9 @@ _, _, g1s3, g2s3 = load(189, 3);
 
 
 # TODO: replace these dummy parameters with estimated ones
-rep1 = rand(54);
-rep2 = rand(54);
-rep3 = rand(54);
+rep1 = rand(76);
+rep2 = rand(76);
+rep3 = rand(76);
 ef1 = getODEparams(rep1, concs);
 ef2 = getODEparams(rep2, concs);
 ef3 = getODEparams(rep3, concs);
@@ -40,8 +40,8 @@ plot(pl..., size=(1000,700))
 The solid lines show the three simulations, meaning, after obtaining the three sets of the parameters, we calculate the time-series simulation and find the cell number for each time-point, for the three replicates, separately. The ribbon is the bounds of std of the original data. This shows that even if the model for individual replicates, deviates a little, but on-average it doesn't deviate the standard deviation. So it is reliable. (here again for lapatinib)
 
 ```julia
-avgs = zeros(8, 8, 5)
-stds = zeros(8, 8, 5)
+avgs = zeros(12, 8, 5)
+stds = zeros(12, 8, 5)
 
 for j=1:5
     avgs[:, :, j], stds[:, :, j] = DrugResponseModel.mean_std_params(ef1[:, :, j], ef2[:, :, j], ef3[:, :, j])

@@ -22,7 +22,7 @@ g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
 
 
 # this is the optimum estimated parameters for all drugs at once, and considers % in G1 separately for drugs. ==> 41 parameters
-p = rand(54)
+p = rand(76)
 
 effs = getODEparams(p, concs);
 lapat = effs[:, :, 1];
