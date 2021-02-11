@@ -1,6 +1,6 @@
 @testset "Sensitivity tests" begin
     concs, _, _, _ = load(189, 1)
-    p = ones(54)
+    p = ones(76)
     effs = getODEparams(p, concs)
     # Check that these at least run
     der = DrugResponseModel.get_derivative(p, 1, 2, concs, effs[:, 1, 1], 1)

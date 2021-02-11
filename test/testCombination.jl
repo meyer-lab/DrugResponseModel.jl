@@ -1,6 +1,6 @@
 @testset "Combination tests where g1 prog. rate increased for one drug and decreases for the other drug and g2 prog. rates where in both drugs the rate is decreasing compared to control." begin
-    p1 = ones(8, 8)
-    p2 = ones(8, 8)
+    p1 = ones(12, 8)
+    p2 = ones(12, 8)
 
     # drugA
     p1[1, 1] = 0.6          # g1 prog. rate in control
@@ -19,8 +19,8 @@ end
 
 @testset "Combination tests from estimated parameters to converting to ODE parameters where for both drugs, rates are decreasing and one reaches to zero." begin
     concs, _, _, _ = load(189, 1)
-    gem_before = [10.0, 0.9, 0.9, 0.3, 1.8, 1.0, 0.2, 0.3, 0.4, 0.1, 0.5, 0.00593379, 0.110279, 0.01]
-    dox_before = [100.0, 0.1, 0.04, 0.5, 0.5, 0.5, 0.5, 0.8, 0.16, 0.0, 0.01, 0.1, 0.0720467, 0.14468]
+    gem_before = [10.0, 0.9, 0.9, 0.3, 1.8, 1.0, 1.0, 1.0, 0.5, 0.5, 0.2, 0.3, 0.4, 0.1, 0.5, 0.00593379, 0.110279, 0.001, 0.001, 0.01]
+    dox_before = [100.0, 0.1, 0.04, 0.5, 0.5, 0.5, 0.5, 0.8, 0.5, 0.5, 0.5, 0.5, 0.16, 0.0, 0.01, 0.1, 0.0720467, 0.14468, 0.001, 0.001]
     p1 = getODEparams(gem_before, concs[:, 3])
     p2 = getODEparams(dox_before, concs[:, 2])
 
