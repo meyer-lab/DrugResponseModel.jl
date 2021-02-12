@@ -13,19 +13,19 @@ function ODEjac(p::AbstractVector{T}, t::Real)::Matrix{T} where {T <: Real}
     #                        index = [1,  2,  3,  4,  5,  6,  7,   8,   9,   10,  11,  12 ]
     A = zeros(nSp, nSp)
 
-    A[diagind(A, 0)[1:Int(nG1/2)]] .= -(p[1] + p[7])
-    A[diagind(A, 0)[Int(nG1/2 + 1):nG1]] .= -(p[2] + p[8])
-    A[diagind(A, 0)[(nG1 + 1):Int(nG1 + nG2/4)]] .= -(p[3] + p[9])
-    A[diagind(A, 0)[Int(nG1 + nG2/4 + 1):Int(nG1 + nG2/2)]] .= -(p[4] + p[10])
-    A[diagind(A, 0)[Int(nG1 + nG2/2 + 1):Int(nG1 + 3*nG2/4)]] .= -(p[5] + p[11])
-    A[diagind(A, 0)[Int(nG1 + 3*nG2/4 + 1):nSp]] .= -(p[6] + p[12])
+    A[diagind(A, 0)[1:Int(nG1 / 2)]] .= -(p[1] + p[7])
+    A[diagind(A, 0)[Int(nG1 / 2 + 1):nG1]] .= -(p[2] + p[8])
+    A[diagind(A, 0)[(nG1 + 1):Int(nG1 + nG2 / 4)]] .= -(p[3] + p[9])
+    A[diagind(A, 0)[Int(nG1 + nG2 / 4 + 1):Int(nG1 + nG2 / 2)]] .= -(p[4] + p[10])
+    A[diagind(A, 0)[Int(nG1 + nG2 / 2 + 1):Int(nG1 + 3 * nG2 / 4)]] .= -(p[5] + p[11])
+    A[diagind(A, 0)[Int(nG1 + 3 * nG2 / 4 + 1):nSp]] .= -(p[6] + p[12])
 
-    A[diagind(A, -1)[1:Int(nG1/2)]] .= p[1]
-    A[diagind(A, -1)[Int(nG1/2 + 1):nG1]] .= p[2]
-    A[diagind(A, -1)[(nG1 + 1):Int(nG1 + nG2/4)]] .= p[3]
-    A[diagind(A, -1)[Int(nG1 + nG2/4 + 1):Int(nG1 + nG2/2)]] .= p[4]
-    A[diagind(A, -1)[Int(nG1 + nG2/2 + 1):Int(nG1 + 3*nG2/4)]] .= p[5]
-    A[diagind(A, -1)[Int(nG1 + 3*nG2/4 + 1):(nSp-1)]] .= p[6]
+    A[diagind(A, -1)[1:Int(nG1 / 2)]] .= p[1]
+    A[diagind(A, -1)[Int(nG1 / 2 + 1):nG1]] .= p[2]
+    A[diagind(A, -1)[(nG1 + 1):Int(nG1 + nG2 / 4)]] .= p[3]
+    A[diagind(A, -1)[Int(nG1 + nG2 / 4 + 1):Int(nG1 + nG2 / 2)]] .= p[4]
+    A[diagind(A, -1)[Int(nG1 + nG2 / 2 + 1):Int(nG1 + 3 * nG2 / 4)]] .= p[5]
+    A[diagind(A, -1)[Int(nG1 + 3 * nG2 / 4 + 1):(nSp - 1)]] .= p[6]
 
     A[1, nSp] = 2 * p[6]
 

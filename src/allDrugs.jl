@@ -40,5 +40,18 @@ end
 function EC50_params(p, i)
     d = Hill_p_eachDr(p)
     # returns the following at EC50: [g1_prog., g2_prog, g1_death, g2_death, g1%]
-    return append!([p[71] + (d[3, i] - p[71]) / 2, p[72] + (d[4, i] - p[72]) / 2, p[73] + (d[5, i] - p[73]) / 2, p[74] + (d[6, i] - p[74]) / 2, p[75] + (d[7, i] - p[75]) / 2, p[76] + (d[8, i] - p[76]) / 2, d[9, i] / 2, d[10, i] / 2, d[11, i] / 2, d[12, i] / 2, d[13, i] / 2, d[14, i] / 2])
+    return append!([
+        p[71] + (d[3, i] - p[71]) / 2,
+        p[72] + (d[4, i] - p[72]) / 2,
+        p[73] + (d[5, i] - p[73]) / 2,
+        p[74] + (d[6, i] - p[74]) / 2,
+        p[75] + (d[7, i] - p[75]) / 2,
+        p[76] + (d[8, i] - p[76]) / 2,
+        d[9, i] / 2,
+        d[10, i] / 2,
+        d[11, i] / 2,
+        d[12, i] / 2,
+        d[13, i] / 2,
+        d[14, i] / 2,
+    ])
 end

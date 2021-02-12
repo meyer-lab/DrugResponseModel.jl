@@ -7,7 +7,7 @@ function residHillpairs(hP, concentrations::Matrix, g1::Array, g2::Array, v::Int
     t = 1
     k = v # drug1 index
     for j = 1:2
-    hill = hP[[t, t + 1, 29, t + 2, 30, t + 3, 31, t + 4, 32, t + 5, 33, t + 6, 34, t + 7, t + 8, t + 9, t + 10, t + 11, t + 12, t + 13]]
+        hill = hP[[t, t + 1, 29, t + 2, 30, t + 3, 31, t + 4, 32, t + 5, 33, t + 6, 34, t + 7, t + 8, t + 9, t + 10, t + 11, t + 12, t + 13]]
         res += residHill(hill, concentrations[:, k], g1[:, :, k], g2[:, :, k])
         t += 14
         k = u # drug 2 index
