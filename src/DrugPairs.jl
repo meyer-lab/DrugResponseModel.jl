@@ -17,21 +17,21 @@ function residHillpairs(hP, concentrations::Matrix, g1::Array, g2::Array, v::Int
 end
 
 function optim_helper()
-    # sharing control condition (min_a1, min_a2, min_b1,min_b2)
+    # sharing control condition (min_a1, min_a2, min_b1, min_b2, min_b3, min_b4)
     low_piece = [1.0, 0.01, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9]
-    high_piece = [500.0, 10.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
+    high_piece = [500.0, 10.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
-    low = vcat(low_piece, low_piece, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9) # 26 params
+    low = vcat(low_piece, low_piece, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9) # 34 params: 2 parts G1, 4 parst G2.
     high = vcat(high_piece, high_piece, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0)
     return low, high
 end
 
 """ Function to optimize pairs of drugs. """
 function BBoptim_DrugPairs(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}, i::Int, j::Int; maxiter = 200000)
-    hillCostAll(hillParams) = residHillpairs(hillParams, concs, g1, g2, i, j)
+    hillCostPairs(hillParams) = residHillpairs(hillParams, concs, g1, g2, i, j)
     low, high = optim_helper()
 
-    return optimize_helper(hillCostAll, low, high, maxiter)
+    return optimize_helper(hillCostPairs, low, high, maxiter)
 end
 
 

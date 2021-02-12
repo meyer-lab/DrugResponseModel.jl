@@ -10,7 +10,7 @@ const nSp = nG1 + nG2
 """ Make the transition matrix. """
 function ODEjac(p::AbstractVector{T}, t::Real)::Matrix{T} where {T <: Real}
     # with 2 G1 and 4 G2 we have p = [a1, a2, b1, b2, b3, b4, g11, g12, g21, g22, g23, g24] # 12 params
-    #                         indx = [1,  2,  3,  4,  5,  6,  7,   8,   9,   10,  11,  12 ]
+    #                        index = [1,  2,  3,  4,  5,  6,  7,   8,   9,   10,  11,  12 ]
     A = zeros(nSp, nSp)
 
     A[diagind(A, 0)[1:Int(nG1/2)]] .= -(p[1] + p[7])
