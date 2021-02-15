@@ -115,7 +115,7 @@ plot(p1, p2)
 quantified response plot
 
 ```julia
-DrugResponseModel.plot_parameters(concs[:, 1], efcs[:, :, 1], zeros(8, 7))
+DrugResponseModel.plot_parameters(concs[:, 1], efcs[:, :, 1])
 ```
 
 ### Doxorubicin
@@ -141,7 +141,7 @@ plot(p1, p2)
 quantified response plot
 
 ```julia
-DrugResponseModel.plot_parameters(concs[:, 2], efcs[:, :, 2], zeros(8,7))
+DrugResponseModel.plot_parameters(concs[:, 2], efcs[:, :, 2])
 ```
 
 ### Gemcitabine
@@ -167,7 +167,7 @@ plot(p1, p2)
 quantified response plot
 
 ```julia
-DrugResponseModel.plot_parameters(concs[:, 3], efcs[:, :, 3], zeros(8,7))
+DrugResponseModel.plot_parameters(concs[:, 3], efcs[:, :, 3])
 ```
 
 ### Paclitaxel
@@ -193,7 +193,7 @@ plot(p1, p2)
 quantified response plot
 
 ```julia
-DrugResponseModel.plot_parameters(concs[:, 4], efcs[:, :, 4], zeros(8,7))
+DrugResponseModel.plot_parameters(concs[:, 4], efcs[:, :, 4])
 ```
 
 ### Palbociclib
@@ -219,5 +219,5 @@ plot(p1, p2)
 quantified response plot
 
 ```julia
-DrugResponseModel.plot_parameters(concs[:, 5], efcs[:, :, 5], zeros(8,7))
+DrugResponseModel.plot_parameters(concs[:, 5], efcs[:, :, 5])
 ```

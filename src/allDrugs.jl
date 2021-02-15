@@ -5,7 +5,7 @@ function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array)
     # Solve for all drugs
     t = 1
     for j = 1:5
-        hill = hP[[t, t + 1, 71, t + 2, 72, t + 3, 73, t + 4, 74, t + 5, 75, t + 6, 76, t + 7, t + 8, t + 9, t + 10, t + 11, t + 12, t + 13]]
+        hill = hP[[t, t + 1, t + 2, t + 3, t + 4, t + 5, t + 6, t + 7, t + 8, t + 9, t + 10, t + 11, t + 12, t + 13, 71, 72, 73, 74, 75, 76]]
         res += residHill(hill, concentrations[:, j], g1[:, :, j], g2[:, :, j])
         t += 14
     end
