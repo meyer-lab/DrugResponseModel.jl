@@ -18,7 +18,7 @@ function unit_plot_params(conc, params, stdn, labelY)
     )
 end
 
-function plot_parameters(concs, parameters; stdn=similar(parameters))
+function plot_parameters(concs, parameters; stdn = similar(parameters))
     labelYs = [" progression rate [1/hr]", " death rate [1/hr]"]
     pre_labels = ["G1,1", "G1,2", "G2,1", "G2,2", "G2, 3", "G2, 4"]
     # stdn = similar(parameters)
