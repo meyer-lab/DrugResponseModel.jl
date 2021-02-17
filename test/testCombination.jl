@@ -1,6 +1,6 @@
 @testset "Combination tests where g1 prog. rate increased for one drug and decreases for the other drug and g2 prog. rates where in both drugs the rate is decreasing compared to control." begin
-    p1 = ones(12, 8)
-    p2 = ones(12, 8)
+    p1 = zeros(12, 8)
+    p2 = zeros(12, 8)
 
     # drugA
     p1[1, 1] = 0.6          # g1 prog. rate in control
