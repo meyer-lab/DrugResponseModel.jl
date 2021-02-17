@@ -75,7 +75,7 @@ function setup_data(drug_name::String)
     #----------- import concentrations
     concentration = readdlm(joinpath(basePath, "concentrations.csv"), ','; skipstart = 1)
     conc_l = [Float64(concentration[idx, col]) for col = 2:9]
-    conc_l[1] = 0.05
+    conc_l[1] = 0.0
 
     #------------ import cell data
     gs = get_data(joinpath(basePath, dfname), joinpath(basePath, dfname2))

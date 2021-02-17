@@ -76,12 +76,12 @@ end
 
 pp1 = DrugResponseModel.estimated_params(concs, "1,5")
 palboLap_params = DrugResponseModel.AllBliss_params(pp1[:, :, 1], pp1[:, :, 2])
-gnum1, gnum2, _ = predict(palboLap_params[:, 1, 5], (palboLap_params[:, 1, 1] .+ palboLap_params[:, 1, 2]) /2, t)
+gnum1, gnum2, _ = predict(palboLap_params[:, 1, 5], palboLap_params[:, 1, 1], t)
 nums = zeros(193, 4, 2) # 193 data points, 4 conditions, 2 phases
-nums[:, 1, 1], nums[:, 1, 2], _ = predict(palboLap_params[:, 4, 5], (palboLap_params[:, 1, 1] .+ palboLap_params[:, 1, 2]) /2, t)
-nums[:, 2, 1], nums[:, 2, 2], _ = predict(palboLap_params[:, 5, 5], (palboLap_params[:, 1, 1] .+ palboLap_params[:, 1, 2]) /2, t)
-nums[:, 3, 1], nums[:, 3, 2], _ = predict(palboLap_params[:, 6, 5], (palboLap_params[:, 1, 1] .+ palboLap_params[:, 1, 2]) /2, t)
-nums[:, 4, 1], nums[:, 4, 2], _ = predict(palboLap_params[:, 7, 5], (palboLap_params[:, 1, 1] .+ palboLap_params[:, 1, 2]) /2, t)
+nums[:, 1, 1], nums[:, 1, 2], _ = predict(palboLap_params[:, 4, 5], palboLap_params[:, 1, 1], t)
+nums[:, 2, 1], nums[:, 2, 2], _ = predict(palboLap_params[:, 5, 5], palboLap_params[:, 1, 1], t)
+nums[:, 3, 1], nums[:, 3, 2], _ = predict(palboLap_params[:, 6, 5], palboLap_params[:, 1, 1], t)
+nums[:, 4, 1], nums[:, 4, 2], _ = predict(palboLap_params[:, 7, 5], palboLap_params[:, 1, 1], t)
 p1 = easierPlot(1, 8, "palbo 50 nM", gnum1, gnum2, false)
 p2 = easierPlot(2, 3, "palbo 50 + lap 25 nM", nums[:, 1, 1], nums[:, 1, 2], false)
 p3 = easierPlot(2, 4, "palbo 50 + lap 50 nM", nums[:, 2, 1], nums[:, 2, 2], false)
