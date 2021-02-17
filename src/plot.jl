@@ -5,6 +5,7 @@
 default(size = (900, 400), margin = 0.4cm, legendfontsize = 5, fmt = :pdf)
 
 function unit_plot_params(conc, params, stdn, labelY)
+    conc[1] = 0.05
     concL = log.(conc)
     plot(
         concL,
