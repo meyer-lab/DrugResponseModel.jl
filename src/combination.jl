@@ -31,6 +31,7 @@ function AllBliss_params(pp1, pp2)
             combined[:, i, j] .= Bliss_params_unit(pp1[:, i], pp2[:, j], hcat(pp1[:, 1], pp2[:, 1]))
         end
     end
+    @assert all(combined[7:end, 1, 1] .== 0.0)
     # TODO: remember to uncomment this assertion after estimating correct set of parameters
     # @assert(all(combined[1:4, :, :] .>= 0.0))
     # @assert(all(combined[1:4, :, :] .<= 5.0))
