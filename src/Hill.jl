@@ -79,6 +79,5 @@ function getODEparams(p, conc)
 
         k += sizep
     end
-    effects[7:end, 1, :] .= 0.0
     return effects
 end
