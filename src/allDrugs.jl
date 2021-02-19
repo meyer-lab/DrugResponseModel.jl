@@ -5,7 +5,7 @@ function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array)
     # Solve for all drugs
     t = 1
     for j = 1:5
-        hill = hP[[t, t + 1, t + 2, t + 3, t + 4, t + 5, t + 6, t + 7, t + 8, t + 9, t + 10, t + 11, t + 12, t + 13, 71, 72, 73, 74, 75, 76]]
+        hill = hP[[t:t+13; 71:76]]
         res += residHill(hill, concentrations[:, j], g1[:, :, j], g2[:, :, j])
         t += 14
     end
@@ -29,9 +29,9 @@ end
 function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 100000)
     f(x) = residHillAll(x, concs, g1, g2)
 
-    lP = [minimum(concs), 0.01, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001]
+    lP = [minimum(concs); 0.01; 0.05*ones(6); 0.00001*ones(6)]
     low = vcat(lP, lP, lP, lP, lP, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9)
-    hP = [maximum(concs), 10.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    hP = [maximum(concs); 10.0; ones(12)]
     high = vcat(hP, hP, hP, hP, hP, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
 
     return optimize_helper(f, low, high, maxiter)
