@@ -26,13 +26,13 @@ function Hill_p_eachDr(p)
 end
 
 
-function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 100000)
+function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 500000)
     f(x) = residHillAll(x, concs, g1, g2)
 
-    lP = [minimum(concs); 0.01; 0.05*ones(6); 0.00001*ones(6)]
+    lP = [minimum(concs); 0.01; 1e-9*ones(12)]
     low = vcat(lP, lP, lP, lP, lP, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9)
-    hP = [maximum(concs); 10.0; ones(12)]
-    high = vcat(hP, hP, hP, hP, hP, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
+    hP = [maximum(concs); 10.0; 2*ones(12)]
+    high = vcat(hP, hP, hP, hP, hP, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0)
 
     return optimize_helper(f, low, high, maxiter)
 end
