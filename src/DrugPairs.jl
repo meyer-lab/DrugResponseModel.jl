@@ -7,7 +7,7 @@ function residHillpairs(hP, concentrations::Matrix, g1::Array, g2::Array, v::Int
     t = 1
     k = v # drug1 index
     for j = 1:2
-        hill = hP[[t:t+13; 29:34]]
+        hill = hP[[t:(t + 13); 29:34]]
         res += residHill(hill, concentrations[:, k], g1[:, :, k], g2[:, :, k])
         t += 14
         k = u # drug 2 index
@@ -21,8 +21,8 @@ end
 function BBoptim_DrugPairs(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}, i::Int, j::Int; maxiter = 200000)
     hillCostPairs(hillParams) = residHillpairs(hillParams, concs, g1, g2, i, j)
 
-    low_piece = [1.0; 1e-9*ones(13)]
-    high_piece = [500.0, 10.0, 2.0*ones(12)]
+    low_piece = [1.0; 1e-9 * ones(13)]
+    high_piece = [500.0, 10.0, 2.0 * ones(12)]
 
     low = vcat(low_piece, low_piece, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9) # 34 params: 2 parts G1, 4 parst G2.
     high = vcat(high_piece, high_piece, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0)
