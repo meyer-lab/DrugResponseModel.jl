@@ -4,7 +4,7 @@
 
 default(size = (900, 400), margin = 0.4cm, legendfontsize = 5, fmt = :pdf)
 
-function unit_plot_params(conc, params, stdn, labelY; lim=2.0)
+function unit_plot_params(conc, params, stdn, labelY; lim = 2.0)
     conc[1] = 0.05
     concL = log.(conc)
     plot(
@@ -25,8 +25,8 @@ function plot_parameters(concs, parameters; stdn = similar(parameters))
     pre_labels = ["G1,1", "G1,2", "G2,1", "G2,2", "G2, 3", "G2, 4"]
     # stdn = similar(parameters)
 
-    p1 = [unit_plot_params(concs, parameters[i, :], stdn[i, :], string(pre_labels[i], labelYs[1]); lim=2.0) for i = 1:6]
-    p2 = [unit_plot_params(concs, parameters[i, :], stdn[i, :], string(pre_labels[i - 6], labelYs[2]); lim=0.6) for i = 7:12]
+    p1 = [unit_plot_params(concs, parameters[i, :], stdn[i, :], string(pre_labels[i], labelYs[1]); lim = 2.0) for i = 1:6]
+    p2 = [unit_plot_params(concs, parameters[i, :], stdn[i, :], string(pre_labels[i - 6], labelYs[2]); lim = 0.6) for i = 7:12]
 
     plot(p1..., p2..., alpha = 0.6, lw = 2.0, size = (1400, 400), layout = (2, 6), color = [:black :gray])
 end
