@@ -229,7 +229,8 @@ p1 = G1plots(concs[:, 5], efcs5[1:2, :], "G1 prog. rate")
 p2 = G2plots(concs[:, 5], efcs5[3:6, :], "G2 prog. rate")
 p3 = G1plots(concs[:, 5], efcs5[7:8, :], "G1 death rate", ylim=0.5)
 p4 = G2plots(concs[:, 5], efcs5[9:12, :], "G2 death rate", ylim=0.5)
-plot(p1, p2, p3, p4)```
+plot(p1, p2, p3, p4)
+```
 
 ## print error for palbociclib
 ```julia
