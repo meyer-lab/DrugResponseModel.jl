@@ -45,10 +45,6 @@ plot(pl..., size=(1000,700))
 
 ### Plot the parameters over concentration; these are known as the drug effects
 
-```julia
-meann, stdd = DrugResponseModel.mean_std_params(effects1[:, :, 1], effects2[:, :, 1], effects3[:, :, 1])
-DrugResponseModel.plot_parameters(concs[:,1], meann; stdn=stdd)
-```
 
 ### Sensitivity analysis
 
@@ -84,10 +80,6 @@ plot(pl..., size=(1000,700))
 
 ### Plot the parameters over concentration; these are known as the drug effects
 
-```julia
-meann, stdd = DrugResponseModel.mean_std_params(effects1[:, :, 1], effects2, effects3)
-DrugResponseModel.plot_parameters(concs[:,2], meann; stdn=stdd)
-```
 
 ### Sensitivity analysis
 
@@ -123,10 +115,6 @@ plot(pl..., size=(1000,700))
 
 ### Plot the parameters over concentration; these are known as the drug effects
 
-```julia
-meann, stdd = DrugResponseModel.mean_std_params(effects1, effects2, effects3)
-DrugResponseModel.plot_parameters(concs[:,3], meann; stdn=stdd)
-```
 
 ### Sensitivity analysis
 
@@ -162,10 +150,6 @@ plot(pl..., size=(1000,700))
 
 ### Plot the parameters over concentration; these are known as the drug effects
 
-```julia
-meann, stdd = DrugResponseModel.mean_std_params(effects1, effects2, effects3)
-DrugResponseModel.plot_parameters(concs[:,4], meann; stdn=stdd)
-```
 
 ### Sensitivity analysis
 
@@ -201,10 +185,6 @@ plot(pl..., size=(1000,700))
 
 ### Plot the parameters over concentration; these are known as the drug effects
 
-```julia
-meann, stdd = DrugResponseModel.mean_std_params(effects1, effects2, effects3)
-DrugResponseModel.plot_parameters(concs[:,5], meann; stdn=stdd)
-```
 
 ### Sensitivity analysis
 

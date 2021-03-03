@@ -52,11 +52,6 @@ p2=DrugResponseModel.plotperc(gdata2[:, :, 1], "lap.", concs[:, 1], "data")
 plot(p1, p2)
 ```
 
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 1], pp1[:, :, 1])
-```
-
 ## Doxorubicin
 ### time series
 ```julia
@@ -72,11 +67,6 @@ plot(p1, p..., figsize=(1000, 700), dpi=150)
 p1=DrugResponseModel.plotperc(g2[:, :, 2], "dox.", concs[:, 2], "model")
 p2=DrugResponseModel.plotperc(gdata2[:, :, 2], "dox.", concs[:, 2], "data")
 plot(p1, p2)
-```
-
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 3], pp1[:, :, 2])
 ```
 
 # Lapatinib and Gemcitabine fitting together
@@ -101,10 +91,6 @@ p =[DrugResponseModel.plotavg(G1[:, :, 1], G2[:, :, 1], g1m[:, :, 1], g2m[:, :, 
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
  
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 1], pp1[:, :, 1])
-```
 
 ## Gemcitabine
 ### time series
@@ -112,11 +98,6 @@ DrugResponseModel.plot_parameters(concs[:, 1], pp1[:, :, 1])
 p1 = DrugResponseModel.plotavg(G1[:, :, 2], G2[:, :, 2], g1m[:, :, 3], g2m[:, :, 3], 1, :false, concs[1, 3])
 p =[DrugResponseModel.plotavg(G1[:, :, 2], G2[:, :, 2], g1m[:, :, 3], g2m[:, :, 3], i, :false, concs[i, 3]) for i=2:7]
 plot(p1, p..., figsize=(1000, 700), dpi=150)
-```
-
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 3], pp1[:, :, 2])
 ```
 
 
@@ -141,11 +122,7 @@ p1 = DrugResponseModel.plotavg(G1[:, :, 1], G2[:, :, 1], g1m[:, :, 1], g2m[:, :,
 p =[DrugResponseModel.plotavg(G1[:, :, 1], G2[:, :, 1], g1m[:, :, 1], g2m[:, :, 1], i, :false, concs[i, 1]) for i=2:7]
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
- 
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 1], pp1[:, :, 1])
-```
+
 
 ## Paclitaxel
 ### time series
@@ -155,10 +132,6 @@ p =[DrugResponseModel.plotavg(G1[:, :, 2], G2[:, :, 2], g1m[:, :, 4], g2m[:, :, 
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 4], pp1[:, :, 2])
-```
 
 # Lapatinib and palbociclib fitting together
 
@@ -182,10 +155,6 @@ p =[DrugResponseModel.plotavg(G1[:, :, 1], G2[:, :, 1], g1m[:, :, 1], g2m[:, :, 
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
  
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 1], pp1[:, :, 1])
-```
 
 ## Palbociclib
 ### time series
@@ -195,10 +164,6 @@ p =[DrugResponseModel.plotavg(G1[:, :, 2], G2[:, :, 2], g1m[:, :, 5], g2m[:, :, 
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 5], pp1[:, :, 2])
-```
 
 # Doxorubicin and gemcitabine fitting together
 
@@ -221,11 +186,7 @@ p1 = DrugResponseModel.plotavg(G1[:, :, 1], G2[:, :, 1], g1m[:, :, 2], g2m[:, :,
 p =[DrugResponseModel.plotavg(G1[:, :, 1], G2[:, :, 1], g1m[:, :, 2], g2m[:, :, 2], i, :false, concs[i, 2]) for i=2:7]
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
- 
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 2], pp1[:, :, 1])
-```
+
 
 ## Gemcitabine
 ### time series
@@ -235,10 +196,6 @@ p =[DrugResponseModel.plotavg(G1[:, :, 2], G2[:, :, 2], g1m[:, :, 3], g2m[:, :, 
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 3], pp1[:, :, 2])
-```
 
 # Doxorubicin and paclitaxel fitting together
 
@@ -262,10 +219,6 @@ p =[DrugResponseModel.plotavg(G1[:, :, 1], G2[:, :, 1], g1m[:, :, 2], g2m[:, :, 
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
  
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 2], pp1[:, :, 1])
-```
 
 ## Paclitaxel
 ### time series
@@ -275,10 +228,6 @@ p =[DrugResponseModel.plotavg(G1[:, :, 2], G2[:, :, 2], g1m[:, :, 4], g2m[:, :, 
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 4], pp1[:, :, 2])
-```
 
 # Doxorubicin and palbociclib fitting together
 
@@ -302,10 +251,6 @@ p =[DrugResponseModel.plotavg(G1[:, :, 1], G2[:, :, 1], g1m[:, :, 2], g2m[:, :, 
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
  
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 2], pp1[:, :, 1])
-```
 
 ## Palbociclib
 ### time series
@@ -315,10 +260,6 @@ p =[DrugResponseModel.plotavg(G1[:, :, 2], G2[:, :, 2], g1m[:, :, 5], g2m[:, :, 
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 5], pp1[:, :, 2])
-```
 
 # Gemcitabine and paclitaxel fitting together
 
@@ -342,10 +283,6 @@ p =[DrugResponseModel.plotavg(G1[:, :, 1], G2[:, :, 1], g1m[:, :, 3], g2m[:, :, 
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
  
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 3], pp1[:, :, 1])
-```
 
 ## Paclitaxel
 ### time series
@@ -355,10 +292,6 @@ p =[DrugResponseModel.plotavg(G1[:, :, 2], G2[:, :, 2], g1m[:, :, 4], g2m[:, :, 
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 4], pp1[:, :, 2])
-```
 
 # Gemcitabine and palbociclib fitting together
 
@@ -381,11 +314,7 @@ p1 = DrugResponseModel.plotavg(G1[:, :, 1], G2[:, :, 1], g1m[:, :, 3], g2m[:, :,
 p =[DrugResponseModel.plotavg(G1[:, :, 1], G2[:, :, 1], g1m[:, :, 3], g2m[:, :, 3], i, :false, concs[i, 3]) for i=2:7]
 plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
- 
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 3], pp1[:, :, 1])
-```
+
 
 ## Palbociclib
 ### time series
@@ -393,9 +322,4 @@ DrugResponseModel.plot_parameters(concs[:, 3], pp1[:, :, 1])
 p1 = DrugResponseModel.plotavg(G1[:, :, 2], G2[:, :, 2], g1m[:, :, 5], g2m[:, :, 5], 1, :false, concs[1, 5])
 p =[DrugResponseModel.plotavg(G1[:, :, 2], G2[:, :, 2], g1m[:, :, 5], g2m[:, :, 5], i, :false, concs[i, 5]) for i=2:7]
 plot(p1, p..., figsize=(1000, 700), dpi=150)
-```
-
-### parameters
-```julia
-DrugResponseModel.plot_parameters(concs[:, 5], pp1[:, :, 2])
 ```
