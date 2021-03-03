@@ -143,9 +143,10 @@ p1 = G1plots(concs[:, 3], efcs3[1:2, :], "G1 prog. rate")
 p2 = G2plots(concs[:, 3], efcs3[3:6, :], "G2 prog. rate")
 p3 = G1plots(concs[:, 3], efcs3[7:8, :], "G1 death rate", ylim=0.5)
 p4 = G2plots(concs[:, 3], efcs3[9:12, :], "G2 death rate", ylim=0.5)
-plot(p1, p2, p3, p4)```
+plot(p1, p2, p3, p4)
+```
 
-## print error for gemcitabine
+## print error for gemcitabine:
 ```julia
 norm(G1 - g1m[:, 1:7, 3]) + norm(G2 - g2m[:, 1:7, 3])
 ```
