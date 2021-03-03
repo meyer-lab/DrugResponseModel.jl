@@ -53,7 +53,11 @@ plot(p1, p2)
 
 ## quantified parameters plot
 ```julia
-DrugResponseModel.plot_parameters(concs[:, 1], efcs)
+p1 = G1plots(concs[:, 1], efcs[1:2, :], "G1 prog. rate")
+p2 = G2plots(concs[:, 1], efcs[3:6, :], "G2 prog. rate")
+p3 = G1plots(concs[:, 1], efcs[7:8, :], "G1 death rate", ylim=0.5)
+p4 = G2plots(concs[:, 1], efcs[9:12, :], "G2 death rate", ylim=0.5)
+plot(p1, p2, p3, p4)
 ```
 
 ## print error for lapatinib:
@@ -92,7 +96,11 @@ plot(p1, p2)
 
 ## quantified parameters plot
 ```julia
-DrugResponseModel.plot_parameters(concs[:, 2], efcs2)
+p1 = G1plots(concs[:, 2], efcs2[1:2, :], "G1 prog. rate")
+p2 = G2plots(concs[:, 2], efcs2[3:6, :], "G2 prog. rate")
+p3 = G1plots(concs[:, 2], efcs2[7:8, :], "G1 death rate", ylim=0.5)
+p4 = G2plots(concs[:, 2], efcs2[9:12, :], "G2 death rate", ylim=0.5)
+plot(p1, p2, p3, p4)
 ```
 
 ## print error for doxorubicin:
@@ -131,10 +139,14 @@ plot(p1, p2)
 
 ## quantified parameters plot
 ```julia
-DrugResponseModel.plot_parameters(concs[:, 3], efcs3)
+p1 = G1plots(concs[:, 3], efcs3[1:2, :], "G1 prog. rate")
+p2 = G2plots(concs[:, 3], efcs3[3:6, :], "G2 prog. rate")
+p3 = G1plots(concs[:, 3], efcs3[7:8, :], "G1 death rate", ylim=0.5)
+p4 = G2plots(concs[:, 3], efcs3[9:12, :], "G2 death rate", ylim=0.5)
+plot(p1, p2, p3, p4)
 ```
 
-## print error for gemcitabine
+## print error for gemcitabine:
 ```julia
 norm(G1 - g1m[:, 1:7, 3]) + norm(G2 - g2m[:, 1:7, 3])
 ```
@@ -170,7 +182,11 @@ plot(p1, p2)
 
 ## quantified parameters plot
 ```julia
-DrugResponseModel.plot_parameters(concs[:, 4], efcs4)
+p1 = G1plots(concs[:, 4], efcs4[1:2, :], "G1 prog. rate")
+p2 = G2plots(concs[:, 4], efcs4[3:6, :], "G2 prog. rate")
+p3 = G1plots(concs[:, 4], efcs4[7:8, :], "G1 death rate", ylim=0.5)
+p4 = G2plots(concs[:, 4], efcs4[9:12, :], "G2 death rate", ylim=0.5)
+plot(p1, p2, p3, p4)
 ```
 
 ## print error for paclitaxel:
@@ -209,7 +225,11 @@ plot(p1, p2)
 
 ## quantified parameters plot
 ```julia
-DrugResponseModel.plot_parameters(concs[:, 5], efcs5)
+p1 = G1plots(concs[:, 5], efcs5[1:2, :], "G1 prog. rate")
+p2 = G2plots(concs[:, 5], efcs5[3:6, :], "G2 prog. rate")
+p3 = G1plots(concs[:, 5], efcs5[7:8, :], "G1 death rate", ylim=0.5)
+p4 = G2plots(concs[:, 5], efcs5[9:12, :], "G2 death rate", ylim=0.5)
+plot(p1, p2, p3, p4)
 ```
 
 ## print error for palbociclib
