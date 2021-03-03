@@ -4,31 +4,35 @@
 
 default(size = (900, 400), margin = 0.4cm, legendfontsize = 5, fmt = :pdf)
 
-function unit_plot_params(conc, params, stdn, labelY; lim=2.0)
+function G1plots(conc, params, Ylabel; ylim=2.0)
     conc[1] = 0.05
     concL = log.(conc)
     plot(
         concL,
-        params,
+        params[1, :],
         xlabel = "log drug conc. [nM]",
-        label = "",
-        ribbon = stdn,
-        line = (:dot, 1),
-        marker = ([:dot :d], 3, 0.7, stroke(0.1, 0.6, :gray)),
-        ylabel = labelY,
+        label = "rate 1",
+        ylabel = Ylabel,
+        lw=2
     )
-    ylims!(0.0, lim)
+    plot!(concL, params[2, :], label="rate 2", lw=2)
+    ylims!(0.0, ylim)
 end
 
-function plot_parameters(concs, parameters; stdn = similar(parameters))
-    labelYs = [" progression rate [1/hr]", " death rate [1/hr]"]
-    pre_labels = ["G1,1", "G1,2", "G2,1", "G2,2", "G2, 3", "G2, 4"]
-    # stdn = similar(parameters)
-
-    p1 = [unit_plot_params(concs, parameters[i, :], stdn[i, :], string(pre_labels[i], labelYs[1]); lim=2.0) for i = 1:6]
-    p2 = [unit_plot_params(concs, parameters[i, :], stdn[i, :], string(pre_labels[i - 6], labelYs[2]); lim=0.6) for i = 7:12]
-
-    plot(p1..., p2..., alpha = 0.6, lw = 2.0, size = (1400, 400), layout = (2, 6), color = [:black :gray])
+function G2plots(conc, params, Ylabel; ylim=2.0)
+    conc[1] = 0.05
+    concL = log.(conc)
+    plot(
+        concL,
+        params[1, :],
+        xlabel = "log drug conc. [nM]",
+        label = "rate 1",
+        ylabel = Ylabel, lw=2
+    )
+    plot!(concL, params[2, :], label="rate 2", lw=2)
+    plot!(concL, params[3, :], label="rate 3", lw=2)
+    plot!(concL, params[4, :], label="rate 4", lw=2)
+    ylims!(0.0, ylim)
 end
 
 

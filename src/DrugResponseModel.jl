@@ -34,6 +34,8 @@ export setup_data,
     newPredict,
     optim_all,
     BlissModelComb,
-    Heatmap
+    Heatmap,
+    G1plots,
+    G2plots
 
 end # module
