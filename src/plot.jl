@@ -4,34 +4,21 @@
 
 default(size = (900, 400), margin = 0.4cm, legendfontsize = 5, fmt = :pdf)
 
-function G1plots(conc, params, Ylabel; ylim=2.0)
+function G1plots(conc, params, Ylabel; ylim = 2.0)
     conc[1] = 0.05
     concL = log.(conc)
-    plot(
-        concL,
-        params[1, :],
-        xlabel = "log drug conc. [nM]",
-        label = "rate 1",
-        ylabel = Ylabel,
-        lw=2
-    )
-    plot!(concL, params[2, :], label="rate 2", lw=2)
+    plot(concL, params[1, :], xlabel = "log drug conc. [nM]", label = "rate 1", ylabel = Ylabel, lw = 2)
+    plot!(concL, params[2, :], label = "rate 2", lw = 2)
     ylims!(0.0, ylim)
 end
 
-function G2plots(conc, params, Ylabel; ylim=2.0)
+function G2plots(conc, params, Ylabel; ylim = 2.0)
     conc[1] = 0.05
     concL = log.(conc)
-    plot(
-        concL,
-        params[1, :],
-        xlabel = "log drug conc. [nM]",
-        label = "rate 1",
-        ylabel = Ylabel, lw=2
-    )
-    plot!(concL, params[2, :], label="rate 2", lw=2)
-    plot!(concL, params[3, :], label="rate 3", lw=2)
-    plot!(concL, params[4, :], label="rate 4", lw=2)
+    plot(concL, params[1, :], xlabel = "log drug conc. [nM]", label = "rate 1", ylabel = Ylabel, lw = 2)
+    plot!(concL, params[2, :], label = "rate 2", lw = 2)
+    plot!(concL, params[3, :], label = "rate 3", lw = 2)
+    plot!(concL, params[4, :], label = "rate 4", lw = 2)
     ylims!(0.0, ylim)
 end
 
