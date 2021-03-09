@@ -1,7 +1,6 @@
 """ 
         This file contains a function to plot the parameters against the  drug concentrations, in a 2x2 subplot.
 """
-
 default(size = (900, 400), margin = 0.4cm, legendfontsize = 5, fmt = :pdf)
 
 function G1plots(conc, params, Ylabel; ylim = 2.0)
