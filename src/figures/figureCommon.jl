@@ -51,7 +51,7 @@ function plotGrid(grid_dim = (1, 1), pls = [], ptitle = nothing; widths = [], he
     # grid[yi][xi]
     grid = Vector(undef, grid_dim[1])
     for i = 1:grid_dim[1]
-        grid[i] = Vector{Union{Gadfly.plot, Compose.Context}}(fill(context(), grid_dim[2]))
+        grid[i] = Vector{Union{Plot, Compose.Context}}(fill(context(), grid_dim[2]))
     end
 
     for i = 1:nplots
