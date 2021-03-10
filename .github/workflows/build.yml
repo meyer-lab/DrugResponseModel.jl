@@ -18,4 +18,6 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: files
-        path: ./*.pdf
+        path: |
+          *.pdf
+          *.svg
