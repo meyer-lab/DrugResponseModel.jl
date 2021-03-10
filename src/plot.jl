@@ -73,3 +73,23 @@ function plotavg(G1, G2, g1m, g2m, i, leg, conc)
     plot!(time, G2[:, i], label = "model G2", color = "darkorange")
     ylims!((0.0, 45))
 end
+
+function plot_timeCourse(G1, G2, g1m, g2m, i, title)
+    x = LinRange(0.0, 95.0, 189)
+    pl = Gadfly.plot(
+        layer(x = x, y = G1[:, i], Geom.line, Theme(default_color = colorant"lightblue", line_width = 1.5px)),
+        layer(x = x, y = G2[:, i], Geom.line, Theme(default_color = colorant"orange", line_width = 1.5px)),
+        layer(x = x, y = g1m[:, i], Geom.line, Theme(default_color = colorant"darkblue", line_width = 1.5px)),
+        layer(x = x, y = g2m[:, i], Geom.line, Theme(default_color = colorant"sienna", line_width = 1.5px)),
+        layer(x = x, y = G1[:, i] .+ G2[:, i], Geom.line, Theme(default_color = colorant"lightgreen", line_width = 1.5px)),
+        layer(x = x, y = g1m[:, i] .+ g2m[:, i], Geom.line, Theme(default_color = colorant"darkgreen", line_width = 1.5px)),
+        Guide.xticks(orientation = :horizontal),
+        Guide.xlabel("time [hr]", orientation = :horizontal),
+        Guide.ylabel("cell number", orientation = :vertical),
+        Coord.cartesian(ymin = 0, ymax = 60),
+        Guide.manual_color_key("", ["total sim", "total data", "G1 sim", "G1 data", "G2 sim", "G2 data"], ["lightgreen", "darkgreen", "lightblue", "darkblue", "orange", "sienna"]),
+        Guide.title(title),
+        style(key_position = :inside),
+    )
+    pl
+end

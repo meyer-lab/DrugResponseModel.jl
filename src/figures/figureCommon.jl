@@ -61,12 +61,12 @@ function plotGrid(grid_dim = (1, 1), pls = [], ptitle = nothing; widths = [], he
             if pls[i] === nothing
                 grid[yi][xi] = compose(
                     context(0, 0, widths[yi, xi], 1),
-                    (context(), text(0.0, 0.0, 'a' - 1 + i, hleft, vtop), font("Helvetica-Bold"), fontsize(25pt), fill(colorant"black")),
+                    (context(), Gadfly.text(0.0, 0.0, 'a' - 1 + i, hleft, vtop), Gadfly.font("Helvetica-Bold"), fontsize(30pt), fill(colorant"black")),
                 )
             else
                 grid[yi][xi] = compose(
                     context(0, 0, widths[yi, xi], 1),
-                    (context(), text(0.0, 0.0, 'a' - 1 + i, hleft, vtop), font("Helvetica-Bold"), fontsize(25pt), fill(colorant"black")),
+                    (context(), Gadfly.text(0.0, 0.0, 'a' - 1 + i, hleft, vtop), Gadfly.font("Helvetica-Bold"), fontsize(30pt), fill(colorant"black")),
                     (context(), render(pls[i])),
                 )
             end
@@ -82,7 +82,7 @@ function plotGrid(grid_dim = (1, 1), pls = [], ptitle = nothing; widths = [], he
     fpl = vstack(fplrows...)
 
     if ptitle !== nothing
-        fpl = title(fpl, ptitle, Compose.font("Helvetica"), Compose.fontsize(20pt), fill(colorant"black"))
+        fpl = title(fpl, ptitle, Compose.font("Helvetica"), Compose.fontsize(25pt), fill(colorant"black"))
     end
     fpl = compose(context(), (context(), fpl), compose(context(), rectangle()), fill(colorant"white"))
     return fpl

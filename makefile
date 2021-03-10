@@ -1,5 +1,6 @@
 
-all: $(patsubst %.jmd, %.pdf, $(wildcard *.jmd))
+all: figure%.svg 
+#$(patsubst %.jmd, %.pdf, $(wildcard *.jmd))
 
 %.pdf: %.jmd
 	julia -e 'using Pkg; Pkg.add("IJulia"); Pkg.add("Weave"); Pkg.precompile()'
