@@ -73,8 +73,8 @@ for i=1:length(gem_ps)
 end
 
 function easierPlot(plateNum, idx, titles, g1, lg)
-    plot(t, mean_perc[:, idx, plateNum], ribbon = std_perc[:, idx, plateNum], label = "G1", alpha = 0.1, color = 6, legend = lg, title = titles, ylabel = "G1 percentage", xlabel="time [hr]")
-    plot!(t, g1, lw=2, color = 5, label = "G1 sim")
+    Plots.plot(t, mean_perc[:, idx, plateNum], ribbon = std_perc[:, idx, plateNum], label = "G1", alpha = 0.1, color = 6, legend = lg, title = titles, ylabel = "G1 percentage", xlabel="time [hr]")
+    Plots.plot!(t, g1, lw=2, color = 5, label = "G1 sim")
     ylims!((0.0, 100.0))
 end
 ```
@@ -102,7 +102,7 @@ p2 = easierPlot(2, 3, "palbo 50 + lap 25 nM", nums[:, 1, 1], false)
 p3 = easierPlot(2, 4, "palbo 50 + lap 50 nM", nums[:, 2, 1], false)
 p4 = easierPlot(2, 5, "palbo 50 + lap 100 nM", nums[:, 3, 1], false)
 p5 = easierPlot(2, 6, "palbo 50 + lap 250 nM", nums[:, 4, 1], true)
-plot(p1, p2, p3, p4, p5)
+Plots.plot(p1, p2, p3, p4, p5)
 ```
 
 ## Palbociclib 50 nM + Gemcitabines.
@@ -121,7 +121,7 @@ p2 = easierPlot(2, 21, "palbo 50 + gem 5 nM", nums[:, 1, 1], false)
 p3 = easierPlot(2, 22, "palbo 50 + gem 10 nM", nums[:, 2, 1], false)
 p4 = easierPlot(2, 23, "palbo 50 + gem 17 nM", nums[:, 3, 1], false)
 p5 = easierPlot(2, 24, "palbo 50 + gem 30 nM", nums[:, 4, 1], true)
-plot(p1, p2, p3, p4, p5)
+Plots.plot(p1, p2, p3, p4, p5)
 ```
 
 ## Gemcitabine 10 nM + palbociclibs.
@@ -136,7 +136,7 @@ p1 = easierPlot(1, 20, "gem 10 nM", gnum1, false)
 p2 = easierPlot(1, 18, "gem 10 + palbo 25 nM", nums[:, 1, 1], false)
 p3 = easierPlot(1, 23, "gem 10 + palbo 100 nM", nums[:, 2, 1], false)
 p4 = easierPlot(1, 24, "gem 10 + palbo 250 nM", nums[:, 3, 1], true)
-plot(p1, p2, p3, p4)
+Plots.plot(p1, p2, p3, p4)
 ```
 
 ## Gemcitabine 10 nM + lapatinibs.
@@ -153,7 +153,7 @@ p2 = easierPlot(2, 9, "gem 10 + lap 25 nM", nums[:, 1, 1], false)
 p3 = easierPlot(2, 10, "gem 10 + lap 50 nM", nums[:, 2, 1], false)
 p4 = easierPlot(2, 11, "gem 10 + lap 100 nM", nums[:, 3, 1], false)
 p5 = easierPlot(2, 12, "gem 10 + lap 250 nM", nums[:, 4, 1], true)
-plot(p1, p2, p3, p4, p5)
+Plots.plot(p1, p2, p3, p4, p5)
 ```
 
 ## Dox 20 nM + gemcitabines.
@@ -173,7 +173,7 @@ p2 = easierPlot(2, 15, "dox 20 + gem 5 nM", nums[:, 1, 1], false)
 p3 = easierPlot(2, 16, "dox 20 + gem 10 nM", nums[:, 2, 1], false)
 p4 = easierPlot(2, 17, "dox 20 + gem 17 nM", nums[:, 3, 1], false)
 p5 = easierPlot(2, 18, "dox 20 + gem 30 nM", nums[:, 4, 1], true)
-plot(p1, p2, p3, p4, p5)
+Plots.plot(p1, p2, p3, p4, p5)
 ```
 
 ## taxol 2 nM + different drugs
@@ -199,7 +199,7 @@ p3 = easierPlot(1, 15, "tax 2 + dox 20 nM", nums[:, 2, 1], false)
 p4 = easierPlot(1, 16, "tax 2 + lap 100 nM", nums[:, 3, 1], false)
 p5 = easierPlot(1, 17, "tax 2 + gem 10 nM", nums[:, 4, 1], false)
 p6 = easierPlot(2, 2, "tax 2 + lap 50 nM", nums[:, 5, 1], true)
-plot(p1, p2, p3, p4, p5, p6)
+Plots.plot(p1, p2, p3, p4, p5, p6)
 ```
 
 ## Lap 100 nM + gemcitabines.
@@ -215,7 +215,7 @@ p1 = easierPlot(1, 4, "lap 100 nM", gnum1, false)
 p2 = easierPlot(2, 17, "lap 100 + gem 5 nM", nums[:, 1, 1], false)
 p3 = easierPlot(2, 13, "lap 100 + gem 17 nM", nums[:, 2, 1], false)
 p4 = easierPlot(2, 19, "lap 100 + gem 30 nM", nums[:, 3, 1], true)
-plot(p1, p2, p3, p4)
+Plots.plot(p1, p2, p3, p4)
 ```
 
 ## Lap 100 nM + palbociclibs.
@@ -229,5 +229,5 @@ p1 = easierPlot(1, 4, "lap 100 nM", gnum1, false)
 p2 = easierPlot(2, 8, "lap 100 + palbo 25 nM", nums[:, 1, 1], false)
 p3 = easierPlot(2, 14, "lap 100 + palbo 100 nM", nums[:, 2, 1], false)
 p4 = easierPlot(2, 20, "lap 100 + palbo 250 nM", nums[:, 3, 1], true)
-plot(p1, p2, p3, p4)
+Plots.plot(p1, p2, p3, p4)
 ```

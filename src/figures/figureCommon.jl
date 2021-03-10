@@ -2,7 +2,7 @@ using Gadfly
 using Compose
 
 """
-Whenever making a plot with Gadfly, use `style()` instead of `Theme()` to add effects
+Whenever making a Plots.plot with Gadfly, use `style()` instead of `Theme()` to add effects
 """
 function setGadflyTheme()
     Gadfly.push_theme(
@@ -51,7 +51,7 @@ function plotGrid(grid_dim = (1, 1), pls = [], ptitle = nothing; widths = [], he
     # grid[yi][xi]
     grid = Vector(undef, grid_dim[1])
     for i = 1:grid_dim[1]
-        grid[i] = Vector{Union{Plot, Compose.Context}}(fill(context(), grid_dim[2]))
+        grid[i] = Vector{Union{Plots.plot, Compose.Context}}(fill(context(), grid_dim[2]))
     end
 
     for i = 1:nplots

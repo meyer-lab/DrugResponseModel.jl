@@ -40,7 +40,7 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
         "# of G1 species",
         "# of G2 species",
     ]
-    plot(
+    Plots.plot(
         paramRange,
         result,
         legend = :false,
@@ -51,7 +51,7 @@ function plotUnitSensitivity(paramRange, result, realParam, i)
         xaxis = :log10,
         yaxis = :log10,
     )
-    plot!([realParam], seriestype = "vline", margin = 0.3cm, legend = :false)
+    Plots.plot!([realParam], seriestype = "vline", margin = 0.3cm, legend = :false)
     ylims!((1E2, 1E5))
 end
 

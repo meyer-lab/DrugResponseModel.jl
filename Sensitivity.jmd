@@ -32,7 +32,7 @@ function make_bar(p, Dr1Ind, Dr2Ind, concs, g0)
   xaxis = ["G11_prog_max", "G12_prog_max", "G21_prog_max", "G22_prog_max", "G11_death_max", "G12_death_max", "G21_death_max", "G22_death_max"]
   p1 = bar(xaxis, twoDHillp1[3:10, Dr1Ind], title=names[Dr1Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
   p2 = bar(xaxis, twoDHillp2[3:10, Dr2Ind], title=names[Dr2Ind], xrotation=35, ylabel="d{diff}/d{p}", label="deriv.")
-  plot(p1, p2)
+  Plots.plot(p1, p2)
   ylims!((-8.0, 8.0))
 end
 ```

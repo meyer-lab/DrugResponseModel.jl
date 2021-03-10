@@ -40,10 +40,10 @@ G1, G2 = DrugResponseModel.predict_replicates(effects1, effects2, effects3, effe
 
 ```julia
 pl = [DrugResponseModel.plot2(G1[:, i, :], G2[:, i, :], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[i, 1], i, 1) for i=1:8]
-plot(pl..., size=(1000,700))
+Plots.plot(pl..., size=(1000,700))
 ```
 
-%### Plot the parameters over concentration; these are known as the drug effects
+%### Plots.plot the parameters over concentration; these are known as the drug effects
 
 
 ### Sensitivity analysis
@@ -51,8 +51,8 @@ plot(pl..., size=(1000,700))
 ```julia
 result, paramRanges = DrugResponseModel.allSensitivity(pps1, concs[:, 1], g1s1[:, :, 1], g2s1[:, :, 1]);
 pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
-plot(pl...)
-plot!(size=(1200, 800))
+Plots.plot(pl...)
+Plots.plot!(size=(1200, 800))
 ```
 
 ## Doxorubicin
@@ -75,10 +75,10 @@ G1, G2 = DrugResponseModel.predict_replicates(effects1[:, :, 1], effects2[:, :, 
 
 ```julia
 pl = [DrugResponseModel.plot2(G1[:, i, :], G2[:, i, :], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[i, 2], i, 2) for i=1:8]
-plot(pl..., size=(1000,700))
+Plots.plot(pl..., size=(1000,700))
 ```
 
-%### Plot the parameters over concentration; these are known as the drug effects
+%### Plots.plot the parameters over concentration; these are known as the drug effects
 
 
 ### Sensitivity analysis
@@ -86,8 +86,8 @@ plot(pl..., size=(1000,700))
 ```julia
 result, paramRanges = DrugResponseModel.allSensitivity(pps1, concs[:, 2], g1s1[:, :, 2], g2s1[:, :, 2]);
 pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
-plot(pl...)
-plot!(size=(1200, 800))
+Plots.plot(pl...)
+Plots.plot!(size=(1200, 800))
 ```
 
 ## Gemcitabine
@@ -110,10 +110,10 @@ G1, G2 = DrugResponseModel.predict_replicates(effects1[:, :, 1], effects2[:, :, 
 
 ```julia
 pl = [DrugResponseModel.plot2(G1[:, i, :], G2[:, i, :], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[i, 3], i, 3) for i=1:8]
-plot(pl..., size=(1000,700))
+Plots.plot(pl..., size=(1000,700))
 ```
 
-%### Plot the parameters over concentration; these are known as the drug effects
+%### Plots.plot the parameters over concentration; these are known as the drug effects
 
 
 ### Sensitivity analysis
@@ -121,8 +121,8 @@ plot(pl..., size=(1000,700))
 ```julia
 result, paramRanges = DrugResponseModel.allSensitivity(pps1, concs[:, 3], g1s1[:, :, 3], g2s1[:, :, 3])
 pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
-plot(pl...)
-plot!(size=(1200, 800))
+Plots.plot(pl...)
+Plots.plot!(size=(1200, 800))
 ```
 
 ## Paclitaxel
@@ -145,10 +145,10 @@ G1, G2 = DrugResponseModel.predict_replicates(effects1[:, :, 1], effects2[:, :, 
 
 ```julia
 pl = [DrugResponseModel.plot2(G1[:, i, :], G2[:, i, :], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[i, 4], i, 4) for i=1:8]
-plot(pl..., size=(1000,700))
+Plots.plot(pl..., size=(1000,700))
 ```
 
-%### Plot the parameters over concentration; these are known as the drug effects
+%### Plots.plot the parameters over concentration; these are known as the drug effects
 
 
 ### Sensitivity analysis
@@ -156,8 +156,8 @@ plot(pl..., size=(1000,700))
 ```julia
 result, paramRanges = DrugResponseModel.allSensitivity(pps1, concs[:, 4], g1s1[:, :, 4], g2s1[:, :, 4])
 pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
-plot(pl...)
-plot!(size=(1200, 800))
+Plots.plot(pl...)
+Plots.plot!(size=(1200, 800))
 ```
 
 ## Palbociclib
@@ -180,10 +180,10 @@ G1, G2 = DrugResponseModel.predict_replicates(effects1[:, :, 1], effects2[:, :, 
 
 ```julia
 pl = [DrugResponseModel.plot2(G1[:, i, :], G2[:, i, :], g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[i, 5], i, 5) for i=1:8]
-plot(pl..., size=(1000,700))
+Plots.plot(pl..., size=(1000,700))
 ```
 
-%### Plot the parameters over concentration; these are known as the drug effects
+%### Plots.plot the parameters over concentration; these are known as the drug effects
 
 
 ### Sensitivity analysis
@@ -191,6 +191,6 @@ plot(pl..., size=(1000,700))
 ```julia
 result, paramRanges = DrugResponseModel.allSensitivity(pps1, concs[:, 5], g1s1[:, :, 5], g2s1[:, :, 5])
 pl = [DrugResponseModel.plotUnitSensitivity(paramRanges[:, i], result[:, i], p1[i], i) for i=1:11]
-plot(pl...)
-plot!(size=(1200, 800))
+Plots.plot(pl...)
+Plots.plot!(size=(1200, 800))
 ```

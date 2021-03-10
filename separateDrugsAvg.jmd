@@ -35,29 +35,29 @@ for i = 1:7 # concentration number
 end
 ```
 
-## time series plot
+## time series Plots.plot
 ```julia; eccho=false
 p1 = DrugResponseModel.plotavg(G1, G2, g1m[:, :, 1], g2m[:, :, 1], 1, :false, concs[1, 1])
 p =[DrugResponseModel.plotavg(G1, G2, g1m[:, :, 1], g2m[:, :, 1], i, :false, concs[i, 1]) for i=2:7]
-plot(p1, p..., figsize=(1000, 700), dpi=250)
+Plots.plot(p1, p..., figsize=(1000, 700), dpi=250)
 ```
 
-## G2 percentage plot
+## G2 percentage Plots.plot
 ```julia
 # percentage
 g2 = G2 ./(G1 .+ G2);
 p1=DrugResponseModel.plotperc(g2, "lap.", concs[:, 1], "model")
 p2=DrugResponseModel.plotperc(gdata2[:, :, 1], "lap.", concs[:, 1], "data")
-plot(p1, p2)
+Plots.plot(p1, p2)
 ```
 
-## quantified parameters plot
+## quantified parameters Plots.plot
 ```julia
 p1 = G1plots(concs[:, 1], efcs[1:2, :], "G1 prog. rate")
 p2 = G2plots(concs[:, 1], efcs[3:6, :], "G2 prog. rate")
 p3 = G1plots(concs[:, 1], efcs[7:8, :], "G1 death rate", ylim=0.5)
 p4 = G2plots(concs[:, 1], efcs[9:12, :], "G2 death rate", ylim=0.5)
-plot(p1, p2, p3, p4)
+Plots.plot(p1, p2, p3, p4)
 ```
 
 ## print error for lapatinib:
@@ -78,29 +78,29 @@ for i = 1:7 # concentration number
 end
 ```
 
-## time series plot
+## time series Plots.plot
 ```julia; eccho=false
 p1 = DrugResponseModel.plotavg(G1, G2, g1m[:, :, 2], g2m[:, :, 2], 1, :true, concs[1, 2])
 p =[DrugResponseModel.plotavg(G1, G2, g1m[:, :, 2], g2m[:, :, 2], i, :false, concs[i, 2]) for i=2:7]
-plot(p1, p..., figsize=(1000, 700), dpi=150)
+Plots.plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
-## G2 percentage plot
+## G2 percentage Plots.plot
 ```julia
 # percentage
 g2 = G2 ./(G1 .+ G2);
 p1=DrugResponseModel.plotperc(g2, "dox.", concs[:, 2], "model")
 p2=DrugResponseModel.plotperc(gdata2[:, :, 2], "dox.", concs[:, 2], "data")
-plot(p1, p2)
+Plots.plot(p1, p2)
 ```
 
-## quantified parameters plot
+## quantified parameters Plots.plot
 ```julia
 p1 = G1plots(concs[:, 2], efcs2[1:2, :], "G1 prog. rate")
 p2 = G2plots(concs[:, 2], efcs2[3:6, :], "G2 prog. rate")
 p3 = G1plots(concs[:, 2], efcs2[7:8, :], "G1 death rate", ylim=0.5)
 p4 = G2plots(concs[:, 2], efcs2[9:12, :], "G2 death rate", ylim=0.5)
-plot(p1, p2, p3, p4)
+Plots.plot(p1, p2, p3, p4)
 ```
 
 ## print error for doxorubicin:
@@ -121,29 +121,29 @@ for i = 1:7 # concentration number
 end
 ```
 
-## time series plot
+## time series Plots.plot
 ```julia; eccho=false
 p1 = DrugResponseModel.plotavg(G1, G2, g1m[:, :, 3], g2m[:, :, 3], 1, :false, concs[1, 3])
 p =[DrugResponseModel.plotavg(G1, G2, g1m[:, :, 3], g2m[:, :, 3], i, :false, concs[i, 3]) for i=2:7]
-plot(p1, p..., figsize=(1000, 700), dpi=150)
+Plots.plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
-## G2 percentage plot
+## G2 percentage Plots.plot
 ```julia
 # percentage
 g2 = G2 ./(G1 .+ G2);
 p1=DrugResponseModel.plotperc(g2, "gem.", concs[:, 3], "model")
 p2=DrugResponseModel.plotperc(gdata2[:, :, 3], "gem.", concs[:, 3], "data")
-plot(p1, p2)
+Plots.plot(p1, p2)
 ```
 
-## quantified parameters plot
+## quantified parameters Plots.plot
 ```julia
 p1 = G1plots(concs[:, 3], efcs3[1:2, :], "G1 prog. rate")
 p2 = G2plots(concs[:, 3], efcs3[3:6, :], "G2 prog. rate")
 p3 = G1plots(concs[:, 3], efcs3[7:8, :], "G1 death rate", ylim=0.5)
 p4 = G2plots(concs[:, 3], efcs3[9:12, :], "G2 death rate", ylim=0.5)
-plot(p1, p2, p3, p4)
+Plots.plot(p1, p2, p3, p4)
 ```
 
 ## print error for gemcitabine:
@@ -164,29 +164,29 @@ for i = 1:7 # concentration number
 end
 ```
 
-## time series plot
+## time series Plots.plot
 ```julia; eccho=false
 p1 = DrugResponseModel.plotavg(G1, G2, g1m[:, :, 4], g2m[:, :, 4], 1, :false, concs[1, 4])
 p =[DrugResponseModel.plotavg(G1, G2, g1m[:, :, 4], g2m[:, :, 4], i, :false, concs[i, 4]) for i=2:7]
-plot(p1, p..., figsize=(1000, 700), dpi=150)
+Plots.plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
-## G2 percentage plot
+## G2 percentage Plots.plot
 ```julia
 # percentage
 g2 = G2 ./(G1 .+ G2);
 p1=DrugResponseModel.plotperc(g2, "tax.", concs[:, 4], "model")
 p2=DrugResponseModel.plotperc(gdata2[:, :, 4], "tax.", concs[:, 4], "data")
-plot(p1, p2)
+Plots.plot(p1, p2)
 ```
 
-## quantified parameters plot
+## quantified parameters Plots.plot
 ```julia
 p1 = G1plots(concs[:, 4], efcs4[1:2, :], "G1 prog. rate")
 p2 = G2plots(concs[:, 4], efcs4[3:6, :], "G2 prog. rate")
 p3 = G1plots(concs[:, 4], efcs4[7:8, :], "G1 death rate", ylim=0.5)
 p4 = G2plots(concs[:, 4], efcs4[9:12, :], "G2 death rate", ylim=0.5)
-plot(p1, p2, p3, p4)
+Plots.plot(p1, p2, p3, p4)
 ```
 
 ## print error for paclitaxel:
@@ -207,29 +207,29 @@ for i = 1:7 # concentration number
 end
 ```
 
-## time series plot
+## time series Plots.plot
 ```julia; eccho=false
 p1 = DrugResponseModel.plotavg(G1, G2, g1m[:, :, 5], g2m[:, :, 5], 1, :false, concs[1, 5])
 p =[DrugResponseModel.plotavg(G1, G2, g1m[:, :, 5], g2m[:, :, 5], i, :false, concs[i, 5]) for i=2:7]
-plot(p1, p..., figsize=(1000, 700), dpi=150)
+Plots.plot(p1, p..., figsize=(1000, 700), dpi=150)
 ```
 
-## G2 percentage plot
+## G2 percentage Plots.plot
 ```julia
 # percentage
 g2 = G2 ./(G1 .+ G2);
 p1=DrugResponseModel.plotperc(g2, "palbo.", concs[:, 5], "model")
 p2=DrugResponseModel.plotperc(gdata2[:, :, 5], "palbo.", concs[:, 5], "data")
-plot(p1, p2)
+Plots.plot(p1, p2)
 ```
 
-## quantified parameters plot
+## quantified parameters Plots.plot
 ```julia
 p1 = G1plots(concs[:, 5], efcs5[1:2, :], "G1 prog. rate")
 p2 = G2plots(concs[:, 5], efcs5[3:6, :], "G2 prog. rate")
 p3 = G1plots(concs[:, 5], efcs5[7:8, :], "G1 death rate", ylim=0.5)
 p4 = G2plots(concs[:, 5], efcs5[9:12, :], "G2 death rate", ylim=0.5)
-plot(p1, p2, p3, p4)
+Plots.plot(p1, p2, p3, p4)
 ```
 
 ## print error for palbociclib

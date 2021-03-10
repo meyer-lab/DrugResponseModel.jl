@@ -34,7 +34,7 @@ function plot2(G1, G2, g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, conc::Float64, i::Int
     stdg1 = std(G1s, dims = 4)
     stdg2 = std(G2s, dims = 4)
 
-    plot(
+    Plots.plot(
         time,
         meang1[:, i, j];
         ribbon = stdg1[:, i, j],
@@ -45,12 +45,12 @@ function plot2(G1, G2, g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, conc::Float64, i::Int
         ylabel = "cell number",
         alpha = 0.1,
     )
-    plot!(time, G1[:, 1], label = "G1", color = 6)
-    plot!(time, G1[:, 2], label = "", color = 6)
-    plot!(time, G1[:, 3], label = "", color = 6)
-    plot!(time, meang2[:, i, j]; ribbon = stdg2[:, i, j], color = 7, label = "", alpha = 0.1)
-    plot!(time, G2[:, 1], label = "G2", color = 7)
-    plot!(time, G2[:, 2], label = "", color = 7)
-    plot!(time, G2[:, 3], label = "", color = 7)
+    Plots.plot!(time, G1[:, 1], label = "G1", color = 6)
+    Plots.plot!(time, G1[:, 2], label = "", color = 6)
+    Plots.plot!(time, G1[:, 3], label = "", color = 6)
+    Plots.plot!(time, meang2[:, i, j]; ribbon = stdg2[:, i, j], color = 7, label = "", alpha = 0.1)
+    Plots.plot!(time, G2[:, 1], label = "G2", color = 7)
+    Plots.plot!(time, G2[:, 2], label = "", color = 7)
+    Plots.plot!(time, G2[:, 3], label = "", color = 7)
     ylims!((0.0, 45))
 end

@@ -25,7 +25,7 @@ function plot_avgstd_data(g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, conc, i, j)
     stdg1 = std(G1, dims=4)
     stdg2 = std(G2, dims=4)
 
-    plot(
+    Plots.plot(
         time,
         meang1[:, i, j];
         ribbon = stdg1[:, i, j],
@@ -36,7 +36,7 @@ function plot_avgstd_data(g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, conc, i, j)
         ylabel = "cell number",
         alpha = 0.1,
     )
-    plot!(time, meang2[:, i, j]; ribbon = stdg2[:, i, j], color = 7, label = "G2", alpha = 0.1)
+    Plots.plot!(time, meang2[:, i, j]; ribbon = stdg2[:, i, j], color = 7, label = "G2", alpha = 0.1)
     ylims!((0.0, 45))
 end
 ```
@@ -47,6 +47,6 @@ end
 p1 = plot_avgstd_data(g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[:, 1], 2, 1)
 p2 = plot_avgstd_data(g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[:, 1], 5, 1)
 p3 = plot_avgstd_data(g1s1, g1s2, g1s3, g2s1, g2s2, g2s3, concs[:, 1], 8, 1)
-plot(p1, p2, p3)
+Plots.plot(p1, p2, p3)
 ```
 

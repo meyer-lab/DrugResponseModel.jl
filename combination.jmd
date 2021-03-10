@@ -54,7 +54,7 @@ function plt_heatmap_combin(drug1_ind, drug2_ind, effs, pCtr, concs, BlissData)
   p3=Heatmap(concs, diff, drug1_ind, drug2_ind, names[drug1_ind], names[drug2_ind], "model - data", clim_min = -10.0, clim_max = 15.0)
   p4=Heatmap(concs, frac, drug1_ind, drug2_ind, names[drug1_ind], names[drug2_ind], "model / data", clim_min = 0.0, clim_max = 2.0)
 
-  return plot(p1, p2, p3, p4, layout=(2, 2))
+  return Plots.plot(p1, p2, p3, p4, layout=(2, 2))
 end
 
 plt_heatmap_combin(1, 2, effs, effs[:, 1, 1], concs, BlissOnData[:, :, 1])
