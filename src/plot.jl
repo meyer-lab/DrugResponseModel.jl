@@ -76,7 +76,7 @@ end
 
 function plot_timeCourse(G1, G2, g1m, g2m, i, title)
     x = LinRange(0.0, 95.0, 189)
-    pl = Gadfly.Plots.plot(
+    pl = Gadfly.plot(
         layer(x = x, y = G1[:, i], Geom.line, Theme(default_color = colorant"lightblue", line_width = 1.5px)),
         layer(x = x, y = G2[:, i], Geom.line, Theme(default_color = colorant"orange", line_width = 1.5px)),
         layer(x = x, y = g1m[:, i], Geom.line, Theme(default_color = colorant"darkblue", line_width = 1.5px)),
