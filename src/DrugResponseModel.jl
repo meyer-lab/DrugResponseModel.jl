@@ -10,7 +10,10 @@ using LinearAlgebra
 using Statistics
 using DSP: conv
 using BlackBoxOptim
+using Gadfly
 
+include("figures/figureCommon.jl")
+include("figures/figure1.jl")
 include("importData.jl")
 include("ODEmodel.jl")
 include("Hill.jl")
