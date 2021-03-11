@@ -74,20 +74,60 @@ function plotavg(G1, G2, g1m, g2m, i, leg, conc)
     ylims!((0.0, 45))
 end
 
-function plot_timeCourse(G1, G2, g1m, g2m, i, title)
+function plot_percTimeCourse(G1, G2, g1m_min, g1m_max, concs, title)
     x = LinRange(0.0, 95.0, 189)
-    pl = Gadfly.plot(
-        layer(x = x, y = G1[:, i], Geom.line, Theme(default_color = colorant"lightblue", line_width = 1.5px)),
-        layer(x = x, y = G2[:, i], Geom.line, Theme(default_color = colorant"orange", line_width = 1.5px)),
-        layer(x = x, y = g1m[:, i], Geom.line, Theme(default_color = colorant"darkblue", line_width = 1.5px)),
-        layer(x = x, y = g2m[:, i], Geom.line, Theme(default_color = colorant"sienna", line_width = 1.5px)),
-        layer(x = x, y = G1[:, i] .+ G2[:, i], Geom.line, Theme(default_color = colorant"lightgreen", line_width = 1.5px)),
-        layer(x = x, y = g1m[:, i] .+ g2m[:, i], Geom.line, Theme(default_color = colorant"darkgreen", line_width = 1.5px)),
+
+    G1_perc = (100 .* G1) ./ (G1 .+ G2)
+    df1 = DataFrame(x=x, y=G1_perc[:, 1], ymin=g1m_min[:, 1], ymax=g1m_max[:, 1], f="control")
+    df2 = DataFrame(x=x, y=G1_perc[:, 3], ymin=g1m_min[:, 3], ymax=g1m_max[:, 3], f="$(concs[3]) nM")
+    df3 = DataFrame(x=x, y=G1_perc[:, 5], ymin=g1m_min[:, 5], ymax=g1m_max[:, 5], f="$(concs[5]) nM")
+    df4 = DataFrame(x=x, y=G1_perc[:, 7], ymin=g1m_min[:, 7], ymax=g1m_max[:, 7], f="$(concs[7]) nM")
+
+    df = vcat(df1, df2, df3, df4)
+    pl = Gadfly.plot(df, x=:x, y=:y, ymin=:ymin, ymax=:ymax, color=:f, Geom.line, Geom.ribbon,
+        Guide.xticks(orientation = :horizontal),
+        Guide.xlabel("time [hr]", orientation = :horizontal),
+        Guide.ylabel("G1 %", orientation = :vertical),
+        Coord.cartesian(ymin = 0, ymax = 100),
+        Guide.title(title),
+        style(key_position = :inside),
+    )
+    pl
+end
+
+function plot_totalTimeCourse(total_sim, tots_min, tots_max, concs, title)
+    x = LinRange(0.0, 95.0, 189)
+
+    df1 = DataFrame(x=x, y=total_sim[:, 1], ymin=tots_min[:, 1], ymax=tots_max[:, 1], f="control")
+    df2 = DataFrame(x=x, y=total_sim[:, 3], ymin=tots_min[:, 3], ymax=tots_max[:, 3], f="$(concs[3]) nM")
+    df3 = DataFrame(x=x, y=total_sim[:, 5], ymin=tots_min[:, 5], ymax=tots_max[:, 5], f="$(concs[5]) nM")
+    df4 = DataFrame(x=x, y=total_sim[:, 7], ymin=tots_min[:, 7], ymax=tots_max[:, 7], f="$(concs[7]) nM")
+
+    df = vcat(df1, df2, df3, df4)
+    pl = Gadfly.plot(df, x=:x, y=:y, ymin=:ymin, ymax=:ymax, color=:f, Geom.line, Geom.ribbon,
         Guide.xticks(orientation = :horizontal),
         Guide.xlabel("time [hr]", orientation = :horizontal),
         Guide.ylabel("cell number", orientation = :vertical),
         Coord.cartesian(ymin = 0, ymax = 60),
-        Guide.manual_color_key("", ["total sim", "total data", "G1 sim", "G1 data", "G2 sim", "G2 data"], ["lightgreen", "darkgreen", "lightblue", "darkblue", "orange", "sienna"]),
+        Guide.title(title),
+        style(key_position = :inside),
+    )
+    pl
+end
+
+function plot_progression_rates(progressions, concs, title)
+
+    df1 = DataFrame(x=concs, y=progressions, f="p1")
+    df2 = DataFrame(x=concs, y=progressions, f="p2")
+    df3 = DataFrame(x=concs, y=progressions, f="p3")
+    df4 = DataFrame(x=concs, y=progressions, f="p4")
+
+    df = vcat(df1, df2, df3, df4)
+    pl = Gadfly.plot(df, x=:x, y=:y, color=:f, Geom.line,
+        Guide.xticks(orientation = :horizontal),
+        Guide.xlabel("concentrations [hr]", orientation = :horizontal),
+        Guide.ylabel("cell number", orientation = :vertical),
+        Coord.cartesian(ymin = 0, ymax = 3),
         Guide.title(title),
         style(key_position = :inside),
     )

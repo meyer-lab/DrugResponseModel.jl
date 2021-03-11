@@ -11,6 +11,7 @@ using Statistics
 using DSP: conv
 using BlackBoxOptim
 using Gadfly
+using DataFrames
 
 include("figures/figureCommon.jl")
 include("figures/figure1.jl")
