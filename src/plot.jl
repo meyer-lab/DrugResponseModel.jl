@@ -74,43 +74,42 @@ function plotavg(G1, G2, g1m, g2m, i, leg, conc)
     ylims!((0.0, 45))
 end
 
-function plot_percTimeCourse(G1, G2, g1m_min, g1m_max, concs, title)
+function plot_G1(G1, g1m_min, g1m_max, concs, title)
     x = LinRange(0.0, 95.0, 189)
 
-    G1_perc = (100 .* G1) ./ (G1 .+ G2)
-    df1 = DataFrame(x=x, y=G1_perc[:, 1], ymin=g1m_min[:, 1], ymax=g1m_max[:, 1], f="control")
-    df2 = DataFrame(x=x, y=G1_perc[:, 3], ymin=g1m_min[:, 3], ymax=g1m_max[:, 3], f="$(concs[3]) nM")
-    df3 = DataFrame(x=x, y=G1_perc[:, 5], ymin=g1m_min[:, 5], ymax=g1m_max[:, 5], f="$(concs[5]) nM")
-    df4 = DataFrame(x=x, y=G1_perc[:, 7], ymin=g1m_min[:, 7], ymax=g1m_max[:, 7], f="$(concs[7]) nM")
+    df1 = DataFrame(x=x, y=G1[:, 1], ymin=g1m_min[:, 1], ymax=g1m_max[:, 1], f="control")
+    df3 = DataFrame(x=x, y=G1[:, 5], ymin=g1m_min[:, 5], ymax=g1m_max[:, 5], f="$(concs[5]) nM")
+    df4 = DataFrame(x=x, y=G1[:, 7], ymin=g1m_min[:, 7], ymax=g1m_max[:, 7], f="$(concs[7]) nM")
 
-    df = vcat(df1, df2, df3, df4)
-    pl = Gadfly.plot(df, x=:x, y=:y, ymin=:ymin, ymax=:ymax, color=:f, Geom.line, Geom.ribbon,
+    df = vcat(df1, df3, df4)
+    pl = Gadfly.plot(df, x=:x, y=:y, ymin=:ymin, ymax=:ymax, color=:f, Geom.line, Geom.ribbon, Theme(line_width = 2px),
         Guide.xticks(orientation = :horizontal),
         Guide.xlabel("time [hr]", orientation = :horizontal),
-        Guide.ylabel("G1 %", orientation = :vertical),
-        Coord.cartesian(ymin = 0, ymax = 100),
+        Guide.ylabel("G1 cell number", orientation = :vertical),
+        Coord.cartesian(ymin = 0, ymax = 50),
         Guide.title(title),
-        style(key_position = :inside),
+        style(key_position = :top),
+        Guide.colorkey(title="", labels=["control", "$(concs[5]) nM", "$(concs[7]) nM"])
     )
     pl
 end
 
-function plot_totalTimeCourse(total_sim, tots_min, tots_max, concs, title)
+function plot_G2(G2, G2_min, G2_max, concs, title)
     x = LinRange(0.0, 95.0, 189)
 
-    df1 = DataFrame(x=x, y=total_sim[:, 1], ymin=tots_min[:, 1], ymax=tots_max[:, 1], f="control")
-    df2 = DataFrame(x=x, y=total_sim[:, 3], ymin=tots_min[:, 3], ymax=tots_max[:, 3], f="$(concs[3]) nM")
-    df3 = DataFrame(x=x, y=total_sim[:, 5], ymin=tots_min[:, 5], ymax=tots_max[:, 5], f="$(concs[5]) nM")
-    df4 = DataFrame(x=x, y=total_sim[:, 7], ymin=tots_min[:, 7], ymax=tots_max[:, 7], f="$(concs[7]) nM")
+    df1 = DataFrame(x=x, y=G2[:, 1], ymin=G2_min[:, 1], ymax=G2_max[:, 1], f="control")
+    df3 = DataFrame(x=x, y=G2[:, 5], ymin=G2_min[:, 5], ymax=G2_max[:, 5], f="$(concs[5]) nM")
+    df4 = DataFrame(x=x, y=G2[:, 7], ymin=G2_min[:, 7], ymax=G2_max[:, 7], f="$(concs[7]) nM")
 
-    df = vcat(df1, df2, df3, df4)
-    pl = Gadfly.plot(df, x=:x, y=:y, ymin=:ymin, ymax=:ymax, color=:f, Geom.line, Geom.ribbon,
+    df = vcat(df1, df3, df4)
+    pl = Gadfly.plot(df, x=:x, y=:y, ymin=:ymin, ymax=:ymax, color=:f, Geom.line, Geom.ribbon, Theme(line_width = 2px),
         Guide.xticks(orientation = :horizontal),
         Guide.xlabel("time [hr]", orientation = :horizontal),
-        Guide.ylabel("cell number", orientation = :vertical),
-        Coord.cartesian(ymin = 0, ymax = 60),
+        Guide.ylabel("G2 cell number", orientation = :vertical),
+        Coord.cartesian(ymin = 0, ymax = 50),
         Guide.title(title),
-        style(key_position = :inside),
+        style(key_position = :top),
+        Guide.colorkey(title="", labels=["control", "$(concs[5]) nM", "$(concs[7]) nM"])
     )
     pl
 end
@@ -139,6 +138,7 @@ function plot_G1_params(pr, i, titles, ymax)
         Coord.cartesian(ymin = 0, ymax = ymax),
         Guide.title(titles),
         style(key_position = :top),
+        Guide.colorkey(title="", labels=["G11", "G12"])
     )
     pl
 end
@@ -163,6 +163,7 @@ function plot_G2_params(pr, i, titles, ymax)
         Coord.cartesian(ymin = 0, ymax = ymax),
         Guide.title(titles),
         style(key_position = :top),
+        Guide.colorkey(title="", labels=["G21", "G22", "G23", "G24"])
     )
     pl
 end
