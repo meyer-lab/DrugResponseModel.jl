@@ -115,21 +115,54 @@ function plot_totalTimeCourse(total_sim, tots_min, tots_max, concs, title)
     pl
 end
 
-function plot_progression_rates(progressions, concs, title)
+function plot_G1_params(pr, i, titles, ymax)
 
-    df1 = DataFrame(x=concs, y=progressions, f="p1")
-    df2 = DataFrame(x=concs, y=progressions, f="p2")
-    df3 = DataFrame(x=concs, y=progressions, f="p3")
-    df4 = DataFrame(x=concs, y=progressions, f="p4")
+    # progressions = [12 x 8]
+    G1p = vcat(pr[i:i+1, 1, 1], pr[i:i+1, 1, 2], pr[i:i+1, 1, 3], pr[i:i+1, 1, 4], pr[i:i+1, 1, 5]); # G1 progression control
+    G1p2 = vcat(pr[i:i+1, 8, 1], pr[i:i+1, 8, 2], pr[i:i+1, 8, 3], pr[i:i+1, 8, 4], pr[i:i+1, 8, 5]); # G1 progression max
 
-    df = vcat(df1, df2, df3, df4)
-    pl = Gadfly.plot(df, x=:x, y=:y, color=:f, Geom.line,
-        Guide.xticks(orientation = :horizontal),
-        Guide.xlabel("concentrations [hr]", orientation = :horizontal),
-        Guide.ylabel("cell number", orientation = :vertical),
-        Coord.cartesian(ymin = 0, ymax = 3),
-        Guide.title(title),
-        style(key_position = :inside),
+    g1 = repeat(["G11", "G12"], 5)
+    xx = zeros(10)
+    for i=1:5
+        xx[(2*i-1)] = i - 0.15
+        xx[2*i] = i + 0.15
+    end
+    xticks = [1.0, 2.0, 3.0, 4.0, 5.0]
+    labels = Dict(zip(xticks, ["Lpt","Dox","Gemc","Taxol", "palbo"]))
+    df1 = DataFrame(x=xx, ymin=G1p, x2=xx.+0.05, ymax=G1p2, subphase=g1)
+    # df = vcat(df1, df2)
+    pl = Gadfly.plot(df1, xmin=:x, ymin=:ymin, xmax=:x2, ymax=:ymax, color=:subphase, Geom.rect,
+        Stat.xticks(ticks = xticks),
+        Scale.x_continuous(labels = x -> labels[x]),
+        Guide.xlabel("Drugs", orientation = :horizontal),
+        Guide.ylabel("rates 1/[hr]", orientation = :vertical),
+        Coord.cartesian(ymin = 0, ymax = ymax),
+        Guide.title(titles),
+        style(key_position = :top),
+    )
+    pl
+end
+
+function plot_G2_params(pr, i, titles, ymax)
+
+    # progressions = [12 x 8]
+    G2p = vcat(pr[i:i+3, 1, 1], pr[i:i+3, 1, 2], pr[i:i+3, 1, 3], pr[i:i+3, 1, 4], pr[i:i+3, 1, 5]); # G2 death control
+    G2p2 = vcat(pr[i:i+3, 8, 1], pr[i:i+3, 8, 2], pr[i:i+3, 8, 3], pr[i:i+3, 8, 4], pr[i:i+3, 8, 5]); # G2 death max
+    g2 = repeat(["G21", "G22", "G23", "G24"], 5)
+    xx = [0.25, 0.75, 1.25, 1.75]
+    xs = vcat(xx, xx .+ 4, xx .+ 8, xx .+ 12, xx .+ 16)
+
+    xticks = [1.0, 5.0, 9.0, 13.0, 17.0]
+    labels = Dict(zip(xticks, ["Lpt","Dox","Gemc","Taxol", "palbo"]))
+    df1 = DataFrame(x=xs, ymin=G2p, x2=xs.+0.2, ymax=G2p2, subphase=g2)
+    pl = Gadfly.plot(df1, xmin=:x, ymin=:ymin, xmax=:x2, ymax=:ymax, color=:subphase, Geom.rect,
+        Stat.xticks(ticks = xticks),
+        Scale.x_continuous(labels = x -> labels[x]),
+        Guide.xlabel("Drugs", orientation = :horizontal),
+        Guide.ylabel("rates 1/[hr]", orientation = :vertical),
+        Coord.cartesian(ymin = 0, ymax = ymax),
+        Guide.title(titles),
+        style(key_position = :top),
     )
     pl
 end
