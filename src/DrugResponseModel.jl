@@ -20,6 +20,7 @@ include("combination.jl")
 include("replicates.jl")
 include("sensitivity.jl")
 include("DrugPairs.jl")
+include("figure1.jl")
 
 export setup_data,
     load,
@@ -36,6 +37,7 @@ export setup_data,
     BlissModelComb,
     Heatmap,
     G1plots,
-    G2plots
+    G2plots,
+    figure1
 
 end # module
