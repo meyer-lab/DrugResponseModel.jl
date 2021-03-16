@@ -1,27 +1,50 @@
 """ Figure 1 including model cartoon, time series simulations and parameters."""
 
-function plot_ribbon(g1, g2, g1s, g2s, tite)
+function SSE(G1, G2, g1m, g2m, subPlabel)
+    SSEs = zeros(5, 2)
+    for i=1:5
+        SSEs[i, 2] = norm(G1[:, :, i] - g1m[:, 1:7, i]) + norm(G2[:, :, i] - g2m[:, 1:7, 1])
+    end
+    ctg = repeat(["w/o LCT", "w/ LCT"], inner = 5)
+    nam = repeat(["Lapatinib", "Doxorubicin", "Gemcitabine", "Paclitaxel", "Palbociclib"], outer=2)
+
+    groupedbar(nam, SSEs, group = ctg, xrotation=30, xlabel = "Drugs", ylabel = "SSE",
+        title = "Sum of Squared Errors", bar_width = 0.45,
+        lw = 0, framestyle = :box, titlefont = Plots.font("Helvetica", 12), legendfont = Plots.font("Helvetica", 9), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1cm, fg_legend = :transparent, top_margin=1cm, left_margin=1cm, right_margin=1cm)
+        annotate!(-1, 390.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
+end
+
+function plot_fig1(concs, g1, g1data, tite, G, subPlabel)
     time = LinRange(0.0, 95.0, 189)
     
-    p = plot(time, g1, ribbon = g1s, lw=2, label="G1", alpha=0.7)
-    plot!(time, g2, ribbon = g2s, lw=2, label="G2", alpha=0.6)
-    plot!(title = tite, titlefontsize = 8, xlabel = "time [hr]", ylabel = "cell number", legend=:true)
+    p = plot(time, g1, lw=2, legend=:topleft, label=["control" "$(concs[2]) nM" "$(concs[3]) nM" "$(concs[4]) nM" "$(concs[5]) nM" "$(concs[6]) nM" "$(concs[7]) nM"], fg_legend = :transparent, palette =:PuBu_8, title = tite, titlefont = Plots.font("Helvetica", 12), legendfont = Plots.font("Helvetica", 9), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), xlabel = "time [hr]", ylabel = "$G cell number", bottom_margin=1cm, top_margin=1cm, left_margin=1cm, right_margin=1cm)
+    plot!(time, g1data, lw=2, linestyle = :dot, label=["" "" "" "" "" "" ""])
+    annotate!(-25.0, 57.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
     ylims!((0.0, 50))
     p
 end
 
-function plot_pG1(concs, efcs, ymax, drName, dorp)
-    p = plot(concs, efcs[1, :], label="G11", title = drName, ylabel="$dorp rate 1/[hr]")
-    plot!(concs, efcs[2, :], label="G12")
-    ylims!((0.0, ymax))
+function plot_pG1(efcs, ymax, drName, ylabel, subPlabel, plus)
+
+    x = ["G11", "G12", "G21", "G22", "G23", "G24"]
+    y1 = efcs[1:6, 1]
+    y2 = efcs[1:6, 8]
+    
+    scatter(x,y1, color="cyan4", xlabel = "sub-phase", legend=false,markerstrokewidth=0, ylabel=ylabel, titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1cm, fg_legend = :transparent, top_margin=1cm, left_margin=1cm, right_margin=1cm,  title="$drName effects")
+    scatter!(x,y2, color="cyan3", xlabel = "sub-phase", legend=false,markerstrokewidth=0, ylabel=ylabel, titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1cm, fg_legend = :transparent, top_margin=1cm, left_margin=1cm, right_margin=1cm,  title="$drName effects")
+    annotate!(-0.5, (ymax+plus), text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
+    ylims!((-0.05, ymax))
 end
 
-function plot_pG2(concs, efcs, ymax, drName, dorp)
-    p = plot(concs, efcs[1, :], label="G21", title = drName, ylabel="$dorp rate 1/[hr]")
-    plot!(concs, efcs[2, :], label="G22")
-    plot!(concs, efcs[3, :], label="G23")
-    plot!(concs, efcs[4, :], label="G24")
-    ylims!((0.0, ymax))
+function plot_pG2(efcs, ymax, drName, ylabel, plus)
+    x = ["G11", "G12", "", "G21", "G22", "G23", "G24"]
+    y1 = [efcs[1:2, 1], nothing, efcs[3:6, 1]]
+    y2 = [efcs[1:2, 8], nothing, efcs[3:6, 8]]
+    
+    scatter(x,y1, color="cyan4", xlabel = "sub-phase", legend=false,markerstrokewidth=0, ylabel=ylabel, titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1cm, fg_legend = :transparent, top_margin=1cm, left_margin=1cm, right_margin=1cm,  title="$drName effects")
+    scatter!(x,y2, color="cyan3", xlabel = "sub-phase", legend=false,markerstrokewidth=0, ylabel=ylabel, titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1cm, fg_legend = :transparent, top_margin=1cm, left_margin=1cm, right_margin=1cm,  title="$drName effects")
+    annotate!(-0.5, (ymax+plus), text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
+    ylims!((-0.05, ymax))
 end
 
 function figure1()
@@ -53,14 +76,18 @@ function figure1()
         end
     end
 
-    titles1 = ["control", "$(concs[2,1]) nM Lapatinib", "$(concs[3,1]) nM Lapatinib", "$(concs[4,1]) nM Lapatinib", "$(concs[5,1]) nM Lapatinib", "$(concs[6,1]) nM Lapatinib", "$(concs[7,1]) nM Lapatinib"]
-    p1 = [plot_ribbon(g1m[:, i, 1, 1], g2m[:, i, 1, 1], g1s[:, i, 1, 1], g2s[:, i, 1, 1], titles1[i]) for i=1:7]
-    titles2 = ["control", "$(concs[2,2]) nM Doxorubicin", "$(concs[3,2]) nM Doxorubicin", "$(concs[4,2]) nM Doxorubicin", "$(concs[5,2]) nM Doxorubicin", "$(concs[6, 2]) nM Doxorubicin", "$(concs[7,2]) nM Doxorubicin"]
-    p2 = [plot_ribbon(g1m[:, i, 2, 1], g2m[:, i, 2, 1], g1s[:, i, 2, 1], g2s[:, i, 2, 1], titles2[i]) for i=1:7]
-    p3 = plot_pG1(concs[:, 1], efcs[1:2, :, 1], 3.0, "Lapatinib", "prog.")
-    p4 = plot_pG1(concs[:, 1], efcs[7:8, :, 1], 0.4, "Lapatinib", "death.")
-    p5 = plot_pG1(concs[:, 2], efcs[3:6, :, 1], 3.0, "Doxorubicin", "prog.")
-    p6 = plot_pG1(concs[:, 2], efcs[9:12, :, 1], 0.65, "Doxorubicin", "death.")
-    figs = plot(nothing, p1..., p2..., p3, p4, p5, p6, layout=(4,5))
-    savefig(figs, "figure1.svg")
+    p0 = plot(legend=false, grid=false, foreground_color_subplot=:white, top_margin=1cm)
+    p1 = plot_fig1(concs[:, 1], G1[:, :, 1], g1m[:, :, 1, 1], "Lapatinib", "G1", "b")
+    p2 = plot_fig1(concs[:, 1], G2[:, :, 1], g2m[:, :, 1, 1], "Lapatinib", "G2", "c")
+    p3 = plot_fig1(concs[:, 2], G1[:, :, 2], g1m[:, :, 2, 1], "Doxorubicin", "G1", "d")
+    p4 = plot_fig1(concs[:, 2], G2[:, :, 2], g2m[:, :, 2, 1], "Doxorubicin", "G2", "e")
+    p5 = SSE(G1, G2, g1m, g2m, "f")
+    p6 = plot_pG1(efcs[1:6, :, 1], 2.0, "Lapatinib", "progression rates", "g", 0.3)
+    p7 = plot_pG1(efcs[7:12, :, 1], 0.1, "lapatinib", "death rates", "h", 0.02)
+    p8 = plot_pG1(efcs[1:6, :, 2], 2.0, "doxorubicin", "progression rates", "i", 0.3)
+    p9 = plot_pG1(efcs[7:12, :, 2], 0.1, "doxorubicin", "death rates", "j", 0.02)
+
+    figure1 = plot(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, size=(2000, 1000), layout=(2,5))
+    #annotate!(-70, 30.0, text("a", :black, :left, Plots.font("Helvetica Bold", 15)))
+    savefig(figure1, "figure1.svg")
 end
