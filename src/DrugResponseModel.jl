@@ -11,6 +11,7 @@ using Statistics
 using DSP: conv
 using BlackBoxOptim
 using StatsPlots
+using JLD
 
 include("importData.jl")
 include("ODEmodel.jl")
@@ -21,7 +22,8 @@ include("combination.jl")
 include("replicates.jl")
 include("sensitivity.jl")
 include("DrugPairs.jl")
-include("figure1.jl")
+include("figures/figure1.jl")
+include("figures/figureS1.jl")
 
 export setup_data,
     load,
