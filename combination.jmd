@@ -35,7 +35,7 @@ pal = effs[:, :, 5];
 
 ```julia
 # Bliss on pure cell numbers
-BlissOnData = DrugResponseModel.blissCellNum(g1avg, g2avg; n = 8); # includes are combinations 8 x 8 x 10
+BlissOnData = DrugResponseModel.blissCellNum(g1avg, g2avg, 96, 96; n = 8); # includes are combinations 8 x 8 x 10
 
 ```
 

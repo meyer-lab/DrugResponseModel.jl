@@ -20,7 +20,7 @@ include("combination.jl")
 include("replicates.jl")
 include("sensitivity.jl")
 include("DrugPairs.jl")
-include("figure1.jl")
+include("figure2.jl")
 
 export setup_data,
     load,

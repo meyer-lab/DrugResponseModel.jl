@@ -33,8 +33,8 @@ function AllBliss_params(pp1, pp2)
     end
     @assert all(combined[7:end, 1, 1] .== 0.0)
     # TODO: remember to uncomment this assertion after estimating correct set of parameters
-    # @assert(all(combined[1:4, :, :] .>= 0.0))
-    # @assert(all(combined[1:4, :, :] .<= 5.0))
+    @assert(all(combined[1:4, :, :] .>= 0.0))
+    @assert(all(combined[1:4, :, :] .<= 5.0))
     combined
 end
 
@@ -69,8 +69,8 @@ end
 
 """ In this function, we apply the Bliss synergy to the cell numbers. 
 This is to compare the traditional way of representing the combination effect, compare to the way we do in our model."""
-function blissCellNum(g1s, g2s; n = 8)
-    gs = g1s[end, :, :] + g2s[end, :, :]
+function blissCellNum(g1s, g2s, tt; n = 8)
+    gs = g1s[tt, :, :] + g2s[tt, :, :]
     num = zeros(n, 5)
 
     for i = 1:5
