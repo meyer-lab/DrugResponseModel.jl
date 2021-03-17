@@ -85,7 +85,7 @@ function figure1()
     p8 = plot_pG1(efcs[1:6, :, 2], 2.0, "Doxorubicin", "progression rates", "i", 0.3)
     p9 = plot_pG1(efcs[7:12, :, 2], 0.1, "Doxorubicin", "death rates", "j", 0.02)
 
-    figure1 = plot(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, size=(2000, 1000), layout=(2,5))
+    figure1 = plot(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, size=(2000, 700), layout=(2,5))
     #annotate!(-70, 30.0, text("a", :black, :left, Plots.font("Helvetica Bold", 15)))
     savefig(figure1, "figure1.svg")
 end
