@@ -11,14 +11,14 @@ function SSE(G1, G2, g1m, g2m, subPlabel)
 
     groupedbar(nam, SSEs, group = ctg, xrotation=30, xlabel = "Drugs", ylabel = "SSE",
         title = "Sum of Squared Errors", bar_width = 0.45,
-        lw = 0, framestyle = :box, titlefont = Plots.font("Helvetica", 12), legendfont = Plots.font("Helvetica", 9), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.5cm, left_margin=1cm, right_margin=1cm)
+        lw = 0, framestyle = :box, titlefont = Plots.font("Helvetica", 12), legendfont = Plots.font("Helvetica", 9), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.25cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.85cm, right_margin=1.25cm)
         annotate!(-1, 555.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
 end
 
 function plot_fig1(concs, g1, g1data, tite, G, subPlabel)
     time = LinRange(0.0, 95.0, 189)
     
-    p = plot(time, g1, lw=2, legend=:topleft, label=["control" "$(concs[2]) nM" "$(concs[3]) nM" "$(concs[4]) nM" "$(concs[5]) nM" "$(concs[6]) nM" "$(concs[7]) nM"], fg_legend = :transparent, palette =:PuBu_8, title = tite, titlefont = Plots.font("Helvetica", 12), legendfont = Plots.font("Helvetica", 9), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), xlabel = "time [hr]", ylabel = "$G cell number", bottom_margin=1cm, top_margin=1.5cm, left_margin=1cm, right_margin=1cm)
+    p = plot(time, g1, lw=2, legend=:topleft, label=["control" "$(concs[2]) nM" "$(concs[3]) nM" "$(concs[4]) nM" "$(concs[5]) nM" "$(concs[6]) nM" "$(concs[7]) nM"], fg_legend = :transparent, palette =:PuBu_8, title = tite, titlefont = Plots.font("Helvetica", 12), legendfont = Plots.font("Helvetica", 9), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), xlabel = "time [hr]", ylabel = "$G cell number", bottom_margin=1.25cm, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
     plot!(time, g1data, lw=2, linestyle = :dot, label=["" "" "" "" "" "" ""])
     annotate!(-25.0, 57.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
     ylims!((0.0, 50))
@@ -31,8 +31,8 @@ function plot_pG1(efcs, ymax, drName, ylabel, subPlabel, plus)
     y1 = efcs[1:6, 1]
     y2 = efcs[1:6, 8]
     
-    scatter(x,y1, color="cyan4", xlabel = "sub-phase", legend=false,markerstrokewidth=0, ylabel=ylabel, titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.5cm, left_margin=1cm, right_margin=1cm,  title="$drName effects")
-    scatter!(x,y2, color="cyan3", xlabel = "sub-phase", legend=false,markerstrokewidth=0, ylabel=ylabel, titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.5cm, left_margin=1cm, right_margin=1cm,  title="$drName effects")
+    scatter(x,y1, color="cyan4", xlabel = "sub-phase", label="control", markerstrokewidth=0, ylabel=ylabel, titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.5cm, left_margin=1.25cm, right_margin=1.25cm,  title="$drName effects")
+    scatter!(x,y2, color="cyan3", xlabel = "sub-phase", label="max effect", markerstrokewidth=0, ylabel=ylabel, titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.5cm, left_margin=1.25cm, right_margin=1.25cm,  title="$drName effects")
     annotate!(-0.5, (ymax+plus), text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
     ylims!((-0.05, ymax))
 end
@@ -42,8 +42,8 @@ function plot_pG2(efcs, ymax, drName, ylabel, plus)
     y1 = [efcs[1:2, 1], nothing, efcs[3:6, 1]]
     y2 = [efcs[1:2, 8], nothing, efcs[3:6, 8]]
     
-    scatter(x,y1, color="cyan4", xlabel = "sub-phase", legend=false,markerstrokewidth=0, ylabel=ylabel, titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1cm, left_margin=1cm, right_margin=1cm,  title="$drName effects")
-    scatter!(x,y2, color="cyan3", xlabel = "sub-phase", legend=false,markerstrokewidth=0, ylabel=ylabel, titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1cm, left_margin=1cm, right_margin=1cm,  title="$drName effects")
+    scatter(x,y1, color="cyan4", xlabel = "sub-phase", label="control", markerstrokewidth=0, ylabel=ylabel, titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm,  title="$drName effects")
+    scatter!(x,y2, color="cyan3", xlabel = "sub-phase", label="max effect", markerstrokewidth=0, ylabel=ylabel, titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm,  title="$drName effects")
     annotate!(-0.5, (ymax+plus), text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
     ylims!((-0.05, ymax))
 end

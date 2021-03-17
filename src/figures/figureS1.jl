@@ -4,7 +4,7 @@
 function plot_fig1(concs, g1, g1data, tite, G, subPlabel)
     time = LinRange(0.0, 95.0, 189)
     
-    p = plot(time, g1, lw=2, legend=:topleft, label=["control" "$(concs[2]) nM" "$(concs[3]) nM" "$(concs[4]) nM" "$(concs[5]) nM" "$(concs[6]) nM" "$(concs[7]) nM"], fg_legend = :transparent, palette =:PuBu_8, title = tite, titlefont = Plots.font("Helvetica", 12), legendfont = Plots.font("Helvetica", 9), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), xlabel = "time [hr]", ylabel = "$G cell number", bottom_margin=1.5cm, top_margin=1.5cm, left_margin=1cm, right_margin=1cm)
+    p = plot(time, g1, lw=2, legend=:topleft, label=["control" "$(concs[2]) nM" "$(concs[3]) nM" "$(concs[4]) nM" "$(concs[5]) nM" "$(concs[6]) nM" "$(concs[7]) nM"], fg_legend = :transparent, palette =:PuBu_8, title = tite, titlefont = Plots.font("Helvetica", 12), legendfont = Plots.font("Helvetica", 9), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), xlabel = "time [hr]", ylabel = "$G cell number", bottom_margin=1.5cm, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
     plot!(time, g1data, lw=2, linestyle = :dot, label=["" "" "" "" "" "" ""])
     annotate!(-25.0, 57.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
     ylims!((0.0, 50))
