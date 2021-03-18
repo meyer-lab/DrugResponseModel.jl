@@ -1,12 +1,14 @@
 """ Figure 2: drug combination. """
 
-function helper(g1_Bliss_model1, g2_Bliss_model1, i, title, lb, label1, label2, meanGS2)
+function helper(g1_Bliss_model1, g2_Bliss_model1, i, title, subPlabel, label1, label2, meanGS2)
     t = LinRange(0.0, 95.0, 189)
-    plot(t, g1_Bliss_model1, label=label1, xlabel="time [hr]", lw=2, ylabel="cell number", color="darkseagreen3", title=title, titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
+    p = plot(t, g1_Bliss_model1, label=label1, xlabel="time [hr]", lw=2, ylabel="cell number", color="darkseagreen3", title=title, titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
     plot!(t, g2_Bliss_model1, label=label2, titlefont = Plots.font("Helvetica", 12), lw=2, color="mediumpurple2", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
-    plot!(t, meanGS2[1, 1:189, i], label="G1 data", titlefont = Plots.font("Helvetica", 12), lw=2, color="darkgreen", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
-    plot!(t, meanGS2[2, 1:189, i], label="G2 data", titlefont = Plots.font("Helvetica", 12), lw=2, color="mediumpurple4", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
-    annotate!(-25.0, 57.0, text(lb, :black, :left, Plots.font("Helvetica Bold", 15)))
+    plot!(t, meanGS2[1, 1:189, i], label="G1 exp", titlefont = Plots.font("Helvetica", 12), lw=2, color="darkgreen", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
+    plot!(t, meanGS2[2, 1:189, i], label="G2 exp", titlefont = Plots.font("Helvetica", 12), lw=2, color="mediumpurple4", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
+    annotate!(-25.0, 87.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
+    ylims!((0.0, 30.0))
+    p
 end
 
 function figure2()
@@ -46,18 +48,18 @@ function figure2()
     Bliss_cellnum = zeros(189, 8, 8, 10)
     Bliss_cellnum2 = zeros(189, 8, 8, 10)
     for i=1:189
-        Bliss_cellnum[i, :, :, :] .= blissCellNum(g1m, g2m, i)[1]
-        Bliss_cellnum2[i, :, :, :] .= blissCellNum(g1m, g2m, i)[2]
+        Bliss_cellnum[i, :, :, :] .= blissCellNum(g1m, g2m, i)[1] # G1
+        Bliss_cellnum2[i, :, :, :] .= blissCellNum(g1m, g2m, i)[2] # G2
     end
 
-    p1 = helper(g1_Bliss_model1, g2_Bliss_model1, 5, "palbo 50 nM & lapt 100 nM", "a", "G1 model", "G2 model", meanGS2)
-    p2 = helper(g1_Bliss_model2, g2_Bliss_model2, 14, "palbo 100 nM & lapt 100 nM", "b", "G1 model", "G2 model", meanGS2)
-    p3 = helper(g1_Bliss_model3, g2_Bliss_model3, 11, "gem 10 nM & lapt 100 nM", "c", "G1 model", "G2 model", meanGS2)
-    p4 = helper(g1_Bliss_model4, g2_Bliss_model4, 19, "palbo 50 nM & lapt 100 nM", "d", "G1 model", "G2 model", meanGS2)
-    p5 = helper(Bliss_cellnum[:, 6, 5, 4], Bliss_cellnum2[:, 6, 5, 4], 5, "palbo 50 nM & lapt 100 nM", "a", "G1 model", "G2 model", meanGS2)
-    p6 = helper(Bliss_cellnum[:, 6, 6, 4], Bliss_cellnum2[:, 6, 6, 4], 14, "palbo 100 nM & lapt 100 nM", "b", "G1 model", "G2 model", meanGS2)
-    p7 = helper(Bliss_cellnum[:, 6, 6, 2], Bliss_cellnum2[:, 6, 6, 2], 11, "gem 10 nM & lapt 100 nM", "c", "G1 model", "G2 model", meanGS2)
-    p8 = helper(Bliss_cellnum[:, 6, 7, 2], Bliss_cellnum2[:, 6, 7, 2], 19, "gem 30 nM & lapt 100 nM", "d", "G1 model", "G2 model", meanGS2)
+    p1 = helper(Bliss_cellnum[:, 6, 5, 4], Bliss_cellnum2[:, 6, 5, 4], 5, "palbo 50 nM & lapt 100 nM", "a", "G1 Bliss data", "G2 Bliss data", meanGS2)
+    p2 = helper(Bliss_cellnum[:, 6, 6, 4], Bliss_cellnum2[:, 6, 6, 4], 14, "palbo 100 nM & lapt 100 nM", "b", "G1 Bliss data", "G2 Bliss data", meanGS2)
+    p3 = helper(Bliss_cellnum[:, 6, 6, 2], Bliss_cellnum2[:, 6, 6, 2], 11, "gem 10 nM & lapt 100 nM", "c", "G1 Bliss data", "G2 Bliss data", meanGS2)
+    p4 = helper(Bliss_cellnum[:, 6, 7, 2], Bliss_cellnum2[:, 6, 7, 2], 19, "gem 30 nM & lapt 100 nM", "d", "G1 Bliss data", "G2 Bliss data", meanGS2)
+    p5 = helper(g1_Bliss_model1, g2_Bliss_model1, 5, "palbo 50 nM & lapt 100 nM", "e", "G1 Bliss model", "G2 Bliss model", meanGS2)
+    p6 = helper(g1_Bliss_model2, g2_Bliss_model2, 14, "palbo 100 nM & lapt 100 nM", "f", "G1 Bliss model", "G2 Bliss model", meanGS2)
+    p7 = helper(g1_Bliss_model3, g2_Bliss_model3, 11, "gem 10 nM & lapt 100 nM", "g", "G1 Bliss model", "G2 Bliss model", meanGS2)
+    p8 = helper(g1_Bliss_model4, g2_Bliss_model4, 19, "palbo 50 nM & lapt 100 nM", "h", "G1 Bliss model", "G2 Bliss model", meanGS2)
     fig = plot(p1, p2, p3, p4, p5, p6, p7, p8, size=(1600, 700), layout=(2, 4))
     savefig(fig, "figure2.svg")
 end
