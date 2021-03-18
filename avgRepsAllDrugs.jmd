@@ -10,7 +10,6 @@ This file plots (1) time series simulations for average of 3 replicates on top o
 import Pkg; Pkg.instantiate()
 Pkg.activate(".")
 using DrugResponseModel
-DrugResponseModel.figure2()
 using Plots, LinearAlgebra, Statistics
 Plots.scalefontsizes(0.7)
 

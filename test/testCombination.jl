@@ -25,6 +25,6 @@ end
     p2 = getODEparams(dox_before, concs[:, 2])
 
     cmb = DrugResponseModel.Bliss_params_unit(p1[:, 2, 1], p2[:, 3, 1], hcat(p1[:, 1, 1], p2[:, 1, 1]))
-    # @assert(all(cmb[1, :, end] .>= 0.4))
-    # @assert(all(cmb[1, :, end] .<= 0.5))
+    @assert(all(cmb[1, :, end] .>= 0.4))
+    @assert(all(cmb[1, :, end] .<= 0.5))
 end
