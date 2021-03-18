@@ -33,6 +33,7 @@ function AllBliss_params(pp1, pp2)
     end
     @assert all(combined[7:end, 1, 1] .== 0.0)
     # TODO: remember to uncomment this assertion after estimating correct set of parameters
+    print(combined)
     @assert(all(combined .>= 0.0))
     combined
 end
