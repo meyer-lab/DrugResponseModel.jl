@@ -6,7 +6,7 @@ function helper(g1_Bliss_model1, g2_Bliss_model1, i, title, subPlabel, label1, l
     plot!(t, g2_Bliss_model1, label=label2, titlefont = Plots.font("Helvetica", 12), lw=2, color="mediumpurple2", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
     plot!(t, meanGS2[1, 1:189, i], label="G1 exp", titlefont = Plots.font("Helvetica", 12), lw=2, color="darkgreen", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
     plot!(t, meanGS2[2, 1:189, i], label="G2 exp", titlefont = Plots.font("Helvetica", 12), lw=2, color="mediumpurple4", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
-    annotate!(-25.0, 87.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
+    annotate!(-20.0, 37.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
     ylims!((0.0, 30.0))
     p
 end
