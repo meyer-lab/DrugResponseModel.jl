@@ -1,13 +1,12 @@
 """ Figure 2: drug combination. """
 
-function helper(g1_Bliss_model1, g2_Bliss_model1, i, title, subPlabel, label1, label2, meanGS2)
-    t = LinRange(0.0, 95.0, 189)
-    p = plot(t, g1_Bliss_model1, label=label1, xlabel="time [hr]", lw=2, ylabel="cell number", color="darkseagreen3", title=title, titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
-    plot!(t, g2_Bliss_model1, label=label2, titlefont = Plots.font("Helvetica", 12), lw=2, color="mediumpurple2", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
-    plot!(t, meanGS2[1, 1:189, i], label="G1 exp", titlefont = Plots.font("Helvetica", 12), lw=2, color="darkgreen", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
-    plot!(t, meanGS2[2, 1:189, i], label="G2 exp", titlefont = Plots.font("Helvetica", 12), lw=2, color="mediumpurple4", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
-    annotate!(-20.0, 37.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
-    ylims!((0.0, 30.0))
+function plotSSEs()
+    SSEs_combination = DrugResponseModel.SSEs_combination()
+    ctg = repeat(["cell number", "model"], inner = 7)
+    nams = repeat(["Palb 50 nM + Lpts", "Palb 50 nM + Gems", "Gem 10 nM + Palbs", "Gem 10 nM + Lpts", "Dox 20 nM + Gems", "Lpt 100 nM + Gems", "Lpt 100 nM + Palbs"], outer=2)
+    p = groupedbar(SSEs_combination[1:2, :], group = ctg, yrotation=60, ylabel = "Combinations", xlabel = "SSE", yflip=true,
+        title = "Sum of Squared Errors", bar_width = 0.45, yticks=(1:14, nams), lw = 0, framestyle = :box, orientation=:horizontal, titlefont = Plots.font("Helvetica", 12), legendfont = Plots.font("Helvetica", 9), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.25cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.85cm, right_margin=1.25cm)
+        annotate!(-1, .0, text("j", :black, :left, Plots.font("Helvetica Bold", 15)))
     p
 end
 
@@ -27,9 +26,6 @@ function figure2()
     GS1 = cat(gt1, gt1_2, gt1_3, dims = 4);
     GS2 = cat(gt2, gt2_2, gt2_3, dims = 4);
 
-    meanGS1 = mean(GS1, dims = 4);
-    meanGS2 = mean(GS2, dims = 4);
-    meanGS2[:, :, 19] .= mean(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims=3), dims=3)[:, :, 1]
     t = LinRange(0.0, 95.0, 189)
 
     # params from fitting all 5 drugs at once
@@ -39,27 +35,31 @@ function figure2()
     # Bliss on Model
     LPT_PLB = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 5])
     LPT_GEM = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 3])
+
+
     g1_Bliss_model1, g2_Bliss_model1, _ = predict(LPT_PLB[:, 6, 5], LPT_PLB[:, 1, 1], t) # palbo 50 & lapatinib 100
     g1_Bliss_model2, g2_Bliss_model2, _ = predict(LPT_PLB[:, 6, 6], LPT_PLB[:, 1, 1], t) # palbo 100 & lapatinib 100
     g1_Bliss_model3, g2_Bliss_model3, _ = predict(LPT_GEM[:, 6, 6], LPT_GEM[:, 1, 1], t) # gem 10 % lapatinib 100
     g1_Bliss_model4, g2_Bliss_model4, _ = predict(LPT_GEM[:, 6, 7], LPT_GEM[:, 1, 1], t) # gem 30 % lapatinib 100
 
     # Bliss on data
-    Bliss_cellnum = zeros(189, 8, 8, 10)
+    Bliss_cellnum1 = zeros(189, 8, 8, 10)
     Bliss_cellnum2 = zeros(189, 8, 8, 10)
     for i=1:189
-        Bliss_cellnum[i, :, :, :] .= blissCellNum(g1m, g2m, i)[1] # G1
-        Bliss_cellnum2[i, :, :, :] .= blissCellNum(g1m, g2m, i)[2] # G2
+        Bliss_cellnum1[i, :, :, :] .= blissCellNum(g1m, g2m, i)[1]
+        Bliss_cellnum2[i, :, :, :] .= blissCellNum(g1m, g2m, i)[2]
     end
 
-    p1 = helper(Bliss_cellnum[:, 6, 5, 4], Bliss_cellnum2[:, 6, 5, 4], 5, "palbo 50 nM & lapt 100 nM", "a", "G1 Bliss data", "G2 Bliss data", meanGS2)
-    p2 = helper(Bliss_cellnum[:, 6, 6, 4], Bliss_cellnum2[:, 6, 6, 4], 14, "palbo 100 nM & lapt 100 nM", "b", "G1 Bliss data", "G2 Bliss data", meanGS2)
-    p3 = helper(Bliss_cellnum[:, 6, 6, 2], Bliss_cellnum2[:, 6, 6, 2], 11, "gem 10 nM & lapt 100 nM", "c", "G1 Bliss data", "G2 Bliss data", meanGS2)
-    p4 = helper(Bliss_cellnum[:, 6, 7, 2], Bliss_cellnum2[:, 6, 7, 2], 19, "gem 30 nM & lapt 100 nM", "d", "G1 Bliss data", "G2 Bliss data", meanGS2)
-    p5 = helper(g1_Bliss_model1, g2_Bliss_model1, 5, "palbo 50 nM & lapt 100 nM", "e", "G1 Bliss model", "G2 Bliss model", meanGS2)
-    p6 = helper(g1_Bliss_model2, g2_Bliss_model2, 14, "palbo 100 nM & lapt 100 nM", "f", "G1 Bliss model", "G2 Bliss model", meanGS2)
-    p7 = helper(g1_Bliss_model3, g2_Bliss_model3, 11, "gem 10 nM & lapt 100 nM", "g", "G1 Bliss model", "G2 Bliss model", meanGS2)
-    p8 = helper(g1_Bliss_model4, g2_Bliss_model4, 19, "palbo 50 nM & lapt 100 nM", "h", "G1 Bliss model", "G2 Bliss model", meanGS2)
-    fig = plot(p1, p2, p3, p4, p5, p6, p7, p8, size=(1600, 700), layout=(2, 4))
+    p1 = DrugResponseModel.helper(Bliss_cellnum1[:, 6, 5, 4], Bliss_cellnum2[:, 6, 5, 4], 5, "palbo 50 nM & lapt 100 nM", "a", "cell num", GS2)
+    p2 = DrugResponseModel.helper(Bliss_cellnum1[:, 6, 6, 4], Bliss_cellnum2[:, 6, 6, 4], 14, "palbo 100 nM & lapt 100 nM", "b", "cell num", GS2)
+    p3 = DrugResponseModel.helper(Bliss_cellnum1[:, 6, 6, 2], Bliss_cellnum2[:, 6, 6, 2], 11, "gem 10 nM & lapt 100 nM", "c", "cell num", GS2)
+    p4 = DrugResponseModel.helper(Bliss_cellnum1[:, 6, 7, 2], Bliss_cellnum2[:, 6, 7, 2], 19, "gem 30 nM & lapt 100 nM", "d", "cell num", GS2)
+    p5 = DrugResponseModel.helper(g1_Bliss_model1, g2_Bliss_model1, 5, "palbo 50 nM & lapt 100 nM", "e", "model", GS2)
+    p6 = DrugResponseModel.helper(g1_Bliss_model2, g2_Bliss_model2, 14, "palbo 100 nM & lapt 100 nM", "f", "model", GS2)
+    p7 = DrugResponseModel.helper(g1_Bliss_model3, g2_Bliss_model3, 11, "gem 10 nM & lapt 100 nM", "g", "model", GS2)
+    p8 = DrugResponseModel.helper(g1_Bliss_model4, g2_Bliss_model4, 19, "palbo 50 nM & lapt 100 nM", "h", "model", GS2)
+    p9 = plotSSEs()
+    l = @layout [grid(2, 4) a{0.2w}]
+    fig = plot(p1, p2, p3, p4, p5, p6, p7, p8, p9, size=(2000, 700), layout=l)
     savefig(fig, "figure2.svg")
 end
