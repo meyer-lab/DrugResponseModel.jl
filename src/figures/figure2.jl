@@ -25,6 +25,7 @@ function figure2()
 
     GS1 = cat(gt1, gt1_2, gt1_3, dims = 4);
     GS2 = cat(gt2, gt2_2, gt2_3, dims = 4);
+    GS2m = cat(gt2, gt2_2, gt2_2, dims = 4)
 
     t = LinRange(0.0, 95.0, 189)
 
@@ -39,8 +40,8 @@ function figure2()
 
     g1_Bliss_model1, g2_Bliss_model1, _ = predict(LPT_PLB[:, 6, 5], LPT_PLB[:, 1, 1], t) # palbo 50 & lapatinib 100
     g1_Bliss_model2, g2_Bliss_model2, _ = predict(LPT_PLB[:, 6, 6], LPT_PLB[:, 1, 1], t) # palbo 100 & lapatinib 100
-    g1_Bliss_model3, g2_Bliss_model3, _ = predict(LPT_GEM[:, 6, 6], LPT_GEM[:, 1, 1], t) # gem 10 % lapatinib 100
-    g1_Bliss_model4, g2_Bliss_model4, _ = predict(LPT_GEM[:, 6, 7], LPT_GEM[:, 1, 1], t) # gem 30 % lapatinib 100
+    g1_Bliss_model3, g2_Bliss_model3, _ = predict(LPT_GEM[:, 6, 6], LPT_GEM[:, 1, 1], t) # gem 10 & lapatinib 100
+    g1_Bliss_model4, g2_Bliss_model4, _ = predict(LPT_GEM[:, 6, 7], LPT_GEM[:, 1, 1], t) # gem 30 & lapatinib 100
 
     # Bliss on data
     Bliss_cellnum1 = zeros(189, 8, 8, 10)
@@ -53,11 +54,11 @@ function figure2()
     p1 = DrugResponseModel.helper(Bliss_cellnum1[:, 6, 5, 4], Bliss_cellnum2[:, 6, 5, 4], 5, "palbo 50 nM & lapt 100 nM", "a", "cell num", GS2)
     p2 = DrugResponseModel.helper(Bliss_cellnum1[:, 6, 6, 4], Bliss_cellnum2[:, 6, 6, 4], 14, "palbo 100 nM & lapt 100 nM", "b", "cell num", GS2)
     p3 = DrugResponseModel.helper(Bliss_cellnum1[:, 6, 6, 2], Bliss_cellnum2[:, 6, 6, 2], 11, "gem 10 nM & lapt 100 nM", "c", "cell num", GS2)
-    p4 = DrugResponseModel.helper(Bliss_cellnum1[:, 6, 7, 2], Bliss_cellnum2[:, 6, 7, 2], 19, "gem 30 nM & lapt 100 nM", "d", "cell num", GS2)
+    p4 = DrugResponseModel.helper(Bliss_cellnum1[:, 6, 7, 2], Bliss_cellnum2[:, 6, 7, 2], 19, "gem 30 nM & lapt 100 nM", "d", "cell num", GS2m)
     p5 = DrugResponseModel.helper(g1_Bliss_model1, g2_Bliss_model1, 5, "palbo 50 nM & lapt 100 nM", "e", "model", GS2)
     p6 = DrugResponseModel.helper(g1_Bliss_model2, g2_Bliss_model2, 14, "palbo 100 nM & lapt 100 nM", "f", "model", GS2)
     p7 = DrugResponseModel.helper(g1_Bliss_model3, g2_Bliss_model3, 11, "gem 10 nM & lapt 100 nM", "g", "model", GS2)
-    p8 = DrugResponseModel.helper(g1_Bliss_model4, g2_Bliss_model4, 19, "palbo 50 nM & lapt 100 nM", "h", "model", GS2)
+    p8 = DrugResponseModel.helper(g1_Bliss_model4, g2_Bliss_model4, 19, "gem 30 nM & lapt 100 nM", "h", "model", GS2m)
     p9 = plotSSEs()
     l = @layout [grid(2, 4) a{0.2w}]
     fig = plot(p1, p2, p3, p4, p5, p6, p7, p8, p9, size=(2000, 700), layout=l)
