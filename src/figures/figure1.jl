@@ -79,6 +79,7 @@ function plot_pG1(efcs, ymax, drName, ylabel, subPlabel, plus)
         markerstrokewidth = 0,
         ylabel = ylabel,
         titlefont = Plots.font("Helvetica", 12),
+        legendfont = Plots.font("Helvetica", 9),
         guidefont = Plots.font("Helvetica", 12),
         xtickfont = Plots.font("Helvetica", 12),
         ytickfont = Plots.font("Helvetica", 12),
@@ -98,6 +99,7 @@ function plot_pG1(efcs, ymax, drName, ylabel, subPlabel, plus)
         markerstrokewidth = 0,
         ylabel = ylabel,
         titlefont = Plots.font("Helvetica", 12),
+        legendfont = Plots.font("Helvetica", 9),
         guidefont = Plots.font("Helvetica", 12),
         xtickfont = Plots.font("Helvetica", 12),
         ytickfont = Plots.font("Helvetica", 12),
@@ -112,52 +114,6 @@ function plot_pG1(efcs, ymax, drName, ylabel, subPlabel, plus)
     ylims!((-0.05, ymax))
 end
 
-function plot_pG2(efcs, ymax, drName, ylabel, plus)
-    x = ["G11", "G12", "", "G21", "G22", "G23", "G24"]
-    y1 = [efcs[1:2, 1], nothing, efcs[3:6, 1]]
-    y2 = [efcs[1:2, 8], nothing, efcs[3:6, 8]]
-
-    scatter(
-        x,
-        y1,
-        color = "cyan4",
-        xlabel = "sub-phase",
-        label = "control",
-        markerstrokewidth = 0,
-        ylabel = ylabel,
-        titlefont = Plots.font("Helvetica", 12),
-        guidefont = Plots.font("Helvetica", 12),
-        xtickfont = Plots.font("Helvetica", 12),
-        ytickfont = Plots.font("Helvetica", 12),
-        bottom_margin = 1.5cm,
-        fg_legend = :transparent,
-        top_margin = 1.25cm,
-        left_margin = 1.25cm,
-        right_margin = 1.25cm,
-        title = "$drName effects",
-    )
-    scatter!(
-        x,
-        y2,
-        color = "cyan3",
-        xlabel = "sub-phase",
-        label = "max effect",
-        markerstrokewidth = 0,
-        ylabel = ylabel,
-        titlefont = Plots.font("Helvetica", 12),
-        guidefont = Plots.font("Helvetica", 12),
-        xtickfont = Plots.font("Helvetica", 12),
-        ytickfont = Plots.font("Helvetica", 12),
-        bottom_margin = 1.5cm,
-        fg_legend = :transparent,
-        top_margin = 1.25cm,
-        left_margin = 1.25cm,
-        right_margin = 1.25cm,
-        title = "$drName effects",
-    )
-    annotate!(-0.5, (ymax + plus), text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
-    ylims!((-0.05, ymax))
-end
 
 function figure1()
 
