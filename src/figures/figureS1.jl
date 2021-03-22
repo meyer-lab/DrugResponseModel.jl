@@ -89,7 +89,7 @@ function figureS1()
         0.470576,
         1.298,
         0.423103,
-    ]
+    ];
     efcs = getODEparams(ps, concs)
 
     # ******* model simulations ********
@@ -103,9 +103,8 @@ function figureS1()
         end
     end
 
-    # For the reference model:
-    G1ref = JLD.load("G1_simpleODE.jld")["data"]
-    G2ref = JLD.load("G2_simpleODE.jld")["data"]
+    G1ref = JLD.load("data/G1ref.jld")["data"]
+    G2ref = JLD.load("data/G2ref.jld")["data"]
 
     p1 = DrugResponseModel.plot_fig1(concs[:, 3], G1[:, :, 3], g1m[:, 1:7, 3, 1], "Gemcitabine", "G1", "a")
     p2 = DrugResponseModel.plot_fig1(concs[:, 3], G2[:, :, 3], g2m[:, 1:7, 3, 1], "Gemcitabine", "G2", "b")
@@ -119,7 +118,13 @@ function figureS1()
     p8 = DrugResponseModel.plot_fig1(concs[:, 1], G2ref[:, :, 1], g2m[:, 1:7, 1, 1], "Lapatinib", "G2", "i")
     p9 = DrugResponseModel.plot_fig1(concs[:, 2], G1ref[:, :, 2], g1m[:, 1:7, 2, 1], "Doxorubicin", "G1", "j")
     p10 = DrugResponseModel.plot_fig1(concs[:, 2], G2ref[:, :, 2], g2m[:, 1:7, 2, 1], "Doxorubicin", "G2", "k")
-    figureS1 = plot(p1, p2, p3, p4, p5, p6, p0, p0, p7, p8, p9, p10, size = (2400, 700), layout = (2, 6))
-    #annotate!(-70, 30.0, text("a", :black, :left, Plots.font("Helvetica Bold", 15)))
+
+    p11 = DrugResponseModel.plot_pG1(efcs[1:6, :, 3], 2.25, "Gemcitabine", "progression rates", "l", 0.35)
+    p12 = DrugResponseModel.plot_pG1(efcs[7:12, :, 3], 0.2, "Gemcitabine", "death rates", "m", 0.05)
+    p13 = DrugResponseModel.plot_pG1(efcs[1:6, :, 4], 2.25, "Paclitaxel", "progression rates", "n", 0.35)
+    p14 = DrugResponseModel.plot_pG1(efcs[7:12, :, 4], 0.2, "Paclitaxel", "death rates", "o", 0.05)
+    p15 = DrugResponseModel.plot_pG1(efcs[1:6, :, 5], 2.25, "Palbociclib", "progression rates", "p", 0.35)
+    p16 = DrugResponseModel.plot_pG1(efcs[7:12, :, 5], 0.2, "Palbociclib", "death rates", "q", 0.05)
+    figureS1 = plot(p1, p2, p3, p4, p5, p6, p0, p0, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, size = (2400, 1050), layout = (3, 6))
     savefig(figureS1, "figureS1.svg")
 end

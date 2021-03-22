@@ -10,7 +10,7 @@ This file shows how much the simulations from the model and the experimental dat
 import Pkg; Pkg.instantiate()
 Pkg.activate(".")
 using DrugResponseModel
-using Plots, Statistics
+using Plots, Statistics, LinearAlgebra, Plots.Measures
 Plots.scalefontsizes(0.7)
 
 gt1, gt2 = DrugResponseModel.import_combination("AU01001");
@@ -20,219 +20,165 @@ concs, _, g1s1, g2s1 = load(189, 1);
 _, _, g1s2, g2s2 = load(189, 2);
 _, _, g1s3, g2s3 = load(189, 3);
 
-g1avg = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
-g2avg = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
-t = LinRange(0.0, 96.0, 193);
+g1m = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure data
+g2m = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure data
+totalm = g1m .+ g2m;
 
 GS1 = cat(gt1, gt1_2, gt1_3, dims = 4);
 GS2 = cat(gt2, gt2_2, gt2_3, dims = 4);
 
-meanGS1 = mean(GS1, dims = 4);
-meanGS2 = mean(GS2, dims = 4);
-stdGS1 = std(GS1, dims = 4);
-stdGS2 = std(GS2, dims = 4);
+t = LinRange(0.0, 95.0, 189);
+# params from fitting all 5 drugs at once
+p = [44.184, 1.24076, 0.0692788, 0.0460918, 0.3822, 0.854034, 0.605391, 0.771326, 0.0138293, 0.00183699, 0.000293753, 0.0127534, 0.00011816, 0.0142541, 60.6069, 0.899573, 1.99993, 0.0748216, 1.99326, 0.468332, 1.99864, 1.22536, 0.000141615, 0.0318616, 0.000216899, 8.80158e-7, 0.598489, 0.00110572, 6.68492, 2.05974, 1.99936, 0.167588, 0.507586, 0.316074, 0.248084, 0.826596, 1.6164e-5, 3.10987e-6, 3.55996e-5, 7.73526e-6, 0.0774056, 8.26708e-5, 3.34656, 2.83739, 0.0907361, 0.108245, 1.9758, 1.96985, 1.9993, 0.210137, 0.0690636, 1.30442e-5, 0.0767181, 0.00991078, 6.87891e-5, 1.45086e-5, 18.2253, 1.1841, 1.00505, 0.0735852, 1.97326, 0.783828, 0.45769, 1.99355, 0.0519941, 0.000533671, 0.00204743, 9.52975e-5, 5.23806e-5, 0.0677505, 0.339953, 0.403341, 0.802518, 0.470576, 1.298, 0.423103];
+efcs = getODEparams(p, concs);
 
-meanGS2[:, :, 19] .= mean(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims=3), dims=3)[:, :, 1]
-stdGS2[:, :, 19] .= std(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims=3), dims=3)[:, :, 1]
-```
+# Bliss on cell numbers over time
+Bliss_cellnum1 = zeros(189, 8, 8, 10)
+Bliss_cellnum2 = zeros(189, 8, 8, 10)
+for i=1:189
+    Bliss_cellnum1[i, :, :, :] .= blissCellNum(g1m, g2m, i)[1] # G1
+    Bliss_cellnum2[i, :, :, :] .= blissCellNum(g1m, g2m, i)[2] # G2
+end
+Bliss_cellnum = Bliss_cellnum1 .+ Bliss_cellnum2 # total
 
-## Palbociclib 50 nM+ lapatinibs.
+# Bliss on Model
+LPT_PLB = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 5]);
+LPT_GEM = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 3]);
+GEM_PLB = DrugResponseModel.AllBliss_params(efcs[:, :, 3], efcs[:, :, 5]);
+DOX_GEM = DrugResponseModel.AllBliss_params(efcs[:, :, 2], efcs[:, :, 3]);
 
-```julia;
-# palbo 50 nM alone
-# data
-
-function easierPlot(plateNum, idx, titles, g1, g2, lg)
-    if plateNum == 1
-        means = meanGS1
-        stds = stdGS1
-    elseif plateNum == 2
-        means = meanGS2
-        stds = stdGS2
-    end
-    p = plot(t, means[1, :, idx], ribbon = stds[1, :, idx], label = "G1", alpha = 0.1, color = 6, legend = lg, title = titles, ylabel = "cell number", xlabel="time [hr]")
-    plot!(t, g1, lw=2, color = 6, label = "G1 sim")
-    plot!(t, means[2, :, idx], color = 7, ribbon = stds[2, :, idx], label = "G2", alpha = 0.1)
-    plot!(t, g2, lw=2, color = 7, label = "G2 sim")
-    plot!(t, means[3, :, idx], color = 8, ribbon = stds[3, :, idx], label = "total", alpha = 0.1)
-    plot!(t, g1 .+ g2, lw=2, color = 8, label = "total sim")
+function helper(Bliss_model1, Bliss_model2, i, title, subPlabel, label, GS2)
+    t = LinRange(0.0, 95.0, 189)
+    p = plot(t, Bliss_model1 .+ Bliss_model2, label="total $label", xlabel="time [hr]", lw=3, ylabel="cell number", color="black", legend=:topright, title=title, titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
+    plot!(t, mean(GS2, dims = 4)[3, 1:189, i], ribbon= std(GS2, dims=4)[3, 1:189, i], alpha=0.1, label="", legend=:topright, titlefont = Plots.font("Helvetica", 12), lw=3, color="gray", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
+    plot!(t, Bliss_model1, label="G1 $label", xlabel="time [hr]", lw=3, ylabel="cell number", color="mediumseagreen", titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
+    plot!(t, Bliss_model2, label="G2 $label", titlefont = Plots.font("Helvetica", 12), lw=3, color="mediumpurple3", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
+    plot!(t, mean(GS2, dims = 4)[1, 1:189, i], ribbon= std(GS2, dims=4)[1, 1:189, i], alpha=0.1, label="", titlefont = Plots.font("Helvetica", 12), lw=3, color="darkseagreen3", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
+    plot!(t, mean(GS2, dims = 4)[2, 1:189, i], ribbon=std(GS2, dims=4)[2, 1:189, i], alpha=0.1, label="", titlefont = Plots.font("Helvetica", 12), lw=3, color="plum", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
+    annotate!(-20.0, 47.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
+    ylims!((0.0, 40.0))
     p
 end
-
-pp1 = DrugResponseModel.estimated_params(hcat(concs[:, 1], concs[:, 5]), "1,5")
-palboLap_params = DrugResponseModel.AllBliss_params(pp1[:, :, 1], pp1[:, :, 2])
-gnum1, gnum2, _ = predict(palboLap_params[:, 1, 5], palboLap_params[:, 1, 1], t)
-nums = zeros(193, 4, 2) # 193 data points, 4 conditions, 2 phases
-nums[:, 1, 1], nums[:, 1, 2], _ = predict(palboLap_params[:, 4, 5], palboLap_params[:, 1, 1], t)
-nums[:, 2, 1], nums[:, 2, 2], _ = predict(palboLap_params[:, 5, 5], palboLap_params[:, 1, 1], t)
-nums[:, 3, 1], nums[:, 3, 2], _ = predict(palboLap_params[:, 6, 5], palboLap_params[:, 1, 1], t)
-nums[:, 4, 1], nums[:, 4, 2], _ = predict(palboLap_params[:, 7, 5], palboLap_params[:, 1, 1], t)
-p1 = easierPlot(1, 8, "palbo 50 nM", gnum1, gnum2, false)
-p2 = easierPlot(2, 3, "palbo 50 + lap 25 nM", nums[:, 1, 1], nums[:, 1, 2], false)
-p3 = easierPlot(2, 4, "palbo 50 + lap 50 nM", nums[:, 2, 1], nums[:, 2, 2], false)
-p4 = easierPlot(2, 5, "palbo 50 + lap 100 nM", nums[:, 3, 1], nums[:, 3, 2], false)
-p5 = easierPlot(2, 6, "palbo 50 + lap 250 nM", nums[:, 4, 1], nums[:, 4, 2], true)
-plot(p1, p2, p3, p4, p5)
-ylims!((0.0, 35.0))
 ```
 
-## Palbociclib 50 nM + Gemcitabines.
+## Palbociclib 50 nM + lapatinibs [25 nM, 50 nM, 100 nM, 250 nM]
 
 ```julia;
-mixx = [
-        6.15483,
-        1.9652,
-        0.88169,
-        0.26036,
-        0.319946,
-        0.280528,
-        0.205429,
-        1.07089,
-        2.98743e-7,
-        4.12098e-8,
-        1.16296e-8,
-        0.0969344,
-        3.12294e-7,
-        1.95212e-6,
-        29.1235,
-        1.11835,
-        0.0955287,
-        0.415902,
-        1.4707,
-        1.99933,
-        0.377391,
-        1.99999,
-        2.21521e-7,
-        1.77619e-6,
-        1.53607e-9,
-        0.0137909,
-        0.0222303,
-        0.0799368,
-        0.274231,
-        0.630045,
-        1.056,
-        1.99997,
-        0.326369,
-        0.51053,
-    ];
-mix = DrugResponseModel.estimated_params(hcat(concs[:, 3], concs[:, 5]), "3,5")
+palbo50Lap = zeros(3, 189, 4)
+for i=1:4
+    palbo50Lap[1, :, i], palbo50Lap[2, :, i], _ = predict(LPT_PLB[:, i+3, 5], LPT_PLB[:, 1, 1], t)
+end
+palbo50Lap[3, :, :] .= palbo50Lap[1, :, :] .+ palbo50Lap[2, :, :]
+# well 2: 3,4,5,6
+p1 = helper(palbo50Lap[1, :, 1], palbo50Lap[2, :, 1], 3, "palbo 50 nM & lapt 25 nM", "a", "model", GS2)
+p2 = helper(palbo50Lap[1, :, 2], palbo50Lap[2, :, 2], 4, "palbo 50 nM & lapt 50 nM", "b", "model", GS2)
+p3 = helper(palbo50Lap[1, :, 3], palbo50Lap[2, :, 3], 5, "palbo 50 nM & lapt 100 nM", "c", "model", GS2)
+p4 = helper(palbo50Lap[1, :, 4], palbo50Lap[2, :, 4], 6, "palbo 50 nM & lapt 250 nM", "d", "model", GS2)
+plot(p1, p2, p3, p4, size = (1600, 350), layout = (1, 4))
+```
+
+## Palbociclib 50 nM + gemcitabines [5 nM, 10 nM, 17 nM, 30 nM]
+```julia
+palbo50Gem = zeros(3, 189, 4)
+for i=1:2
+    palbo50Gem[1, :, i], palbo50Gem[2, :, i], _ = predict(GEM_PLB[:, i+4, 5], GEM_PLB[:, 1, 1], t)
+end
 # Interpolation to find the parameters for 17 nM.
 hill(p, c) = p[2] + (p[3] - p[2]) / (1 + ((p[1]/c) ^ p[4]))
 gemc_hillParams = zeros(12, 4) # [a1, a2, b1, b2, b3, b4, d1, d2, d3, d4, d5, d6] x [EC50, min, max, k]
-gemc_hillParams[:, 1] .= mixx[1] # ec50
-gemc_hillParams[:, 4] .= mixx[2] # k
-gemc_hillParams[1:6, 2] = mixx[29:34]
+gemc_hillParams[:, 1] .= p[15] # ec50
+gemc_hillParams[:, 4] .= p[16] # k
+gemc_hillParams[1:6, 2] = p[71:76]
 gemc_hillParams[7:12, 2] .= 0.0
-gemc_hillParams[:, 3] .= mixx[3:14]
-gem_ps = zeros(12)
-for i=1:length(gem_ps)
-    gem_ps[i] = hill(gemc_hillParams[i, :], 17.0)
+gemc_hillParams[:, 3] .= p[17:28]
+GEM17 = zeros(12)
+for i=1:length(GEM17)
+    GEM17[i] = hill(gemc_hillParams[i, :], 17.0)
 end
-
-palboGem_params = DrugResponseModel.AllBliss_params(mix[:, :, 1], mix[:, :, 2])
-controls = cat(mix[:, 1, 1], mix[:, 1, 2], dims=2)
-gem17_palb50 = DrugResponseModel.Bliss_params_unit(gem_ps, mix[:, 5, 2], controls)
-nums[:, 1, 1], nums[:, 1, 2], _ = predict(palboGem_params[:, 5, 2], palboGem_params[:, 1, 1], t)
-nums[:, 2, 1], nums[:, 2, 2], _ = predict(palboGem_params[:, 6, 2], palboGem_params[:, 1, 1], t)
-nums[:, 3, 1], nums[:, 3, 2], _ = predict(gem17_palb50, palboGem_params[:, 1, 1], t)
-nums[:, 4, 1], nums[:, 4, 2], _ = predict(palboGem_params[:, 7, 2], palboGem_params[:, 1, 1], t)
-
-p1 = easierPlot(1, 8, "palbo 50 nM", gnum1, gnum2, false)
-p2 = easierPlot(2, 21, "palbo 50 + gem 5 nM", nums[:, 1, 1], nums[:, 1, 2], false)
-p3 = easierPlot(2, 22, "palbo 50 + gem 10 nM", nums[:, 2, 1], nums[:, 2, 2], false)
-p4 = easierPlot(2, 23, "palbo 50 + gem 17 nM", nums[:, 3, 1], nums[:, 3, 2], false)
-p5 = easierPlot(2, 24, "palbo 50 + gem 30 nM", nums[:, 4, 1], nums[:, 4, 2], true)
-plot(p1, p2, p3, p4, p5)
-ylims!((0.0, 35.0))
+GEM17_PLB = DrugResponseModel.Bliss_params_unit(GEM17, efcs[:, 5, 5], hcat(efcs[:, 1, 3], efcs[:, 1, 5]))
+palbo50Gem[1, :, 4], palbo50Gem[2, :, 4], _ = predict(GEM_PLB[:, 7, 5], GEM_PLB[:, 1, 1], t)
+palbo50Gem[1, :, 3], palbo50Gem[2, :, 3], _ = predict(GEM17_PLB, GEM_PLB[:, 1, 1], t)
+palbo50Gem[3, :, :] .= palbo50Gem[1, :, :] .+ palbo50Gem[2, :, :]
+# well 2: 21, 22, 23, 24
+p1 = helper(palbo50Gem[1, :, 1], palbo50Gem[2, :, 1], 21, "palbo 50 nM & gem 5 nM", "a", "model", GS2)
+p2 = helper(palbo50Gem[1, :, 2], palbo50Gem[2, :, 2], 22, "palbo 50 nM & gem 10 nM", "b", "model", GS2)
+p3 = helper(palbo50Gem[1, :, 3], palbo50Gem[2, :, 3], 23, "palbo 50 nM & gem 17 nM", "c", "model", GS2)
+p4 = helper(palbo50Gem[1, :, 4], palbo50Gem[2, :, 4], 24, "palbo 50 nM & gem 30 nM", "d", "model", GS2)
+plot(p1, p2, p3, p4, size = (1600, 350), layout = (1, 4))
 ```
 
-## Gemcitabine 10 nM + palbociclibs.
-
-```julia;
-gnum1, gnum2, _ = predict(palboGem_params[:, 6, 1], palboGem_params[:, 1, 1], t)
-nums[:, 1, 1], nums[:, 1, 2], _ = predict(palboGem_params[:, 6, 4], palboGem_params[:, 1, 1], t)
-nums[:, 2, 1], nums[:, 2, 2], _ = predict(palboGem_params[:, 6, 5], palboGem_params[:, 1, 1], t)
-nums[:, 3, 1], nums[:, 3, 2], _ = predict(palboGem_params[:, 6, 6], palboGem_params[:, 1, 1], t)
-
-p1 = easierPlot(1, 20, "gem 10 nM", gnum1, gnum2, false)
-p2 = easierPlot(1, 18, "gem 10 + palbo 25 nM", nums[:, 1, 1], nums[:, 1, 2], false)
-p3 = easierPlot(1, 23, "gem 10 + palbo 100 nM", nums[:, 2, 1], nums[:, 2, 2], false)
-p4 = easierPlot(1, 24, "gem 10 + palbo 250 nM", nums[:, 3, 1], nums[:, 3, 2], true)
-plot(p1, p2, p3, p4)
-ylims!((0.0, 35.0))
+## Gemcitabine 10 nM + palbociclibs [25 nM, 100 nM, 250 nM]
+```julia
+Gem10palbo = zeros(3, 189, 3)
+for i=2:3
+    Gem10palbo[1, :, i], Gem10palbo[2, :, i], _ = predict(GEM_PLB[:, 6, i+4], GEM_PLB[:, 1, 1], t)
+end
+Gem10palbo[1, :, 3], Gem10palbo[2, :, 3], _ = predict(GEM_PLB[:, 6, 4], GEM_PLB[:, 1, 1], t)
+Gem10palbo[3, :, :] .= Gem10palbo[1, :, :] .+ Gem10palbo[2, :, :]
+# well 1: 18, 23, 24
+p1 = helper(Gem10palbo[1, :, 1], Gem10palbo[2, :, 1], 18, "gem 10 nM & palbo 25 nM", "a", "model", GS1)
+p2 = helper(Gem10palbo[1, :, 2], Gem10palbo[2, :, 2], 23, "gem 10 nM & palbo 100 nM", "b", "model", GS1)
+p3 = helper(Gem10palbo[1, :, 3], Gem10palbo[2, :, 3], 24, "gem 10 nM & palbo 250 nM", "c", "model", GS1)
+plot(p1, p2, p3, size = (1200, 350), layout = (1, 3))
 ```
 
-## Gemcitabine 10 nM + lapatinibs.
-
-```julia;
-pp1 = DrugResponseModel.estimated_params(hcat(concs[:, 1], concs[:, 3]), "1,3")
-gemLap_params = DrugResponseModel.AllBliss_params(pp1[:, :, 2], pp1[:, :, 1])
-nums[:, 1, 1], nums[:, 1, 2], _ = predict(gemLap_params[:, 6, 4], gemLap_params[:, 1, 1], t)
-nums[:, 2, 1], nums[:, 2, 2], _ = predict(gemLap_params[:, 6, 5], gemLap_params[:, 1, 1], t)
-nums[:, 3, 1], nums[:, 3, 2], _ = predict(gemLap_params[:, 6, 6], gemLap_params[:, 1, 1], t)
-nums[:, 4, 1], nums[:, 4, 2], _ = predict(gemLap_params[:, 6, 7], gemLap_params[:, 1, 1], t)
-
-p1 = easierPlot(1, 20, "gem 10 nM", gnum1, gnum2, false)
-p2 = easierPlot(2, 9, "gem 10 + lap 25 nM", nums[:, 1, 1], nums[:, 1, 2], false)
-p3 = easierPlot(2, 10, "gem 10 + lap 50 nM", nums[:, 2, 1], nums[:, 2, 2], false)
-p4 = easierPlot(2, 11, "gem 10 + lap 100 nM", nums[:, 3, 1], nums[:, 3, 2], false)
-p5 = easierPlot(2, 12, "gem 10 + lap 250 nM", nums[:, 4, 1], nums[:, 4, 2], true)
-plot(p1, p2, p3, p4, p5)
-ylims!((0.0, 35.0))
+## Gemcitabine 10 nM + lapatinibs [25 nM, 50 nM, 100 nM, 250 nM]
+```julia
+Gem10Lap = zeros(3, 189, 4)
+for i=1:4
+    Gem10Lap[1, :, i], Gem10Lap[2, :, i], _ = predict(LPT_GEM[:, i+3, 6], LPT_GEM[:, 1, 1], t)
+end
+Gem10Lap[3, :, :] .= Gem10Lap[1, :, :] .+ Gem10Lap[2, :, :];
+# well 2: 9, 10, 11, 12
+p1 = helper(Gem10Lap[1, :, 1], Gem10Lap[2, :, 1], 9, "gem 10 nM & lapt 25 nM", "a", "model", GS2)
+p2 = helper(Gem10Lap[1, :, 2], Gem10Lap[2, :, 2], 10, "gem 10 nM & lapt 50 nM", "b", "model", GS2)
+p3 = helper(Gem10Lap[1, :, 3], Gem10Lap[2, :, 3], 11, "gem 10 nM & lapt 100 nM", "c", "model", GS2)
+p4 = helper(Gem10Lap[1, :, 4], Gem10Lap[2, :, 4], 12, "gem 10 nM & lapt 250 nM", "d", "model", GS2)
+plot(p1, p2, p3, p4, size = (1600, 350), layout = (1, 4))
 ```
 
-## Dox 20 nM + gemcitabines.
-
-```julia;
-pp1 = DrugResponseModel.estimated_params(hcat(concs[:, 2], concs[:, 3]), "2,3")
-doxGem_params = DrugResponseModel.AllBliss_params(pp1[:, :, 1], pp1[:, :, 2])
-gnum1, gnum2, _ = predict(doxGem_params[:, 4, 1], doxGem_params[:, 1, 1], t)
-controlss = cat(pp1[:, 1, 1], pp1[:, 1, 2], dims=2)
-gem17_dox20 = DrugResponseModel.Bliss_params_unit(pp1[:, 4, 1], gem_ps, controlss)
-nums[:, 1, 1], nums[:, 1, 2], _ = predict(doxGem_params[:, 4, 5], doxGem_params[:, 1, 1], t)
-nums[:, 2, 1], nums[:, 2, 2], _ = predict(doxGem_params[:, 4, 6], doxGem_params[:, 1, 1], t)
-nums[:, 3, 1], nums[:, 3, 2], _ = predict(gem17_dox20, doxGem_params[:, 1, 1], t)
-nums[:, 4, 1], nums[:, 4, 2], _ = predict(doxGem_params[:, 4, 7], doxGem_params[:, 1, 1], t)
-
-p1 = easierPlot(1, 6, "dox 20 nM", gnum1, gnum2, false)
-p2 = easierPlot(2, 15, "dox 20 + gem 5 nM", nums[:, 1, 1], nums[:, 1, 2], false)
-p3 = easierPlot(2, 16, "dox 20 + gem 10 nM", nums[:, 2, 1], nums[:, 2, 2], false)
-p4 = easierPlot(2, 17, "dox 20 + gem 17 nM", nums[:, 3, 1], nums[:, 3, 2], false)
-p5 = easierPlot(2, 18, "dox 20 + gem 30 nM", nums[:, 4, 1], nums[:, 4, 2], true)
-plot(p1, p2, p3, p4, p5)
-ylims!((0.0, 35.0))
+## Dox 20 nM + gemcitabines [5 nM, 10 nM, 17 nM, 30 nM]
+```julia
+dox20gem = zeros(3, 189, 4)
+for i=1:2
+    dox20gem[1, :, i], dox20gem[2, :, i], _ = predict(DOX_GEM[:, 4, i+4], DOX_GEM[:, 1, 1], t)
+end
+dox20gem[1, :, 4], dox20gem[2, :, 4], _ = predict(DOX_GEM[:, 4, 7], DOX_GEM[:, 1, 1], t)
+DOX10_GEM17 = DrugResponseModel.Bliss_params_unit(efcs[:, 4, 2], GEM17, hcat(efcs[:, 1, 2], efcs[:, 1, 3]))
+dox20gem[1, :, 3], dox20gem[2, :, 3], _ = predict(DOX10_GEM17, DOX_GEM[:, 1, 1], t)
+dox20gem[3, :, :] .= dox20gem[1, :, :] .+ dox20gem[2, :, :]
+# well 2: 15, 16, 17, 18
+p1 = helper(dox20gem[1, :, 1], dox20gem[2, :, 1], 15, "dox 20 nM & gem 5 nM", "a", "model", GS2)
+p2 = helper(dox20gem[1, :, 2], dox20gem[2, :, 2], 16, "dox 20 nM & gem 10 nM", "b", "model", GS2)
+p3 = helper(dox20gem[1, :, 3], dox20gem[2, :, 3], 17, "dox 20 nM & gem 17 nM", "c", "model", GS2)
+p4 = helper(dox20gem[1, :, 4], dox20gem[2, :, 4], 18, "dox 20 nM & gem 30 nM", "d", "model", GS2)
+plot(p1, p2, p3, p4, size = (1600, 350), layout = (1, 4))
 ```
 
-
-## Lap 100 nM + gemcitabines.
-```julia;
-pp1 = DrugResponseModel.estimated_params(hcat(concs[:, 1], concs[:, 3]), "1,3")
-gnum1, gnum2, _ = predict(pp1[:, 6, 1], pp1[:, 1, 1], t)
-controlsss = cat(pp1[:, 1, 1], pp1[:, 1, 2], dims=2)
-gem17_lap100 = DrugResponseModel.Bliss_params_unit(gem_ps, pp1[:, 6, 1], controlsss)
-nums[:, 1, 1], nums[:, 1, 2], _ = predict(gemLap_params[:, 5, 6], gemLap_params[:, 1, 1], t)
-nums[:, 2, 1], nums[:, 2, 2], _ = predict(gem17_lap100, gemLap_params[:, 1, 1], t)
-nums[:, 3, 1], nums[:, 3, 2], _ = predict(gemLap_params[:, 7, 6], gemLap_params[:, 1, 1], t)
-
-p1 = easierPlot(1, 4, "lap 100 nM", gnum1, gnum2, false)
-p2 = easierPlot(2, 17, "lap 100 + gem 5 nM", nums[:, 1, 1], nums[:, 1, 2], false)
-p3 = easierPlot(2, 13, "lap 100 + gem 17 nM", nums[:, 2, 1], nums[:, 2, 2], false)
-p4 = easierPlot(2, 19, "lap 100 + gem 30 nM", nums[:, 3, 1], nums[:, 3, 2], true)
-plot(p1, p2, p3, p4)
-ylims!((0.0, 35.0))
+## Lap 100 nM + gemcitabines [17 nM, 30 nM]
+```julia
+lap100gem = zeros(3, 189, 2)
+LAP100_GEM17 = DrugResponseModel.Bliss_params_unit(efcs[:, 6, 1], GEM17, hcat(efcs[:, 1, 1], efcs[:, 1, 3]))
+lap100gem[1, :, 1], lap100gem[2, :, 1], _ = predict(LAP100_GEM17, LPT_GEM[:, 1, 1], t)
+lap100gem[1, :, 2], lap100gem[2, :, 2], _ = predict(LPT_GEM[:, 6, 7], LPT_GEM[:, 1, 1], t)
+lap100gem[3, :, :] .= lap100gem[1, :, :] .+ lap100gem[2, :, :]
+# well 2: 13, 19
+p1 = helper(lap100gem[1, :, 1], lap100gem[2, :, 1], 13, "lapt 100 nM & gem 17 nM", "a", "model", GS2)
+p2 = helper(lap100gem[1, :, 2], lap100gem[2, :, 2], 19, "lapt 100 nM & gem 30 nM", "b", "model", GS2)
+plot(p1, p2, size = (800, 350), layout = (1, 2))
 ```
 
-## Lap 100 nM + palbociclibs.
-```julia;
-gnum1, gnum2, _ = predict(palboLap_params[:, 6, 1], palboLap_params[:, 1, 1], t)
-nums[:, 1, 1], nums[:, 1, 2], _ = predict(palboLap_params[:, 6, 4], palboLap_params[:, 1, 1], t)
-nums[:, 2, 1], nums[:, 2, 2], _ = predict(palboLap_params[:, 6, 6], palboLap_params[:, 1, 1], t)
-nums[:, 3, 1], nums[:, 3, 2], _ = predict(palboLap_params[:, 6, 7], palboLap_params[:, 1, 1], t)
-
-p1 = easierPlot(1, 4, "lap 100 nM", gnum1, gnum2, false)
-p2 = easierPlot(2, 8, "lap 100 + palbo 25 nM", nums[:, 1, 1], nums[:, 1, 2], false)
-p3 = easierPlot(2, 14, "lap 100 + palbo 100 nM", nums[:, 2, 1], nums[:, 2, 2], false)
-p4 = easierPlot(2, 20, "lap 100 + palbo 250 nM", nums[:, 3, 1], nums[:, 3, 2], true)
-plot(p1, p2, p3, p4)
-ylims!((0.0, 35.0))
+## Lap 100 nM + palbociclibs [25 nM, 100 nM, 250 nM]
+```julia
+Lap100palbo = zeros(3, 189, 3)
+for i=2:3
+    Lap100palbo[1, :, i], Lap100palbo[2, :, i], _ = predict(LPT_PLB[:, 6, i+4], LPT_PLB[:, 1, 1], t)
+end
+Lap100palbo[1, :, 1], Lap100palbo[2, :, 1], _ = predict(LPT_PLB[:, 6, 4], LPT_PLB[:, 1, 1], t)
+Lap100palbo[3, :, :] .= Lap100palbo[1, :, :] .+ Lap100palbo[2, :, :]
+# well 2: 8, 14, 20
+p1 = helper(Lap100palbo[1, :, 1], Lap100palbo[2, :, 1], 8, "lapt 100 nM & palbo 25 nM", "a", "model", GS1)
+p2 = helper(Lap100palbo[1, :, 2], Lap100palbo[2, :, 2], 14, "lapt 100 nM & palbo 100 nM", "b", "model", GS1)
+p3 = helper(Lap100palbo[1, :, 3], Lap100palbo[2, :, 3], 20, "lapt 100 nM & palbo 250 nM", "c", "model", GS1)
+plot(p1, p2, p3, size = (1200, 350), layout = (1, 3))
 ```

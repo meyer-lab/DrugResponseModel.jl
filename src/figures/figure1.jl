@@ -79,6 +79,7 @@ function plot_pG1(efcs, ymax, drName, ylabel, subPlabel, plus)
         markerstrokewidth = 0,
         ylabel = ylabel,
         titlefont = Plots.font("Helvetica", 12),
+        legendfont = Plots.font("Helvetica", 9),
         guidefont = Plots.font("Helvetica", 12),
         xtickfont = Plots.font("Helvetica", 12),
         ytickfont = Plots.font("Helvetica", 12),
@@ -98,6 +99,7 @@ function plot_pG1(efcs, ymax, drName, ylabel, subPlabel, plus)
         markerstrokewidth = 0,
         ylabel = ylabel,
         titlefont = Plots.font("Helvetica", 12),
+        legendfont = Plots.font("Helvetica", 9),
         guidefont = Plots.font("Helvetica", 12),
         xtickfont = Plots.font("Helvetica", 12),
         ytickfont = Plots.font("Helvetica", 12),
@@ -109,55 +111,9 @@ function plot_pG1(efcs, ymax, drName, ylabel, subPlabel, plus)
         title = "$drName effects",
     )
     annotate!(-0.5, (ymax + plus), text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
-    ylims!((-0.05, ymax))
+    ylims!((-0.01, ymax))
 end
 
-function plot_pG2(efcs, ymax, drName, ylabel, plus)
-    x = ["G11", "G12", "", "G21", "G22", "G23", "G24"]
-    y1 = [efcs[1:2, 1], nothing, efcs[3:6, 1]]
-    y2 = [efcs[1:2, 8], nothing, efcs[3:6, 8]]
-
-    scatter(
-        x,
-        y1,
-        color = "cyan4",
-        xlabel = "sub-phase",
-        label = "control",
-        markerstrokewidth = 0,
-        ylabel = ylabel,
-        titlefont = Plots.font("Helvetica", 12),
-        guidefont = Plots.font("Helvetica", 12),
-        xtickfont = Plots.font("Helvetica", 12),
-        ytickfont = Plots.font("Helvetica", 12),
-        bottom_margin = 1.5cm,
-        fg_legend = :transparent,
-        top_margin = 1.25cm,
-        left_margin = 1.25cm,
-        right_margin = 1.25cm,
-        title = "$drName effects",
-    )
-    scatter!(
-        x,
-        y2,
-        color = "cyan3",
-        xlabel = "sub-phase",
-        label = "max effect",
-        markerstrokewidth = 0,
-        ylabel = ylabel,
-        titlefont = Plots.font("Helvetica", 12),
-        guidefont = Plots.font("Helvetica", 12),
-        xtickfont = Plots.font("Helvetica", 12),
-        ytickfont = Plots.font("Helvetica", 12),
-        bottom_margin = 1.5cm,
-        fg_legend = :transparent,
-        top_margin = 1.25cm,
-        left_margin = 1.25cm,
-        right_margin = 1.25cm,
-        title = "$drName effects",
-    )
-    annotate!(-0.5, (ymax + plus), text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
-    ylims!((-0.05, ymax))
-end
 
 function figure1()
 
@@ -268,9 +224,9 @@ function figure1()
     p3 = plot_fig1(concs[:, 2], G1[:, :, 2], g1m[:, 1:7, 2, 1], "Doxorubicin", "G1", "d")
     p4 = plot_fig1(concs[:, 2], G2[:, :, 2], g2m[:, 1:7, 2, 1], "Doxorubicin", "G2", "e")
     p5 = SSE(G1, G2, g1m, g2m, "f")
-    p6 = plot_pG1(efcs[1:6, :, 1], 2.0, "Lapatinib", "progression rates", "g", 0.3)
+    p6 = plot_pG1(efcs[1:6, :, 1], 2.5, "Lapatinib", "progression rates", "g", 0.3)
     p7 = plot_pG1(efcs[7:12, :, 1], 0.1, "Lapatinib", "death rates", "h", 0.02)
-    p8 = plot_pG1(efcs[1:6, :, 2], 2.0, "Doxorubicin", "progression rates", "i", 0.3)
+    p8 = plot_pG1(efcs[1:6, :, 2], 2.5, "Doxorubicin", "progression rates", "i", 0.3)
     p9 = plot_pG1(efcs[7:12, :, 2], 0.1, "Doxorubicin", "death rates", "j", 0.02)
 
     figure1 = plot(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, size = (2000, 700), layout = (2, 5))
