@@ -10,7 +10,9 @@ This file shows how much the simulations from the model and the experimental dat
 import Pkg; Pkg.instantiate()
 Pkg.activate(".")
 using DrugResponseModel
-using Plots, Statistics, LinearAlgebra;
+using Plots, Statistics, LinearAlgebra, Plots.Measures
+Plots.scalefontsizes(0.7)
+
 gt1, gt2 = DrugResponseModel.import_combination("AU01001");
 gt1_2, gt2_2 = DrugResponseModel.import_combination("AU01101");
 gt1_3, gt2_3 = DrugResponseModel.import_combination("AU00901");
@@ -72,7 +74,7 @@ p1 = helper(palbo50Lap[1, :, 1], palbo50Lap[2, :, 1], 3, "palbo 50 nM & lapt 25 
 p2 = helper(palbo50Lap[1, :, 2], palbo50Lap[2, :, 2], 4, "palbo 50 nM & lapt 50 nM", "b", "model", GS2)
 p3 = helper(palbo50Lap[1, :, 3], palbo50Lap[2, :, 3], 5, "palbo 50 nM & lapt 100 nM", "c", "model", GS2)
 p4 = helper(palbo50Lap[1, :, 4], palbo50Lap[2, :, 4], 6, "palbo 50 nM & lapt 250 nM", "d", "model", GS2)
-plot(p1, p2, p3, p4)
+plot(p1, p2, p3, p4, size = (1600, 350), layout = (1, 4))
 ```
 
 ## Palbociclib 50 nM + gemcitabines [5 nM, 10 nM, 17 nM, 30 nM]
@@ -102,7 +104,7 @@ p1 = helper(palbo50Gem[1, :, 1], palbo50Gem[2, :, 1], 21, "palbo 50 nM & gem 5 n
 p2 = helper(palbo50Gem[1, :, 2], palbo50Gem[2, :, 2], 22, "palbo 50 nM & gem 10 nM", "b", "model", GS2)
 p3 = helper(palbo50Gem[1, :, 3], palbo50Gem[2, :, 3], 23, "palbo 50 nM & gem 17 nM", "c", "model", GS2)
 p4 = helper(palbo50Gem[1, :, 4], palbo50Gem[2, :, 4], 24, "palbo 50 nM & gem 30 nM", "d", "model", GS2)
-plot(p1, p2, p3, p4)
+plot(p1, p2, p3, p4, size = (1600, 350), layout = (1, 4))
 ```
 
 ## Gemcitabine 10 nM + palbociclibs [25 nM, 100 nM, 250 nM]
@@ -117,7 +119,7 @@ Gem10palbo[3, :, :] .= Gem10palbo[1, :, :] .+ Gem10palbo[2, :, :]
 p1 = helper(Gem10palbo[1, :, 1], Gem10palbo[2, :, 1], 18, "gem 10 nM & palbo 25 nM", "a", "model", GS1)
 p2 = helper(Gem10palbo[1, :, 2], Gem10palbo[2, :, 2], 23, "gem 10 nM & palbo 100 nM", "b", "model", GS1)
 p3 = helper(Gem10palbo[1, :, 3], Gem10palbo[2, :, 3], 24, "gem 10 nM & palbo 250 nM", "c", "model", GS1)
-plot(p1, p2, p3)
+plot(p1, p2, p3, size = (1200, 350), layout = (1, 3))
 ```
 
 ## Gemcitabine 10 nM + lapatinibs [25 nM, 50 nM, 100 nM, 250 nM]
@@ -132,7 +134,7 @@ p1 = helper(Gem10Lap[1, :, 1], Gem10Lap[2, :, 1], 9, "gem 10 nM & lapt 25 nM", "
 p2 = helper(Gem10Lap[1, :, 2], Gem10Lap[2, :, 2], 10, "gem 10 nM & lapt 50 nM", "b", "model", GS2)
 p3 = helper(Gem10Lap[1, :, 3], Gem10Lap[2, :, 3], 11, "gem 10 nM & lapt 100 nM", "c", "model", GS2)
 p4 = helper(Gem10Lap[1, :, 4], Gem10Lap[2, :, 4], 12, "gem 10 nM & lapt 250 nM", "d", "model", GS2)
-plot(p1, p2, p3, p4)
+plot(p1, p2, p3, p4, size = (1600, 350), layout = (1, 4))
 ```
 
 ## Dox 20 nM + gemcitabines [5 nM, 10 nM, 17 nM, 30 nM]
@@ -150,7 +152,7 @@ p1 = helper(dox20gem[1, :, 1], dox20gem[2, :, 1], 15, "dox 20 nM & gem 5 nM", "a
 p2 = helper(dox20gem[1, :, 2], dox20gem[2, :, 2], 16, "dox 20 nM & gem 10 nM", "b", "model", GS2)
 p3 = helper(dox20gem[1, :, 3], dox20gem[2, :, 3], 17, "dox 20 nM & gem 17 nM", "c", "model", GS2)
 p4 = helper(dox20gem[1, :, 4], dox20gem[2, :, 4], 18, "dox 20 nM & gem 30 nM", "d", "model", GS2)
-plot(p1, p2, p3, p4)
+plot(p1, p2, p3, p4, size = (1600, 350), layout = (1, 4))
 ```
 
 ## Lap 100 nM + gemcitabines [17 nM, 30 nM]
@@ -163,7 +165,7 @@ lap100gem[3, :, :] .= lap100gem[1, :, :] .+ lap100gem[2, :, :]
 # well 2: 13, 19
 p1 = helper(lap100gem[1, :, 1], lap100gem[2, :, 1], 13, "lapt 100 nM & gem 17 nM", "a", "model", GS2)
 p2 = helper(lap100gem[1, :, 2], lap100gem[2, :, 2], 19, "lapt 100 nM & gem 30 nM", "b", "model", GS2)
-plot(p1, p2)
+plot(p1, p2, size = (800, 350), layout = (1, 2))
 ```
 
 ## Lap 100 nM + palbociclibs [25 nM, 100 nM, 250 nM]
@@ -178,5 +180,5 @@ Lap100palbo[3, :, :] .= Lap100palbo[1, :, :] .+ Lap100palbo[2, :, :]
 p1 = helper(Lap100palbo[1, :, 1], Lap100palbo[2, :, 1], 8, "lapt 100 nM & palbo 25 nM", "a", "model", GS1)
 p2 = helper(Lap100palbo[1, :, 2], Lap100palbo[2, :, 2], 14, "lapt 100 nM & palbo 100 nM", "b", "model", GS1)
 p3 = helper(Lap100palbo[1, :, 3], Lap100palbo[2, :, 3], 20, "lapt 100 nM & palbo 250 nM", "c", "model", GS1)
-plot(p1, p2, p3)
+plot(p1, p2, p3, size = (1200, 350), layout = (1, 3))
 ```
