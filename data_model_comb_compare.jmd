@@ -10,7 +10,7 @@ This file shows how much the simulations from the model and the experimental dat
 import Pkg; Pkg.instantiate()
 Pkg.activate(".")
 using DrugResponseModel
-
+using Plots, Statistics, LinearAlgebra;
 gt1, gt2 = DrugResponseModel.import_combination("AU01001");
 gt1_2, gt2_2 = DrugResponseModel.import_combination("AU01101");
 gt1_3, gt2_3 = DrugResponseModel.import_combination("AU00901");
