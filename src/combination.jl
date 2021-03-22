@@ -33,8 +33,7 @@ function AllBliss_params(pp1, pp2)
     end
     @assert all(combined[7:end, 1, 1] .== 0.0)
     # TODO: remember to uncomment this assertion after estimating correct set of parameters
-    # @assert(all(combined[1:4, :, :] .>= 0.0))
-    # @assert(all(combined[1:4, :, :] .<= 5.0))
+    @assert(all(combined .>= 0.0))
     combined
 end
 
@@ -69,16 +68,20 @@ end
 
 """ In this function, we apply the Bliss synergy to the cell numbers. 
 This is to compare the traditional way of representing the combination effect, compare to the way we do in our model."""
-function blissCellNum(g1s, g2s; n = 8)
-    gs = g1s[end, :, :] + g2s[end, :, :]
+function blissCellNum(g1s, g2s, tt; n = 8)
+    gs = g1s[tt, :, :]
+    gs2 = g2s[tt, :, :]
     num = zeros(n, 5)
+    num2 = zeros(n, 5)
 
     for i = 1:5
         # num is a 8 x 5 matrix, holding scaled cell numbers for 5 drugs, in 8 concentrations, for a specific time point.
         num[:, i] = 1.0 .- (gs[:, i] ./ gs[1, i])
+        num2[:, i] = 1.0 .- (gs2[:, i] ./ gs2[1, i])
     end
 
     combined = zeros(n, n, 10)
+    combined2 = zeros(n, n, 10)
     x = 1
     for i = 1:4
         for k = (i + 1):5
@@ -86,11 +89,21 @@ function blissCellNum(g1s, g2s; n = 8)
             # columns are drugA and rows are drug 2, and the third dimension shows which pair of drugs were combined.
             for j = 1:n
                 combined[:, j, x] = -(num[:, i] .+ num[j, k] .- (num[:, i] .* num[j, k]) .- 1.0) .* (gs[1, i] + gs[1, k]) / 2
+                combined2[:, j, x] = -(num2[:, i] .+ num2[j, k] .- (num2[:, i] .* num2[j, k]) .- 1.0) .* (gs2[1, i] + gs2[1, k]) / 2
             end
             x += 1
         end
     end
 
     @assert all(combined .>= 0.0)
+    return combined, combined2
+end
+
+""" only to find the combination of one concentration of drug 1, and once concentration of drug 2, over time. """
+function pair_cellnum_Bliss(total1, total2)
+    # note that each of the two inputs, should be vcat with control: total1: [control; condition_i]
+    normedtotal1 = 1.0 .- (total1[:, 2] ./ total1[:, 1]) # normalize to control
+    normedtotal2 = 1.0 .- (total2[:, 2] ./ total2[:, 1]) # normalize to control
+    combined = -(normedtotal1 .+ normedtotal2 .- (normedtotal1 .* normedtotal2) .- 1.0) .* (total1[:, 1] .+ total2[:, 1])/2
     return combined
 end
