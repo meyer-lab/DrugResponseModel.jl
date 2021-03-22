@@ -103,8 +103,8 @@ function figureS1()
         end
     end
 
-    G1ref = JLD.load("G1ref.jld")["data"]
-    G2ref = JLD.load("G2ref.jld")["data"]
+    G1ref = JLD.load("data/G1ref.jld")["data"]
+    G2ref = JLD.load("data/G2ref.jld")["data"]
 
     p1 = DrugResponseModel.plot_fig1(concs[:, 3], G1[:, :, 3], g1m[:, 1:7, 3, 1], "Gemcitabine", "G1", "a")
     p2 = DrugResponseModel.plot_fig1(concs[:, 3], G2[:, :, 3], g2m[:, 1:7, 3, 1], "Gemcitabine", "G2", "b")

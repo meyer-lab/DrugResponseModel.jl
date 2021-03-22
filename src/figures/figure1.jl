@@ -111,7 +111,7 @@ function plot_pG1(efcs, ymax, drName, ylabel, subPlabel, plus)
         title = "$drName effects",
     )
     annotate!(-0.5, (ymax + plus), text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
-    ylims!((-0.05, ymax))
+    ylims!((-0.01, ymax))
 end
 
 
@@ -224,9 +224,9 @@ function figure1()
     p3 = plot_fig1(concs[:, 2], G1[:, :, 2], g1m[:, 1:7, 2, 1], "Doxorubicin", "G1", "d")
     p4 = plot_fig1(concs[:, 2], G2[:, :, 2], g2m[:, 1:7, 2, 1], "Doxorubicin", "G2", "e")
     p5 = SSE(G1, G2, g1m, g2m, "f")
-    p6 = plot_pG1(efcs[1:6, :, 1], 2.0, "Lapatinib", "progression rates", "g", 0.3)
+    p6 = plot_pG1(efcs[1:6, :, 1], 2.5, "Lapatinib", "progression rates", "g", 0.3)
     p7 = plot_pG1(efcs[7:12, :, 1], 0.1, "Lapatinib", "death rates", "h", 0.02)
-    p8 = plot_pG1(efcs[1:6, :, 2], 2.0, "Doxorubicin", "progression rates", "i", 0.3)
+    p8 = plot_pG1(efcs[1:6, :, 2], 2.5, "Doxorubicin", "progression rates", "i", 0.3)
     p9 = plot_pG1(efcs[7:12, :, 2], 0.1, "Doxorubicin", "death rates", "j", 0.02)
 
     figure1 = plot(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, size = (2000, 700), layout = (2, 5))

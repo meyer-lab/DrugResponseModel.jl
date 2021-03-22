@@ -7,6 +7,10 @@ weave_options:
 This file shows how much the simulations from the model and the experimental data agree for drug combination.
 
 ```julia;
+import Pkg; Pkg.instantiate()
+Pkg.activate(".")
+using DrugResponseModel
+
 gt1, gt2 = DrugResponseModel.import_combination("AU01001");
 gt1_2, gt2_2 = DrugResponseModel.import_combination("AU01101");
 gt1_3, gt2_3 = DrugResponseModel.import_combination("AU00901");
