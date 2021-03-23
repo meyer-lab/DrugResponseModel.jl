@@ -105,7 +105,7 @@ LAP100_GEM17 = DrugResponseModel.Bliss_params_unit(efcs[:, 6, 1], GEM17, hcat(ef
 lap100gem[1, :, 1], lap100gem[2, :, 1], _ = predict(LAP100_GEM17, LPT_GEM[:, 1, 1], t)
 lap100gem[1, :, 2], lap100gem[2, :, 2], _ = predict(LPT_GEM[:, 6, 7], LPT_GEM[:, 1, 1], t)
 lap100gem[3, :, :] .= lap100gem[1, :, :] .+ lap100gem[2, :, :]
-# well 2: 17, 13, 19
+# well 2: 13, 19
 
 ########### Lap 100 nM + palbociclibs [25 nM, 100 nM, 250 nM]
 Lap100palbo = zeros(3, 189, 3)
