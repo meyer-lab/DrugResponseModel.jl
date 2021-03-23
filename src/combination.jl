@@ -104,6 +104,6 @@ function pair_cellnum_Bliss(total1, total2)
     # note that each of the two inputs, should be vcat with control: total1: [control; condition_i]
     normedtotal1 = 1.0 .- (total1[:, 2] ./ total1[:, 1]) # normalize to control
     normedtotal2 = 1.0 .- (total2[:, 2] ./ total2[:, 1]) # normalize to control
-    combined = -(normedtotal1 .+ normedtotal2 .- (normedtotal1 .* normedtotal2) .- 1.0) .* (total1[:, 1] .+ total2[:, 1])/2
+    combined = -(normedtotal1 .+ normedtotal2 .- (normedtotal1 .* normedtotal2) .- 1.0) .* (total1[:, 1] .+ total2[:, 1]) / 2
     return combined
 end
