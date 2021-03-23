@@ -36,6 +36,7 @@ Bliss_cellnum = Bliss_cellnum1 .+ Bliss_cellnum2 # total
 # Bliss on Model
 LPT_PLB = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 5])
 LPT_GEM = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 3])
+LPT_TAX = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 4])
 GEM_PLB = DrugResponseModel.AllBliss_params(efcs[:, :, 3], efcs[:, :, 5])
 DOX_GEM = DrugResponseModel.AllBliss_params(efcs[:, :, 2], efcs[:, :, 3])
 
@@ -115,6 +116,13 @@ Lap100palbo[1, :, 1], Lap100palbo[2, :, 1], _ = predict(LPT_PLB[:, 6, 4], LPT_PL
 Lap100palbo[3, :, :] .= Lap100palbo[1, :, :] .+ Lap100palbo[2, :, :]
 # well 2: 8, 14, 20
 
+########### Pax 2 nM + Lapatinib [50 nM, 100 nM]
+Pax2_lap = zeros(3, 189, 2)
+Pax2_lap[1, :, 1], Pax2_lap[2, :, 1], _ = predict(LPT_TAX[:, 5, 4], LPT_TAX[:, 1, 1], t)
+Pax2_lap[1, :, 2], Pax2_lap[2, :, 2], _ = predict(LPT_TAX[:, 6, 4], LPT_TAX[:, 1, 1], t)
+Pax2_lap[3, :, :] .= Pax2_lap[1, :, :] .+ Pax2_lap[2, :, :]
+# well 2: 2 (50 nM) well 1: 16 (100 nM)
+
 function SSEs_combination()
     SSEs = zeros(2, 7) # dim1: exp - Bliss on cell number, dim2: exp - Bliss on model
 
@@ -161,14 +169,18 @@ end
 
 function figureS2()
 
-    p1 = helper(Bliss_cellnum1[:, 4, 6, 2], Bliss_cellnum2[:, 4, 6, 2], 9, "gem 10 nM & lapt 25 nM", "a", "cell num", GS2)
-    p2 = helper(Bliss_cellnum1[:, 5, 6, 2], Bliss_cellnum2[:, 5, 6, 2], 10, "gem 10 nM & lapt 50 nM", "b", "cell num", GS2)
-    p3 = helper(Bliss_cellnum1[:, 6, 6, 2], Bliss_cellnum2[:, 6, 6, 2], 11, "gem 10 nM & lapt 100 nM", "c", "cell num", GS2)
-    p4 = helper(Bliss_cellnum1[:, 7, 6, 2], Bliss_cellnum2[:, 7, 6, 2], 12, "gem 10 nM & lapt 250 nM", "d", "cell num", GS2)
-    p5 = helper(Gem10Lap[1, :, 1], Gem10Lap[2, :, 1], 9, "gem 10 nM & lapt 25 nM", "e", "model", GS2)
-    p6 = helper(Gem10Lap[1, :, 2], Gem10Lap[2, :, 2], 10, "gem 10 nM & lapt 50 nM", "f", "model", GS2)
-    p7 = helper(Gem10Lap[1, :, 3], Gem10Lap[2, :, 3], 11, "gem 10 nM & lapt 100 nM", "g", "model", GS2)
+    p1 = helper(Bliss_cellnum1[:, 4, 6, 2], Bliss_cellnum2[:, 5, 6, 2], 10, "gem 10 nM & lapt 50 nM", "a", "cell num", GS2)
+    p2 = helper(Bliss_cellnum1[:, 5, 6, 2], Bliss_cellnum2[:, 7, 6, 2], 12, "gem 10 nM & lapt 250 nM", "b", "cell num", GS2)
+    p3 = helper(Bliss_cellnum1[:, 6, 5, 9], Bliss_cellnum2[:, 6, 5, 9], 22, "palbo 50 nM & gem 10 nM", "c", "cell num", GS2)
+    p4 = helper(Bliss_cellnum1[:, 7, 5, 9], Bliss_cellnum2[:, 7, 5, 9], 24, "palbo 50 nM & gem 30 nM", "d", "cell num", GS2)
+    p5 = helper(Bliss_cellnum1[:, 5, 4, 3], Bliss_cellnum2[:, 5, 4, 3], 2, "pax 2 nM & lapt 50 nM", "e", "cell num", GS2)
+    p6 = helper(Bliss_cellnum1[:, 6, 4, 3], Bliss_cellnum2[:, 6, 4, 3], 16, "pax 2 nM & lapt 100 nM", "f", "cell num", GS1)
+    p7 = helper(Gem10Lap[1, :, 2], Gem10Lap[2, :, 2], 10, "gem 10 nM & lapt 50 nM", "g", "model", GS2)
     p8 = helper(Gem10Lap[1, :, 4], Gem10Lap[2, :, 4], 12, "gem 10 nM & lapt 250 nM", "h", "model", GS2)
-    fig = plot(p1, p2, p3, p4, p5, p6, p7, p8, size=(1600, 700), layout=(2, 4))
+    p9 = helper(palbo50Gem[1, :, 2], palbo50Gem[2, :, 2], 22, "palbo 50 nM & gem 10 nM", "i", "model", GS2)
+    p10 = helper(palbo50Gem[1, :, 4], palbo50Gem[2, :, 4], 24, "palbo 50 nM & gem 30 nM", "j", "model", GS2)
+    p11 = helper(Pax2_lap[1, :, 1], Pax2_lap[2, :, 1], 2, "pax 2 nM & lapt 50 nM", "k", "model", GS2)
+    p12 = helper(Pax2_lap[1, :, 2], Pax2_lap[2, :, 2], 16, "pax 2 nM & lapt 100 nM", "l", "model", GS1)
+    fig = plot(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, size=(2000, 700), layout=(2, 6))
     savefig(fig, "figureS2.svg")
 end
