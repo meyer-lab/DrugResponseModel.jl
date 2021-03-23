@@ -14,7 +14,7 @@ function ODEjac_exp(p::AbstractVector{T})::Matrix{T} where {T <: Real}
     #                                [a, 0, b, 0, 0, 0, g1, 0, g2, 0, 0, 0]
     A = zeros(2, 2)
     A[1] = -(p[1] + p[7])
-    A[2] = 2*p[3]
+    A[2] = 2 * p[3]
     A[3] = p[1]
     A[4] = -(p[3] + p[9])
 
