@@ -2,10 +2,12 @@
 # remember: to load the simple ODE params do: JLD.load("G1_simpleODE.jld")["data"]
 function SSE(G1, G2, g1m, g2m, subPlabel)
     SSEs = zeros(5, 2)
+    G1ref = JLD.load("data/G1ref.jld")["data"]
+    G2ref = JLD.load("data/G2ref.jld")["data"]
     for i = 1:5
+        SSEs[i, 1] = norm(G1ref[:, :, i] - g1m[:, 1:7, i]) + norm(G2ref[:, :, i] - g2m[:, 1:7, 1])
         SSEs[i, 2] = norm(G1[:, :, i] - g1m[:, 1:7, i]) + norm(G2[:, :, i] - g2m[:, 1:7, 1])
     end
-    SSEs[:, 1] .= [379.145, 449.709, 483.859, 413.068, 402.336]
     ctg = repeat(["w/o LCT", "w/ LCT"], inner = 5)
     nam = repeat(["Lapatinib", "Doxorubicin", "Gemcitabine", "Paclitaxel", "Palbociclib"], outer = 2)
 
