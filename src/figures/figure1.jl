@@ -2,10 +2,12 @@
 # remember: to load the simple ODE params do: JLD.load("G1_simpleODE.jld")["data"]
 function SSE(G1, G2, g1m, g2m, subPlabel)
     SSEs = zeros(5, 2)
+    G1ref = JLD.load("data/G1ref.jld")["data"]
+    G2ref = JLD.load("data/G2ref.jld")["data"]
     for i = 1:5
+        SSEs[i, 1] = norm(G1ref[:, :, i] - g1m[:, 1:7, i]) + norm(G2ref[:, :, i] - g2m[:, 1:7, 1])
         SSEs[i, 2] = norm(G1[:, :, i] - g1m[:, 1:7, i]) + norm(G2[:, :, i] - g2m[:, 1:7, 1])
     end
-    SSEs[:, 1] .= [379.145, 449.709, 483.859, 413.068, 402.336]
     ctg = repeat(["w/o LCT", "w/ LCT"], inner = 5)
     nam = repeat(["Lapatinib", "Doxorubicin", "Gemcitabine", "Paclitaxel", "Palbociclib"], outer = 2)
 
@@ -221,13 +223,13 @@ function figure1()
     p0 = plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
     p1 = plot_fig1(concs[:, 1], G1[:, :, 1], g1m[:, 1:7, 1, 1], "Lapatinib", "G1", "b")
     p2 = plot_fig1(concs[:, 1], G2[:, :, 1], g2m[:, 1:7, 1, 1], "Lapatinib", "G2", "c")
-    p3 = plot_fig1(concs[:, 2], G1[:, :, 2], g1m[:, 1:7, 2, 1], "Doxorubicin", "G1", "d")
-    p4 = plot_fig1(concs[:, 2], G2[:, :, 2], g2m[:, 1:7, 2, 1], "Doxorubicin", "G2", "e")
+    p3 = plot_fig1(concs[:, 3], G1[:, :, 3], g1m[:, 1:7, 3, 1], "Gemcitabine", "G1", "d")
+    p4 = plot_fig1(concs[:, 3], G2[:, :, 3], g2m[:, 1:7, 3, 1], "Gemcitabine", "G2", "e")
     p5 = SSE(G1, G2, g1m, g2m, "f")
     p6 = plot_pG1(efcs[1:6, :, 1], 2.5, "Lapatinib", "progression rates", "g", 0.3)
     p7 = plot_pG1(efcs[7:12, :, 1], 0.1, "Lapatinib", "death rates", "h", 0.02)
-    p8 = plot_pG1(efcs[1:6, :, 2], 2.5, "Doxorubicin", "progression rates", "i", 0.3)
-    p9 = plot_pG1(efcs[7:12, :, 2], 0.1, "Doxorubicin", "death rates", "j", 0.02)
+    p8 = plot_pG1(efcs[1:6, :, 3], 2.5, "gemcitabine", "progression rates", "i", 0.3)
+    p9 = plot_pG1(efcs[7:12, :, 3], 0.1, "gemcitabine", "death rates", "j", 0.02)
 
     figure1 = plot(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, size = (2000, 700), layout = (2, 5))
     #annotate!(-70, 30.0, text("a", :black, :left, Plots.font("Helvetica Bold", 15)))
