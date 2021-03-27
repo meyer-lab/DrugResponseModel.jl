@@ -381,6 +381,6 @@ function figureS2()
     p10 = helper(palbo50Gem[1, :, 4], palbo50Gem[2, :, 4], 24, "palbo 50 nM & gem 30 nM", "j", "model", GS2)
     p11 = helper(Pax2_lap[1, :, 1], Pax2_lap[2, :, 1], 2, "pax 2 nM & lapt 50 nM", "k", "model", GS2)
     p12 = helper(Pax2_lap[1, :, 2], Pax2_lap[2, :, 2], 16, "pax 2 nM & lapt 100 nM", "l", "model", GS1)
-    fig = plot(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, size=(2000, 700), layout=(2, 6))
+    fig = plot(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, size = (2000, 700), layout = (2, 6))
     savefig(fig, "figureS2.svg")
 end
