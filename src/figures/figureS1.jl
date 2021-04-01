@@ -1,5 +1,55 @@
 """ Figure S1 to show the data and model comparison in other 3 drugs. """
 
+function plot_pG1(efcs, ymax, Phasename, ylabel, subPlabel, plus)
+
+    x = ["G11", "G12", "G21", "G22", "G23", "G24"]
+    y1 = efcs[1:6, 1]
+    y2 = efcs[1:6, 8]
+    scatter(
+        x,
+        y1,
+        color = "cyan4",
+        xlabel = "sub-phase",
+        xrotation = 30,
+        label = "Control",
+        markerstrokewidth = 0,
+        ylabel = ylabel,
+        titlefont = Plots.font("Helvetica", 12),
+        legendfont = Plots.font("Helvetica", 9),
+        guidefont = Plots.font("Helvetica", 12),
+        xtickfont = Plots.font("Helvetica", 12),
+        ytickfont = Plots.font("Helvetica", 12),
+        bottom_margin = 1.5cm,
+        fg_legend = :transparent,
+        top_margin = 1.5cm,
+        left_margin = 1.25cm,
+        right_margin = 1.25cm,
+        title = "$Phasename effects",
+    )
+    scatter!(
+        x,
+        y2,
+        color = "cyan3",
+        xlabel = "sub-phase",
+        label = "E_max",
+        markerstrokewidth = 0,
+        ylabel = ylabel,
+        titlefont = Plots.font("Helvetica", 12),
+        legendfont = Plots.font("Helvetica", 9),
+        guidefont = Plots.font("Helvetica", 12),
+        xtickfont = Plots.font("Helvetica", 12),
+        ytickfont = Plots.font("Helvetica", 12),
+        bottom_margin = 1.5cm,
+        fg_legend = :transparent,
+        top_margin = 1.5cm,
+        left_margin = 1.25cm,
+        right_margin = 1.25cm,
+        title = "$Phasename effects",
+    )
+    annotate!(-0.5, (ymax + plus), text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
+    ylims!((-0.01, ymax))
+end
+
 function figureS1()
 
     concs, popul1, g1s1, g2s1 = load(189, 1)
@@ -106,25 +156,25 @@ function figureS1()
     G1ref = JLD.load("data/G1ref.jld")["data"]
     G2ref = JLD.load("data/G2ref.jld")["data"]
 
-    p1 = DrugResponseModel.plot_fig1(concs[:, 2], G1[:, :, 2], g1m[:, 1:7, 2, 1], "Doxorubicin", "G1", "a")
-    p2 = DrugResponseModel.plot_fig1(concs[:, 2], G2[:, :, 2], g2m[:, 1:7, 2, 1], "Doxorubicin", "G2", "b")
-    p3 = DrugResponseModel.plot_fig1(concs[:, 4], G1[:, :, 4], g1m[:, 1:7, 4, 1], "Paclitaxel", "G1", "c")
-    p4 = DrugResponseModel.plot_fig1(concs[:, 4], G2[:, :, 4], g2m[:, 1:7, 4, 1], "Paclitaxel", "G2", "d")
-    p5 = DrugResponseModel.plot_fig1(concs[:, 5], G1[:, :, 5], g1m[:, 1:7, 5, 1], "Palbociclib", "G1", "e")
-    p6 = DrugResponseModel.plot_fig1(concs[:, 5], G2[:, :, 5], g2m[:, 1:7, 5, 1], "Palbociclib", "G2", "f")
+    p1 = DrugResponseModel.plot_fig1(concs[:, 2], G1[:, :, 2], g1m[:, 1:7, 2, 1], "Doxorubicin", "G1", "A")
+    p2 = DrugResponseModel.plot_fig1(concs[:, 2], G2[:, :, 2], g2m[:, 1:7, 2, 1], "Doxorubicin", "G2", "B")
+    p3 = DrugResponseModel.plot_fig1(concs[:, 4], G1[:, :, 4], g1m[:, 1:7, 4, 1], "Paclitaxel", "G1", "C")
+    p4 = DrugResponseModel.plot_fig1(concs[:, 4], G2[:, :, 4], g2m[:, 1:7, 4, 1], "Paclitaxel", "G2", "D")
+    p5 = DrugResponseModel.plot_fig1(concs[:, 5], G1[:, :, 5], g1m[:, 1:7, 5, 1], "Palbociclib", "G1", "E")
+    p6 = DrugResponseModel.plot_fig1(concs[:, 5], G2[:, :, 5], g2m[:, 1:7, 5, 1], "Palbociclib", "G2", "F")
 
     p0 = plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
-    p7 = DrugResponseModel.plot_fig1(concs[:, 1], G1ref[:, :, 1], g1m[:, 1:7, 1, 1], "Lapatinib", "G1", "h")
-    p8 = DrugResponseModel.plot_fig1(concs[:, 1], G2ref[:, :, 1], g2m[:, 1:7, 1, 1], "Lapatinib", "G2", "i")
-    p9 = DrugResponseModel.plot_fig1(concs[:, 3], G1ref[:, :, 3], g1m[:, 1:7, 3, 1], "Gemcitabine", "G1", "j")
-    p10 = DrugResponseModel.plot_fig1(concs[:, 3], G2ref[:, :, 3], g2m[:, 1:7, 3, 1], "Gemcitabine", "G2", "k")
+    p7 = DrugResponseModel.plot_fig1(concs[:, 1], G1ref[:, :, 1], g1m[:, 1:7, 1, 1], "Lapatinib", "G1", "N")
+    p8 = DrugResponseModel.plot_fig1(concs[:, 1], G2ref[:, :, 1], g2m[:, 1:7, 1, 1], "Lapatinib", "G2", "O")
+    p9 = DrugResponseModel.plot_fig1(concs[:, 3], G1ref[:, :, 3], g1m[:, 1:7, 3, 1], "Gemcitabine", "G1", "P")
+    p10 = DrugResponseModel.plot_fig1(concs[:, 3], G2ref[:, :, 3], g2m[:, 1:7, 3, 1], "Gemcitabine", "G2", "Q")
 
-    p11 = DrugResponseModel.plot_pG1(efcs[1:6, :, 2], 2.25, "Doxorubicin", "progression rates", "l", 0.35)
-    p12 = DrugResponseModel.plot_pG1(efcs[7:12, :, 2], 0.2, "Doxorubicin", "death rates", "m", 0.05)
-    p13 = DrugResponseModel.plot_pG1(efcs[1:6, :, 4], 2.25, "Paclitaxel", "progression rates", "n", 0.35)
-    p14 = DrugResponseModel.plot_pG1(efcs[7:12, :, 4], 0.2, "Paclitaxel", "death rates", "o", 0.05)
-    p15 = DrugResponseModel.plot_pG1(efcs[1:6, :, 5], 2.25, "Palbociclib", "progression rates", "p", 0.35)
-    p16 = DrugResponseModel.plot_pG1(efcs[7:12, :, 5], 0.2, "Palbociclib", "death rates", "q", 0.05)
-    figureS1 = plot(p1, p2, p3, p4, p5, p6, p0, p0, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, size = (2400, 1050), layout = (3, 6))
+    p11 = DrugResponseModel.plot_pG1(efcs[1:6, :, 1], 2.25, "Lapatinib", "progression rates", "G", 0.35)
+    p12 = DrugResponseModel.plot_pG1(efcs[7:12, :, 1], 0.2, "Lapatinib", "death rates", "H", 0.05)
+    p13 = DrugResponseModel.plot_pG1(efcs[1:6, :, 3], 2.25, "Gemcitabine", "progression rates", "I", 0.35)
+    p14 = DrugResponseModel.plot_pG1(efcs[7:12, :, 3], 0.2, "Gemcitabine", "death rates", "J", 0.05)
+    p15 = DrugResponseModel.plot_pG1(efcs[1:6, :, 5], 2.25, "Paclitaxel", "progression rates", "K", 0.35)
+    p16 = DrugResponseModel.plot_pG1(efcs[7:12, :, 5], 0.2, "Paclitaxel", "death rates", "L", 0.05)
+    figureS1 = plot(p1, p2, p3, p4, p5, p6, p11, p12, p13, p14, p15, p16, p0, p0, p7, p8, p9, p10, size = (2400, 1050), layout = (3, 6))
     savefig(figureS1, "figureS1.svg")
 end

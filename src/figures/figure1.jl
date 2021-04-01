@@ -66,18 +66,18 @@ function plot_fig1(concs, g1, g1data, tite, G, subPlabel)
     p
 end
 
-function plot_pG1(efcs, ymax, drName, ylabel, subPlabel, plus)
+function plot_pG1_mean(efcs, ymax, Phasename, ylabel, subPlabel, plus)
 
-    x = ["G11", "G12", "G21", "G22", "G23", "G24"]
-    y1 = efcs[1:6, 1]
-    y2 = efcs[1:6, 8]
-
+    x = ["Lapatinib", "Doxorubicin", "Gemcitabine", "Paclitaxel", "Palbociclib"]
+    y1 = mean(efcs[:, 1, :], dims=1) # control effects
+    y2 = mean(efcs[:, 8, :], dims=1) # E max
     scatter(
         x,
-        y1,
+        y1',
         color = "cyan4",
-        xlabel = "sub-phase",
-        label = "control",
+        xlabel = "drugs",
+        xrotation = 30,
+        label = "Control",
         markerstrokewidth = 0,
         ylabel = ylabel,
         titlefont = Plots.font("Helvetica", 12),
@@ -90,14 +90,14 @@ function plot_pG1(efcs, ymax, drName, ylabel, subPlabel, plus)
         top_margin = 1.5cm,
         left_margin = 1.25cm,
         right_margin = 1.25cm,
-        title = "$drName effects",
+        title = "$Phasename effects",
     )
     scatter!(
         x,
-        y2,
+        y2',
         color = "cyan3",
-        xlabel = "sub-phase",
-        label = "max effect",
+        xlabel = "drugs",
+        label = "E_max",
         markerstrokewidth = 0,
         ylabel = ylabel,
         titlefont = Plots.font("Helvetica", 12),
@@ -110,7 +110,7 @@ function plot_pG1(efcs, ymax, drName, ylabel, subPlabel, plus)
         top_margin = 1.5cm,
         left_margin = 1.25cm,
         right_margin = 1.25cm,
-        title = "$drName effects",
+        title = "$Phasename effects",
     )
     annotate!(-0.5, (ymax + plus), text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
     ylims!((-0.01, ymax))
@@ -221,17 +221,16 @@ function figure1()
     end
 
     p0 = plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
-    p1 = plot_fig1(concs[:, 1], G1[:, :, 1], g1m[:, 1:7, 1, 1], "Lapatinib", "G1", "b")
-    p2 = plot_fig1(concs[:, 1], G2[:, :, 1], g2m[:, 1:7, 1, 1], "Lapatinib", "G2", "c")
-    p3 = plot_fig1(concs[:, 3], G1[:, :, 3], g1m[:, 1:7, 3, 1], "Gemcitabine", "G1", "d")
-    p4 = plot_fig1(concs[:, 3], G2[:, :, 3], g2m[:, 1:7, 3, 1], "Gemcitabine", "G2", "e")
-    p5 = SSE(G1, G2, g1m, g2m, "f")
-    p6 = plot_pG1(efcs[1:6, :, 1], 2.5, "Lapatinib", "progression rates", "g", 0.3)
-    p7 = plot_pG1(efcs[7:12, :, 1], 0.1, "Lapatinib", "death rates", "h", 0.02)
-    p8 = plot_pG1(efcs[1:6, :, 3], 2.5, "gemcitabine", "progression rates", "i", 0.3)
-    p9 = plot_pG1(efcs[7:12, :, 3], 0.1, "gemcitabine", "death rates", "j", 0.02)
+    p1 = plot_fig1(concs[:, 1], G1[:, :, 1], g1m[:, 1:7, 1, 1], "Lapatinib", "G1", "B")
+    p2 = plot_fig1(concs[:, 1], G2[:, :, 1], g2m[:, 1:7, 1, 1], "Lapatinib", "G2", "C")
+    p3 = plot_fig1(concs[:, 3], G1[:, :, 3], g1m[:, 1:7, 3, 1], "Gemcitabine", "G1", "D")
+    p4 = plot_fig1(concs[:, 3], G2[:, :, 3], g2m[:, 1:7, 3, 1], "Gemcitabine", "G2", "E")
+    p5 = SSE(G1, G2, g1m, g2m, "F")
+    p6 = plot_pG1_mean(efcs[1:2, :, :], 2.5, "G1 ", "progression rates", "G", 0.3)
+    p7 = plot_pG1_mean(efcs[3:6, :, :], 2.5, "G2 ", "progression rates", "H", 0.3)
+    p8 = plot_pG1_mean(efcs[7:8, :, :], 0.1, "G1", "death rates", "I", 0.02)
+    p9 = plot_pG1_mean(efcs[9:12, :, :], 0.1, "G2", "death rates", "J", 0.02)
 
-    figure1 = plot(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, size = (2000, 700), layout = (2, 5))
-    #annotate!(-70, 30.0, text("a", :black, :left, Plots.font("Helvetica Bold", 15)))
+    figure1 = plot(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, size = (2200, 700), layout = (2, 5))
     savefig(figure1, "figure1.svg")
 end
