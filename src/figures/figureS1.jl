@@ -139,7 +139,7 @@ function figureS1()
         0.470576,
         1.298,
         0.423103,
-    ];
+    ]
     efcs = getODEparams(ps, concs)
 
     # ******* model simulations ********
