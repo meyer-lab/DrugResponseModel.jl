@@ -69,8 +69,8 @@ end
 function plot_pG1_mean(efcs, ymax, Phasename, ylabel, subPlabel, plus)
 
     x = ["Lapatinib", "Doxorubicin", "Gemcitabine", "Paclitaxel", "Palbociclib"]
-    y1 = mean(efcs[:, 1, :], dims=1) # control effects
-    y2 = mean(efcs[:, 8, :], dims=1) # E max
+    y1 = mean(efcs[:, 1, :], dims = 1) # control effects
+    y2 = mean(efcs[:, 8, :], dims = 1) # E max
     scatter(
         x,
         y1',
