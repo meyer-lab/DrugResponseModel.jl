@@ -54,6 +54,7 @@ function plot_fig1(concs, g1, g1data, tite, G, subPlabel)
         xtickfont = Plots.font("Helvetica", 12),
         ytickfont = Plots.font("Helvetica", 12),
         xlabel = "time [hr]",
+        xticks = 0:24.0:96.0,
         ylabel = "$G cell number",
         bottom_margin = 1.25cm,
         top_margin = 1.25cm,
