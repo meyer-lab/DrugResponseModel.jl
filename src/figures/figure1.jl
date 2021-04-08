@@ -70,8 +70,7 @@ end
 function plot_pG1_mean(y1, y2, ymax, Phasename, ylabel, subPlabel, plus)
 
     x = ["Lapatinib", "Doxorubicin", "Gemcitabine", "Paclitaxel", "Palbociclib"]
-    conts = 
-    scatter(
+    conts = scatter(
         x,
         y1',
         color = "cyan4",
@@ -222,7 +221,7 @@ function figure1()
 
     # deaths
     deathContG1 = zeros(2, 5)
-    deathEmaxG1 =  zeros(2, 5)
+    deathEmaxG1 = zeros(2, 5)
     deathContG1[1, :] .= (efcs[7, 1, :]) ./ (efcs[7, 1, :] .+ efcs[1, 1, :])
     deathContG1[2, :] .= (1 .- deathContG1[1, :]) .* (efcs[8, 1, :]) ./ (efcs[8, 1, :] .+ efcs[2, 1, :])
     deathEmaxG1[1, :] .= (efcs[7, 8, :]) ./ (efcs[7, 8, :] .+ efcs[1, 8, :])
@@ -231,9 +230,9 @@ function figure1()
     deathEmaxG2 = zeros(4, 5)
     deathContG2[1, :] .= (efcs[9, 1, :]) ./ (efcs[9, 1, :] .+ efcs[3, 1, :])
     deathEmaxG2[1, :] .= (efcs[9, 8, :]) ./ (efcs[9, 8, :] .+ efcs[3, 8, :])
-    for i=10:12
-        deathContG2[i-8, :] = (1 .- deathContG2[i-9, :]) .* (efcs[i, 1, :]) ./ (efcs[i, 1, :] .+ efcs[i-6, 1, :])
-        deathEmaxG2[i-9, :] = (1 .- deathEmaxG2[i-9, :]) .* (efcs[i, 8, :]) ./ (efcs[i, 8, :] .+ efcs[i-6, 8, :])
+    for i = 10:12
+        deathContG2[i - 8, :] = (1 .- deathContG2[i - 9, :]) .* (efcs[i, 1, :]) ./ (efcs[i, 1, :] .+ efcs[i - 6, 1, :])
+        deathEmaxG2[i - 9, :] = (1 .- deathEmaxG2[i - 9, :]) .* (efcs[i, 8, :]) ./ (efcs[i, 8, :] .+ efcs[i - 6, 8, :])
     end
 
     p0 = plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
@@ -244,8 +243,8 @@ function figure1()
     p5 = SSE(G1, G2, g1m, g2m, "F")
     p6 = plot_pG1_mean(mean(efcs[1:2, 1, :], dims = 1), mean(efcs[1:2, 8, :], dims = 1), 2.5, "G1 ", "progression rates", "G", 0.3)
     p7 = plot_pG1_mean(mean(efcs[3:6, 1, :], dims = 1), mean(efcs[3:6, 8, :], dims = 1), 2.5, "G2 ", "progression rates", "H", 0.3)
-    p8 = plot_pG1_mean(sum(deathContG1, dims=1), sum(deathEmaxG1, dims=1), 1.0, "G1", "death rates", "I", 0.02)
-    p9 = plot_pG1_mean(sum(deathContG2, dims=1), sum(deathEmaxG2, dims=1), 1.0, "G2", "death rates", "J", 0.02)
+    p8 = plot_pG1_mean(sum(deathContG1, dims = 1), sum(deathEmaxG1, dims = 1), 1.0, "G1", "death rates", "I", 0.02)
+    p9 = plot_pG1_mean(sum(deathContG2, dims = 1), sum(deathEmaxG2, dims = 1), 1.0, "G2", "death rates", "J", 0.02)
 
     figure1 = plot(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, size = (2200, 700), layout = (2, 5))
     savefig(figure1, "figure1.svg")
