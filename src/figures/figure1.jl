@@ -16,7 +16,7 @@ function SSE(G1, G2, g1m, g2m, subPlabel)
         SSEs,
         group = ctg,
         xrotation = 30,
-        xlabel = "Drugs",
+        xlabel = "drugs",
         ylabel = "SSE",
         title = "Sum of Squared Errors",
         bar_width = 0.45,
@@ -44,9 +44,9 @@ function plot_fig1(concs, g1, g1data, tite, G, subPlabel)
         g1,
         lw = 2,
         legend = :topleft,
-        label = ["control" "$(concs[2]) nM" "$(concs[3]) nM" "$(concs[4]) nM" "$(concs[5]) nM" "$(concs[6]) nM" "$(concs[7]) nM"],
+        label = ["control" "$(concs[4]) nM" "$(concs[5]) nM" "$(concs[6]) nM" "$(concs[7]) nM" "$(concs[8]) nM"],
         fg_legend = :transparent,
-        palette = :PuBu_7,
+        palette = :PuBu_6,
         title = tite,
         titlefont = Plots.font("Helvetica", 12),
         legendfont = Plots.font("Helvetica", 9),
@@ -73,11 +73,12 @@ function plot_pG1_mean(y1, y2, ymax, Phasename, ylabel, subPlabel, plus)
     conts = scatter(
         x,
         y1',
-        color = "cyan4",
+        color = "red",
         xlabel = "drugs",
         xrotation = 30,
         label = "Control",
         markerstrokewidth = 0,
+        markersize=8,
         ylabel = ylabel,
         titlefont = Plots.font("Helvetica", 12),
         legendfont = Plots.font("Helvetica", 9),
@@ -94,10 +95,11 @@ function plot_pG1_mean(y1, y2, ymax, Phasename, ylabel, subPlabel, plus)
     scatter!(
         x,
         y2',
-        color = "cyan3",
+        color = "cyan4",
         xlabel = "drugs",
-        label = "E_max",
+        label = "Emax",
         markerstrokewidth = 0,
+        markersize=8,
         ylabel = ylabel,
         titlefont = Plots.font("Helvetica", 12),
         legendfont = Plots.font("Helvetica", 9),
@@ -112,7 +114,7 @@ function plot_pG1_mean(y1, y2, ymax, Phasename, ylabel, subPlabel, plus)
         title = "$Phasename effects",
     )
     annotate!(-0.5, (ymax + plus), text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
-    ylims!((-0.01, ymax))
+    ylims!((-0.1, ymax))
 end
 
 
@@ -209,12 +211,12 @@ function figure1()
     efcs = getODEparams(ps, concs)
 
     # ******* model simulations ********
-    G1 = zeros(189, 7, 5)
-    G2 = zeros(189, 7, 5)
+    G1 = zeros(189, 8, 5)
+    G2 = zeros(189, 8, 5)
 
     t = LinRange(0.0, 95.0, 189)
     for k = 1:5 # drug number
-        for i = 1:7 # concentration number
+        for i = 1:8 # concentration number
             G1[:, i, k], G2[:, i, k], _ = predict(efcs[:, i, k], efcs[:, 1, k], t)
         end
     end
@@ -235,16 +237,28 @@ function figure1()
         deathEmaxG2[i - 9, :] = (1 .- deathEmaxG2[i - 9, :]) .* (efcs[i, 8, :]) ./ (efcs[i, 8, :] .+ efcs[i - 6, 8, :])
     end
 
+    G1short = zeros(189, 6, 5)
+    G2short = zeros(189, 6, 5)
+    g1mshort = zeros(189, 6, 5)
+    g2mshort = zeros(189, 6, 5)
+    G1short[:, 1, :] .= G1[:, 1, :]
+    G2short[:, 1, :] .= G2[:, 1, :]
+    g1mshort[:, 1, :] .= g1m[:, 1, :]
+    g2mshort[:, 1, :] .= g2m[:, 1, :]
+    G1short[:, 2:6, :] .= G1[:, 4:8, :]
+    G2short[:, 2:6, :] .= G2[:, 4:8, :]
+    g1mshort[:, 2:6, :] .= g1m[:, 4:8, :]
+    g2mshort[:, 2:6, :] .= g2m[:, 4:8, :]
     p0 = plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
-    p1 = plot_fig1(concs[:, 1], G1[:, :, 1], g1m[:, 1:7, 1, 1], "Lapatinib", "G1", "B")
-    p2 = plot_fig1(concs[:, 1], G2[:, :, 1], g2m[:, 1:7, 1, 1], "Lapatinib", "G2", "C")
-    p3 = plot_fig1(concs[:, 3], G1[:, :, 3], g1m[:, 1:7, 3, 1], "Gemcitabine", "G1", "D")
-    p4 = plot_fig1(concs[:, 3], G2[:, :, 3], g2m[:, 1:7, 3, 1], "Gemcitabine", "G2", "E")
-    p5 = SSE(G1, G2, g1m, g2m, "F")
-    p6 = plot_pG1_mean(mean(efcs[1:2, 1, :], dims = 1), mean(efcs[1:2, 8, :], dims = 1), 2.5, "G1 ", "progression rates", "G", 0.3)
-    p7 = plot_pG1_mean(mean(efcs[3:6, 1, :], dims = 1), mean(efcs[3:6, 8, :], dims = 1), 2.5, "G2 ", "progression rates", "H", 0.3)
-    p8 = plot_pG1_mean(sum(deathContG1, dims = 1), sum(deathEmaxG1, dims = 1), 1.0, "G1", "death rates", "I", 0.02)
-    p9 = plot_pG1_mean(sum(deathContG2, dims = 1), sum(deathEmaxG2, dims = 1), 1.0, "G2", "death rates", "J", 0.02)
+    p1 = plot_fig1(concs[:, 1], G1short[:, :, 1], g1mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "G1", "B")
+    p2 = plot_fig1(concs[:, 1], G2short[:, :, 1], g2mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "S/G2", "C")
+    p3 = plot_fig1(concs[:, 3], G1short[:, :, 3], g1mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "G1", "D")
+    p4 = plot_fig1(concs[:, 3], G2short[:, :, 3], g2mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "S/G2", "E")
+    p5 = plot_pG1_mean(mean(efcs[1:2, 1, :], dims = 1), mean(efcs[1:2, 8, :], dims = 1), 2.5, "G1 ", "progression rates", "F", 0.3)
+    p6 = plot_pG1_mean(mean(efcs[3:6, 1, :], dims = 1), mean(efcs[3:6, 8, :], dims = 1), 2.5, "S/G2 ", "progression rates", "G", 0.3)
+    p7 = plot_pG1_mean(sum(deathContG1, dims = 1), sum(deathEmaxG1, dims = 1), 1.0, "G1", "death rates", "H", 0.06)
+    p8 = plot_pG1_mean(sum(deathContG2, dims = 1), sum(deathEmaxG2, dims = 1), 1.0, "S/G2", "death rates", "I", 0.06)
+    p9 = SSE(G1[:, 1:7, :], G2[:, 1:7, :], g1m, g2m, "J")
 
     figure1 = plot(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, size = (2200, 700), layout = (2, 5))
     savefig(figure1, "figure1.svg")
