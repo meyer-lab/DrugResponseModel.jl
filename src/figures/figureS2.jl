@@ -18,6 +18,23 @@ GS2 = cat(gt2, gt2_2, gt2_3, dims = 4);
 meanGS1 = mean(GS1, dims = 4);
 meanGS2 = mean(GS2, dims = 4);
 meanGS2[:, :, 19] .= mean(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims = 3), dims = 3)[:, :, 1]
+
+# to find the Bliss_on_cellnumber for gem17 and existing combinations
+function single_cellnum_combo(total1, total2, control1, control2)
+    total1 = 1.0 .- (total1 ./ control1)
+    total2 = 1.0 .- (total2 ./ control2)
+    cmb = zeros(189)
+    for i=1:189
+        cmb[i] = - (total1[i] + total2[i] .- (total1[i] * total2[i]) -1.0) * (control1[i] + control2[i]) / 2 
+    end
+    cmb
+end
+
+gem17 = meanGS1[3, 1:189, 21]
+palbo50_gem17_cellnum = single_cellnum_combo(gem17, totalm[:, 5, 5], totalm[:, 1, 3], totalm[:, 1, 5])
+lap100_gem17_cellnum = single_cellnum_combo(gem17, totalm[:, 6, 1], totalm[:, 1, 3], totalm[:, 1, 1])
+dox20_gem17_cellnum = single_cellnum_combo(gem17, totalm[:, 4, 2], totalm[:, 1, 3], totalm[:, 1, 2])
+
 t = LinRange(0.0, 95.0, 189)
 
 # params from fitting all 5 drugs at once
@@ -153,7 +170,7 @@ Gem10palbo = zeros(3, 189, 3)
 for i = 2:3
     Gem10palbo[1, :, i], Gem10palbo[2, :, i], _ = predict(GEM_PLB[:, 6, i + 4], GEM_PLB[:, 1, 1], t)
 end
-Gem10palbo[1, :, 3], Gem10palbo[2, :, 3], _ = predict(GEM_PLB[:, 6, 4], GEM_PLB[:, 1, 1], t)
+Gem10palbo[1, :, 1], Gem10palbo[2, :, 1], _ = predict(GEM_PLB[:, 6, 4], GEM_PLB[:, 1, 1], t)
 Gem10palbo[3, :, :] .= Gem10palbo[1, :, :] .+ Gem10palbo[2, :, :]
 # well 1: 18, 23, 24
 
@@ -199,6 +216,14 @@ Pax2_lap[1, :, 1], Pax2_lap[2, :, 1], _ = predict(LPT_TAX[:, 5, 4], LPT_TAX[:, 1
 Pax2_lap[1, :, 2], Pax2_lap[2, :, 2], _ = predict(LPT_TAX[:, 6, 4], LPT_TAX[:, 1, 1], t)
 Pax2_lap[3, :, :] .= Pax2_lap[1, :, :] .+ Pax2_lap[2, :, :]
 # well 2: 2 (50 nM) well 1: 16 (100 nM)
+
+### The following 4 lines are for saving the Bliss on model and cell numbers in excel files.
+### Remember to add XLSX and DataFrames packages before running this.
+# df1 = DataFrames.DataFrame(pax2_lap50 = Pax2_lap[3, :, 1], pax2_lap100 = Pax2_lap[3, :, 2], lap100_palb25 = Lap100palbo[3, :, 1], lap100_palb100 = Lap100palbo[3, :, 2], lap100_palb250 = Lap100palbo[3, :, 3], lap100_gem17 = lap100gem[3, :, 1], lap100_gem30 = lap100gem[3, :, 2], dox20_gem5 = dox20gem[3, :, 1], dox20_gem10 = dox20gem[3, :, 2], dox20_gem17 = dox20gem[3, :, 3], dox20_gem30 = dox20gem[3, :, 4], gem10_lap25 = Gem10Lap[3, :, 1], gem10_lap50 = Gem10Lap[3, :, 2], gem10_lap100 = Gem10Lap[3, :, 3], gem10_lap250 = Gem10Lap[3, :, 4], gem10_palbo25 = Gem10palbo[3, :, 1], gem10_palbo100 = Gem10palbo[3, :, 2], gem10_palbo250 = Gem10palbo[3, :, 3], palbo50_gem5 = palbo50Gem[3, :, 1], palbo50_gem10 = palbo50Gem[3, :, 2], palbo50_gem17 = palbo50Gem[3, :, 3], palbo50_gem30 = palbo50Gem[3, :, 4], plb50_lpt25 = palbo50Lap[3, :, 1], plb50_lpt50 = palbo50Lap[3, :, 2], plb50_lpt100 = palbo50Lap[3, :, 3], plb50_lpt250 = palbo50Lap[3, :, 4], )
+# df2 = DataFrames.DataFrame(pax2_lap50 = Bliss_cellnum[:, 5, 4, 3], pax2_lap100 = Bliss_cellnum[:, 6, 4, 3], lap100_palb25 = Bliss_cellnum[:, 6, 4, 4], lap100_palb100 = Bliss_cellnum[:, 6, 6, 4], lap100_palb250 = Bliss_cellnum[:, 6, 7, 4], lap100_gem17=lap100_gem17_cellnum, lap100_gem30 = Bliss_cellnum[:, 6, 7, 2], dox20_gem5 = Bliss_cellnum[:, 4, 5, 5], dox20_gem10 = Bliss_cellnum[:, 4, 6, 5], dox20_gem17 = dox20_gem17_cellnum, dox20_gem30 = Bliss_cellnum[:, 4, 7, 5], gem10_lap25 = Bliss_cellnum[:, 4, 6, 2], gem10_lap50 = Bliss_cellnum[:, 5, 6, 2], gem10_lap100 = Bliss_cellnum[:, 6, 6, 2], gem10_lap250 = Bliss_cellnum[:, 7, 6, 2], gem10_palbo25 = Bliss_cellnum[:, 6, 4, 7], gem10_palbo100 = Bliss_cellnum[:, 6, 6, 7], gem10_palbo250 = Bliss_cellnum[:, 6, 7, 7], palbo50_gem5 = Bliss_cellnum[:, 5, 5, 7], palbo50_gem10 = Bliss_cellnum[:, 6, 5, 7], palbo50_gem17 = palbo50_gem17_cellnum, palbo50_gem30 = Bliss_cellnum[:, 7, 5, 7], plb50_lpt25 = Bliss_cellnum[:, 4, 5, 4], plb50_lpt50 = Bliss_cellnum[:, 5, 5, 4], plb50_lpt100 = Bliss_cellnum[:, 6, 5, 4], plb50_lpt250 = Bliss_cellnum[:, 7, 5, 4])
+
+# XLSX.writetable("Bliss_model.xlsx", df1, overwrite=true, sheetname="cell number")
+# XLSX.writetable("Bliss_cellNumber.xlsx", df2, overwrite=true, sheetname="Bliss")
 
 function SSEs_combination()
     SSEs = zeros(2, 7) # dim1: exp - Bliss on cell number, dim2: exp - Bliss on model
