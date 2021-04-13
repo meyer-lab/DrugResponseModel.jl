@@ -30,7 +30,7 @@ function single_cellnum_combo(total1, total2, control1, control2)
     cmb
 end
 
-gem17 = GS1[3, 1:189, 21]
+gem17 = meanGS1[3, 1:189, 21]
 palbo50_gem17_cellnum = single_cellnum_combo(gem17, gmtotal[:, 5, 5], gmtotal[:, 1, 3], gmtotal[:, 1, 5])
 lap100_gem17_cellnum = single_cellnum_combo(gem17, gmtotal[:, 6, 1], gmtotal[:, 1, 3], gmtotal[:, 1, 1])
 dox20_gem17_cellnum = single_cellnum_combo(gem17, gmtotal[:, 4, 2], gmtotal[:, 1, 3], gmtotal[:, 1, 2])
