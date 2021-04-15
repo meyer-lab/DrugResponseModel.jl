@@ -24,8 +24,8 @@ function single_cellnum_combo(total1, total2, control1, control2)
     total1 = 1.0 .- (total1 ./ control1)
     total2 = 1.0 .- (total2 ./ control2)
     cmb = zeros(189)
-    for i=1:189
-        cmb[i] = - (total1[i] + total2[i] .- (total1[i] * total2[i]) -1.0) * (control1[i] + control2[i]) / 2 
+    for i = 1:189
+        cmb[i] = -(total1[i] + total2[i] .- (total1[i] * total2[i]) - 1.0) * (control1[i] + control2[i]) / 2
     end
     cmb
 end
