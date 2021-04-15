@@ -13,6 +13,10 @@ using BlackBoxOptim
 using StatsPlots
 using JLD
 using Distributions
+using DataFrames
+using XLSX
+using StatsPlots
+using StatsBase
 
 include("importData.jl")
 include("ODEmodel.jl")
@@ -23,6 +27,7 @@ include("allDrugs.jl")
 include("combination.jl")
 include("replicates.jl")
 include("sensitivity.jl")
+include("figures/figureS2.jl")
 include("figures/figure3.jl")
 include("figures/figureS3.jl")
 include("figures/figure4.jl")
