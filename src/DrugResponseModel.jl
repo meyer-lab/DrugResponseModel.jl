@@ -23,10 +23,10 @@ include("allDrugs.jl")
 include("combination.jl")
 include("replicates.jl")
 include("sensitivity.jl")
-include("figures/figure1.jl")
-include("figures/figureS1.jl")
-include("figures/figure2.jl")
-include("figures/figureS2.jl")
+include("figures/figure3.jl")
+include("figures/figureS3.jl")
+include("figures/figure4.jl")
+include("figures/figureS4.jl")
 
 export setup_data,
     load,
