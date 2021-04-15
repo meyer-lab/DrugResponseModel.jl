@@ -12,6 +12,7 @@ using DSP: conv
 using BlackBoxOptim
 using StatsPlots
 using JLD
+using Distributions
 
 include("importData.jl")
 include("ODEmodel.jl")
