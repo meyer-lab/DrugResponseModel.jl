@@ -24,6 +24,7 @@ include("replicates.jl")
 include("sensitivity.jl")
 include("figures/figure1.jl")
 include("figures/figureS1.jl")
+include("figures/figureS01.jl")
 include("figures/figure2.jl")
 include("figures/figureS2.jl")
 
