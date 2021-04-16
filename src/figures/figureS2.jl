@@ -28,7 +28,7 @@ function plotErlang()
     top_margin = 1.5cm,
     left_margin = 1.25cm,
     right_margin = 1.25cm)
-    histogram!(g1_rand, normalize=false, label="Erlang dist.", titlefont = Plots.font("Helvetica", 12),
+    histogram!(g1_rand, normalize=false, label="Gamma dist.", titlefont = Plots.font("Helvetica", 12),
     legendfont = Plots.font("Helvetica", 9),
     guidefont = Plots.font("Helvetica", 12),
     xtickfont = Plots.font("Helvetica", 12),
@@ -50,7 +50,7 @@ function plotErlang()
     top_margin = 1.5cm,
     left_margin = 1.25cm,
     right_margin = 1.25cm)
-    histogram!(g2_rand, label="Erlang dist.", normalize=false, titlefont = Plots.font("Helvetica", 12),
+    histogram!(g2_rand, label="Gamma dist.", normalize=false, titlefont = Plots.font("Helvetica", 12),
     legendfont = Plots.font("Helvetica", 9),
     guidefont = Plots.font("Helvetica", 12),
     xtickfont = Plots.font("Helvetica", 12),
@@ -61,6 +61,6 @@ function plotErlang()
     top_margin = 1.5cm,
     left_margin = 1.25cm,
     right_margin = 1.25cm)
-    figs2 = plot(fig1, fig2)
+    figs2 = plot(fig1, fig2, size=(900, 350))
     savefig(figs2, "figureS2.svg")
 end
