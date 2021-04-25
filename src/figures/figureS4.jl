@@ -428,5 +428,5 @@ function figureS2()
     fig = plot(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, size = (2000, 700), layout = (2, 6))
 
     savefig(fig, "figureS2.svg")
-    save("GC.jld", "GC", GC)
+    # save("GC.jld", "GC", GC)
 end
