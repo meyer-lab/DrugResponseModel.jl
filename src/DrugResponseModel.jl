@@ -10,7 +10,6 @@ using LinearAlgebra
 using Statistics
 using DSP: conv
 using BlackBoxOptim
-using StatsPlots
 using JLD
 using Distributions
 using DataFrames
