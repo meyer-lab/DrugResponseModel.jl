@@ -7,76 +7,8 @@
 ########### 5. control, Doxorubicin 20, Doxorubicin 20 nM + gemcitabines [5 nM, 10 nM, 17 nM, 30 nM]
 ########### 6. control, Lapatinib  100, Lapatinib  100 nM + palbociclibs [25 nM, 100 nM, 250 nM, 250 nM]
 
-concens = zeros(6, 6)
-concens[:, 1] = [0, 50, 75, 100, 150, 300]
-concens[:, 2] = [0, 50, 55, 60, 67, 80]
-concens[:, 3] = [0, 10, 35, 110, 260, 260]
-concens[:, 4] = [0, 10, 35, 60, 110, 260]
-concens[:, 5] = [0, 20, 25, 30, 37, 50]
-concens[:, 6] = [0, 100, 125, 200, 350, 350]
-
-p = [66.8293, 2.4197, 0.00123021, 0.00712543, 6.29059e-5, 0.507736, 0.57301, 1.43432, 0.197454, 0.000746317, 0.0139532, 0.000195288, 0.000198413, 0.0579202, 51.0189, 4.91286, 1.9938, 0.0984497, 0.202416, 0.0898113, 0.462294, 1.96682, 0.701686, 1.72932e-5, 0.000264064, 0.0161778, 1.77773e-5, 0.000346317, 7.81101, 2.99285, 0.176786, 0.517642, 0.171136, 0.630778, 1.88104, 1.55652, 2.50663e-6, 4.3372e-5, 0.00893008, 4.08347e-5, 0.210399, 0.00172866, 36.4208, 1.5254, 0.151112, 0.0177697, 2.56792e-5, 0.000100105, 0.340996, 1.99177, 2.41582e-5, 2.16132e-6, 9.34096e-6, 0.0103405, 0.00016328, 0.204885, 28.1124, 2.64429, 1.15148, 0.282533, 0.46855, 0.260182, 5.08504e-5, 0.945885, 0.000964972, 9.55437e-6, 2.5317e-5, 1.68925e-5, 0.0826429, 5.02612e-5, 83.9744, 0.216313, 0.567271, 0.471734, 0.545467, 0.31523, 0.426661, 1.87149, 1.38939, 0.617567, 0.45418, 1.57687, 0.79395, 0.185619, 0.712989, 1.12255, 0.714262, 0.958377, 0.68417, 0.780506];
-
+p = [0.189371, 1.31225, 0.331636, 3.0, 3.0, 0.274225, 3.32364e-9, 1.48818e-9, 1.5106e-9, 2.04528e-9, 2.3648e-8, 0.0132698, 33.8183, 1.15343, 1.16521e-8, 0.0249639, 0.392687, 0.402105, 2.3868e-8, 0.338073, 0.00245421, 1.36638e-8, 1.62531e-9, 9.78796e-8, 0.0592202, 0.0143732, 0.228744, 2.5, 1.23386, 0.347899, 2.49999, 0.210224]
 combinEffects = DrugResponseModel.getODEparams(p, concens);
-
-function plot_pCombo(efcs, ymax, label2, Phasename, ylabel, subPlabel, plus)
-
-    x = ["G11", "G12", "G21", "G22", "G23", "G24"]
-    y1 = efcs[1:6, 1] # control
-    y2 = efcs[1:6, 2] # base drug alone
-    y3 = efcs[1:6, 6] # combination at max of drug B
-    scatter(
-        x,
-        y1,
-        color = "blue",
-        xlabel = "sub-phase",
-        xrotation = 40,
-        label = "Control",
-        markerstrokewidth = 0,
-        markershape=:circle,
-        markersize = 8,
-        ylabel = ylabel,
-        titlefont = Plots.font("Helvetica", 12),
-        legendfont = Plots.font("Helvetica", 9),
-        guidefont = Plots.font("Helvetica", 12),
-        xtickfont = Plots.font("Helvetica", 12),
-        ytickfont = Plots.font("Helvetica", 12),
-        bottom_margin = 1.5cm,
-        fg_legend = :transparent,
-        top_margin = 1.5cm,
-        left_margin = 1.25cm,
-        right_margin = 1.25cm,
-        title = "$Phasename effects",
-    )
-    scatter!(
-        x,
-        y2,
-        color = "red",
-        label = label2,
-        markerstrokewidth = 0,
-        markershape=:square,
-        markersize = 8,
-        legendfont = Plots.font("Helvetica", 9),
-        guidefont = Plots.font("Helvetica", 12),
-        bottom_margin = 1.5cm,
-        fg_legend = :transparent,
-    )
-    scatter!(
-        x,
-        y3,
-        color = "green",
-        label = "Emax Combo",
-        markerstrokewidth = 0,
-        markershape=:star5,
-        markersize = 8,
-        legendfont = Plots.font("Helvetica", 9),
-        guidefont = Plots.font("Helvetica", 12),
-        bottom_margin = 1.5cm,
-        fg_legend = :transparent,
-    )
-    annotate!(-0.5, (ymax + plus), text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
-    ylims!((-0.1, ymax))
-end
 
 function figureS5()
     p1 = plot_pCombo(combinEffects[1:6, :, 1], 2.25, "Palbo 50 nM", "Palbo 50 nM + Lap", "progression rates [1/hr]", "A", 0.35)

@@ -18,7 +18,6 @@ function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
     return res
 end
 
-
 """ Generic setup for optimization. """
 function optimize_helper(f, low::Vector, high::Vector, maxstep::Int)
     results_ode = bboptimize(
