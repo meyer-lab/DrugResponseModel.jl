@@ -146,7 +146,7 @@ end
 palbo50Lap[3, :, :] .= palbo50Lap[1, :, :] .+ palbo50Lap[2, :, :]
 # well 2: 3,4,5,6
 
-GC[1:2, :, 2, 1:2] .= meanGS1[1:2, :, 8]
+GC[1:2, :, 2, 1] .= meanGS1[1:2, :, 8]
 GC[1:2, :, 3:6, 1] .= meanGS2[1:2, :, 3:6]
 
 ########### Palbociclib 50 nM + gemcitabines [5 nM, 10 nM, 17 nM, 30 nM]
@@ -171,20 +171,20 @@ palbo50Gem[1, :, 4], palbo50Gem[2, :, 4], _ = predict(GEM_PLB[:, 7, 5], GEM_PLB[
 palbo50Gem[1, :, 3], palbo50Gem[2, :, 3], _ = predict(GEM17_PLB, GEM_PLB[:, 1, 1], t)
 palbo50Gem[3, :, :] .= palbo50Gem[1, :, :] .+ palbo50Gem[2, :, :]
 # well 2: 21, 22, 23, 24
+GC[1:2, :, 2, 2] .= meanGS1[1:2, :, 8]
 GC[1:2, :, 3:6, 2] .= meanGS2[1:2, :, 21:24]
 
-########### Gemcitabine 10 nM + palbociclibs [25 nM, 100 nM, 250 nM]
+########### Gemcitabine 10 nM + palbociclibs [25 nM, 50 nM, 100 nM, 250 nM]
 Gem10palbo = zeros(3, 189, 3)
 for i = 2:3
     Gem10palbo[1, :, i], Gem10palbo[2, :, i], _ = predict(GEM_PLB[:, 6, i + 4], GEM_PLB[:, 1, 1], t)
 end
 Gem10palbo[1, :, 1], Gem10palbo[2, :, 1], _ = predict(GEM_PLB[:, 6, 4], GEM_PLB[:, 1, 1], t)
 Gem10palbo[3, :, :] .= Gem10palbo[1, :, :] .+ Gem10palbo[2, :, :]
-# well 1: 18, 23, 24
-GC[1:2, :, 2, 3:4] .= meanGS1[1:2, :, 20]
+# well 1: 18, 22, 23, 24
+GC[1:2, :, 2, 3] .= meanGS1[1:2, :, 20]
 GC[1:2, :, 3, 3] .= meanGS2[1:2, :, 18]
-GC[1:2, :, 4:5, 3] .= meanGS2[1:2, :, 23:24]
-GC[1:2, :, 6, 3] .= meanGS2[1:2, :, 24]
+GC[1:2, :, 4:6, 3] .= meanGS2[1:2, :, 22:24]
 
 ########### Gemcitabine 10 nM + lapatinibs [25 nM, 50 nM, 100 nM, 250 nM]
 Gem10Lap = zeros(3, 189, 4)
@@ -193,6 +193,7 @@ for i = 1:4
 end
 Gem10Lap[3, :, :] .= Gem10Lap[1, :, :] .+ Gem10Lap[2, :, :]
 # well 2: 9, 10, 11, 12
+GC[1:2, :, 2, 4] .= meanGS1[1:2, :, 20]
 GC[1:2, :, 3:6, 4] .= meanGS2[1:2, :, 9:12]
 
 ########## Dox 20 nM + gemcitabines [5 nM, 10 nM, 17 nM, 30 nM]
@@ -216,18 +217,19 @@ lap100gem[1, :, 2], lap100gem[2, :, 2], _ = predict(LPT_GEM[:, 6, 7], LPT_GEM[:,
 lap100gem[3, :, :] .= lap100gem[1, :, :] .+ lap100gem[2, :, :]
 # well 2: 13, 19
 
-########### Lap 100 nM + palbociclibs [25 nM, 100 nM, 250 nM]
+########### Lap 100 nM + palbociclibs [25 nM, 50 nM, 100 nM, 250 nM]
 Lap100palbo = zeros(3, 189, 3)
 for i = 2:3
     Lap100palbo[1, :, i], Lap100palbo[2, :, i], _ = predict(LPT_PLB[:, 6, i + 4], LPT_PLB[:, 1, 1], t)
 end
 Lap100palbo[1, :, 1], Lap100palbo[2, :, 1], _ = predict(LPT_PLB[:, 6, 4], LPT_PLB[:, 1, 1], t)
 Lap100palbo[3, :, :] .= Lap100palbo[1, :, :] .+ Lap100palbo[2, :, :]
-# well 2: 8, 14, 20
-GC[1:2, :, 2, 6] .= meanGS1[1:2, :, 4]
-GC[1:2, :, 3, 6] .= meanGS2[1:2, :, 8]
-GC[1:2, :, 4, 6] .= meanGS2[1:2, :, 14]
-GC[1:2, :, 5:6, 6] .= meanGS2[1:2, :, 20]
+# well 2: 8, 5, 14, 20
+GC[1:2, :, 2, 6] .= meanGS1[1:2, :, 8]
+GC[1:2, :, 3, 6] .= meanGS2[1:2, :, 4]
+GC[1:2, :, 4, 6] .= meanGS2[1:2, :, 5]
+GC[1:2, :, 5, 6] .= meanGS2[1:2, :, 14]
+GC[1:2, :, 6, 6] .= meanGS2[1:2, :, 20]
 
 ########### Pax 2 nM + Lapatinib [50 nM, 100 nM]
 Pax2_lap = zeros(3, 189, 2)
@@ -428,5 +430,5 @@ function figureS2()
     fig = plot(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, size = (2000, 700), layout = (2, 6))
 
     savefig(fig, "figureS2.svg")
-    # save("GC.jld", "GC", GC)
+    save("GC.jld", "GC", GC)
 end

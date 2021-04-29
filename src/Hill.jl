@@ -46,10 +46,10 @@ function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 300000)
 end
 
 function getODEparams(p, conc)
-    if length(p) == 90 # fitting combination
-        nMax = 6
-    elseif length(p) == 76
+    if length(p) == 76
         nMax = 5
+    elseif length(p) == 48
+        nMax = 3
     elseif length(p) == 34
         nMax = 2
     elseif length(p) == 20
