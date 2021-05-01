@@ -31,7 +31,7 @@ include("figures/figureS3.jl")
 include("figures/figure4.jl")
 include("figures/figureS4.jl")
 include("figures/figure5.jl")
-# include("figures/figureS5.jl")
+include("figures/figureS5.jl")
 
 export setup_data,
     load,

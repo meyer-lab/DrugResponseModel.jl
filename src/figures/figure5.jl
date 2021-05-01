@@ -52,12 +52,12 @@ function plot_fig5(g1, g1data, labels, tite, G, subPlabel)
     p
 end
 
-function plot_pCombo(efcs, single_effs, ymax, label2, Phasename, ylabel, subPlabel, plus)
+function plot_pCombo(efcs, single_effs, drugB, ymax, label2, Phasename, ylabel, subPlabel, plus)
 
     x = ["G11", "G12", "G21", "G22", "G23", "G24"]
     y1 = efcs[1:6, 1] # control
     y2 = efcs[1:6, 2] # base drug alone
-    y3 = efcs[1:6, 6] # combination at max of drug B
+    y3 = efcs[1:6, 5] # combination at max of drug B 
     scatter(
         x,
         y1,
@@ -114,7 +114,7 @@ function plot_pCombo(efcs, single_effs, ymax, label2, Phasename, ylabel, subPlab
         x,
         single_effs,
         color = "orange",
-        label = "Emax Lap",
+        label = "Emax $drugB",
         alpha=0.6,
         markerstrokewidth = 0,
         markershape=:xcross,
@@ -137,13 +137,9 @@ function figure5()
     p6 = plot_fig5(GCsim[2, :, :, 3], GC[2, :, :, 3], x3, "Gem 10 + Palbo combo", "G2", "F")
     p7 = plot_fig5(GCsim[1, :, :, 4], GC[1, :, :, 4], x4, "Gem 10 + Lap combo", "G1", "G")
     p8 = plot_fig5(GCsim[2, :, :, 4], GC[2, :, :, 4], x4, "Gem 10 + Lap combo", "G2", "H")
-    # p9 = plot_fig5(GCsim[1, :, :, 5], GC[1, :, :, 5], x5, "Dox 20 + Gem combo", "G1", "I")
-    # p10 = plot_fig5(GCsim[2, :, :, 5], GC[2, :, :, 5], x5, "Dox 20 + Gem combo", "G2", "J")
     p9 = plot_fig5(GCsim[1, :, :, 5], GC[1, :, :, 6], x6, "Lap 100 + Palbo combo", "G1", "I")
     p10 = plot_fig5(GCsim[2, :, :, 5], GC[2, :, :, 6], x6, "Lap 100 + Palbo combo", "G2", "J")
-    # p3 = plot_pCombo(combinEffects[1:6, :], single_effs[1:6, end, 1], 3.75, "Palbo 50 nM", "Palbo 50 nM + Lap", "progression rates [1/hr]", "C", 0.35)
-    # p4 = plot_pCombo(combinEffects[7:12, :], single_effs[7:12, end, 1], 0.5, "Palbo 50 nM", "Palbo 50 nM + Lap", "death rates [1/hr]", "D", 0.06)
 
-    fig5 = plot(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, size = (1650, 850), layout = (2, 5))
+    fig5 = plot(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, size = (1600, 700), layout = (2, 5))
     savefig(fig5, "figure51.svg")
 end
