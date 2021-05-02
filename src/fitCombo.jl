@@ -26,7 +26,7 @@ function optimize_combo(g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxstep = 
 
     # [EC50, k, max_a1, max_a2, max_b1,  max_b2, max_b3, max_b4, max_g11, max_g12, max_g21, max_g22, max_g23, max_g24, min_a1, min_a2, min_b1,  min_b2, min_b3, min_b4]
     low = [5.0; 0.1; 1e-5 * ones(12); 1.0; 0.1; 1e-5 * ones(12); 5.0; 0.1; 1e-5 * ones(18)] # 60 parameters including 12 for single drug A, and 20 for the drugB
-    high = [500.0; 10.0; 2.5 * ones(12); 50.0; 10.0; 2.5 * ones(12); 500.0; 10.0; 2.5 * ones(18)]
+    high = [500.0; 10.0; 2.5 * ones(12); 200.0; 20.0; 5 * ones(12); 500.0; 10.0; 2.5 * ones(18)]
 
     return optimize_helper(f, low, high, maxstep)
 end
@@ -65,7 +65,6 @@ function my_helper(p)
         p_combo[:, i, 2] = Bliss_unit(p_ode[:, 3, 3], p_ode[:, i-1, 2], p_ode[:, 1, 1])
         p_combo[:, i, 3] = Bliss_unit(p_ode[:, 2, 2], p_ode[:, i-1, 3], p_ode[:, 1, 1])
         p_combo[:, i, 4] = Bliss_unit(p_ode[:, 2, 2], p_ode[:, i-1, 1], p_ode[:, 1, 1])
-        # p_combo[:, i, 5] = Bliss_unit(dox, p_ode[:, i-1, 2], p_ode[:, 1, 1])
         p_combo[:, i, 5] = Bliss_unit(p_ode[:, 4, 1], p_ode[:, i-1, 3], p_ode[:, 1, 1])
     end
     p_combo

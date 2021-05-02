@@ -1,7 +1,7 @@
 """ This plots time series of combination versus their fit. """
 
-# p = [0.196747, 0.367277, 2.13154, 2.19888, 0.0774228, 2.49933, 0.000542219, 1.22351e-5, 0.000305728, 0.000354421, 0.000134259, 0.0398953, 36.4052, 1.0259, 0.00799788, 0.000938322, 0.156959, 0.259583, 0.495498, 1.82072, 0.0151445, 0.000100429, 0.000397396, 0.00967118, 0.0183582, 0.00186278, 1.01035, 0.187416, 2.39342, 0.230667, 0.00947831, 0.000180932, 0.490201, 1.80919, 0.0157187, 0.000113442, 1.27606e-5, 0.000116357, 0.0218928, 0.0756593, 19.8996, 0.341808, 2.40293, 0.0992919, 0.252608, 2.4763, 0.246814, 2.47739, 0.0264986, 1.21131e-5, 0.00942984, 0.000439138, 0.00212002, 0.0694528, 0.817749, 0.295525, 0.613096, 0.417977, 0.377789, 0.461066]
-p =  [42.287, 1.23679, 0.00092215, 0.000171948, 0.105891, 0.106112, 0.575983, 0.43957, 0.0130425, 1.4023e-5, 0.000612624, 6.37907e-5, 0.00556483, 0.0380514, 1.00236, 1.09617, 0.279774, 0.319337, 2.48502, 0.0866805, 0.139491, 0.524595, 1.7475e-5, 2.01682e-5, 0.0128685, 3.66501e-5, 2.81847e-5, 0.0283298, 6.96782, 0.472736, 0.8431, 0.121317, 0.00609095, 2.49417, 0.24863, 0.507952, 0.00717231, 1.10748e-5, 0.00275721, 0.000171418, 3.52874e-5, 0.0182033, 2.49528, 0.234771, 1.69371, 0.761456, 0.372818, 0.233638]
+p =  [22.6116, 0.906908, 0.076665, 0.00321998, 0.140348, 0.623161, 2.47439, 2.46818, 0.00107404, 0.00202817, 6.81464e-5, 0.00949839, 0.00309843, 0.130674, 1.11947, 0.174963, 2.27961, 0.0117939, 0.00275518, 0.162717, 4.50623, 4.9279, 0.00698243, 0.00333901, 2.85654e-5, 0.0241219, 0.00038035, 0.00244354, 20.2521, 0.20926, 0.449486, 0.00905644, 0.376322, 0.540614, 2.42192, 2.4884, 3.00388e-5, 1.50455e-5, 0.000278125, 0.000434414, 0.0119472, 0.184269, 0.293064, 0.784923, 0.248949, 0.378405, 0.582056, 2.03156]
+
 concs = hcat([0, 25, 50, 100, 250], [0, 5, 10, 17, 30], [0, 25, 50, 100, 250])
 x1 = ["control" "palbo 50 nM" "palbo 50 nM + lap25 nM" "palbo 50 nM + lap 50 nM" "palbo 50 nM + lap 100 nM" "palbo 50 nM + lap 250 nM"]
 x2 = ["control" "palbo 50 nM" "palbo 50 nM + gem 5 nM" "palbo 50 nM + gem 10 nM" "palbo 50 nM + gem 17 nM" "palbo 50 nM + gem 30 nM"]
@@ -20,9 +20,7 @@ for j=1:5
         GCsim[1, :, i, j], GCsim[2, :, i, j], _ = predict(combinEffects[:, i, j], combinEffects[:, 1, j], t)
     end
 end
-
-function plot_fig5(g1, g1data, labels, tite, G, subPlabel)
-    time = LinRange(0.0, 96.0, 193)
+function plot_fig5(time, g1, g1data, labels, tite, G, subPlabel)
 
     p = plot(
         time,
@@ -68,7 +66,7 @@ function plot_pCombo(efcs, single_effs, drugB, ymax, label2, Phasename, ylabel, 
         markerstrokewidth = 0,
         markershape=:circle,
         markersize = 10,
-        alpha=0.6,
+        alpha=0.4,
         ylabel = ylabel,
         titlefont = Plots.font("Helvetica", 12),
         legendfont = Plots.font("Helvetica", 9),
@@ -86,7 +84,7 @@ function plot_pCombo(efcs, single_effs, drugB, ymax, label2, Phasename, ylabel, 
         x,
         y2,
         color = "red",
-        alpha=0.6,
+        alpha=0.4,
         label = label2,
         markerstrokewidth = 0,
         markershape=:square,
@@ -101,7 +99,7 @@ function plot_pCombo(efcs, single_effs, drugB, ymax, label2, Phasename, ylabel, 
         y3,
         color = "green",
         label = "Emax Combo",
-        alpha=0.6,
+        alpha=0.4,
         markerstrokewidth = 0,
         markershape=:star5,
         markersize = 8,
@@ -129,17 +127,17 @@ function plot_pCombo(efcs, single_effs, drugB, ymax, label2, Phasename, ylabel, 
 end
 
 function figure5()
-    p1 = plot_fig5(GCsim[1, :, :, 1], GC[1, :, :, 1], x1, "Palbo 50 + Lap combo", "G1", "A")
-    p2 = plot_fig5(GCsim[2, :, :, 1], GC[2, :, :, 1], x1, "Palbo 50 + Lap combo", "G2", "B")
-    p3 = plot_fig5(GCsim[1, :, :, 2], GC[1, :, :, 2], x2, "Palbo 50 + Gem combo", "G1", "C")
-    p4 = plot_fig5(GCsim[2, :, :, 2], GC[2, :, :, 2], x2, "Palbo 50 + Gem combo", "G2", "D")
-    p5 = plot_fig5(GCsim[1, :, :, 3], GC[1, :, :, 3], x3, "Gem 10 + Palbo combo", "G1", "E")
-    p6 = plot_fig5(GCsim[2, :, :, 3], GC[2, :, :, 3], x3, "Gem 10 + Palbo combo", "G2", "F")
-    p7 = plot_fig5(GCsim[1, :, :, 4], GC[1, :, :, 4], x4, "Gem 10 + Lap combo", "G1", "G")
-    p8 = plot_fig5(GCsim[2, :, :, 4], GC[2, :, :, 4], x4, "Gem 10 + Lap combo", "G2", "H")
-    p9 = plot_fig5(GCsim[1, :, :, 5], GC[1, :, :, 6], x6, "Lap 100 + Palbo combo", "G1", "I")
-    p10 = plot_fig5(GCsim[2, :, :, 5], GC[2, :, :, 6], x6, "Lap 100 + Palbo combo", "G2", "J")
+    p1 = plot_fig5(t, GCsim[1, :, :, 1], GC[1, :, :, 1], x1, "Palbo 50 + Lap combo", "G1", "A")
+    p2 = plot_fig5(t, GCsim[2, :, :, 1], GC[2, :, :, 1], x1, "Palbo 50 + Lap combo", "G2", "B")
+    p3 = plot_fig5(t, GCsim[1, :, :, 2], GC[1, :, :, 2], x2, "Palbo 50 + Gem combo", "G1", "C")
+    p4 = plot_fig5(t, GCsim[2, :, :, 2], GC[2, :, :, 2], x2, "Palbo 50 + Gem combo", "G2", "D")
+    p5 = plot_fig5(t, GCsim[1, :, :, 3], GC[1, :, :, 3], x3, "Gem 10 + Palbo combo", "G1", "E")
+    p6 = plot_fig5(t, GCsim[2, :, :, 3], GC[2, :, :, 3], x3, "Gem 10 + Palbo combo", "G2", "F")
+    p7 = plot_fig5(t, GCsim[1, :, :, 4], GC[1, :, :, 4], x4, "Gem 10 + Lap combo", "G1", "G")
+    p8 = plot_fig5(t, GCsim[2, :, :, 4], GC[2, :, :, 4], x4, "Gem 10 + Lap combo", "G2", "H")
+    p9 = plot_fig5(t, GCsim[1, :, :, 5], GC[1, :, :, 6], x6, "Lap 100 + Palbo combo", "G1", "I")
+    p10 = plot_fig5(t, GCsim[2, :, :, 5], GC[2, :, :, 6], x6, "Lap 100 + Palbo combo", "G2", "J")
 
     fig5 = plot(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, size = (1600, 700), layout = (2, 5))
-    savefig(fig5, "figure51.svg")
+    savefig(fig5, "figure5.svg")
 end
