@@ -18,6 +18,12 @@ function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
     return res
 end
 
+# function residC(params, g1, g2)
+#     t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
+#     return predict(params[:, 1, 1], params[:, 1, 1], t, g1[:, 1], g2[:, 1])[1]
+# end
+
+
 """ Generic setup for optimization. """
 function optimize_helper(f, low::Vector, high::Vector, maxstep::Int)
     results_ode = bboptimize(
@@ -44,6 +50,14 @@ function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 300000)
 
     return optimize_helper(f, low, high, maxstep)
 end
+
+# function optimC(g1, g2)
+
+#     ff(x) = residC(x, g1, g2)
+#     low = append!(1e-6 * ones(6), zeros(6))
+#     high = append!(3.0 * ones(6), zeros(6))
+#     return optimize_helper(ff, low, high, 300000)
+# end
 
 function getODEparams(p, conc)
     if length(p) == 76

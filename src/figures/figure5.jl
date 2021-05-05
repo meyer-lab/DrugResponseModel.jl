@@ -29,7 +29,7 @@ function plot_fig5(time, g1, g1data, labels, tite, G, subPlabel)
         legend = :topleft,
         label = labels,
         fg_legend = :transparent,
-        palette = :PuBu_6,
+        palette = :PuBu_5,
         title = tite,
         titlefont = Plots.font("Helvetica", 12),
         legendfont = Plots.font("Helvetica", 9),
@@ -49,6 +49,7 @@ function plot_fig5(time, g1, g1data, labels, tite, G, subPlabel)
     ylims!((0.0, 50))
     p
 end
+p = [0.621894, 0.327901, 1.43602, 0.138798, 2.79013, 1.32374, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 function plot_pCombo(efcs, single_effs, drugB, ymax, label2, Phasename, ylabel, subPlabel, plus)
 
@@ -111,11 +112,11 @@ function plot_pCombo(efcs, single_effs, drugB, ymax, label2, Phasename, ylabel, 
     scatter!(
         x,
         single_effs,
-        color = "orange",
+        color = "black",
         label = "Emax $drugB",
         alpha=0.6,
         markerstrokewidth = 0,
-        markershape=:xcross,
+        markershape=:+,
         markersize = 8,
         legendfont = Plots.font("Helvetica", 9),
         guidefont = Plots.font("Helvetica", 12),
