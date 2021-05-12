@@ -35,9 +35,7 @@ pal = effs[:, :, 5];
 
 ```julia
 # Bliss on pure cell numbers
-BlissOnDatag1, BlissOnDataG2 = DrugResponseModel.blissCellNum(g1avg, g2avg, 189); # includes are combinations 8 x 8 x 10
-BlissOnData = BlissOnDatag1 .+ BlissOnDataG2
-
+BlissOnData = DrugResponseModel.blissCellNum((g1avg[189, :, :] .+ g2avg[189, :, :])); # includes are combinations 8 x 8 x 10
 ```
 
 # Lapatinib and doxorubicin

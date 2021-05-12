@@ -117,7 +117,6 @@ p = [
     0.423103,
 ];
 efcs = getODEparams(p, concs);
-
 # Bliss on cell numbers over time
 Bliss_cellnum = zeros(189, 8, 8, 10)
 for i = 1:189
