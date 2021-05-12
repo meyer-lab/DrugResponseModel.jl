@@ -117,13 +117,10 @@ p = [
     0.423103,
 ];
 efcs = getODEparams(p, concs);
-
 # Bliss on cell numbers over time
-Bliss_cellnum1 = zeros(189, 8, 8, 10)
-Bliss_cellnum2 = zeros(189, 8, 8, 10)
+Bliss_cellnum = zeros(189, 8, 8, 10)
 for i = 1:189
-    Bliss_cellnum1[i, :, :, :] .= blissCellNum(g1m, g2m, i)[1] # G1
-    Bliss_cellnum2[i, :, :, :] .= blissCellNum(g1m, g2m, i)[2] # G2
+    Bliss_cellnum[i, :, :, :] .= blissCellNum((g1m[i, :, :] .+ g2m[i, :, :]))
 end
 Bliss_cellnum = Bliss_cellnum1 .+ Bliss_cellnum2 # total
 
