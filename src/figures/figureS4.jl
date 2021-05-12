@@ -122,7 +122,6 @@ Bliss_cellnum = zeros(189, 8, 8, 10)
 for i = 1:189
     Bliss_cellnum[i, :, :, :] .= blissCellNum((g1m[i, :, :] .+ g2m[i, :, :]))
 end
-Bliss_cellnum = Bliss_cellnum1 .+ Bliss_cellnum2 # total
 
 # Bliss on Model
 LPT_PLB = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 5])
