@@ -39,12 +39,12 @@ end
     @assert(all(combin ≈ lpt50))
 
     Total = zeros(193, 5, 5) # time x concentrations x 5 drugs
-    Total[:, 1, :] .= meanGS1[3, :, 1] # controls
-    Total[:, 2:5, 1] .= meanGS1[3, :, 2:5] # lapatinibs
-    Total[:, 2, 2] .= meanGS1[3, :, 6] # dox 20 nM
-    Total[:, 2:5, 3] .= meanGS1[3, :, 19:22] # gemcitabines
-    Total[:, 2, 4] .= meanGS1[3, :, 13] # pax 2 nM
-    Total[:, 2:5, 5] .= meanGS1[3, :, 7:10] # palbos
+    Total[:, 1, :] .= gt1[3, :, 1] # controls
+    Total[:, 2:5, 1] .= gt1[3, :, 2:5] # lapatinibs
+    Total[:, 2, 2] .= gt1[3, :, 6] # dox 20 nM
+    Total[:, 2:5, 3] .= gt1[3, :, 19:22] # gemcitabines
+    Total[:, 2, 4] .= gt1[3, :, 13] # pax 2 nM
+    Total[:, 2:5, 5] .= gt1[3, :, 7:10] # palbos
     cellnum = zeros(30, 5, 5, 10) # the first one changes with rows, which is the drug that comes first (e.g., in lapatinib (rows-first) dox (columns-second))
     for i = 1:30
         cellnum[i, :, :, :] .= DrugResponseModel.blissCellNum(Total[i, :, :]; n = 5)
@@ -53,3 +53,4 @@ end
     @assert(all(cellnum[:, 1, 1, 2] ≈ Total[1:30, 1, 3])) # control + control ≈ control
     @assert(all(cellnum[:, 1, 1, 2] ≈ Total[1:30, 1, 3])) # control + control ≈ control
     @assert(all(cellnum[:, 1, 4, 2] ≈ Total[1:30, 4, 3])) # control + gem 17 ≈ gem 17
+end
