@@ -66,3 +66,4 @@ end
     @assert(all(cellnum[:, 1, 1, 2] ≈ Total[1:30, 1, 3])) # control + control ≈ control
     @assert(all(cellnum[:, 1, 1, 2] ≈ Total[1:30, 1, 3])) # control + control ≈ control
     @assert(all(cellnum[:, 1, 4, 2] ≈ Total[1:30, 4, 3])) # control + gem 17 ≈ gem 17
+end
