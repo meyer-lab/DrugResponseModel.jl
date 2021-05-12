@@ -30,3 +30,26 @@ end
     # @assert(all(cmb[1, :, end] .>= 0.4))
     # @assert(all(cmb[1, :, end] .<= 0.5))
 end
+
+@testset "Test if the function that calculates bliss for cell numbers, works right." begin
+    gt1, _ = DrugResponseModel.import_combination("AU01001"); # [3, 193, 24]
+    control = gt1[3, 1:50, 1]
+    lpt50 = gt1[3, 1:50, 3]
+    combin = DrugResponseModel.pair_cellnum_Bliss(hcat(control, lpt50), hcat(control, control))
+    @assert(all(combin ≈ lpt50))
+
+    Total = zeros(193, 5, 5) # time x concentrations x 5 drugs
+    Total[:, 1, :] .= meanGS1[3, :, 1] # controls
+    Total[:, 2:5, 1] .= meanGS1[3, :, 2:5] # lapatinibs
+    Total[:, 2, 2] .= meanGS1[3, :, 6] # dox 20 nM
+    Total[:, 2:5, 3] .= meanGS1[3, :, 19:22] # gemcitabines
+    Total[:, 2, 4] .= meanGS1[3, :, 13] # pax 2 nM
+    Total[:, 2:5, 5] .= meanGS1[3, :, 7:10] # palbos
+    cellnum = zeros(30, 5, 5, 10) # the first one changes with rows, which is the drug that comes first (e.g., in lapatinib (rows-first) dox (columns-second))
+    for i = 1:30
+        cellnum[i, :, :, :] .= DrugResponseModel.blissCellNum(Total[i, :, :]; n = 5)
+    end
+    @assert(all(cellnum[:, 3, 1, 1] ≈ Total[1:30, 3, 1])) # control + lap50 ≈ lap50
+    @assert(all(cellnum[:, 1, 1, 2] ≈ Total[1:30, 1, 3])) # control + control ≈ control
+    @assert(all(cellnum[:, 1, 1, 2] ≈ Total[1:30, 1, 3])) # control + control ≈ control
+    @assert(all(cellnum[:, 1, 4, 2] ≈ Total[1:30, 4, 3])) # control + gem 17 ≈ gem 17
