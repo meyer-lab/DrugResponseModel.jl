@@ -44,7 +44,7 @@ end
 end
 
 @testset "Test if the function that calculates bliss for cell numbers, works right." begin
-    gt1, _ = DrugResponseModel.import_combination("AU01001"); # [3, 193, 24]
+    gt1, _ = DrugResponseModel.import_combination("AU01001") # [3, 193, 24]
     control = gt1[3, 1:50, 1]
     lpt50 = gt1[3, 1:50, 3]
     combin = DrugResponseModel.pair_cellnum_Bliss(hcat(control, lpt50), hcat(control, control))

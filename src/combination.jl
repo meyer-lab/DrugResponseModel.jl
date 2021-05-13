@@ -104,16 +104,16 @@ end
 
 function output_Bliss_cellnum()
     # data import
-    gt1, gt2 = DrugResponseModel.import_combination("AU01001");
-    gt1_2, gt2_2 = DrugResponseModel.import_combination("AU01101");
-    gt1_3, gt2_3 = DrugResponseModel.import_combination("AU00901");
-    concs, _, _, _ = load(189, 1);
+    gt1, gt2 = DrugResponseModel.import_combination("AU01001")
+    gt1_2, gt2_2 = DrugResponseModel.import_combination("AU01101")
+    gt1_3, gt2_3 = DrugResponseModel.import_combination("AU00901")
+    concs, _, _, _ = load(189, 1)
 
-    GS1 = cat(gt1, gt1_2, gt1_3, dims = 4);
-    GS2 = cat(gt2, gt2_2, gt2_3, dims = 4);
+    GS1 = cat(gt1, gt1_2, gt1_3, dims = 4)
+    GS2 = cat(gt2, gt2_2, gt2_3, dims = 4)
 
-    meanGS1 = mean(GS1, dims = 4);
-    meanGS2 = mean(GS2, dims = 4);
+    meanGS1 = mean(GS1, dims = 4)
+    meanGS2 = mean(GS2, dims = 4)
     meanGS2[:, :, 19] .= mean(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims = 3), dims = 3)[:, :, 1]
 
     Total = zeros(193, 5, 5) # time x concentrations x 5 drugs
