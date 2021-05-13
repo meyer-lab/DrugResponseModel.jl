@@ -31,7 +31,6 @@ end
     # @assert(all(cmb[1, :, end] .<= 0.5))
 end
 
-
 @testset "Combination tests from estimated parameters to converting to ODE parameters where for both drugs, rates are decreasing and one reaches to zero." begin
     concs, _, _, _ = load(189, 1)
     gem_before = [10.0, 0.9, 0.9, 0.3, 1.8, 1.0, 1.0, 1.0, 0.5, 0.5, 0.2, 0.3, 0.4, 0.1, 0.5, 0.00593379, 0.110279, 0.001, 0.001, 0.01]
