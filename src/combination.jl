@@ -22,21 +22,19 @@ function Bliss_params_unit(pp1, pp2, control)
 end
 
 """ Using the unit function to find all combinations of parameters. """
-function AllBliss_params(pp1, pp2)
+function AllBliss_params(pp1, pp2; n = 8)
     # pp1 and pp2 are 2D arrays [12 x 8] each includes the parameters fo all concentrations of a drug. 
 
-    combined = Array{eltype(pp1), 3}(undef, 12, 8, 8)
-    for i = 1:8
-        for j = 1:8
+    combined = Array{eltype(pp1), 3}(undef, 12, n, n)
+    for i = 1:n
+        for j = 1:n
             combined[:, i, j] .= Bliss_params_unit(pp1[:, i], pp2[:, j], hcat(pp1[:, 1], pp2[:, 1]))
         end
     end
     @assert all(combined[7:end, 1, 1] .== 0.0)
-    # TODO: remember to uncomment this assertion after estimating correct set of parameters
     @assert(all(combined .>= 0.0))
     combined
 end
-
 
 """ This function calculates cell number for parameter sets that are the result of Bliss on prog. rates. """
 function BlissModelComb(bliss_comb, pCtr)

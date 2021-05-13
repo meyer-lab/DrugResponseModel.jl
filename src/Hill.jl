@@ -60,17 +60,9 @@ end
 # end
 
 function getODEparams(p, conc)
-    if length(p) == 76
-        nMax = 5
-    elseif length(p) == 48
-        nMax = 3
-    elseif length(p) == 34
-        nMax = 2
-    elseif length(p) == 20
-        nMax = 1
-    end
+    nMax = Int((length(p) - 6) /14)
 
-    effects = zeros(eltype(p), 12, length(conc[:, 1]), Int((length(p) - 6) / 14))
+    effects = zeros(eltype(p), 12, length(conc[:, 1]), nMax)
     k = 1
     sizep = 14 # the size of independent parameters, meaning except for control.
     j = nMax * sizep + 1 # the starting index of "control parameters", according to the number of drugs being fitted at once.

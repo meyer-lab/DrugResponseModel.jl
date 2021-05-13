@@ -4,13 +4,13 @@
 gt1, gt2 = DrugResponseModel.import_combination("AU01001");
 gt1_2, gt2_2 = DrugResponseModel.import_combination("AU01101");
 gt1_3, gt2_3 = DrugResponseModel.import_combination("AU00901");
-concs, _, g1s1, g2s1 = load(189, 1);
-_, _, g1s2, g2s2 = load(189, 2);
-_, _, g1s3, g2s3 = load(189, 3);
+# concs, _, g1s1, g2s1 = load(189, 1);
+# _, _, g1s2, g2s2 = load(189, 2);
+# # _, _, g1s3, g2s3 = load(189, 3);
 
-g1m = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure single drug data
-g2m = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure dingle drug data
-totalm = g1m .+ g2m;
+# g1m = (g1s1 .+ g1s2 .+ g1s3) ./ 3; # pure single drug data
+# g2m = (g2s1 .+ g2s2 .+ g2s3) ./ 3; # pure dingle drug data
+# totalm = g1m .+ g2m;
 
 GS1 = cat(gt1, gt1_2, gt1_3, dims = 4);
 GS2 = cat(gt2, gt2_2, gt2_3, dims = 4);
@@ -19,9 +19,9 @@ meanGS1 = mean(GS1, dims = 4);
 meanGS2 = mean(GS2, dims = 4);
 meanGS2[:, :, 19] .= mean(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims = 3), dims = 3)[:, :, 1]
 
-GC = zeros(2, length(meanGS1[1, :, 1, 1]), 6, 6)
+g = zeros(2, length(meanGS1[1, :, 1, 1]), 6, 8)
 
-GC[1:2, :, 1, :] .= meanGS1[1:2, :, 1] # control
+g[1:2, :, 1, :] .= meanGS1[1:2, :, 1] # control
 
 # to find the Bliss_on_cellnumber for gem17 and existing combinations
 function single_cellnum_combo(total1, total2, control1, control2)
@@ -142,8 +142,8 @@ end
 palbo50Lap[3, :, :] .= palbo50Lap[1, :, :] .+ palbo50Lap[2, :, :]
 # well 2: 3,4,5,6
 
-GC[1:2, :, 2, 1] .= meanGS1[1:2, :, 8]
-GC[1:2, :, 3:6, 1] .= meanGS2[1:2, :, 3:6]
+g[1:2, :, 2, 1] .= meanGS1[1:2, :, 8]
+g[1:2, :, 3:6, 1] .= meanGS2[1:2, :, 3:6]
 
 ########### Palbociclib 50 nM + gemcitabines [5 nM, 10 nM, 17 nM, 30 nM]
 palbo50Gem = zeros(3, 189, 4)
@@ -167,8 +167,8 @@ palbo50Gem[1, :, 4], palbo50Gem[2, :, 4], _ = predict(GEM_PLB[:, 7, 5], GEM_PLB[
 palbo50Gem[1, :, 3], palbo50Gem[2, :, 3], _ = predict(GEM17_PLB, GEM_PLB[:, 1, 1], t)
 palbo50Gem[3, :, :] .= palbo50Gem[1, :, :] .+ palbo50Gem[2, :, :]
 # well 2: 21, 22, 23, 24
-GC[1:2, :, 2, 2] .= meanGS1[1:2, :, 8]
-GC[1:2, :, 3:6, 2] .= meanGS2[1:2, :, 21:24]
+g[1:2, :, 2, 2] .= meanGS1[1:2, :, 8]
+g[1:2, :, 3:6, 2] .= meanGS2[1:2, :, 21:24]
 
 ########### Gemcitabine 10 nM + palbociclibs [25 nM, 50 nM, 100 nM, 250 nM]
 Gem10palbo = zeros(3, 189, 3)
@@ -178,9 +178,9 @@ end
 Gem10palbo[1, :, 1], Gem10palbo[2, :, 1], _ = predict(GEM_PLB[:, 6, 4], GEM_PLB[:, 1, 1], t)
 Gem10palbo[3, :, :] .= Gem10palbo[1, :, :] .+ Gem10palbo[2, :, :]
 # well 1: 18, 22, 23, 24
-GC[1:2, :, 2, 3] .= meanGS1[1:2, :, 20]
-GC[1:2, :, 3, 3] .= meanGS2[1:2, :, 18]
-GC[1:2, :, 4:6, 3] .= meanGS2[1:2, :, 22:24]
+g[1:2, :, 2, 3] .= meanGS1[1:2, :, 20]
+g[1:2, :, 3, 3] .= meanGS2[1:2, :, 18]
+g[1:2, :, 4:6, 3] .= meanGS2[1:2, :, 22:24]
 
 ########### Gemcitabine 10 nM + lapatinibs [25 nM, 50 nM, 100 nM, 250 nM]
 Gem10Lap = zeros(3, 189, 4)
@@ -189,8 +189,8 @@ for i = 1:4
 end
 Gem10Lap[3, :, :] .= Gem10Lap[1, :, :] .+ Gem10Lap[2, :, :]
 # well 2: 9, 10, 11, 12
-GC[1:2, :, 2, 4] .= meanGS1[1:2, :, 20]
-GC[1:2, :, 3:6, 4] .= meanGS2[1:2, :, 9:12]
+g[1:2, :, 2, 4] .= meanGS1[1:2, :, 20]
+g[1:2, :, 3:6, 4] .= meanGS2[1:2, :, 9:12]
 
 ########## Dox 20 nM + gemcitabines [5 nM, 10 nM, 17 nM, 30 nM]
 dox20gem = zeros(3, 189, 4)
@@ -202,8 +202,8 @@ DOX10_GEM17 = DrugResponseModel.Bliss_params_unit(efcs[:, 4, 2], GEM17, hcat(efc
 dox20gem[1, :, 3], dox20gem[2, :, 3], _ = predict(DOX10_GEM17, DOX_GEM[:, 1, 1], t)
 dox20gem[3, :, :] .= dox20gem[1, :, :] .+ dox20gem[2, :, :]
 # well 2: 15, 16, 17, 18
-GC[1:2, :, 2, 5] .= meanGS1[1:2, :, 6]
-GC[1:2, :, 3:6, 5] .= meanGS2[1:2, :, 15:18]
+g[1:2, :, 2, 7] .= meanGS1[1:2, :, 6]
+g[1:2, :, 3:6, 7] .= meanGS2[1:2, :, 15:18]
 
 ########### Lap 100 nM + gemcitabines [17 nM, 30 nM]
 lap100gem = zeros(3, 189, 2)
@@ -212,7 +212,11 @@ lap100gem[1, :, 1], lap100gem[2, :, 1], _ = predict(LAP100_GEM17, LPT_GEM[:, 1, 
 lap100gem[1, :, 2], lap100gem[2, :, 2], _ = predict(LPT_GEM[:, 6, 7], LPT_GEM[:, 1, 1], t)
 lap100gem[3, :, :] .= lap100gem[1, :, :] .+ lap100gem[2, :, :]
 # well 2: 13, 19
-
+g[1:2, :, 2, 6] .= meanGS1[1:2, :, 8]
+g[1:2, :, 3, 6] .= meanGS2[1:2, :, 7]
+g[1:2, :, 4, 6] .= meanGS2[1:2, :, 11]
+g[1:2, :, 5, 6] .= meanGS2[1:2, :, 13]
+g[1:2, :, 6, 6] .= meanGS2[1:2, :, 19]
 ########### Lap 100 nM + palbociclibs [25 nM, 50 nM, 100 nM, 250 nM]
 Lap100palbo = zeros(3, 189, 3)
 for i = 2:3
@@ -221,11 +225,11 @@ end
 Lap100palbo[1, :, 1], Lap100palbo[2, :, 1], _ = predict(LPT_PLB[:, 6, 4], LPT_PLB[:, 1, 1], t)
 Lap100palbo[3, :, :] .= Lap100palbo[1, :, :] .+ Lap100palbo[2, :, :]
 # well 2: 8, 5, 14, 20
-GC[1:2, :, 2, 6] .= meanGS1[1:2, :, 8]
-GC[1:2, :, 3, 6] .= meanGS2[1:2, :, 4]
-GC[1:2, :, 4, 6] .= meanGS2[1:2, :, 5]
-GC[1:2, :, 5, 6] .= meanGS2[1:2, :, 14]
-GC[1:2, :, 6, 6] .= meanGS2[1:2, :, 20]
+g[1:2, :, 2, 5] .= meanGS1[1:2, :, 8]
+g[1:2, :, 3, 5] .= meanGS2[1:2, :, 4]
+g[1:2, :, 4, 5] .= meanGS2[1:2, :, 5]
+g[1:2, :, 5, 5] .= meanGS2[1:2, :, 14]
+g[1:2, :, 6, 5] .= meanGS2[1:2, :, 20]
 
 ########### Pax 2 nM + Lapatinib [50 nM, 100 nM]
 Pax2_lap = zeros(3, 189, 2)
@@ -234,14 +238,14 @@ Pax2_lap[1, :, 2], Pax2_lap[2, :, 2], _ = predict(LPT_TAX[:, 6, 4], LPT_TAX[:, 1
 Pax2_lap[3, :, :] .= Pax2_lap[1, :, :] .+ Pax2_lap[2, :, :]
 # well 2: 2 (50 nM) well 1: 16 (100 nM)
 
+g[1:2, :, 2:3, 8] .= meanGS1[1:2, :, 14:15]
+g[1:2, :, 4, 8] = meanGS2[1:2, :, 2]
+g[1:2, :, 5:6, 8] = meanGS1[1:2, :, 16:17]
+
 ### The following 4 lines are for saving the Bliss on model and cell numbers in excel files.
 ### Remember to add XLSX and DataFrames packages before running this.
-# df1 = DataFrames.DataFrame(pax2_lap50 = Pax2_lap[3, :, 1], pax2_lap100 = Pax2_lap[3, :, 2], lap100_palb25 = Lap100palbo[3, :, 1], lap100_palb100 = Lap100palbo[3, :, 2], lap100_palb250 = Lap100palbo[3, :, 3], lap100_gem17 = lap100gem[3, :, 1], lap100_gem30 = lap100gem[3, :, 2], dox20_gem5 = dox20gem[3, :, 1], dox20_gem10 = dox20gem[3, :, 2], dox20_gem17 = dox20gem[3, :, 3], dox20_gem30 = dox20gem[3, :, 4], gem10_lap25 = Gem10Lap[3, :, 1], gem10_lap50 = Gem10Lap[3, :, 2], gem10_lap100 = Gem10Lap[3, :, 3], gem10_lap250 = Gem10Lap[3, :, 4], gem10_palbo25 = Gem10palbo[3, :, 1], gem10_palbo100 = Gem10palbo[3, :, 2], gem10_palbo250 = Gem10palbo[3, :, 3], palbo50_gem5 = palbo50Gem[3, :, 1], palbo50_gem10 = palbo50Gem[3, :, 2], palbo50_gem17 = palbo50Gem[3, :, 3], palbo50_gem30 = palbo50Gem[3, :, 4], plb50_lpt25 = palbo50Lap[3, :, 1], plb50_lpt50 = palbo50Lap[3, :, 2], plb50_lpt100 = palbo50Lap[3, :, 3], plb50_lpt250 = palbo50Lap[3, :, 4], )
-# df2 = DataFrames.DataFrame(pax2_lap50 = Bliss_cellnum[:, 5, 4, 3], pax2_lap100 = Bliss_cellnum[:, 6, 4, 3], lap100_palb25 = Bliss_cellnum[:, 6, 4, 4], lap100_palb100 = Bliss_cellnum[:, 6, 6, 4], lap100_palb250 = Bliss_cellnum[:, 6, 7, 4], lap100_gem17=lap100_gem17_cellnum, lap100_gem30 = Bliss_cellnum[:, 6, 7, 2], dox20_gem5 = Bliss_cellnum[:, 4, 5, 5], dox20_gem10 = Bliss_cellnum[:, 4, 6, 5], dox20_gem17 = dox20_gem17_cellnum, dox20_gem30 = Bliss_cellnum[:, 4, 7, 5], gem10_lap25 = Bliss_cellnum[:, 4, 6, 2], gem10_lap50 = Bliss_cellnum[:, 5, 6, 2], gem10_lap100 = Bliss_cellnum[:, 6, 6, 2], gem10_lap250 = Bliss_cellnum[:, 7, 6, 2], gem10_palbo25 = Bliss_cellnum[:, 6, 4, 7], gem10_palbo100 = Bliss_cellnum[:, 6, 6, 7], gem10_palbo250 = Bliss_cellnum[:, 6, 7, 7], palbo50_gem5 = Bliss_cellnum[:, 5, 5, 7], palbo50_gem10 = Bliss_cellnum[:, 6, 5, 7], palbo50_gem17 = palbo50_gem17_cellnum, palbo50_gem30 = Bliss_cellnum[:, 7, 5, 7], plb50_lpt25 = Bliss_cellnum[:, 4, 5, 4], plb50_lpt50 = Bliss_cellnum[:, 5, 5, 4], plb50_lpt100 = Bliss_cellnum[:, 6, 5, 4], plb50_lpt250 = Bliss_cellnum[:, 7, 5, 4])
-
+# df1 = DataFrames.DataFrame(pax2_lap50 = Pax2_lap[3, :, 1], pax2_lap100 = Pax2_lap[3, :, 2])
 # XLSX.writetable("Bliss_model.xlsx", df1, overwrite=true, sheetname="cell number")
-# XLSX.writetable("Bliss_cellNumber.xlsx", df2, overwrite=true, sheetname="Bliss")
-
 function SSEs_combination()
     SSEs = zeros(2, 7) # dim1: exp - Bliss on cell number, dim2: exp - Bliss on model
 
@@ -426,5 +430,5 @@ function figureS2()
     fig = plot(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, size = (2000, 700), layout = (2, 6))
 
     savefig(fig, "figureS2.svg")
-    save("GC.jld", "GC", GC)
+    save("g.jld", "g", g)
 end
