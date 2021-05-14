@@ -28,7 +28,6 @@ end
     @assert(cmb[7:12] == 2.0 * ones(6))
 end
 
-
 @testset "Combination tests from estimated parameters to converting to ODE parameters where for both drugs, rates are decreasing and one reaches to zero." begin
     concs, _, _, _ = load(189, 1)
     gem_before = [10.0, 0.9, 0.9, 0.3, 1.8, 1.0, 1.0, 1.0, 0.5, 0.5, 0.2, 0.3, 0.4, 0.1, 0.5, 0.00593379, 0.110279, 0.001, 0.001, 0.01]
@@ -42,7 +41,7 @@ end
 end
 
 @testset "Test if the function that calculates bliss for cell numbers, works right." begin
-    gt1, _ = DrugResponseModel.import_combination("AU01001"); # [3, 193, 24]
+    gt1, _ = DrugResponseModel.import_combination("AU01001") # [3, 193, 24]
     control = gt1[3, 1:50, 1]
     lpt50 = gt1[3, 1:50, 3]
     combin = DrugResponseModel.pair_cellnum_Bliss(hcat(control, lpt50), hcat(control, control))

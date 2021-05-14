@@ -155,7 +155,6 @@ function figure2()
 
     # Bliss on data
     Bliss_cellnum1 = zeros(189, 8, 8, 10)
-    Bliss_cellnum2 = zeros(189, 8, 8, 10)
     for i = 1:189
         Bliss_cellnum1[i, :, :, :] .= blissCellNum(g1m, g2m, i)[1]
         Bliss_cellnum2[i, :, :, :] .= blissCellNum(g1m, g2m, i)[2]
