@@ -9,14 +9,13 @@ function Bliss_params_unit(pp1, pp2, control)
     p2 = copy(pp2)
     # normalization
     p1[1:6] .= 1.0 .- (pp1[1:6] ./ control[1:6, 1]) # g1 and g2 prog. rates
-    p1[7:12] .= pp1[7:12]                          # g1 and g2 death rates
+
     # drug B
     p2[1:6] .= 1.0 .- (pp2[1:6] ./ control[1:6, 2])
-    p2[7:12] .= pp2[7:12]
 
     c = Array{eltype(pp1), 1}(undef, 12)
     c[1:6] .= (1.0 .- (p1[1:6] .+ p2[1:6] .- p1[1:6] .* p2[1:6])) .* ((control[1:6, 1] .+ control[1:6, 2]) ./ 2)
-    c[7:12] .= p1[7:12] .+ p2[7:12]
+    c[7:12] .= pp1[7:12] .+ pp2[7:12]
 
     c
 end

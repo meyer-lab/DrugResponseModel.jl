@@ -67,7 +67,7 @@ function plot_pCombo(efcs, single_effs, drugB, ymax, label2, Phasename, ylabel, 
     x = ["G11", "G12", "G21", "G22", "G23", "G24"]
     y1 = efcs[1:6, 1] # control
     y2 = efcs[1:6, 2] # base drug alone
-    y3 = efcs[1:6, 5] # combination at max of drug B 
+    y3 = efcs[1:6, 6] # combination at max of drug B 
     scatter(
         x,
         y1,
@@ -178,20 +178,20 @@ end
 
 """ Plot inferred rate parameters. """
 function figureS5()
-    p1 = plot_pCombo(combinEffects[1:6, :, 1], single_effs[1:6, end, 1], "Lap", 10.95, "Palbo 50 nM", "Palbo 50 nM + Lap", "progression rates [1/hr]", "A", 0.35)
-    p2 = plot_pCombo(combinEffects[7:12, :, 1], single_effs[1:6, end, 1], "Lap", 2.5, "Palbo 50 nM", "Palbo 50 nM + Lap", "death rates [1/hr]", "B", 0.06)
-    p3 = plot_pCombo(combinEffects[1:6, :, 2], single_effs[1:6, end, 3], "Gem", 10.95, "Palbo 50 nM", "Palbo 50 nM + Gem", "progression rates [1/hr]", "C", 0.35)
-    p4 = plot_pCombo(combinEffects[7:12, :, 2], single_effs[1:6, end, 3], "Gem", 2.5, "Palbo 50 nM", "Palbo 50 nM + Gem", "death rates [1/hr]", "D", 0.06)
-    p5 = plot_pCombo(combinEffects[1:6, :, 3], single_effs[1:6, end, 5], "Palbo", 10.95, "Gem 10 nM", "Gem 10 nM + Palbo", "progression rates [1/hr]", "E", 0.35)
-    p6 = plot_pCombo(combinEffects[7:12, :, 3], single_effs[1:6, end, 5], "Palbo", 2.5, "Gem 10 nM", "Gem 10 nM + Palbo", "death rates [1/hr]", "F", 0.06)
-    p7 = plot_pCombo(combinEffects[1:6, :, 4], single_effs[1:6, end, 1], "Lap", 10.95, "Gem 10 nM", "Gem 10 nM + Lap", "progression rates [1/hr]", "G", 0.35)
-    p8 = plot_pCombo(combinEffects[7:12, :, 4], single_effs[1:6, end, 1], "Lap", 2.5, "Gem 10 nM", "Gem 10 nM + Lap", "death rates [1/hr]", "H", 0.06)
-    p9 = plot_pCombo(combinEffects[1:6, :, 5], single_effs[1:6, end, 1], "Lap", 10.95, "Palbo 50 nM", "Palbo 50 nM + Lap", "progression rates [1/hr]", "I", 0.35)
-    p10 = plot_pCombo(combinEffects[7:12, :, 5], single_effs[7:12, end, 1], "Lap", 2.5, "Palbo 50 nM", "Palbo 50 nM + Lap", "death rates [1/hr]", "J", 0.06)
-    p11 = plot_pCombo(combinEffects[1:6, :, 6], single_effs[1:6, end, 3], "Gem", 10.95, "Lap 100 nM", "Lap 100 nM + Gem", "progression rates [1/hr]", "K", 0.35)
-    p12 = plot_pCombo(combinEffects[7:12, :, 6], single_effs[7:12, end, 3], "Gem", 2.5, "Lap 100 nM", "Lap 100 nM + Gem", "death rates [1/hr]", "L", 0.06)
-    p13 = plot_pCombo(combinEffects[1:6, :, 7], single_effs[1:6, end, 3], "Gem", 10.95, "Dox 20 nM", "Dox 20 nM + Gem", "progression rates [1/hr]", "M", 0.35)
-    p14 = plot_pCombo(combinEffects[7:12, :, 7], single_effs[7:12, end, 3], "Gem", 2.5, "Dox 20 nM", "Dox 20 nM + Gem", "death rates [1/hr]", "N", 0.06)
+    p1 = plot_pCombo(combinEffects[1:6, :, 1], single_effs[1:6, end, 1], "Lap", 10.0, "Palbo 50 nM", "Palbo 50 nM + Lap", "progression rates [1/hr]", "A", 0.75)
+    p2 = plot_pCombo(combinEffects[7:12, :, 1], single_effs[7:12, end, 1], "Lap", 0.25, "Palbo 50 nM", "Palbo 50 nM + Lap", "death rates [1/hr]", "B", 0.06)
+    p3 = plot_pCombo(combinEffects[1:6, :, 2], single_effs[1:6, end, 3], "Gem", 10.0, "Palbo 50 nM", "Palbo 50 nM + Gem", "progression rates [1/hr]", "C", 0.75)
+    p4 = plot_pCombo(combinEffects[7:12, :, 2], single_effs[7:12, end, 3], "Gem", 0.25, "Palbo 50 nM", "Palbo 50 nM + Gem", "death rates [1/hr]", "D", 0.06)
+    p5 = plot_pCombo(combinEffects[1:6, :, 3], single_effs[1:6, end, 5], "Palbo", 10.0, "Gem 10 nM", "Gem 10 nM + Palbo", "progression rates [1/hr]", "E", 0.75)
+    p6 = plot_pCombo(combinEffects[7:12, :, 3], single_effs[7:12, end, 5], "Palbo", 0.25, "Gem 10 nM", "Gem 10 nM + Palbo", "death rates [1/hr]", "F", 0.06)
+    p7 = plot_pCombo(combinEffects[1:6, :, 4], single_effs[1:6, end, 1], "Lap", 10.0, "Gem 10 nM", "Gem 10 nM + Lap", "progression rates [1/hr]", "G", 0.75)
+    p8 = plot_pCombo(combinEffects[7:12, :, 4], single_effs[7:12, end, 1], "Lap", 0.25, "Gem 10 nM", "Gem 10 nM + Lap", "death rates [1/hr]", "H", 0.06)
+    p9 = plot_pCombo(combinEffects[1:6, :, 5], single_effs[1:6, end, 5], "Palbo", 10.0, "Lpt 100 nM", "Lap 100 nM + Palbo", "progression rates [1/hr]", "I", 0.75)
+    p10 = plot_pCombo(combinEffects[7:12, :, 5], single_effs[7:12, end, 5], "Palbo", 0.25, "Lpt 100 nM", "Lap 100 nM + Palbo", "death rates [1/hr]", "J", 0.06)
+    p11 = plot_pCombo(combinEffects[1:6, :, 6], single_effs[1:6, end, 3], "Gem", 10.0, "Lap 100 nM", "Lap 100 nM + Gem", "progression rates [1/hr]", "K", 0.75)
+    p12 = plot_pCombo(combinEffects[7:12, :, 6], single_effs[7:12, end, 3], "Gem", 0.25, "Lap 100 nM", "Lap 100 nM + Gem", "death rates [1/hr]", "L", 0.06)
+    p13 = plot_pCombo(combinEffects[1:6, :, 7], single_effs[1:6, end, 3], "Gem", 10.0, "Dox 20 nM", "Dox 20 nM + Gem", "progression rates [1/hr]", "M", 0.75)
+    p14 = plot_pCombo(combinEffects[7:12, :, 7], single_effs[7:12, end, 3], "Gem", 0.25, "Dox 20 nM", "Dox 20 nM + Gem", "death rates [1/hr]", "N", 0.06)
     p0 = plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
 
     figS5 = plot(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p0, p0, size = (1800, 1600), layout = (4, 4))

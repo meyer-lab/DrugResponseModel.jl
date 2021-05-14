@@ -51,6 +51,8 @@ function Bliss_unit(pp1, pp2, control)
     c[1:6] .= (1.0 .- (p1[1:6] .+ p2[1:6] .- p1[1:6] .* p2[1:6])) .* control[1:6]
     c[7:12] .= p1[7:12] .+ p2[7:12]
 
+    @assert(all(c[7:12] .>= p1[7:12]))
+    @assert(all(c[7:12] .>= p2[7:12]))
     c
 end
 
