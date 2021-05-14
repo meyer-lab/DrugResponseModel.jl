@@ -14,6 +14,8 @@ using JLD
 using Distributions
 using DataFrames
 using XLSX
+using JuMP
+using Ipopt
 
 include("importData.jl")
 include("ODEmodel.jl")

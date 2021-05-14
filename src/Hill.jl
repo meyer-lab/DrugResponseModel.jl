@@ -14,7 +14,6 @@ function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
     for ii = 1:length(conc)
         res += predict(params[:, ii, 1], params[:, 1, 1], t, g1[:, ii], g2[:, ii])[1]
     end
-
     return res
 end
 
@@ -37,25 +36,33 @@ end
 """ Hill optimization function. """
 function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 300000)
 
+    m = Model(Ipopt.Optimizer)
+    @variables(m, begin
+    1e-5 <= x[1:20] <= 500
+    end
+    )
     f(x) = residHill(x, conc, g1, g2)
 
+    @constraint(m, x[3] <= x[15])
+    @constraint(m, x[4] <= x[16])
+    @constraint(m, x[5] <= x[17])
+    @constraint(m, x[6] <= x[18])
+    @constraint(m, x[7] <= x[19])
+    @constraint(m, x[8] <= x[20])
+    @objective(m, Min, f(x))
     # [EC50, k, max_a1, max_a2, max_b1,  max_b2, max_b3, max_b4, max_g11, max_g12, max_g21, max_g22, max_g23, max_g24, min_a1, min_a2, min_b1,  min_b2, min_b3, min_b4]
-    low = [minimum(conc); 1e-9 * ones(19)]
-    high = [maximum(conc); 10.0; 2.5 * ones(18)]
-
-    return optimize_helper(f, low, high, maxstep)
+    # low = [minimum(conc); 1e-9 * ones(19)]
+    # high = [maximum(conc); 10.0; 2.5 * ones(18)]
+    optimize!(model)
+    println(value(x))
+    # return optimize_helper(f, low, high, maxstep)
 end
 
-function getODEparams(p, conc)
-    if length(p) == 76
-        nMax = 5
-    elseif length(p) == 20
-        nMax = 1
-    elseif length(p) == 34
-        nMax = 2
-    end
+function getODEparams(p, concs)
 
-    effects = zeros(eltype(p), 12, length(conc[:, 1]), Int((length(p) - 6) / 14))
+    nMax = Int((length(p) - 6) / 14)
+
+    effects = zeros(eltype(p), 12, length(conc[:, 1]), nMax)
     k = 1
     sizep = 14 # the size of independent parameters, meaning except for control.
     j = nMax * sizep + 1 # the starting index of "control parameters", according to the number of drugs being fitted at once.
