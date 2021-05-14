@@ -24,7 +24,7 @@ end
     p2 = hcat(vcat(ones(6), zeros(6)), 1.5*ones(12))
 
     cmb = DrugResponseModel.Bliss_params_unit(p1[:, 2], p2[:, 2], hcat(p1[:, 1], p2[:, 1]))
-    @assert(cmb[1:6] == 0.75 * ones(6)))
+    @assert(cmb[1:6] == 0.75 * ones(6))
     @assert(cmb[7:12] == 2.0 * ones(6))
 end
 
