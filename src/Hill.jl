@@ -50,15 +50,12 @@ function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 300000)
     @constraint(m, x[7] <= x[19])
     @constraint(m, x[8] <= x[20])
     @objective(m, Min, f(x))
-    # [EC50, k, max_a1, max_a2, max_b1,  max_b2, max_b3, max_b4, max_g11, max_g12, max_g21, max_g22, max_g23, max_g24, min_a1, min_a2, min_b1,  min_b2, min_b3, min_b4]
-    # low = [minimum(conc); 1e-9 * ones(19)]
-    # high = [maximum(conc); 10.0; 2.5 * ones(18)]
-    optimize!(model)
+
+    optimize!(m)
     println(value(x))
-    # return optimize_helper(f, low, high, maxstep)
 end
 
-function getODEparams(p, concs)
+function getODEparams(p, conc)
 
     nMax = Int((length(p) - 6) / 14)
 
