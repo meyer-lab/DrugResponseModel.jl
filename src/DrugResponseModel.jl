@@ -14,6 +14,7 @@ using JLD
 using Distributions
 using DataFrames
 using XLSX
+using StatsPlots
 
 include("importData.jl")
 include("ODEmodel.jl")
