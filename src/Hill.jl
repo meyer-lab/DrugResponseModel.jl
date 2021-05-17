@@ -7,14 +7,16 @@ DDE parameters, passes them to residual function and based off of these, optimiz
 and estimates hill parameters. """
 function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
 
+    res = 0.0
+    for i=3:8
+        res += 60*(maximum([0, (x[i] - x[i + 12])]))^2
+    end
     params = getODEparams(x, conc)
     t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
-    res = 0.0
     # Solve each concentration separately
     for ii = 1:length(conc)
         res += predict(params[:, ii, 1], params[:, 1, 1], t, g1[:, ii], g2[:, ii])[1]
     end
-
     return res
 end
 
@@ -46,16 +48,17 @@ function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 300000)
     return optimize_helper(f, low, high, maxstep)
 end
 
-function getODEparams(p, conc)
-    if length(p) == 76
-        nMax = 5
-    elseif length(p) == 20
-        nMax = 1
-    elseif length(p) == 34
-        nMax = 2
+function getODEparams(p, concs)
+    if size(concs) == (8,)
+        conc = zeros(8, 1)
+        conc[:, 1] = concs
+    else
+        conc = concs
     end
 
-    effects = zeros(eltype(p), 12, length(conc[:, 1]), Int((length(p) - 6) / 14))
+    nMax = Int((length(p) - 6) / 14)
+
+    effects = zeros(eltype(p), 12, length(conc[:, 1]), nMax)
     k = 1
     sizep = 14 # the size of independent parameters, meaning except for control.
     j = nMax * sizep + 1 # the starting index of "control parameters", according to the number of drugs being fitted at once.
