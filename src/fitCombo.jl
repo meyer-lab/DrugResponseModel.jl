@@ -12,9 +12,20 @@
 
 """ The residuals function that calculates cost function for combination data vs model. """
 function RESID_through_bliss(p, g1c, g2c)
-    p_combo = my_helper(p)
     t = LinRange(0.0, 0.5 * size(g1c, 1), size(g1c, 1))
     res = 0
+    res += 1e4 * (maximum([0, mean(p[1:2]) - mean(p[67:68])]))^2
+    res += 1e4 * (maximum([0, mean(p[3:6]) - mean(p[69:72])]))^2
+    res += 1e4 * (maximum([0, mean(p[13:14]) - mean(p[67:68])]))^2
+    res += 1e4 * (maximum([0, mean(p[15:18]) - mean(p[69:72])]))^2
+    res += 1e4 * (maximum([0, mean(p[27:28]) - mean(p[67:68])]))^2
+    res += 1e4 * (maximum([0, mean(p[29:32]) - mean(p[69:72])]))^2
+    res += 1e4 * (maximum([0, mean(p[41:42]) - mean(p[67:68])]))^2
+    res += 1e4 * (maximum([0, mean(p[43:46]) - mean(p[69:72])]))^2
+    res += 1e4 * (maximum([0, mean(p[55:56]) - mean(p[67:68])]))^2
+    res += 1e4 * (maximum([0, mean(p[57:60]) - mean(p[69:72])]))^2
+
+    p_combo = my_helper(p)
     for j=1:8
         for i=1:6
             res += predict(p_combo[:, i, j], p_combo[:, 1, j], t, g1c[:, i, j], g2c[:, i, j])[1]
@@ -24,13 +35,13 @@ function RESID_through_bliss(p, g1c, g2c)
 end
 
 """ Optimizer function that we run for fitting. """
-function optimize_combo(g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxstep = 300000)
+function optimize_combo(g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxstep = 700000)
 
     f(x) = RESID_through_bliss(x, g1, g2)
 
     # [EC50, k, max_a1, max_a2, max_b1,  max_b2, max_b3, max_b4, max_g11, max_g12, max_g21, max_g22, max_g23, max_g24, min_a1, min_a2, min_b1,  min_b2, min_b3, min_b4]
-    low = [1e-5 * ones(12); 1e-5 * ones(12); 5.0; 0.1; 1e-5 * ones(12); 1.0; 0.1; 1e-5 * ones(12); 5.0; 0.1; 1e-5 * ones(18)] # 60 parameters including 12 for single drug A, and 20 for the drugB
-    high = [2.5 * ones(12); 2.5 * ones(12); 500.0; 10.0; 2.5 * ones(12); 200.0; 20.0; 5 * ones(12); 500.0; 10.0; 2.5 * ones(18)]
+    low = [0.01 * ones(12); 0.01 * ones(12); 5.0; 0.1; 0.01 * ones(12); 1.0; 0.1; 0.01 * ones(12); 5.0; 0.1; 0.01 * ones(12); 0.2 * ones(6)] # 60 parameters including 12 for single drug A, and 20 for the drugB
+    high = [2 * ones(12); 1.8 * ones(12); 500.0; 100.0; 1.8 * ones(12); 200.0; 20.0; 1.8 * ones(12); 500.0; 10.0; 2 * ones(12); 3.0 * ones(6)]
 
     return optimize_helper(f, low, high, maxstep)
 end
