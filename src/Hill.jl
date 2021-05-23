@@ -20,11 +20,6 @@ function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
     return res
 end
 
-# function residC(params, g1, g2)
-#     t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
-#     return predict(params[:, 1, 1], params[:, 1, 1], t, g1[:, 1], g2[:, 1])[1]
-# end
-
 
 """ Generic setup for optimization. """
 function optimize_helper(f, low::Vector, high::Vector, maxstep::Int)

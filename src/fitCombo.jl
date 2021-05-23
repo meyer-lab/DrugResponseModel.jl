@@ -39,8 +39,8 @@ function optimize_combo(g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxstep = 
     f(x) = RESID_through_bliss(x, g1, g2)
 
     # [EC50, k, max_a1, max_a2, max_b1,  max_b2, max_b3, max_b4, max_g11, max_g12, max_g21, max_g22, max_g23, max_g24, min_a1, min_a2, min_b1,  min_b2, min_b3, min_b4]
-    low = [0.01 * ones(12); 0.01 * ones(12); 5.0; 0.1; 0.01 * ones(12); 1.0; 0.1; 0.01 * ones(12); 5.0; 0.1; 0.01 * ones(12); 0.2 * ones(6)] # 60 parameters including 12 for single drug A, and 20 for the drugB
-    high = [2 * ones(12); 1.8 * ones(12); 500.0; 100.0; 1.8 * ones(12); 200.0; 20.0; 1.8 * ones(12); 500.0; 10.0; 2 * ones(12); 3.0 * ones(6)]
+    low = [1e-4 * ones(12); 1e-4 * ones(12); 5.0; 0.1; 1e-4 * ones(12); 1.0; 0.1; 1e-4 * ones(12); 5.0; 0.1; 1e-4 * ones(12); 0.1 * ones(6)] # 60 parameters including 12 for single drug A, and 20 for the drugB
+    high = [4.0 * ones(12); 4.0 * ones(12); 500.0; 100.0; 4.0 * ones(12); 200.0; 20.0; 4.0 * ones(12); 500.0; 10.0; 4.0 * ones(12); 4.0 * ones(6)]
 
     return optimize_helper(f, low, high, maxstep)
 end
@@ -75,6 +75,7 @@ function my_helper(p)
     p_ode[:, 2, 2] = p[1:12]
     p_ode[:, 2, 4] = p[13:24]
     p_ode[:, :, [1, 3, 5]] = getODEparams(p[25:end], concs) # returns 12 x 5 x 3
+    p_ode[:, 1, [2, 4]] .= p_ode[:, 1, 1]
     p_combo = zeros(12, 6, 8)
     p_combo[:, 1, :] .= p_ode[:, 1, 1] # control
 
