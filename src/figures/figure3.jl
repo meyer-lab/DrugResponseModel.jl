@@ -2,11 +2,11 @@
 # remember: to load the simple ODE params do: JLD.load("G1_simpleODE.jld")["data"]
 function SSE(G1, G2, g1m, g2m, subPlabel)
     SSEs = zeros(5, 2)
-    G1ref = JLD.load("data/G1ref.jld")["data"]
-    G2ref = JLD.load("data/G2ref.jld")["data"]
+    G1ref = JLD.load("data/G1ref.jld")["G1ref"]
+    G2ref = JLD.load("data/G2ref.jld")["G2ref"]
     for i = 1:5
-        SSEs[i, 1] = norm(G1ref[:, :, i] - g1m[:, 1:7, i]) + norm(G2ref[:, :, i] - g2m[:, 1:7, 1])
-        SSEs[i, 2] = norm(G1[:, :, i] - g1m[:, 1:7, i]) + norm(G2[:, :, i] - g2m[:, 1:7, 1])
+        SSEs[i, 1] = norm(G1ref[:, :, i] - g1m[:, :, i]) + norm(G2ref[:, :, i] - g2m[:, :, 1])
+        SSEs[i, 2] = norm(G1[:, :, i] - g1m[:, :, i]) + norm(G2[:, :, i] - g2m[:, :, 1])
     end
     ctg = repeat(["w/o LCT", "w/ LCT"], inner = 5)
     nam = repeat(["Lapatinib", "Doxorubicin", "Gemcitabine", "Paclitaxel", "Palbociclib"], outer = 2)
@@ -36,7 +36,7 @@ function SSE(G1, G2, g1m, g2m, subPlabel)
     annotate!(-1, 555.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
 end
 
-function plot_fig1(concs, g1, g1data, tite, G, subPlabel)
+function plot_fig1(concs, g1, g1data, tite, G, subPlabel, palet)
     time = LinRange(0.0, 95.0, 189)
 
     p = plot(
@@ -46,7 +46,7 @@ function plot_fig1(concs, g1, g1data, tite, G, subPlabel)
         legend = :topleft,
         label = ["control" "$(concs[4]) nM" "$(concs[5]) nM" "$(concs[6]) nM" "$(concs[7]) nM" "$(concs[8]) nM"],
         fg_legend = :transparent,
-        palette = :PuBu_6,
+        palette = palet,
         title = tite,
         titlefont = Plots.font("Helvetica", 12),
         legendfont = Plots.font("Helvetica", 9),
@@ -62,8 +62,8 @@ function plot_fig1(concs, g1, g1data, tite, G, subPlabel)
         right_margin = 1.25cm,
     )
     plot!(time, g1data, lw = 2, linestyle = :dot, label = ["" "" "" "" "" "" ""])
-    annotate!(-25.0, 57.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
-    ylims!((0.0, 50))
+    annotate!(-1.0, 2.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
+    ylims!((0.0, 2.5))
     p
 end
 
@@ -130,85 +130,7 @@ function figure3()
     g1m = mean(g1S, dims = 4) # mean G1
     g2m = mean(g2S, dims = 4) # mean G2
 
-    # ps = [54.0081, 1.14609, 0.0134731, 0.0612216, 0.000544618, 0.508163, 0.449942, 0.750197, 0.00572742, 0.000605325, 0.00377081, 0.012888, 0.0324958, 0.00794965, 72.3608, 1.16909, 0.218171, 0.0132366, 1.95068, 0.332628, 1.78255, 1.99802, 9.98294e-6, 0.0723566, 0.000217136, 1.31271e-5, 0.000200519, 0.482793, 6.31801, 2.31431, 1.20631, 0.321574, 0.141168, 1.2279, 0.889013, 0.613851, 1.33851e-5, 8.38169e-7, 0.0276191, 0.0898858, 8.58913e-5, 1.90899e-5, 4.93753, 2.38264, 0.114318, 0.0436741, 1.60857, 1.99957, 0.249228, 0.0422159, 8.156e-6, 7.92813e-5, 0.77743, 8.52954e-5, 0.000302843, 0.0294197, 39.4451, 1.14695, 0.0783482, 0.965189, 1.89227, 0.4033, 0.873064, 1.86796, 3.29632e-6, 0.00966054, 0.0313393, 0.0100267, 4.22143e-6, 0.106995, 0.208104, 1.55023, 1.67404, 0.328186, 1.98992, 0.421714]
-    ps = [
-        48.1186,
-        1.17017,
-        0.0344367,
-        0.153542,
-        0.343799,
-        0.803251,
-        1.99644,
-        0.848162,
-        0.009062,
-        2.40783e-6,
-        2.12734e-5,
-        0.0538466,
-        5.83618e-5,
-        2.4157e-5,
-        15.5429,
-        1.43629,
-        0.367771,
-        0.0080823,
-        0.454744,
-        0.245463,
-        0.218754,
-        1.2806,
-        5.99234e-6,
-        0.0239985,
-        1.27509e-6,
-        4.87889e-6,
-        0.0179952,
-        0.146385,
-        4.99849,
-        1.90953,
-        0.510128,
-        0.220032,
-        0.221798,
-        1.60443,
-        0.240652,
-        0.950461,
-        2.01533e-7,
-        5.76098e-7,
-        8.91899e-7,
-        9.83827e-7,
-        0.0734884,
-        4.48427e-6,
-        3.62437,
-        2.74308,
-        0.0939696,
-        0.884336,
-        1.02885,
-        0.175659,
-        0.312402,
-        0.386282,
-        1.71926e-6,
-        0.373011,
-        5.02502e-6,
-        1.37135e-6,
-        0.127517,
-        2.9824e-6,
-        37.9028,
-        1.13736,
-        0.0930045,
-        0.591583,
-        0.456692,
-        1.10714,
-        1.31904,
-        1.3567,
-        4.92751e-7,
-        6.53767e-7,
-        0.0295615,
-        5.40729e-6,
-        5.87169e-6,
-        0.0568699,
-        0.212288,
-        1.28386,
-        0.310092,
-        1.44867,
-        1.99996,
-        0.471678,
-    ]
+    ps = [51.0122, 1.19478, 0.0123853, 0.197453, 0.783039, 6.53136e-5, 1.35692e-6, 0.284673, 0.00521293, 3.69958e-7, 0.00913979, 0.0258875, 3.04229e-6, 0.00527735, 18.4107, 1.38004, 0.288625, 9.6902e-9, 0.787761, 1.02151, 1.99999, 0.106618, 4.35605e-9, 0.0478454, 1.22383e-7, 1.04499e-7, 0.381662, 2.39835e-9, 4.75582, 1.78552, 0.481014, 0.404215, 0.471125, 0.187735, 1.99999, 0.255864, 1.35294e-9, 7.07919e-9, 1.74332e-9, 0.0672485, 4.87662e-8, 4.45473e-9, 7.0734, 2.47932, 0.066145, 5.62597e-8, 1.94036, 2.0, 2.0, 0.00866935, 1.22435e-9, 9.23547e-7, 2.0, 2.14921e-7, 1.23361e-7, 0.0174862, 36.8515, 1.11516, 0.0806277, 0.726529, 1.92473, 1.99999, 1.97768, 0.319934, 2.65382e-9, 6.12668e-9, 0.0197645, 1.06389e-6, 5.28303e-8, 0.0308013, 0.196915, 2.0, 1.92313, 2.0, 1.99921, 0.199044]
     efcs = getODEparams(ps, concs)
 
     # ******* model simulations ********
@@ -251,15 +173,15 @@ function figure3()
     g1mshort[:, 2:6, :] .= g1m[:, 4:8, :]
     g2mshort[:, 2:6, :] .= g2m[:, 4:8, :]
     p0 = plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
-    p1 = plot_fig1(concs[:, 1], G1short[:, :, 1], g1mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "G1", "B")
-    p2 = plot_fig1(concs[:, 1], G2short[:, :, 1], g2mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "S/G2", "C")
-    p3 = plot_fig1(concs[:, 3], G1short[:, :, 3], g1mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "G1", "D")
-    p4 = plot_fig1(concs[:, 3], G2short[:, :, 3], g2mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "S/G2", "E")
-    p5 = plot_pG1_mean(mean(efcs[1:2, 1, :], dims = 1), mean(efcs[1:2, 8, :], dims = 1), 2.5, "G1 ", "progression rates [1/hr]", "F", 0.3)
-    p6 = plot_pG1_mean(mean(efcs[3:6, 1, :], dims = 1), mean(efcs[3:6, 8, :], dims = 1), 2.5, "S/G2 ", "progression rates [1/hr]", "G", 0.3)
+    p1 = plot_fig1(concs[:, 1], G1short[:, :, 1], g1mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "G1", "B", :PuBu_6)
+    p2 = plot_fig1(concs[:, 1], G2short[:, :, 1], g2mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "S/G2", "C", :PuBu_6)
+    p3 = plot_fig1(concs[:, 3], G1short[:, :, 3], g1mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "G1", "D", :PuBu_6)
+    p4 = plot_fig1(concs[:, 3], G2short[:, :, 3], g2mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "S/G2", "E", :PuBu_6)
+    p5 = plot_pG1_mean(mean(efcs[1:2, 1, :], dims = 1), mean(efcs[1:2, 8, :], dims = 1), 2.0, "G1 ", "progression rates [1/hr]", "F", 0.3)
+    p6 = plot_pG1_mean(mean(efcs[3:6, 1, :], dims = 1), mean(efcs[3:6, 8, :], dims = 1), 2.0, "S/G2 ", "progression rates [1/hr]", "G", 0.3)
     p7 = plot_pG1_mean(sum(deathContG1, dims = 1), sum(deathEmaxG1, dims = 1), 1.0, "G1", "death probability", "H", 0.06)
     p8 = plot_pG1_mean(sum(deathContG2, dims = 1), sum(deathEmaxG2, dims = 1), 1.0, "S/G2", "death probability", "I", 0.06)
-    p9 = SSE(G1[:, 1:7, :], G2[:, 1:7, :], g1m, g2m, "J")
+    p9 = SSE(G1[:, :, :], G2[:, :, :], g1m, g2m, "J")
 
     figure1 = plot(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, size = (2200, 700), layout = (2, 5))
     savefig(figure1, "figure3.svg")
@@ -269,3 +191,111 @@ end
 # p1 = [59.132, 1.23216, 2.93162, 0.0224589, 0.275675, 2.99447, 0.493825, 0.582667, 0.0014566, 0.00738793, 0.0297349, 0.0763022, 0.00317598, 0.000262541, 172.905, 0.8691, 2.94725, 0.133166, 0.234383, 2.73361, 0.464481, 2.98659, 0.000172721, 0.000107943, 0.202668, 0.00391187, 0.000557085, 0.345508, 3.52234, 1.74014, 0.000323184, 0.255954, 0.100639, 0.124028, 0.730151, 0.901477, 0.0202751, 1.83514e-5, 1.5387e-5, 0.0315427, 0.000701986, 3.44425e-5, 2.37072, 2.10702, 0.542407, 0.0866461, 1.66253, 1.64308, 0.199229, 1.82007, 0.0594886, 0.0267128, 0.000201773, 0.000405221, 0.0151659, 0.00142696, 167.719, 0.684362, 2.18003, 0.0284909, 1.37066, 1.85981, 0.267127, 2.99785, 0.00214824, 3.36141e-5, 0.134529, 0.000727143, 6.67082e-5, 0.126732, 2.99503, 0.169147, 0.429907, 2.98509, 0.471941, 0.474202]
 # p2 = [42.146, 1.25318, 0.00756712, 0.0697291, 0.085851, 0.00123844, 0.775785, 0.586675, 0.00613917, 0.000414688, 0.00326492, 7.08622e-5, 0.000116708, 0.0250105, 35.0601, 0.713745, 0.930779, 0.00027068, 1.7175, 1.9972, 0.223518, 1.99703, 0.00021207, 0.0645482, 0.0631564, 0.376948, 0.000373298, 0.000581707, 5.05173, 2.3473, 0.502171, 0.348143, 0.414099, 0.203361, 0.204054, 1.98124, 2.67144e-5, 1.9479e-5, 4.97218e-5, 0.0645767, 1.52479e-5, 7.28062e-5, 3.23095, 2.09279, 0.0897522, 0.0948307, 1.97429, 0.0507758, 0.921704, 0.0677673, 9.64556e-6, 0.188601, 0.00153864, 7.74546e-5, 3.10941e-6, 0.032831, 26.8248, 1.09054, 0.0957954, 0.792823, 0.787165, 1.27552, 0.356341, 1.9483, 1.98233e-5, 0.0238753, 0.000176911, 0.00200283, 0.021934, 0.00858807, 0.244592, 1.26283, 1.72032, 1.9972, 0.292368, 0.775993]
 # p3 = [57.7701, 0.95457, 0.0325867, 0.0412113, 0.429698, 0.967497, 0.849089, 2.9987, 0.0149979, 5.57127e-6, 4.39279e-5, 2.01576e-5, 3.30843e-5, 0.0629629, 88.7115, 1.01634, 2.73977, 0.0700161, 2.48209, 0.564991, 2.99984, 2.99375, 3.49147e-5, 0.0289362, 8.14621e-5, 2.44595e-5, 0.70729, 0.000131428, 7.78495, 1.88809, 2.99927, 0.177006, 0.254106, 0.173401, 1.66882, 2.99713, 1.17434e-5, 7.03714e-6, 6.09986e-6, 0.0504083, 6.46098e-5, 9.38154e-5, 4.13404, 6.6356, 0.188563, 0.0646219, 2.99742, 0.482296, 0.286644, 0.0666906, 2.57614e-6, 2.99968e-6, 0.858529, 1.39496e-5, 4.66364e-6, 0.0409683, 26.1721, 1.12445, 1.88882, 0.0624009, 2.0323, 0.313346, 2.70712, 2.99926, 0.0586253, 0.000730662, 0.0784669, 4.3896e-5, 0.000300769, 0.06418, 0.319625, 0.431269, 0.386734, 0.618726, 0.630307, 1.01177]
+
+function p_t()
+    concs, popul1, g1s1, g2s1 = load(189, 1)
+    _, popul2, g1s2, g2s2 = load(189, 2)
+    _, popul3, g1s3, g2s3 = load(189, 3)
+
+    # find G1 std and mean ***** data ******
+    g1S = cat(g1s1, g1s2, g1s3, dims = 4)
+    g2S = cat(g2s1, g2s2, g2s3, dims = 4)
+    g1m = mean(g1S, dims = 4) # mean G1
+    g2m = mean(g2S, dims = 4) # mean G2
+    gt = g1m .+ g2m
+    time = LinRange(0.0, 95.0, 189)
+
+    p = plot(
+        time, gt[:, end, 1], label ="lapatinib", xlabel="time [hr]", ylabel="cell numbers", 
+        fg_legend = :transparent,
+        lw=2,
+        titlefont = Plots.font("Helvetica", 12),
+        legendfont = Plots.font("Helvetica", 9),
+        guidefont = Plots.font("Helvetica", 12),
+        xtickfont = Plots.font("Helvetica", 12),
+        ytickfont = Plots.font("Helvetica", 12),
+        bottom_margin = 1.25cm,
+        top_margin = 1.25cm,
+        left_margin = 1.25cm,
+        right_margin = 1.25cm,
+    )
+    p = plot!(
+        time, gt[:, end, 2], label ="doxorubicin", xlabel="time [hr]", ylabel="cell numbers", 
+        fg_legend = :transparent,
+        lw=2,
+        titlefont = Plots.font("Helvetica", 12),
+        legendfont = Plots.font("Helvetica", 9),
+        guidefont = Plots.font("Helvetica", 12),
+        xtickfont = Plots.font("Helvetica", 12),
+        ytickfont = Plots.font("Helvetica", 12),
+        bottom_margin = 1.25cm,
+        top_margin = 1.25cm,
+        left_margin = 1.25cm,
+        right_margin = 1.25cm,
+    )
+    plot!(
+        time, gt[:, end, 3], label ="gemcitabine", xlabel="time [hr]", ylabel="cell numbers", 
+        fg_legend = :transparent,
+        lw=2,
+        titlefont = Plots.font("Helvetica", 12),
+        legendfont = Plots.font("Helvetica", 9),
+        guidefont = Plots.font("Helvetica", 12),
+        xtickfont = Plots.font("Helvetica", 12),
+        ytickfont = Plots.font("Helvetica", 12),
+        bottom_margin = 1.25cm,
+        top_margin = 1.25cm,
+        left_margin = 1.25cm,
+        right_margin = 1.25cm,
+    )
+    plot!(
+        time, gt[:, end, 4], label ="paclitaxel", xlabel="time [hr]", ylabel="cell numbers", 
+        fg_legend = :transparent,
+        lw=2,
+        titlefont = Plots.font("Helvetica", 12),
+        legendfont = Plots.font("Helvetica", 9),
+        guidefont = Plots.font("Helvetica", 12),
+        xtickfont = Plots.font("Helvetica", 12),
+        ytickfont = Plots.font("Helvetica", 12),
+        xticks = 0:24.0:96.0,
+        bottom_margin = 1.25cm,
+        top_margin = 1.25cm,
+        left_margin = 1.25cm,
+        right_margin = 1.25cm,
+    )
+    plot!(
+        time, gt[:, end, 5], label ="palbociclib", xlabel="time [hr]", ylabel="cell numbers", 
+        fg_legend = :transparent,
+        lw=2,
+        titlefont = Plots.font("Helvetica", 12),
+        legendfont = Plots.font("Helvetica", 9),
+        guidefont = Plots.font("Helvetica", 12),
+        xtickfont = Plots.font("Helvetica", 12),
+        ytickfont = Plots.font("Helvetica", 12),
+        xticks = 0:24.0:96.0,
+        bottom_margin = 1.25cm,
+        top_margin = 1.25cm,
+        left_margin = 1.25cm,
+        right_margin = 1.25cm,
+    )
+    ylims!((0.0, 40.0))
+    savefig(p, "tot.svg")
+end
+
+function temp()
+    concs, popul1, g1s1, g2s1 = load(189, 1)
+    _, popul2, g1s2, g2s2 = load(189, 2)
+    _, popul3, g1s3, g2s3 = load(189, 3)
+
+    # find G1 std and mean ***** data ******
+    g1S = cat(g1s1, g1s2, g1s3, dims = 4)
+    g2S = cat(g2s1, g2s2, g2s3, dims = 4)
+    g1m = mean(g1S, dims = 4) # mean G1
+    g2m = mean(g2S, dims = 4) # mean G2
+    gt = g1m .+ g2m
+    time = LinRange(0.0, 95.0, 189)
+    p1 = scatter(time, g1m[:, 6, 1], xlabel="time [hr]", ylabel = "G1 cell counts")
+    p2 = scatter(time, g2m[:, 6, 1], xlabel="time [hr]", ylabel = "S/G2 cell counts")
+    pp = plot(p1, p2, size=(700, 300), layout=(1, 2))
+    savefig(pp, "temp.svg")
+end
+    

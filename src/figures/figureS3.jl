@@ -63,7 +63,6 @@ function figureS3()
     g2S = cat(g2s1, g2s2, g2s3, dims = 4)
     g1m = mean(g1S, dims = 4) # mean G1
     g2m = mean(g2S, dims = 4) # mean G2
-    # ps = [49.3586, 1.17185, 0.0282905, 0.0951968, 0.504262, 0.0184514, 1.18907, 0.430626, 0.00196231, 0.000298825, 0.012889, 0.0439383, 0.000411681, 0.00843959, 50.8016, 1.1163, 0.719054, 0.0198512, 1.7385, 1.99593, 0.559215, 1.99812, 5.19521e-5, 0.0437321, 0.000159324, 2.40294e-5, 1.00505e-5, 0.358554, 8.01052, 1.85522, 0.991196, 0.30734, 0.147207, 1.9967, 1.97281, 0.467472, 5.79695e-6, 2.26411e-6, 0.0244994, 0.194905, 8.68958e-5, 1.0193e-6, 5.03098, 2.54629, 0.102513, 0.982979, 1.9996, 1.99136, 0.0413995, 0.291088, 1.36472e-5, 0.863982, 7.7907e-5, 3.62615e-6, 0.0166949, 3.96192e-5, 41.1008, 1.17745, 0.0775729, 1.04506, 0.844931, 1.99068, 0.469021, 1.47542, 2.09634e-6, 0.0360343, 0.00337154, 0.0139691, 0.000166717, 0.102599, 0.21534, 1.17926, 0.619844, 1.98919, 0.635168, 0.360777]
     ps = [
         48.1186,
         1.17017,
@@ -155,8 +154,8 @@ function figureS3()
         end
     end
 
-    G1ref = JLD.load("data/G1ref.jld")["data"]
-    G2ref = JLD.load("data/G2ref.jld")["data"]
+    G1ref = JLD.load("data/G1ref.jld")["G1ref"]
+    G2ref = JLD.load("data/G2ref.jld")["G2ref"]
 
     G1short = zeros(189, 6, 5)
     G2short = zeros(189, 6, 5)
@@ -176,18 +175,18 @@ function figureS3()
     G2refshort[:, 2:6, :] .= G2ref[:, 3:7, :]
     g1mshort[:, 2:6, :] .= g1m[:, 3:7, :]
     g2mshort[:, 2:6, :] .= g2m[:, 3:7, :]
-    p1 = DrugResponseModel.plot_fig1(concs[:, 2], G1short[:, :, 2], g1mshort[:, :, 2, 1], "Dynamical Model Fits - Doxorubicin", "G1", "A")
-    p2 = DrugResponseModel.plot_fig1(concs[:, 2], G2short[:, :, 2], g2mshort[:, :, 2, 1], "Dynamical Model Fits - Doxorubicin", "S/G2", "B")
-    p3 = DrugResponseModel.plot_fig1(concs[:, 4], G1short[:, :, 4], g1mshort[:, :, 4, 1], "Dynamical Model Fits - Paclitaxel", "G1", "C")
-    p4 = DrugResponseModel.plot_fig1(concs[:, 4], G2short[:, :, 4], g2mshort[:, :, 4, 1], "Dynamical Model Fits - Paclitaxel", "S/G2", "D")
-    p5 = DrugResponseModel.plot_fig1(concs[:, 5], G1short[:, :, 5], g1mshort[:, :, 5, 1], "Dynamical Model Fits - Palbociclib", "G1", "E")
-    p6 = DrugResponseModel.plot_fig1(concs[:, 5], G2short[:, :, 5], g2mshort[:, :, 5, 1], "Dynamical Model Fits - Palbociclib", "S/G2", "F")
+    p1 = DrugResponseModel.plot_fig1(concs[:, 2], G1short[:, :, 2], g1mshort[:, :, 2, 1], "Dynamical Model Fits - Doxorubicin", "G1", "A", :PuBu_6)
+    p2 = DrugResponseModel.plot_fig1(concs[:, 2], G2short[:, :, 2], g2mshort[:, :, 2, 1], "Dynamical Model Fits - Doxorubicin", "S/G2", "B", :PuBu_6)
+    p3 = DrugResponseModel.plot_fig1(concs[:, 4], G1short[:, :, 4], g1mshort[:, :, 4, 1], "Dynamical Model Fits - Paclitaxel", "G1", "C", :PuBu_6)
+    p4 = DrugResponseModel.plot_fig1(concs[:, 4], G2short[:, :, 4], g2mshort[:, :, 4, 1], "Dynamical Model Fits - Paclitaxel", "S/G2", "D", :PuBu_6)
+    p5 = DrugResponseModel.plot_fig1(concs[:, 5], G1short[:, :, 5], g1mshort[:, :, 5, 1], "Dynamical Model Fits - Palbociclib", "G1", "E", :PuBu_6)
+    p6 = DrugResponseModel.plot_fig1(concs[:, 5], G2short[:, :, 5], g2mshort[:, :, 5, 1], "Dynamical Model Fits - Palbociclib", "S/G2", "F", :PuBu_6)
 
     p0 = plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
-    p7 = DrugResponseModel.plot_fig1(concs[:, 1], G1refshort[:, :, 1], g1mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "G1", "N")
-    p8 = DrugResponseModel.plot_fig1(concs[:, 1], G2refshort[:, :, 1], g2mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "S/G2", "O")
-    p9 = DrugResponseModel.plot_fig1(concs[:, 3], G1refshort[:, :, 3], g1mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "G1", "P")
-    p10 = DrugResponseModel.plot_fig1(concs[:, 3], G2refshort[:, :, 3], g2mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "S/G2", "Q")
+    p7 = DrugResponseModel.plot_fig1(concs[:, 1], G1refshort[:, :, 1], g1mshort[:, :, 1, 1], "Expon Model Fits - Lapatinib", "G1", "N", :YlOrBr_6)
+    p8 = DrugResponseModel.plot_fig1(concs[:, 1], G2refshort[:, :, 1], g2mshort[:, :, 1, 1], "Expon Model Fits - Lapatinib", "S/G2", "O", :YlOrBr_6)
+    p9 = DrugResponseModel.plot_fig1(concs[:, 3], G1refshort[:, :, 3], g1mshort[:, :, 3, 1], "Expon Model Fits - Gemcitabine", "G1", "P", :YlOrBr_6)
+    p10 = DrugResponseModel.plot_fig1(concs[:, 3], G2refshort[:, :, 3], g2mshort[:, :, 3, 1], "Expon Model Fits - Gemcitabine", "S/G2", "Q", :YlOrBr_6)
 
     p11 = DrugResponseModel.plot_pG1(efcs[1:6, :, 1], 2.25, "Lapatinib", "progression rates [1/hr]", "G", 0.35)
     p12 = DrugResponseModel.plot_pG1(efcs[7:12, :, 1], 0.2, "Lapatinib", "death rates [1/hr]", "H", 0.06)
@@ -195,14 +194,14 @@ function figureS3()
     p14 = DrugResponseModel.plot_pG1(efcs[7:12, :, 3], 0.2, "Gemcitabine", "death rates [1/hr]", "J", 0.06)
     p15 = DrugResponseModel.plot_pG1(efcs[1:6, :, 5], 2.25, "Paclitaxel", "progression rates [1/hr]", "K", 0.35)
     p16 = DrugResponseModel.plot_pG1(efcs[7:12, :, 5], 0.2, "Paclitaxel", "death rates [1/hr]", "L", 0.06)
-    figureS1 = plot(p1, p2, p3, p4, p5, p6, p11, p12, p13, p14, p15, p16, p0, p0, p7, p8, p9, p10, size = (2400, 1050), layout = (3, 6))
-    savefig(figureS1, "figureS3.svg")
+    figureS3 = plot(p1, p2, p3, p4, p5, p6, p11, p12, p13, p14, p15, p16, p0, p0, p7, p8, p9, p10, size = (2400, 1050), layout = (3, 6))
+    savefig(figureS3, "figureS3.svg")
 end
 
 """ To plot the baseline Bliss overlayed with experimental data. """
 function plot_figss()
     concs, popul1, g1s1, g2s1 = load(189, 1)
-    expD = JLD.load("GC.jld")["GC"]
+    expD = JLD.load("g.jld")["g"]
     C = output_Bliss_cellnum()
 
     D = (expD[1, 1:189, [1, 3, 4, 5, 6], [1, 2, 3, 4, 6]] .+ expD[2, 1:189, [1, 3, 4, 5, 6], [1, 2, 3, 4, 6]])

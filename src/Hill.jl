@@ -48,15 +48,16 @@ function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 300000)
     return optimize_helper(f, low, high, maxstep)
 end
 
-function getODEparams(p, concs)
-    if size(concs) == (8,)
-        conc = zeros(8, 1)
-        conc[:, 1] = concs
-    else
-        conc = concs
-    end
+# function optimC(g1, g2)
 
-    nMax = Int((length(p) - 6) / 14)
+#     ff(x) = residC(x, g1, g2)
+#     low = append!(1e-6 * ones(6), zeros(6))
+#     high = append!(3.0 * ones(6), zeros(6))
+#     return optimize_helper(ff, low, high, 300000)
+# end
+
+function getODEparams(p, conc)
+    nMax = Int((length(p) - 6) /14)
 
     effects = zeros(eltype(p), 12, length(conc[:, 1]), nMax)
     k = 1
