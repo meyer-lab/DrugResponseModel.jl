@@ -35,7 +35,7 @@ function startV_exp(p::AbstractVector{T})::AbstractVector{T} where {T <: Real}
     @assert all(isreal.(vals[selectt]))
     @assert all(isreal.(vecs))
 
-    return 20.0 * vecs / sum(vecs)
+    return vecs / sum(vecs)
 end
 
 
@@ -99,3 +99,45 @@ function predict_exp(p::AbstractVector, g_0::AbstractVector, t::Union{Real, LinR
 
     return G1, G2, v
 end
+
+function residHillexp(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
+
+    res = 0.0
+    for i=3:8
+        res += 60*(maximum([0, (x[i] - x[i + 12])]))^2
+    end
+    params = getODEparams(x, conc)
+    t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
+    # Solve each concentration separately
+    for ii = 1:length(conc)
+        res += predict_exp(params[:, ii, 1], params[:, 1, 1], t, g1[:, ii], g2[:, ii])[1]
+    end
+    return res
+end
+
+function residHillAllexp(hP, concentrations::Matrix, g1::Array, g2::Array)
+    res = 0.0
+
+    # Solve for all drugs
+    t = 1
+    for j = 1:5
+        hill = hP[[t:(t + 13); 71:76]]
+        res += residHillexp(hill, concentrations[:, j], g1[:, :, j], g2[:, :, j])
+        t += 14
+    end
+
+    return res
+end
+
+function optim_allexp(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 800000)
+    f(x) = residHillAllexp(x, concs, g1, g2)
+
+    # [a, 0, b, 0, 0, 0, g1, 0, g2, 0, 0, 0]
+    lP = [minimum(concs); 0.01; 1e-9; 0; 1e-9; 0.0; 0.0; 0.0; 1e-9; 0; 1e-9; 0.0; 0.0; 0.0]
+    low = vcat(lP, lP, lP, lP, lP, 1e-9, 0, 1e-9, 0, 0, 0)
+    hP = [maximum(concs); 10.0; 2; 0.0; 2; 0.0; 0.0; 0; 2; 0.0; 2; 0.0; 0.0; 0.0]
+    high = vcat(hP, hP, hP, hP, hP, 2.0, 0.0, 2.0, 0.0, 0.0, 0.0)
+
+    return optimize_helper(f, low, high, maxiter)
+end
+# p_optim = [69.0898, 1.75704, 1.00525e-9, 0.0, 1.30328e-9, 0.0, 0.0, 0.0, 1.01896e-9, 0.0, 0.0117861, 0.0, 0.0, 0.0, 52.0114, 1.04672, 0.0249361, 0.0, 1.20034e-9, 0.0, 0.0, 0.0, 1.0814e-9, 0.0, 0.0336839, 0.0, 0.0, 0.0, 6.48332, 1.5805, 0.232475, 0.0, 0.0762636, 0.0, 0.0, 0.0, 0.205384, 0.0, 0.00899069, 0.0, 0.0, 0.0, 3.3574, 3.51098, 0.0213074, 0.0, 1.03062e-9, 0.0, 0.0, 0.0, 1.00861e-9, 0.0, 0.0212547, 0.0, 0.0, 0.0, 29.4276, 1.27817, 0.334571, 0.0, 4.21098e-9, 0.0, 0.0, 0.0, 1.01008e-9, 0.0, 0.00287931, 0.0, 0.0, 0.0, 0.206861, 0.0, 0.0145702, 0.0, 0.0, 0.0]

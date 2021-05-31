@@ -26,16 +26,13 @@ function Hill_p_eachDr(p)
 end
 
 
-function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 800000)
+function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 700000)
     f(x) = residHillAll(x, concs, g1, g2)
 
-    # lP = [minimum(concs); 0.01; 1e-9 * ones(12)]
-    # low = vcat(lP, lP, lP, lP, lP, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9)
-    # hP = [maximum(concs); 10.0; 2 * ones(12)]
-    # high = vcat(hP, hP, hP, hP, hP, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0)
-    low = [5.0; 0.01; 0.01 * ones(12); 5.0; 0.01; 0.01 * ones(12); 5.0; 0.1; 0.01 * ones(12); 1.0; 0.1; 0.01 * ones(12); 5.0; 0.1; 0.01 * ones(12); 0.2 * ones(6)] # 60 parameters including 12 for single drug A, and 20 for the drugB
-    high = [500.0; 10.0; 2 * ones(12); 500.0; 10.0; 1.8 * ones(12); 500.0; 100.0; 1.8 * ones(12); 200.0; 20.0; 1.8 * ones(12); 500.0; 10.0; 2 * ones(12); 3.0 * ones(6)]
-
+    lP = [minimum(concs); 0.01; 1e-9 * ones(12)]
+    low = vcat(lP, lP, lP, lP, lP, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9)
+    hP = [maximum(concs); 10.0; 2 * ones(12)]
+    high = vcat(hP, hP, hP, hP, hP, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0)
 
     return optimize_helper(f, low, high, maxiter)
 end

@@ -2,7 +2,7 @@
         Imports data works for the ODE model
 """
 
-const init_cells = 20.0
+const init_cells = 1.0
 
 function get_data(path_g2::String, path_total::String; max = 189)
     # Import data all the trials for each drug
@@ -13,7 +13,7 @@ function get_data(path_g2::String, path_total::String; max = 189)
     perc = convert(Array, perc[1:max, 2:9])
     total = convert(Array, total[1:max, 2:9])
 
-    # rescaling the experimental data assuming we have 20 initial cells for each trial
+    # rescaling the experimental data assuming we have 1 initial cells for each trial
     gs = zeros(2, size(perc, 1), 8)
     population = init_cells * total
     gs[2, :, :] = 0.01 * population .* perc
@@ -44,7 +44,7 @@ function import_combination(filename::String)
         total[:, i] = savitzky_golay_filter(total[:, i], 41, 3)
     end
 
-    # rescaling the experimental data assuming we have 20 initial cells for each trial
+    # rescaling the experimental data assuming we have 1 initial cells for each trial
     gs = zeros(3, size(perc, 1), size(perc, 2))
     population = init_cells * total
     gs[1, :, :] = 0.01 * population .* perc

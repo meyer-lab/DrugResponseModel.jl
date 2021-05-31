@@ -2,11 +2,11 @@
 # remember: to load the simple ODE params do: JLD.load("G1_simpleODE.jld")["data"]
 function SSE(G1, G2, g1m, g2m, subPlabel)
     SSEs = zeros(5, 2)
-    G1ref = JLD.load("data/G1ref.jld")["data"]
-    G2ref = JLD.load("data/G2ref.jld")["data"]
+    G1ref = JLD.load("data/G1ref.jld")["G1ref"]
+    G2ref = JLD.load("data/G2ref.jld")["G2ref"]
     for i = 1:5
-        SSEs[i, 1] = norm(G1ref[:, :, i] - g1m[:, 1:7, i]) + norm(G2ref[:, :, i] - g2m[:, 1:7, 1])
-        SSEs[i, 2] = norm(G1[:, :, i] - g1m[:, 1:7, i]) + norm(G2[:, :, i] - g2m[:, 1:7, 1])
+        SSEs[i, 1] = norm(G1ref[:, :, i] - g1m[:, :, i]) + norm(G2ref[:, :, i] - g2m[:, :, 1])
+        SSEs[i, 2] = norm(G1[:, :, i] - g1m[:, :, i]) + norm(G2[:, :, i] - g2m[:, :, 1])
     end
     ctg = repeat(["w/o LCT", "w/ LCT"], inner = 5)
     nam = repeat(["Lapatinib", "Doxorubicin", "Gemcitabine", "Paclitaxel", "Palbociclib"], outer = 2)
@@ -62,8 +62,8 @@ function plot_fig1(concs, g1, g1data, tite, G, subPlabel, palet)
         right_margin = 1.25cm,
     )
     plot!(time, g1data, lw = 2, linestyle = :dot, label = ["" "" "" "" "" "" ""])
-    annotate!(-25.0, 57.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
-    ylims!((0.0, 50))
+    annotate!(-1.0, 2.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
+    ylims!((0.0, 2.5))
     p
 end
 
@@ -130,7 +130,7 @@ function figure3()
     g1m = mean(g1S, dims = 4) # mean G1
     g2m = mean(g2S, dims = 4) # mean G2
 
-    ps = [48.1186, 1.17017, 0.0344367, 0.153542, 0.343799, 0.803251, 1.99644, 0.848162, 0.009062, 2.40783e-6, 2.12734e-5, 0.0538466, 5.83618e-5, 2.4157e-5, 15.5429, 1.43629, 0.367771, 0.0080823, 0.454744, 0.245463, 0.218754, 1.2806, 5.99234e-6, 0.0239985, 1.27509e-6, 4.87889e-6, 0.0179952, 0.146385, 4.99849, 1.90953, 0.510128, 0.220032, 0.221798, 1.60443, 0.240652, 0.950461, 2.01533e-7, 5.76098e-7, 8.91899e-7, 9.83827e-7, 0.0734884, 4.48427e-6, 3.62437, 2.74308, 0.0939696, 0.884336, 1.02885, 0.175659, 0.312402, 0.386282, 1.71926e-6, 0.373011, 5.02502e-6, 1.37135e-6, 0.127517, 2.9824e-6, 37.9028, 1.13736, 0.0930045, 0.591583, 0.456692, 1.10714, 1.31904, 1.3567, 4.92751e-7, 6.53767e-7, 0.0295615, 5.40729e-6, 5.87169e-6, 0.0568699, 0.212288, 1.28386, 0.310092, 1.44867, 1.99996, 0.471678]
+    ps = [51.0122, 1.19478, 0.0123853, 0.197453, 0.783039, 6.53136e-5, 1.35692e-6, 0.284673, 0.00521293, 3.69958e-7, 0.00913979, 0.0258875, 3.04229e-6, 0.00527735, 18.4107, 1.38004, 0.288625, 9.6902e-9, 0.787761, 1.02151, 1.99999, 0.106618, 4.35605e-9, 0.0478454, 1.22383e-7, 1.04499e-7, 0.381662, 2.39835e-9, 4.75582, 1.78552, 0.481014, 0.404215, 0.471125, 0.187735, 1.99999, 0.255864, 1.35294e-9, 7.07919e-9, 1.74332e-9, 0.0672485, 4.87662e-8, 4.45473e-9, 7.0734, 2.47932, 0.066145, 5.62597e-8, 1.94036, 2.0, 2.0, 0.00866935, 1.22435e-9, 9.23547e-7, 2.0, 2.14921e-7, 1.23361e-7, 0.0174862, 36.8515, 1.11516, 0.0806277, 0.726529, 1.92473, 1.99999, 1.97768, 0.319934, 2.65382e-9, 6.12668e-9, 0.0197645, 1.06389e-6, 5.28303e-8, 0.0308013, 0.196915, 2.0, 1.92313, 2.0, 1.99921, 0.199044]
     efcs = getODEparams(ps, concs)
 
     # ******* model simulations ********
@@ -173,15 +173,15 @@ function figure3()
     g1mshort[:, 2:6, :] .= g1m[:, 4:8, :]
     g2mshort[:, 2:6, :] .= g2m[:, 4:8, :]
     p0 = plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
-    p1 = plot_fig1(concs[:, 1], G1short[:, :, 1], g1mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "G1", "B", :PuBu_5)
-    p2 = plot_fig1(concs[:, 1], G2short[:, :, 1], g2mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "S/G2", "C", :PuBu_5)
-    p3 = plot_fig1(concs[:, 3], G1short[:, :, 3], g1mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "G1", "D", :PuBu_5)
-    p4 = plot_fig1(concs[:, 3], G2short[:, :, 3], g2mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "S/G2", "E", :PuBu_5)
-    p5 = plot_pG1_mean(mean(efcs[1:2, 1, :], dims = 1), mean(efcs[1:2, 8, :], dims = 1), 1.5, "G1 ", "progression rates [1/hr]", "F", 0.3)
-    p6 = plot_pG1_mean(mean(efcs[3:6, 1, :], dims = 1), mean(efcs[3:6, 8, :], dims = 1), 1.5, "S/G2 ", "progression rates [1/hr]", "G", 0.3)
+    p1 = plot_fig1(concs[:, 1], G1short[:, :, 1], g1mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "G1", "B", :PuBu_6)
+    p2 = plot_fig1(concs[:, 1], G2short[:, :, 1], g2mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "S/G2", "C", :PuBu_6)
+    p3 = plot_fig1(concs[:, 3], G1short[:, :, 3], g1mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "G1", "D", :PuBu_6)
+    p4 = plot_fig1(concs[:, 3], G2short[:, :, 3], g2mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "S/G2", "E", :PuBu_6)
+    p5 = plot_pG1_mean(mean(efcs[1:2, 1, :], dims = 1), mean(efcs[1:2, 8, :], dims = 1), 2.0, "G1 ", "progression rates [1/hr]", "F", 0.3)
+    p6 = plot_pG1_mean(mean(efcs[3:6, 1, :], dims = 1), mean(efcs[3:6, 8, :], dims = 1), 2.0, "S/G2 ", "progression rates [1/hr]", "G", 0.3)
     p7 = plot_pG1_mean(sum(deathContG1, dims = 1), sum(deathEmaxG1, dims = 1), 1.0, "G1", "death probability", "H", 0.06)
     p8 = plot_pG1_mean(sum(deathContG2, dims = 1), sum(deathEmaxG2, dims = 1), 1.0, "S/G2", "death probability", "I", 0.06)
-    p9 = SSE(G1[:, 1:7, :], G2[:, 1:7, :], g1m, g2m, "J")
+    p9 = SSE(G1[:, :, :], G2[:, :, :], g1m, g2m, "J")
 
     figure1 = plot(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, size = (2200, 700), layout = (2, 5))
     savefig(figure1, "figure3.svg")

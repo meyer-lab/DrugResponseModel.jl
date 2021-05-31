@@ -45,7 +45,7 @@ function startV(p::AbstractVector{T})::AbstractVector{T} where {T <: Real}
     @assert all(isreal.(vals[selectt]))
     @assert all(isreal.(vecs))
 
-    return 20.0 * vecs / sum(vecs)
+    return vecs / sum(vecs)
 end
 
 

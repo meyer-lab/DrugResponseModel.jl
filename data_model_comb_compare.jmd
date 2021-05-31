@@ -26,10 +26,11 @@ totalm = g1m .+ g2m;
 
 GS1 = cat(gt1, gt1_2, gt1_3, dims = 4);
 GS2 = cat(gt2, gt2_2, gt2_3, dims = 4);
-
 t = LinRange(0.0, 95.0, 189);
 # params from fitting all 5 drugs at once
-p = [44.184, 1.24076, 0.0692788, 0.0460918, 0.3822, 0.854034, 0.605391, 0.771326, 0.0138293, 0.00183699, 0.000293753, 0.0127534, 0.00011816, 0.0142541, 60.6069, 0.899573, 1.99993, 0.0748216, 1.99326, 0.468332, 1.99864, 1.22536, 0.000141615, 0.0318616, 0.000216899, 8.80158e-7, 0.598489, 0.00110572, 6.68492, 2.05974, 1.99936, 0.167588, 0.507586, 0.316074, 0.248084, 0.826596, 1.6164e-5, 3.10987e-6, 3.55996e-5, 7.73526e-6, 0.0774056, 8.26708e-5, 3.34656, 2.83739, 0.0907361, 0.108245, 1.9758, 1.96985, 1.9993, 0.210137, 0.0690636, 1.30442e-5, 0.0767181, 0.00991078, 6.87891e-5, 1.45086e-5, 18.2253, 1.1841, 1.00505, 0.0735852, 1.97326, 0.783828, 0.45769, 1.99355, 0.0519941, 0.000533671, 0.00204743, 9.52975e-5, 5.23806e-5, 0.0677505, 0.339953, 0.403341, 0.802518, 0.470576, 1.298, 0.423103];
+#p = [44.184, 1.24076, 0.0692788, 0.0460918, 0.3822, 0.854034, 0.605391, 0.771326, 0.0138293, 0.00183699, 0.000293753, 0.0127534, 0.00011816, 0.0142541, 60.6069, 0.899573, 1.99993, 0.0748216, 1.99326, 0.468332, 1.99864, 1.22536, 0.000141615, 0.0318616, 0.000216899, 8.80158e-7, 0.598489, 0.00110572, 6.68492, 2.05974, 1.99936, 0.167588, 0.507586, 0.316074, 0.248084, 0.826596, 1.6164e-5, 3.10987e-6, 3.55996e-5, 7.73526e-6, 0.0774056, 8.26708e-5, 3.34656, 2.83739, 0.0907361, 0.108245, 1.9758, 1.96985, 1.9993, 0.210137, 0.0690636, 1.30442e-5, 0.0767181, 0.00991078, 6.87891e-5, 1.45086e-5, 18.2253, 1.1841, 1.00505, 0.0735852, 1.97326, 0.783828, 0.45769, 1.99355, 0.0519941, 0.000533671, 0.00204743, 9.52975e-5, 5.23806e-5, 0.0677505, 0.339953, 0.403341, 0.802518, 0.470576, 1.298, 0.423103];
+p = [51.0122, 1.19478, 0.0123853, 0.197453, 0.783039, 6.53136e-5, 1.35692e-6, 0.284673, 0.00521293, 3.69958e-7, 0.00913979, 0.0258875, 3.04229e-6, 0.00527735, 18.4107, 1.38004, 0.288625, 9.6902e-9, 0.787761, 1.02151, 1.99999, 0.106618, 4.35605e-9, 0.0478454, 1.22383e-7, 1.04499e-7, 0.381662, 2.39835e-9, 4.75582, 1.78552, 0.481014, 0.404215, 0.471125, 0.187735, 1.99999, 0.255864, 1.35294e-9, 7.07919e-9, 1.74332e-9, 0.0672485, 4.87662e-8, 4.45473e-9, 7.0734, 2.47932, 0.066145, 5.62597e-8, 1.94036, 2.0, 2.0, 0.00866935, 1.22435e-9, 9.23547e-7, 2.0, 2.14921e-7, 1.23361e-7, 0.0174862, 36.8515, 1.11516, 0.0806277, 0.726529, 1.92473, 1.99999, 1.97768, 0.319934, 2.65382e-9, 6.12668e-9, 0.0197645, 1.06389e-6, 5.28303e-8, 0.0308013, 0.196915, 2.0, 1.92313, 2.0, 1.99921, 0.199044]
+
 efcs = getODEparams(p, concs);
 
 # Bliss on cell numbers over time
@@ -52,8 +53,22 @@ function helper(Bliss_model1, Bliss_model2, i, title, subPlabel, label, GS2)
     plot!(t, Bliss_model2, label="G2 $label", titlefont = Plots.font("Helvetica", 12), lw=3, color="mediumpurple3", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
     plot!(t, mean(GS2, dims = 4)[1, 1:189, i], ribbon= std(GS2, dims=4)[1, 1:189, i], alpha=0.1, label="", titlefont = Plots.font("Helvetica", 12), lw=3, color="darkseagreen3", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
     plot!(t, mean(GS2, dims = 4)[2, 1:189, i], ribbon=std(GS2, dims=4)[2, 1:189, i], alpha=0.1, label="", titlefont = Plots.font("Helvetica", 12), lw=3, color="plum", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
-    annotate!(-20.0, 47.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
-    ylims!((0.0, 40.0))
+    #annotate!(-20.0, 47.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
+    ylims!((0.0, 3.0))
+    p
+end
+
+function helper2(Bliss_model1, Bliss_model2, i, title, subPlabel, label, gt2, gt2_2)
+    GS22 = cat(gt2, gt2_2, dims = 4);
+    t = LinRange(0.0, 95.0, 189)
+    p = plot(t, Bliss_model1 .+ Bliss_model2, label="total $label", xlabel="time [hr]", lw=3, ylabel="cell number", color="black", legend=:topright, title=title, titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
+    plot!(t, mean(GS22, dims = 4)[3, 1:189, i], ribbon= std(GS22, dims=4)[3, 1:189, i], alpha=0.1, label="", legend=:topright, titlefont = Plots.font("Helvetica", 12), lw=3, color="gray", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
+    plot!(t, Bliss_model1, label="G1 $label", xlabel="time [hr]", lw=3, ylabel="cell number", color="mediumseagreen", titlefont = Plots.font("Helvetica", 12), guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
+    plot!(t, Bliss_model2, label="G2 $label", titlefont = Plots.font("Helvetica", 12), lw=3, color="mediumpurple3", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
+    plot!(t, mean(GS22, dims = 4)[1, 1:189, i], ribbon= std(GS22, dims=4)[1, 1:189, i], alpha=0.1, label="", titlefont = Plots.font("Helvetica", 12), lw=3, color="darkseagreen3", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
+    plot!(t, mean(GS22, dims = 4)[2, 1:189, i], ribbon=std(GS22, dims=4)[2, 1:189, i], alpha=0.1, label="", titlefont = Plots.font("Helvetica", 12), lw=3, color="plum", guidefont=Plots.font("Helvetica", 12), xtickfont=Plots.font("Helvetica", 12),ytickfont=Plots.font("Helvetica", 12), bottom_margin=1.5cm, fg_legend = :transparent, top_margin=1.25cm, left_margin=1.25cm, right_margin=1.25cm)
+    #annotate!(-20.0, 47.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
+    ylims!((0.0, 3.0))
     p
 end
 ```
@@ -110,7 +125,7 @@ Gem10palbo = zeros(3, 189, 3)
 for i=2:3
     Gem10palbo[1, :, i], Gem10palbo[2, :, i], _ = predict(GEM_PLB[:, 6, i+4], GEM_PLB[:, 1, 1], t)
 end
-Gem10palbo[1, :, 3], Gem10palbo[2, :, 3], _ = predict(GEM_PLB[:, 6, 4], GEM_PLB[:, 1, 1], t)
+Gem10palbo[1, :, 1], Gem10palbo[2, :, 1], _ = predict(GEM_PLB[:, 6, 4], GEM_PLB[:, 1, 1], t)
 Gem10palbo[3, :, :] .= Gem10palbo[1, :, :] .+ Gem10palbo[2, :, :]
 # well 1: 18, 23, 24
 p1 = helper(Gem10palbo[1, :, 1], Gem10palbo[2, :, 1], 18, "gem 10 nM & palbo 25 nM", "a", "model", GS1)
@@ -161,7 +176,7 @@ lap100gem[1, :, 2], lap100gem[2, :, 2], _ = predict(LPT_GEM[:, 6, 7], LPT_GEM[:,
 lap100gem[3, :, :] .= lap100gem[1, :, :] .+ lap100gem[2, :, :]
 # well 2: 13, 19
 p1 = helper(lap100gem[1, :, 1], lap100gem[2, :, 1], 13, "lapt 100 nM & gem 17 nM", "a", "model", GS2)
-p2 = helper(lap100gem[1, :, 2], lap100gem[2, :, 2], 19, "lapt 100 nM & gem 30 nM", "b", "model", GS2)
+p2 = helper2(lap100gem[1, :, 2], lap100gem[2, :, 2], 19, "lapt 100 nM & gem 30 nM", "b", "model", gt2, gt2_2)
 plot(p1, p2, size = (800, 350), layout = (1, 2))
 ```
 

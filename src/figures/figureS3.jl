@@ -77,8 +77,8 @@ function figureS3()
         end
     end
 
-    G1ref = JLD.load("data/G1ref.jld")["data"]
-    G2ref = JLD.load("data/G2ref.jld")["data"]
+    G1ref = JLD.load("data/G1ref.jld")["G1ref"]
+    G2ref = JLD.load("data/G2ref.jld")["G2ref"]
 
     G1short = zeros(189, 6, 5)
     G2short = zeros(189, 6, 5)
