@@ -130,7 +130,84 @@ function figure3()
     g1m = mean(g1S, dims = 4) # mean G1
     g2m = mean(g2S, dims = 4) # mean G2
 
-    ps = [51.0122, 1.19478, 0.0123853, 0.197453, 0.783039, 6.53136e-5, 1.35692e-6, 0.284673, 0.00521293, 3.69958e-7, 0.00913979, 0.0258875, 3.04229e-6, 0.00527735, 18.4107, 1.38004, 0.288625, 9.6902e-9, 0.787761, 1.02151, 1.99999, 0.106618, 4.35605e-9, 0.0478454, 1.22383e-7, 1.04499e-7, 0.381662, 2.39835e-9, 4.75582, 1.78552, 0.481014, 0.404215, 0.471125, 0.187735, 1.99999, 0.255864, 1.35294e-9, 7.07919e-9, 1.74332e-9, 0.0672485, 4.87662e-8, 4.45473e-9, 7.0734, 2.47932, 0.066145, 5.62597e-8, 1.94036, 2.0, 2.0, 0.00866935, 1.22435e-9, 9.23547e-7, 2.0, 2.14921e-7, 1.23361e-7, 0.0174862, 36.8515, 1.11516, 0.0806277, 0.726529, 1.92473, 1.99999, 1.97768, 0.319934, 2.65382e-9, 6.12668e-9, 0.0197645, 1.06389e-6, 5.28303e-8, 0.0308013, 0.196915, 2.0, 1.92313, 2.0, 1.99921, 0.199044]
+    ps = [
+        51.0122,
+        1.19478,
+        0.0123853,
+        0.197453,
+        0.783039,
+        6.53136e-5,
+        1.35692e-6,
+        0.284673,
+        0.00521293,
+        3.69958e-7,
+        0.00913979,
+        0.0258875,
+        3.04229e-6,
+        0.00527735,
+        18.4107,
+        1.38004,
+        0.288625,
+        9.6902e-9,
+        0.787761,
+        1.02151,
+        1.99999,
+        0.106618,
+        4.35605e-9,
+        0.0478454,
+        1.22383e-7,
+        1.04499e-7,
+        0.381662,
+        2.39835e-9,
+        4.75582,
+        1.78552,
+        0.481014,
+        0.404215,
+        0.471125,
+        0.187735,
+        1.99999,
+        0.255864,
+        1.35294e-9,
+        7.07919e-9,
+        1.74332e-9,
+        0.0672485,
+        4.87662e-8,
+        4.45473e-9,
+        7.0734,
+        2.47932,
+        0.066145,
+        5.62597e-8,
+        1.94036,
+        2.0,
+        2.0,
+        0.00866935,
+        1.22435e-9,
+        9.23547e-7,
+        2.0,
+        2.14921e-7,
+        1.23361e-7,
+        0.0174862,
+        36.8515,
+        1.11516,
+        0.0806277,
+        0.726529,
+        1.92473,
+        1.99999,
+        1.97768,
+        0.319934,
+        2.65382e-9,
+        6.12668e-9,
+        0.0197645,
+        1.06389e-6,
+        5.28303e-8,
+        0.0308013,
+        0.196915,
+        2.0,
+        1.92313,
+        2.0,
+        1.99921,
+        0.199044,
+    ]
     efcs = getODEparams(ps, concs)
 
     # ******* model simulations ********
@@ -206,9 +283,13 @@ function p_t()
     time = LinRange(0.0, 95.0, 189)
 
     p = plot(
-        time, gt[:, end, 1], label ="lapatinib", xlabel="time [hr]", ylabel="cell numbers", 
+        time,
+        gt[:, end, 1],
+        label = "lapatinib",
+        xlabel = "time [hr]",
+        ylabel = "cell numbers",
         fg_legend = :transparent,
-        lw=2,
+        lw = 2,
         titlefont = Plots.font("Helvetica", 12),
         legendfont = Plots.font("Helvetica", 9),
         guidefont = Plots.font("Helvetica", 12),
@@ -220,9 +301,13 @@ function p_t()
         right_margin = 1.25cm,
     )
     p = plot!(
-        time, gt[:, end, 2], label ="doxorubicin", xlabel="time [hr]", ylabel="cell numbers", 
+        time,
+        gt[:, end, 2],
+        label = "doxorubicin",
+        xlabel = "time [hr]",
+        ylabel = "cell numbers",
         fg_legend = :transparent,
-        lw=2,
+        lw = 2,
         titlefont = Plots.font("Helvetica", 12),
         legendfont = Plots.font("Helvetica", 9),
         guidefont = Plots.font("Helvetica", 12),
@@ -234,9 +319,13 @@ function p_t()
         right_margin = 1.25cm,
     )
     plot!(
-        time, gt[:, end, 3], label ="gemcitabine", xlabel="time [hr]", ylabel="cell numbers", 
+        time,
+        gt[:, end, 3],
+        label = "gemcitabine",
+        xlabel = "time [hr]",
+        ylabel = "cell numbers",
         fg_legend = :transparent,
-        lw=2,
+        lw = 2,
         titlefont = Plots.font("Helvetica", 12),
         legendfont = Plots.font("Helvetica", 9),
         guidefont = Plots.font("Helvetica", 12),
@@ -248,9 +337,13 @@ function p_t()
         right_margin = 1.25cm,
     )
     plot!(
-        time, gt[:, end, 4], label ="paclitaxel", xlabel="time [hr]", ylabel="cell numbers", 
+        time,
+        gt[:, end, 4],
+        label = "paclitaxel",
+        xlabel = "time [hr]",
+        ylabel = "cell numbers",
         fg_legend = :transparent,
-        lw=2,
+        lw = 2,
         titlefont = Plots.font("Helvetica", 12),
         legendfont = Plots.font("Helvetica", 9),
         guidefont = Plots.font("Helvetica", 12),
@@ -263,9 +356,13 @@ function p_t()
         right_margin = 1.25cm,
     )
     plot!(
-        time, gt[:, end, 5], label ="palbociclib", xlabel="time [hr]", ylabel="cell numbers", 
+        time,
+        gt[:, end, 5],
+        label = "palbociclib",
+        xlabel = "time [hr]",
+        ylabel = "cell numbers",
         fg_legend = :transparent,
-        lw=2,
+        lw = 2,
         titlefont = Plots.font("Helvetica", 12),
         legendfont = Plots.font("Helvetica", 9),
         guidefont = Plots.font("Helvetica", 12),
@@ -293,9 +390,8 @@ function temp()
     g2m = mean(g2S, dims = 4) # mean G2
     gt = g1m .+ g2m
     time = LinRange(0.0, 95.0, 189)
-    p1 = scatter(time, g1m[:, 6, 1], xlabel="time [hr]", ylabel = "G1 cell counts")
-    p2 = scatter(time, g2m[:, 6, 1], xlabel="time [hr]", ylabel = "S/G2 cell counts")
-    pp = plot(p1, p2, size=(700, 300), layout=(1, 2))
+    p1 = scatter(time, g1m[:, 6, 1], xlabel = "time [hr]", ylabel = "G1 cell counts")
+    p2 = scatter(time, g2m[:, 6, 1], xlabel = "time [hr]", ylabel = "S/G2 cell counts")
+    pp = plot(p1, p2, size = (700, 300), layout = (1, 2))
     savefig(pp, "temp.svg")
 end
-    

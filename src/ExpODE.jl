@@ -103,8 +103,8 @@ end
 function residHillexp(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
 
     res = 0.0
-    for i=3:8
-        res += 60*(maximum([0, (x[i] - x[i + 12])]))^2
+    for i = 3:8
+        res += 60 * (maximum([0, (x[i] - x[i + 12])]))^2
     end
     params = getODEparams(x, conc)
     t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
