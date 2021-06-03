@@ -57,7 +57,7 @@ end
 # end
 
 function getODEparams(p, conc)
-    nMax = Int((length(p) - 6) /14)
+    nMax = Int((length(p) - 6) / 14)
 
     effects = zeros(eltype(p), 12, length(conc[:, 1]), nMax)
     k = 1

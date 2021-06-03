@@ -20,8 +20,8 @@
 end
 
 @testset "Combination tests from estimated parameters to converting to ODE parameters where for both drugs, rates are decreasing and one reaches to zero." begin
-    p1 = hcat(vcat(ones(6), zeros(6)), 0.5*ones(12))
-    p2 = hcat(vcat(ones(6), zeros(6)), 1.5*ones(12))
+    p1 = hcat(vcat(ones(6), zeros(6)), 0.5 * ones(12))
+    p2 = hcat(vcat(ones(6), zeros(6)), 1.5 * ones(12))
 
     cmb = DrugResponseModel.Bliss_params_unit(p1[:, 2], p2[:, 2], hcat(p1[:, 1], p2[:, 1]))
     @assert(cmb[1:6] == 0.75 * ones(6))

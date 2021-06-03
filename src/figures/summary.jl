@@ -30,7 +30,8 @@ function plot_summary()
     function unit_plt(cnc, ycombin, ysingle, subPlabel)
         plot(cnc, ycombin./ysingle[1,1], label ="A+B", xlabel="concentration [nM]", ylabel="cell #", 
             fg_legend = :transparent,
-            lw=3, alpha=0.8,
+            lw = 3,
+            alpha = 0.8,
             titlefont = Plots.font("Helvetica", 12),
             legendfont = Plots.font("Helvetica", 9),
             guidefont = Plots.font("Helvetica", 12),
