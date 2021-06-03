@@ -89,3 +89,19 @@ g[:, :, 4, 9] .= meanGS2[:, :, 16, 1]
 g[:, :, 5, 9] .= meanGS1[:, :, 12, 1]
 g[:, :, 6, 9] .= meanGS1[:, :, 11, 1]
 # well 1: 15, well 2: 16, well 1: 12, 11 
+
+function find_gem17(p)
+    # Interpolation to find the parameters for 17 nM.
+    hill(p, c) = p[2] + (p[3] - p[2]) / (1 + ((p[1] / c)^p[4]))
+    gemc_hillParams = zeros(12, 4) # [a1, a2, b1, b2, b3, b4, d1, d2, d3, d4, d5, d6] x [EC50, min, max, k]
+    gemc_hillParams[:, 1] .= p[15] # ec50
+    gemc_hillParams[:, 4] .= p[16] # k
+    gemc_hillParams[1:6, 2] = p[71:76]
+    gemc_hillParams[7:12, 2] .= 0.0
+    gemc_hillParams[:, 3] .= p[17:28]
+    GEM17 = zeros(12)
+    for i = 1:length(GEM17)
+        GEM17[i] = hill(gemc_hillParams[i, :], 17.0)
+    end
+    GEM17
+end
