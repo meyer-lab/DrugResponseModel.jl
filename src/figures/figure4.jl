@@ -339,8 +339,57 @@ end
 
 
 function fake_drugs()
-    conc = hcat([0.0, 25.0, 50.0, 100.0, 250.0],[0.0, 25.0, 50.0, 100.0, 250.0],[0.0, 25.0, 50.0, 100.0, 250.0])
-    p = [50.0, 1.1, 0.1,0.1,1,1,1,1,0,0,0,0,0,0,50.0, 1.1,1,1,1,1,1,1,0.02,0.02,0,0,0,0, 50.0, 1.1,1,1,1,1,1,1,0,0,0.01,0.01,0.01,0.01, 1,1,1,1,1,1]
+    conc = hcat([0.0, 25.0, 50.0, 100.0, 250.0], [0.0, 25.0, 50.0, 100.0, 250.0], [0.0, 25.0, 50.0, 100.0, 250.0])
+    p = [
+        50.0,
+        1.1,
+        0.1,
+        0.1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        50.0,
+        1.1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0.02,
+        0.02,
+        0,
+        0,
+        0,
+        0,
+        50.0,
+        1.1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+    ]
     ef = getODEparams(p, conc)
 
     # single treatment expected cell numbers
@@ -357,7 +406,7 @@ function fake_drugs()
     for j = 1:5
         for i = 1:5
             Pcombin[j, :, i] = DrugResponseModel.Bliss_params_unit(ef[:, j, 1], ef[:, i, 2], hcat(ef[:, 1, 1], ef[:, 1, 1]))
-            Pcombin[j+5, :, i] = DrugResponseModel.Bliss_params_unit(ef[:, j, 1], ef[:, i, 3], hcat(ef[:, 1, 1], ef[:, 1, 1]))
+            Pcombin[j + 5, :, i] = DrugResponseModel.Bliss_params_unit(ef[:, j, 1], ef[:, i, 3], hcat(ef[:, 1, 1], ef[:, 1, 1]))
         end
     end
 
@@ -366,7 +415,7 @@ function fake_drugs()
     for j = 1:5
         for i = 1:5
             expected_cellnums[1, j, i], expected_cellnums[2, j, i], _ = predict(Pcombin[j, :, i], ef[:, 1, 1], 96.0)
-            expected_cellnums[1, j+5, i], expected_cellnums[2, j+5, i], _ = predict(Pcombin[j+5, :, i], ef[:, 1, 1], 96.0)
+            expected_cellnums[1, j + 5, i], expected_cellnums[2, j + 5, i], _ = predict(Pcombin[j + 5, :, i], ef[:, 1, 1], 96.0)
         end
     end
     expected_cellnums[3, :, :] .= expected_cellnums[1, :, :] .+ expected_cellnums[2, :, :] # total
@@ -374,10 +423,15 @@ function fake_drugs()
     onee = expected_cellnums[3, 1:5, :]
     twoo = expected_cellnums[3, 6:10, :]
     function unit_plt(cnc, onee, subPlabel, d, titl)
-        plot(cnc, onee[:, 1], label ="drugA", ylabel="cell #", 
+        plot(
+            cnc,
+            onee[:, 1],
+            label = "drugA",
+            ylabel = "cell #",
             fg_legend = :transparent,
-            xlabel="concentration [nM]",
-            lw=3, alpha=0.8,
+            xlabel = "concentration [nM]",
+            lw = 3,
+            alpha = 0.8,
             titlefont = Plots.font("Helvetica", 12),
             legendfont = Plots.font("Helvetica", 9),
             guidefont = Plots.font("Helvetica", 12),
@@ -387,18 +441,18 @@ function fake_drugs()
             top_margin = 1.25cm,
             left_margin = 1.25cm,
             right_margin = 1.25cm,
-            title=titl,
+            title = titl,
         )
-        plot!(cnc, onee[:, 2], label="drugA+drug$d 25",lw=3, alpha=0.8)
-        plot!(cnc, onee[:, 3], label="drugA+drug$d 50",lw=3, alpha=0.8)
-        plot!(cnc, onee[:, 4], label="drugA+drug$d 100",lw=3, alpha=0.8)
-        plot!(cnc, onee[:, 5], label="drugA+drug $d 250",lw=3, alpha=0.8)
+        plot!(cnc, onee[:, 2], label = "drugA+drug$d 25", lw = 3, alpha = 0.8)
+        plot!(cnc, onee[:, 3], label = "drugA+drug$d 50", lw = 3, alpha = 0.8)
+        plot!(cnc, onee[:, 4], label = "drugA+drug$d 100", lw = 3, alpha = 0.8)
+        plot!(cnc, onee[:, 5], label = "drugA+drug $d 250", lw = 3, alpha = 0.8)
         # annotate!(-0.1, 2.7, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
         ylims!((-0.05, 11.0))
     end
 
     p1 = unit_plt(conc[:, 1], onee, "A", "B", "G1 cell arrest and death")
-    p2 = unit_plt(conc[:, 1],twoo, "B", "C", "G1 cell arrest S/G2 death")
-    p = plot(p1, p2, layout=(1,2), size=(900, 400))
+    p2 = unit_plt(conc[:, 1], twoo, "B", "C", "G1 cell arrest S/G2 death")
+    p = plot(p1, p2, layout = (1, 2), size = (900, 400))
     savefig(p, "summ.svg")
 end
