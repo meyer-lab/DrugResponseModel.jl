@@ -15,6 +15,7 @@ using Distributions
 using DataFrames
 using XLSX
 using StatsPlots
+using Roots
 
 include("importData.jl")
 include("ODEmodel.jl")
@@ -30,6 +31,7 @@ include("figures/figure3.jl")
 include("figures/figureS3.jl")
 include("figures/figure4.jl")
 include("figures/summary.jl")
+include("loewe.jl")
 
 export setup_data,
     load,
