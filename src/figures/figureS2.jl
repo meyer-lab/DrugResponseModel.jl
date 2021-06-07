@@ -191,8 +191,8 @@ function output_durations()
     gi[1, :, :] .= (4 ./ efcs[1, :, :] .+ 4 ./ efcs[2, :, :])
     gi[2, :, :] .= (5 ./ efcs[3, :, :] .+ 5 ./ efcs[4, :, :] .+ 5 ./ efcs[5, :, :] .+ 5 ./ efcs[6, :, :])
 
-    df1 = DataFrames.DataFrame(lap = gi[1, :, 1], dox = gi[1, :, 2], gem = gi[1, :, 3], pax=gi[1,:,4], palbo=gi[1, :, 5])
+    df1 = DataFrames.DataFrame(lap = gi[1, :, 1], dox = gi[1, :, 2], gem = gi[1, :, 3], pax = gi[1, :, 4], palbo = gi[1, :, 5])
     XLSX.writetable("durationsG1.xlsx", df1)
-    df2 = DataFrames.DataFrame(lap = gi[2, :, 1], dox = gi[2, :, 2], gem = gi[2, :, 3], pax=gi[2,:,4], palbo=gi[2, :, 5])
+    df2 = DataFrames.DataFrame(lap = gi[2, :, 1], dox = gi[2, :, 2], gem = gi[2, :, 3], pax = gi[2, :, 4], palbo = gi[2, :, 5])
     XLSX.writetable("durationsG2.xlsx", df2)
 end
