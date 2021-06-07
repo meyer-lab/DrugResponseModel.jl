@@ -195,4 +195,5 @@ function output_durations()
     XLSX.writetable("durationsG1.xlsx", df1)
     df2 = DataFrames.DataFrame(lap = gi[2, :, 1], dox = gi[2, :, 2], gem = gi[2, :, 3], pax=gi[2,:,4], palbo=gi[2, :, 5])
     XLSX.writetable("durationsG2.xlsx", df2)
+    return gi
 end

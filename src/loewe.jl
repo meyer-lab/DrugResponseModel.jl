@@ -1,15 +1,5 @@
 """ This file calculates loewe additivity """
 
-Hill(p, d) = p[2] + (p[3] - p[2]) / (1 + ((p[1]/d) ^ p[4]))
-
-function loewe(x, d1, d2)
-
-    f(x) = d1 / x[1] + d2 / x[2] - 1
-
-
-end
-
-####--------------- Loewe additivity ------------------####
 """ Find the inverse of a hill function (concentration), given the parameters and the effect. """
 function inv_hill(p::Array{Float64, 1}, y)
     #p = [EC50, min, max, steepness], y:effect. it returns concentration
