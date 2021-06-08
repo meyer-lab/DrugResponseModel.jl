@@ -31,6 +31,7 @@ include("figures/figure3.jl")
 include("figures/figureS3.jl")
 include("figures/figure4.jl")
 include("figures/summary.jl")
+include("organize.jl")
 include("loewe.jl")
 
 export setup_data,
@@ -49,6 +50,6 @@ export setup_data,
     Heatmap,
     G1plots,
     G2plots,
-    figure1
+    parameters
 
 end # module

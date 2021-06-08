@@ -101,41 +101,36 @@ end
 
 function output_Bliss_cellnum()
     # data import
-    gt1, gt2 = DrugResponseModel.import_combination("AU01001")
-    gt1_2, gt2_2 = DrugResponseModel.import_combination("AU01101")
-    gt1_3, gt2_3 = DrugResponseModel.import_combination("AU00901")
-    concs, _, _, _ = load(189, 1)
+    concs, _, g1s1, g2s1 = load(189, 1);
+    _, _, g1s2, g2s2 = load(189, 2);
+    _, _, g1s3, g2s3 = load(189, 3);
+    p = parameters()
+    gem17 = DrugResponseModel.find_gem17(p)
+    efc = getODEparams(p, concs)
+    t = LinRange(0.0, 95.0, 189)
 
-    GS1 = cat(gt1, gt1_2, gt1_3, dims = 4)
-    GS2 = cat(gt2, gt2_2, gt2_3, dims = 4)
+    g1m = (g1s1 .+ g1s2 .+ g1s3) ./ 3;
+    g2m = (g2s1 .+ g2s2 .+ g2s3) ./ 3;
+    g1m[:, 7, 3], g2m[:, 7, 3], _ = predict(gem17, efc[:, 1, 3], t)
+    g1m[:, 8, 3] .= g1m[:, 7, 3]
+    g2m[:, 8, 3] .= g2m[:, 7, 3]
+    Total = g1m .+ g2m
+    bliss = blissCellNum(Total[end, :, :]; n = 8)
 
-    meanGS1 = mean(GS1, dims = 4)
-    meanGS2 = mean(GS2, dims = 4)
-    meanGS2[:, :, 19] .= mean(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims = 3), dims = 3)[:, :, 1]
-
-    Total = zeros(193, 5, 5) # time x concentrations x 5 drugs
-    Total[:, 1, :] .= meanGS1[3, :, 1] # controls
-    Total[:, 2:5, 1] .= meanGS1[3, :, 2:5] # lapatinibs
-    Total[:, 2, 2] .= meanGS1[3, :, 6] # dox 20 nM
-    Total[:, 2:5, 3] .= meanGS1[3, :, 19:22] # gemcitabines
-    Total[:, 2, 4] .= meanGS1[3, :, 13] # pax 2 nM
-    Total[:, 2:5, 5] .= meanGS1[3, :, 7:10] # palbos
-    bliss = blissCellNum(Total[end, :, :]; n = 5)
-
-    df1 = DataFrames.DataFrame(plb50_lpt25=bliss[2, 3, 4], plb50_lpt50=bliss[3, 3, 4], plb50_lpt100=bliss[4, 3, 4], plb50_lpt250=bliss[5, 3, 4])
-    df2 = DataFrames.DataFrame(gem10_lpt25=bliss[2, 3, 2], gem10_lpt50=bliss[3, 3, 2], gem10_lpt100=bliss[4, 3, 2], gem10_lpt250=bliss[5, 3, 2])
-    df3 = DataFrames.DataFrame(dox20_gem5=bliss[1, 2, 5], dox20_gem10=bliss[1, 3, 5], dox20_gem17=bliss[1, 4, 5], dox20_gem30=bliss[1, 5, 5])
-    df4 = DataFrames.DataFrame(plb50_gem5=bliss[2, 3, 9], plb50_gem10=bliss[3, 3, 9], plb50_gem17=bliss[4, 3, 9], plb50_gem30=bliss[5, 3, 9])
-    df5 = DataFrames.DataFrame(lpt100_palbo25=bliss[4, 2, 4], lpt100_palbo50=bliss[4, 3, 4], lpt100_palbo100=bliss[4, 4, 4], lpt100_palbo250=bliss[4, 5, 4])
-    df6 = DataFrames.DataFrame(lpt100_gem5=bliss[4, 2, 2], lpt100_gem10=bliss[4, 3, 2], lpt100_gem17=bliss[4, 4, 2], lpt100_gem30=bliss[4, 5, 2])
-    df7 = DataFrames.DataFrame(gem10_palbo25=bliss[3, 2, 9], gem10_palbo50=bliss[3, 3, 9], gem10_palbo100=bliss[3, 4, 9], gem10_palbo250=bliss[3, 5, 9])
-    XLSX.writetable("Bliss_palbo_lpt.xlsx", df1, overwrite=true, sheetname="cell number")
-    XLSX.writetable("Bliss_lpt_gems.xlsx", df2, overwrite=true, sheetname="cell number")
-    XLSX.writetable("Bliss_dox_gem.xlsx", df3, overwrite=true, sheetname="cell number")
-    XLSX.writetable("Bliss_palbo_gem.xlsx", df4, overwrite=true, sheetname="cell number")
-    XLSX.writetable("Bliss_lapt_palbo.xlsx", df5, overwrite=true, sheetname="cell number")
-    XLSX.writetable("Bliss_lpt_gem.xlsx", df6, overwrite=true, sheetname="cell number")
-    XLSX.writetable("Bliss_gem_palbo.xlsx", df7, overwrite=true, sheetname="cell number")
+    df1 = DataFrames.DataFrame(plb50_lpt25=bliss[4, 5, 4], plb50_lpt50=bliss[5, 5, 4], plb50_lpt100=bliss[6, 5, 4], plb50_lpt250=bliss[7, 5, 4])
+    df2 = DataFrames.DataFrame(gem10_lpt25=bliss[4, 6, 2], gem10_lpt50=bliss[5, 6, 2], gem10_lpt100=bliss[6, 6, 2], gem10_lpt250=bliss[7, 6, 2])
+    df3 = DataFrames.DataFrame(dox20_gem5=bliss[2, 5, 5], dox20_gem10=bliss[2, 6, 5], dox20_gem17=bliss[2, 7, 5], dox20_gem30=bliss[2, 8, 5])
+    df4 = DataFrames.DataFrame(plb50_gem5=bliss[5, 3, 9], plb50_gem10=bliss[6, 3, 9], plb50_gem17=bliss[7, 3, 9], plb50_gem30=bliss[8, 3, 9])
+    df5 = DataFrames.DataFrame(lpt100_palbo25=bliss[6, 4, 4], lpt100_palbo50=bliss[6, 5, 4], lpt100_palbo100=bliss[6, 6, 4], lpt100_palbo250=bliss[6, 7, 4])
+    df6 = DataFrames.DataFrame(lpt100_gem5=bliss[6, 5, 2], lpt100_gem10=bliss[6, 6, 2], lpt100_gem17=bliss[6, 7, 2], lpt100_gem30=bliss[6, 8, 2])
+    df7 = DataFrames.DataFrame(gem10_palbo25=bliss[6, 4, 9], gem10_palbo50=bliss[6, 5, 9], gem10_palbo100=bliss[6, 6, 9], gem10_palbo250=bliss[6, 7, 9])
+    XLSX.writetable("Bliss_palbo50_lpt.xlsx", df1, overwrite=true, sheetname="cell number")
+    XLSX.writetable("Bliss_gem10_lpt.xlsx", df2, overwrite=true, sheetname="cell number")
+    XLSX.writetable("Bliss_dox20_gem.xlsx", df3, overwrite=true, sheetname="cell number")
+    XLSX.writetable("Bliss_palbo50_gem.xlsx", df4, overwrite=true, sheetname="cell number")
+    XLSX.writetable("Bliss_lpt100_palbo.xlsx", df5, overwrite=true, sheetname="cell number")
+    XLSX.writetable("Bliss_lpt100_gem.xlsx", df6, overwrite=true, sheetname="cell number")
+    XLSX.writetable("Bliss_gem10_palbo.xlsx", df7, overwrite=true, sheetname="cell number")
 
 end
 
