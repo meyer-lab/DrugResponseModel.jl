@@ -8,7 +8,7 @@ function inv_hill(p::Array{Float64, 1}, y)
 end
 
 function costHill(ydata::Array{Float64, 1}, p::Array{Float64, 1}, conc::Array{Float64, 1})
-    y = ydata[1] .+ (0.0 - ydata[1]) ./ (1 .+ (p[1] ./ conc) .^ p[2])
+    y = ydata[1] .+ (ydata[end] - ydata[1]) ./ (1 .+ (p[1] ./ conc) .^ p[2])
     return norm(y - ydata)
 end
 
@@ -31,7 +31,7 @@ function optimizeHill(concs::Array{Float64, 2}, d1ind::Int, Total)
         MaxSteps = 1E5,
     )
     par = best_candidate(results_hill)
-    return [par[1], nums1[1], 0.0, par[2]]
+    return [par[1], nums1[1], nums1[end], par[2]]
 end
 
 function low(d1, d2, p1, p2)
@@ -95,9 +95,9 @@ function output_loewe()
     plot!(concs[:, 4], Total[end, :, 4], label = "data")
     p5 = plot(concs[:, 5], cell[:, 5], label="model", title="palbociclib")
     plot!(concs[:, 5], Total[end, :, 5], label = "data")
-    ylims!((0.0, 4.0))
     p6 = plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
     p = plot(p1, p2, p3, p4, p5, p6, layout=(2, 3), size=(900, 350))
+    ylims!((0.0, 4.0))
     savefig(p, "loewe.svg")
 
     df1 = DataFrames.DataFrame(plb50_lpt25=lapatinib_palbo[4, 5], plb50_lpt50=lapatinib_palbo[5, 5], plb50_lpt100=lapatinib_palbo[6, 5], plb50_lpt250=lapatinib_palbo[7, 5])
