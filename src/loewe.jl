@@ -35,9 +35,11 @@ function optimizeHill(concs::Array{Float64, 2}, d1ind::Int, Total)
 end
 
 function low(d1, d2, p1, p2)
+    
     f(x) = (d1 / inv_hill(p1, x)) + (d2 / inv_hill(p2, x)) - 1.0
     find_min = maximum([minimum([p2[2], p2[3]]), minimum([p1[2], p1[3]])])
     find_max = minimum([maximum([p2[2], p2[3]]), maximum([p1[2], p1[3]])])
+
     combined_effect = find_zero(f, [find_min, find_max])
     return combined_effect
 end
