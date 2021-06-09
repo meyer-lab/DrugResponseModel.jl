@@ -8,15 +8,14 @@ function inv_hill(p::Array{Float64, 1}, y)
 end
 
 function costHill(ydata::Array{Float64, 1}, p::Array{Float64, 1}, conc::Array{Float64, 1})
-    y = ydata[1] .+ (ydata[end] - ydata[1]) ./ (1 .+ (p[1] ./ conc) .^ p[2])
+    y = ydata[1] .+ (0.0 - ydata[1]) ./ (1 .+ (p[1] ./ conc) .^ p[2])
     return norm(y - ydata)
 end
 
 function optimizeHill(concs::Array{Float64, 2}, d1ind::Int, Total)
-    nums1 = zeros(9)
-    conc1 = zeros(9)
+    nums1 = zeros(8)
+    conc1 = zeros(8)
     conc1[1:8] = concs[:, d1ind]
-    conc1[9] = 10000
     for i=1:8
         nums1[i] = Total[end, i, d1ind]
     end
@@ -32,7 +31,7 @@ function optimizeHill(concs::Array{Float64, 2}, d1ind::Int, Total)
         MaxSteps = 1E5,
     )
     par = best_candidate(results_hill)
-    return [par[1], nums1[1], nums1[end], par[2]]
+    return [par[1], nums1[1], 0.0, par[2]]
 end
 
 function low(d1, d2, p1, p2)
@@ -43,21 +42,20 @@ function low(d1, d2, p1, p2)
     return combined_effect
 end
 
+TheHill(p, c) = p[2] + (p[3] - p[2]) / (1 + ((p[1]/c) ^ p[4]))
+
 function loweCellNum(concs, d1ind, d2ind, Total)
     pars1 = optimizeHill(concs, d1ind, Total)
     pars2 = optimizeHill(concs, d2ind, Total)
-    combined_effs = zeros(9, 9)
-    conc1 = zeros(9)
-    conc2 = zeros(9)
-    conc1[1:8] = concs[:, d1ind]
-    conc1[9] = conc2[9] = 10000.0
-    conc2[1:8] = concs[:, d2ind]
-    for i=1:9
-        for j=1:9
+    combined_effs = zeros(8, 8)
+    conc1 = concs[:, d1ind]
+    conc2 = concs[:, d2ind]
+    for i=1:8
+        for j=1:8
             combined_effs[i,j] = low(conc1[i], conc2[j], pars1, pars2)
         end
     end
-    return combined_effs[1:8, 1:8]
+    return combined_effs
 end
 
 function output_loewe()
@@ -79,6 +77,28 @@ function output_loewe()
     lapatinib_gemc = loweCellNum(concs, 1, 3, Total)
     gemc_palbo = loweCellNum(concs, 3, 5, Total)
     dox_gem = loweCellNum(concs, 2, 3, Total)
+
+    cell = zeros(8, 5)
+    for j = 1:5 # drug index
+        par = optimizeHill(concs, j, Total)
+        for i = 1:8 # conc index
+            cell[i, j] = TheHill(par, concs[i, j])
+        end
+    end
+    p1 = plot(concs[:, 1], cell[:, 1], label="model", title="lapatinib")
+    plot!(concs[:, 1], Total[end, :, 1], label = "data")
+    p2 = plot(concs[:, 2], cell[:, 2], label="model", title="doxorubicin")
+    plot!(concs[:, 2], Total[end, :, 2], label = "data")
+    p3 = plot(concs[:, 3], cell[:, 3], label="model", title="gemcitabine")
+    plot!(concs[:, 3], Total[end, :, 3], label = "data")
+    p4 = plot(concs[:, 4], cell[:, 4], label="model", title="paclitaxel")
+    plot!(concs[:, 4], Total[end, :, 4], label = "data")
+    p5 = plot(concs[:, 5], cell[:, 5], label="model", title="palbociclib")
+    plot!(concs[:, 5], Total[end, :, 5], label = "data")
+    ylims!((0.0, 4.0))
+    p6 = plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
+    p = plot(p1, p2, p3, p4, p5, p6, layout=(2, 3), size=(900, 350))
+    savefig(p, "loewe.svg")
 
     df1 = DataFrames.DataFrame(plb50_lpt25=lapatinib_palbo[4, 5], plb50_lpt50=lapatinib_palbo[5, 5], plb50_lpt100=lapatinib_palbo[6, 5], plb50_lpt250=lapatinib_palbo[7, 5])
     df2 = DataFrames.DataFrame(gem10_lpt25=lapatinib_gemc[4, 6], gem10_lpt50=lapatinib_gemc[5, 6], gem10_lpt100=lapatinib_gemc[6, 6], gem10_lpt250=lapatinib_gemc[7, 6])
