@@ -23,6 +23,16 @@ meanGS1 = mean(GS1, dims = 4);
 meanGS2 = mean(GS2, dims = 4);
 meanGS2[:, :, 19] .= mean(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims = 3), dims = 3)[:, :, 1]
 
+#### only single drug treatments in the new expreiment
+Total = zeros(193, 5, 5) # time x concentrations x 5 drugs
+Total[:, 1, :] .= meanGS1[3, :, 1] # controls
+Total[:, 2:5, 1] .= meanGS1[3, :, 2:5] # lapatinibs
+Total[:, 2, 2] .= meanGS1[3, :, 6] # dox 20 nM
+Total[:, 2:5, 3] .= meanGS1[3, :, 19:22] # gemcitabines
+Total[:, 2, 4] .= meanGS1[3, :, 13] # pax 2 nM
+Total[:, 2:5, 5] .= meanGS1[3, :, 7:10] # palbos
+
+
 g = zeros(3, 193, 6, 9)
 g[:, :, 1, :] .= meanGS2[:, :, 1, 1]
 ########### 1. Palbociclib 50 nM + lapatinibs [25 nM, 50 nM, 100 nM, 250 nM]
@@ -90,15 +100,15 @@ g[:, :, 5, 9] .= meanGS1[:, :, 12, 1]
 g[:, :, 6, 9] .= meanGS1[:, :, 11, 1]
 # well 1: 15, well 2: 16, well 1: 12, 11 
 
-function find_gem17(p)
+function find_gem17(pp)
     # Interpolation to find the parameters for 17 nM.
     hill(p, c) = p[2] + (p[3] - p[2]) / (1 + ((p[1] / c)^p[4]))
     gemc_hillParams = zeros(12, 4) # [a1, a2, b1, b2, b3, b4, d1, d2, d3, d4, d5, d6] x [EC50, min, max, k]
-    gemc_hillParams[:, 1] .= p[15] # ec50
-    gemc_hillParams[:, 4] .= p[16] # k
-    gemc_hillParams[1:6, 2] = p[71:76]
+    gemc_hillParams[:, 1] .= pp[29] # ec50
+    gemc_hillParams[:, 4] .= pp[30] # k
+    gemc_hillParams[1:6, 2] = pp[71:76]
     gemc_hillParams[7:12, 2] .= 0.0
-    gemc_hillParams[:, 3] .= p[17:28]
+    gemc_hillParams[:, 3] .= pp[31:42]
     GEM17 = zeros(12)
     for i = 1:length(GEM17)
         GEM17[i] = hill(gemc_hillParams[i, :], 17.0)

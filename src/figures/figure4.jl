@@ -3,7 +3,7 @@
 
 function SSEs_combination()
     cellnum = DrugResponseModel.output_Bliss_cellnum() # bliss on cell number [189, 5, 5, 10]
-    g = JLD.load("g.jld")["g"] # experimental data
+    g = JLD.load("data/GC.jld")["GC"] # experimental data
     gT = g[1, 1:189, :, :] .+ g[2, 1:189, :, :] # [189, 6, 8]
 
     p = [
