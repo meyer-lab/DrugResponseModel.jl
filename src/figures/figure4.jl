@@ -467,83 +467,110 @@ function output_combination()
     efcs[:, 7, 3] = gem17
 
     # Bliss on Model
-    LPT_PLB = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 5])
+    LPT_DOX = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 2])
     LPT_GEM = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 3])
     LPT_TAX = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 4])
-    GEM_PLB = DrugResponseModel.AllBliss_params(efcs[:, :, 3], efcs[:, :, 5])
+    LPT_PLB = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 5])
     DOX_GEM = DrugResponseModel.AllBliss_params(efcs[:, :, 2], efcs[:, :, 3])
+    DOX_TAX = DrugResponseModel.AllBliss_params(efcs[:, :, 2], efcs[:, :, 4])
+    DOX_PLB = DrugResponseModel.AllBliss_params(efcs[:, :, 2], efcs[:, :, 5])
+    GEM_TAX = DrugResponseModel.AllBliss_params(efcs[:, :, 3], efcs[:, :, 4])
+    GEM_PLB = DrugResponseModel.AllBliss_params(efcs[:, :, 3], efcs[:, :, 5])
+    TAX_PLB = DrugResponseModel.AllBliss_params(efcs[:, :, 4], efcs[:, :, 5])
 
-    ########### Palbociclib 50 nM + lapatinibs [25 nM, 50 nM, 100 nM, 250 nM]
-    palbo50Lap = zeros(3, 189, 4)
-    palbo_alone = zeros(3, 189, 4)
-    lapatinib_alone = zeros(3, 189, 4)
-    for i = 1:4
-        palbo50Lap[1, :, i], palbo50Lap[2, :, i], _ = predict(LPT_PLB[:, i + 3, 5], LPT_PLB[:, 1, 1], t)
-        palbo_alone[1, :, i], palbo_alone[2, :, i], _ = predict(LPT_PLB[:, 1, i + 3], LPT_PLB[:, 1, 1], t)
-        lapatinib_alone[1, :, i], lapatinib_alone[2, :, i], _ = predict(LPT_PLB[:, i + 3, 1], LPT_PLB[:, 1, 1], t)
+
+    ########### lapatinibs + Doxorubicins
+    LapDox = zeros(3, 189, 8, 8)
+    for i = 1:8
+        for j = 1:8
+            LapDox[1, :, i, j], LapDox[2, :, i, j], _ = predict(LPT_DOX[:, i, j], LPT_DOX[:, 1, 1], t)
+        end
     end
-    palbo50Lap[3, :, :] .= palbo50Lap[1, :, :] .+ palbo50Lap[2, :, :]
-    palbo_alone[3, :, :] .= palbo_alone[1, :, :] .+ palbo_alone[2, :, :]
-    lapatinib_alone[3, :, :] .= lapatinib_alone[1, :, :] .+ lapatinib_alone[2, :, :]
+    LapDox[3, :, :, :] .= LapDox[1, :, :, :] .+ LapDox[2, :, :, :]
 
-
-    ########### Palbociclib 50 nM + gemcitabines [5 nM, 10 nM, 17 nM, 30 nM]
-    palbo50Gem = zeros(3, 189, 4)
-    gemcitabine_alone = zeros(3, 189, 4)
-    for i = 1:4
-        palbo50Gem[1, :, i], palbo50Gem[2, :, i], _ = predict(GEM_PLB[:, i + 4, 5], GEM_PLB[:, 1, 1], t)
-        gemcitabine_alone[1, :, i], gemcitabine_alone[2, :, i], _ = predict(GEM_PLB[:, i + 4, 1], GEM_PLB[:, 1, 1], t)
+    ########### lapatinibs + Gemcitabines
+    LapGem = zeros(3, 189, 8, 8)
+    for i = 1:8
+        for j = 1:8
+            LapGem[1, :, i, j], LapGem[2, :, i, j], _ = predict(LPT_GEM[:, i, j], LPT_GEM[:, 1, 1], t)
+        end
     end
-    palbo50Gem[3, :, :] .= palbo50Gem[1, :, :] .+ palbo50Gem[2, :, :]
-    gemcitabine_alone[3, :, :] .= gemcitabine_alone[1, :, :] .+ gemcitabine_alone[2, :, :]
+    LapGem[3, :, :, :] .= LapGem[1, :, :, :] .+ LapGem[2, :, :, :]
 
-    ########### Gemcitabine 10 nM + lapatinibs [25 nM, 50 nM, 100 nM, 250 nM]
-    Gem10Lap = zeros(3, 189, 4)
-    for i = 1:4
-        Gem10Lap[1, :, i], Gem10Lap[2, :, i], _ = predict(LPT_GEM[:, i + 3, 6], LPT_GEM[:, 1, 1], t)
-    end
-    Gem10Lap[3, :, :] .= Gem10Lap[1, :, :] .+ Gem10Lap[2, :, :]
 
-    ########### Gemcitabine 10 nM + palbociclibs [25 nM, 50 nM, 100 nM, 250 nM]
-    Gem10palbo = zeros(3, 189, 4)
-    for i = 1:4
-        Gem10palbo[1, :, i], Gem10palbo[2, :, i], _ = predict(GEM_PLB[:, 6, i + 4], GEM_PLB[:, 1, 1], t)
+    ########### lapatinibs + Taxol
+    LapTax = zeros(3, 189, 8, 8)
+    for i = 1:8
+        for j = 1:8
+            LapTax[1, :, i, j], LapTax[2, :, i, j], _ = predict(LPT_TAX[:, i, j], LPT_TAX[:, 1, 1], t)
+        end
     end
-    Gem10palbo[3, :, :] .= Gem10palbo[1, :, :] .+ Gem10palbo[2, :, :]
+    LapTax[3, :, :, :] .= LapTax[1, :, :, :] .+ LapTax[2, :, :, :]
 
-    ########### Lap 100 nM + palbociclibs [25 nM, 50 nM, 100 nM, 250 nM]
-    Lap100palbo = zeros(3, 189, 4)
-    for i = 1:4
-        Lap100palbo[1, :, i], Lap100palbo[2, :, i], _ = predict(LPT_PLB[:, 6, i + 3], LPT_PLB[:, 1, 1], t)
-    end
-    Lap100palbo[3, :, :] .= Lap100palbo[1, :, :] .+ Lap100palbo[2, :, :]
 
-    ########### Lap 100 nM + gemcitabines [5 nM, 10 nM, 17 nM, 30 nM]
-    lap100gem = zeros(3, 189, 4)
-    for i = 1:4
-        lap100gem[1, :, i], lap100gem[2, :, i], _ = predict(LPT_GEM[:, 6, i + 4], LPT_GEM[:, 1, 1], t)
+    ########### lapatinibs + Palbociclibs
+    LapPalbo = zeros(3, 189, 8, 8)
+    for i = 1:8
+        for j = 1:8
+            LapPalbo[1, :, i, j], LapPalbo[2, :, i, j], _ = predict(LPT_PLB[:, i, j], LPT_PLB[:, 1, 1], t)
+        end
     end
-    lap100gem[3, :, :] .= lap100gem[1, :, :] .+ lap100gem[2, :, :]
+    LapPalbo[3, :, :, :] .= LapPalbo[1, :, :, :] .+ LapPalbo[2, :, :, :]
 
-    ########## Dox 20 nM + gemcitabines [5 nM, 10 nM, 17 nM, 30 nM]
-    dox20gem = zeros(3, 189, 4)
-    dox_alone = zeros(3, 189)
-    for i = 1:4
-        dox20gem[1, :, i], dox20gem[2, :, i], _ = predict(DOX_GEM[:, 4, i + 4], DOX_GEM[:, 1, 1], t)
+    ########### doxorubicins + gemcitabines 
+    DoxGem = zeros(3, 189, 8, 8)
+    for i = 1:8
+        for j = 1:8
+            DoxGem[1, :, i, j], DoxGem[2, :, i, j], _ = predict(DOX_GEM[:, i, j], DOX_GEM[:, 1, 1], t)
+        end
     end
-    dox20gem[1, :, 4], dox20gem[2, :, 4], _ = predict(DOX_GEM[:, 4, 7], DOX_GEM[:, 1, 1], t)
-    dox_alone[1, :], dox_alone[2, :], _ = predict(DOX_GEM[:, 4, 1], DOX_GEM[:, 1, 1], t)
-    dox_alone[3, :] .= dox_alone[1, :] .+ dox_alone[2, :]
+    DoxGem[3, :, :, :] .= DoxGem[1, :, :, :] .+ DoxGem[2, :, :, :]
 
-    ########### Pax 2 nM + Lapatinib [25 nM, 50 nM, 100 nM, 250 nM]
-    Pax2_lap = zeros(3, 189, 4)
-    pax2_alone = zeros(3, 189)
-    for i = 1:4
-        Pax2_lap[1, :, i], Pax2_lap[2, :, i], _ = predict(LPT_TAX[:, 4, i + 4], LPT_TAX[:, 1, 1], t)
+    ########### doxorubicins + taxols 
+    DoxTax = zeros(3, 189, 8, 8)
+    for i = 1:8
+        for j = 1:8
+            DoxTax[1, :, i, j], DoxTax[2, :, i, j], _ = predict(DOX_TAX[:, i, j], DOX_TAX[:, 1, 1], t)
+        end
     end
-    Pax2_lap[3, :, :] .= Pax2_lap[1, :, :] .+ Pax2_lap[2, :, :]
-    pax2_alone[1, :], pax2_alone[2, :], _ = predict(LPT_TAX[:, 1, 4], LPT_TAX[:, 1, 1], t)
-    pax2_alone[3, :] .= pax2_alone[1, :] .+ pax2_alone[2, :]
+    DoxTax[3, :, :, :] .= DoxTax[1, :, :, :] .+ DoxTax[2, :, :, :]
+    
+
+    ########### doxorubicins + palbos
+    DoxPalbo = zeros(3, 189, 8, 8)
+    for i = 1:8
+        for j = 1:8
+            DoxPalbo[1, :, i, j], DoxPalbo[2, :, i, j], _ = predict(DOX_PLB[:, i, j], DOX_PLB[:, 1, 1], t)
+        end
+    end
+    DoxPalbo[3, :, :, :] .= DoxPalbo[1, :, :, :] .+ DoxPalbo[2, :, :, :]
+
+    ########### gemcitabines + taxols
+    GemTax = zeros(3, 189, 8, 8)
+    for i = 1:8
+        for j = 1:8
+            GemTax[1, :, i, j], GemTax[2, :, i, j], _ = predict(GEM_TAX[:, i, j], GEM_TAX[:, 1, 1], t)
+        end
+    end
+    GemTax[3, :, :, :] .= GemTax[1, :, :, :] .+ GemTax[2, :, :, :]
+
+    ########### gemcitabines + palbos
+    GemPalb = zeros(3, 189, 8, 8)
+    for i = 1:8
+        for j = 1:8
+            GemPalb[1, :, i, j], GemPalb[2, :, i, j], _ = predict(GEM_PLB[:, i, j], GEM_PLB[:, 1, 1], t)
+        end
+    end
+    GemPalb[3, :, :, :] .= GemPalb[1, :, :, :] .+ GemPalb[2, :, :, :]
+
+    ########### gemcitabines + palbos
+    TaxPlb = zeros(3, 189, 8, 8)
+    for i = 1:8
+        for j = 1:8
+            TaxPlb[1, :, i, j], TaxPlb[2, :, i, j], _ = predict(TAX_PLB[:, i, j], TAX_PLB[:, 1, 1], t)
+        end
+    end
+    TaxPlb[3, :, :, :] .= TaxPlb[1, :, :, :] .+ TaxPlb[2, :, :, :]
 
     # G1
     df1 = DataFrames.DataFrame(
