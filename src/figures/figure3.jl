@@ -191,4 +191,3 @@ function figure3()
     figure1 = plot(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, size = (2200, 700), layout = (2, 5))
     savefig(figure1, "figure3.svg")
 end
-
