@@ -16,6 +16,7 @@ using DataFrames
 using XLSX
 using StatsPlots
 using Roots
+using NumericalIntegration
 
 include("importData.jl")
 include("ODEmodel.jl")
@@ -32,6 +33,7 @@ include("figures/figureS3.jl")
 include("figures/figure4.jl")
 include("figures/summary.jl")
 include("organize.jl")
+include("deadcells.jl")
 
 export setup_data,
     load,
