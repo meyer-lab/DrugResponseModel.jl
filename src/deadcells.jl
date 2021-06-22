@@ -1,0 +1,87 @@
+""" deadcells """
+
+function vTOgD(v::AbstractVector)
+    G11 = sum(view(v, 1:4))
+    G12 = sum(view(v, 5:8))
+    G21 = sum(view(v, 9:13))
+    G22 = sum(view(v, 14:18))
+    G23 = sum(view(v, 19:23))
+    G24 = sum(view(v, 24:28))
+    return G11, G12, G21, G22, G23, G24
+end
+
+
+""" Predicts the model given a set of parametrs. """
+function predictD(p::AbstractVector, g_0::AbstractVector, t::Union{Real, LinRange}, g1data = nothing, g2data = nothing)
+    @assert length(p) == 12 # we have 2 G1 prog rates, 4 G2 prog rates, 2 G1 death and 4 G2 death rates.
+
+    if length(g_0) == length(p)
+        v = startV(g_0)
+    else
+        @assert length(g_0) == nSp
+        v = copy(g_0)
+    end
+
+    # Some assumptions
+    @assert t.start == 0.0
+    A = ODEjac(p)
+    lmul!(t[2], A)
+    A = LinearAlgebra.exp!(A)
+    u = similar(v)
+
+        G11 = Vector{eltype(p)}(undef, length(t))
+        G12 = Vector{eltype(p)}(undef, length(t))
+        G21 = Vector{eltype(p)}(undef, length(t))
+        G22 = Vector{eltype(p)}(undef, length(t))
+        G23 = Vector{eltype(p)}(undef, length(t))
+        G24 = Vector{eltype(p)}(undef, length(t))
+
+        for ii = 1:length(t)
+            G11[ii], G12[ii], G21[ii], G22[ii], G23[ii], G24[ii] = vTOgD(v)
+
+            mul!(u, A, v)
+            copyto!(v, u)
+        end
+    
+    return G11, G12, G21, G22, G23, G24
+end
+
+function output_deadcells()
+    concs, popul1, g1s1, g2s1 = load(189, 1)
+    ps = parameters()
+    efcs = getODEparams(ps, concs)
+    g = zeros(189, 8, 5, 6) # total
+    t = LinRange(0.0, 96.0, 189)
+    d = zeros(189, 8, 5)
+    for i=1:5
+        for j=1:8
+            g[:, j, i, 1], g[:, j, i, 2], g[:, j, i, 3], g[:, j, i, 4], g[:, j, i, 5], g[:, j, i, 6] = predictD(efcs[:, j, i], efcs[:, 1, i], t)
+            d[:, j, i] = efcs[7, j, i] .* g[:, j, i, 1] .+ efcs[8, j, i] .* g[:, j, i, 2] .+ efcs[9, j, i] .* g[:, j, i, 3] .+ efcs[10, j, i] .* g[:, j, i, 4] .+ efcs[11, j, i] .* g[:, j, i, 5] .+ efcs[12, j, i] .* g[:, j, i, 6]
+        end
+    end
+    intg = zeros(189, 8, 5)
+    for i=1:5
+        for j=1:8
+            intg[:, j, i] = cumul_integrate(t, d[:, j, i])
+        end
+    end
+    p0 = plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
+    p1 = plot(t, intg[:, :, 1], labels=["0" "5" "10" "25" "50" "100" "250" "500"], title="lapatinib", lw=2, ylabel="accumulated cell death #", xlabel="time [hr]")
+    p2 = plot(t, intg[:, :, 2], labels=["0" "1" "10" "25" "50" "125" "250" "500"], title="doxorubicin", lw=2, ylabel="accumulated cell death #", xlabel="time [hr]")
+    p3 = plot(t, intg[:, :, 3], labels=["0" "0.25" "1" "2.5" "5" "10" "30" "100"], title="gemcitabine", lw=2, ylabel="accumulated cell death #", xlabel="time [hr]")
+    p4 = plot(t, intg[:, :, 4], labels=["0" "0.1" "1" "2" "3" "5" "7.5" "15"], title="taxol", lw=2, ylabel="accumulated cell death #", xlabel="time [hr]")
+    p5 = plot(t, intg[:, :, 5], labels=["0" "5" "10" "25" "50" "100" "250" "500"], title="palbociclib", lw=2, ylabel="accumulated cell death #", xlabel="time [hr]")
+    p = plot(p0, p1, p2, p3, p4, p5, layout=(2, 3), size=(1000, 650))
+    ylims!((0.0, 1.3))
+    savefig(p, "deadcells.svg")
+    df1 = DataFrames.DataFrame(controlLPT=intg[:, 1, 1], lpt5=intg[:, 2, 1], lpt10=intg[:, 3, 1], lpt25=intg[:, 4, 1], lpt50=intg[:, 5, 1], lpt100=intg[:, 6, 1], lpt250=intg[:, 7, 1], lpt500=intg[:, 8, 1])
+    df2 = DataFrames.DataFrame(controlDOX=intg[:, 1, 2], dox1=intg[:, 2, 2], dox10=intg[:, 3, 2], dox25=intg[:, 4, 2], dox50=intg[:, 5, 2], dox125=intg[:, 6, 2], dox250=intg[:, 7, 2], dox500=intg[:, 8, 2])
+    df3 = DataFrames.DataFrame(controlGEM=intg[:, 1, 3], gem025=intg[:, 2, 3], gem1=intg[:, 3, 3], gem2_5=intg[:, 4, 3], gem5=intg[:, 5, 3], gem10=intg[:, 6, 3], gem30=intg[:, 7, 3], gem100=intg[:, 8, 3])
+    df4 = DataFrames.DataFrame(controlTAX=intg[:, 1, 4], tax0_1=intg[:, 2, 4], tax1=intg[:, 3, 4], tax2=intg[:, 4, 4], tax3=intg[:, 5, 4], tax5=intg[:, 6, 4], tax7_5=intg[:, 7, 4], tax15=intg[:, 8, 4])
+    df5 = DataFrames.DataFrame(controlPLB=intg[:, 1, 5], plb5=intg[:, 2, 5], plb10=intg[:, 3, 5], plb25=intg[:, 4, 5], plb50=intg[:, 5, 5], plb100=intg[:, 6, 5], plb250=intg[:, 7, 5], plb500=intg[:, 8, 5])
+    XLSX.writetable("lapatinibDeadCells.xlsx", df1)
+    XLSX.writetable("doxorubicinDeadCells.xlsx", df2)
+    XLSX.writetable("gemcitabineDeadCells.xlsx", df3)
+    XLSX.writetable("taxolDeadCells.xlsx", df4)
+    XLSX.writetable("palbociclibDeadCells.xlsx", df5)
+end

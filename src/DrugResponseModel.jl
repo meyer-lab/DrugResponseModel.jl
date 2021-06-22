@@ -16,7 +16,7 @@ using DataFrames
 using XLSX
 using StatsPlots
 using Roots
-using DifferentialEquations
+using NumericalIntegration
 
 include("importData.jl")
 include("ODEmodel.jl")
