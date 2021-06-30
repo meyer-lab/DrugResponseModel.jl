@@ -1163,9 +1163,9 @@ function combined_phaseDurations()
     t = LinRange(0.0, 95.0, 189)
     p = parameters()
     efcs = getODEparams(p, concs)
-    gem17 = DrugResponseModel.find_gem17(p)
-    efcs[:, 8, 3] = efcs[:, 7, 3]
-    efcs[:, 7, 3] = gem17
+    # gem17 = DrugResponseModel.find_gem17(p)
+    # efcs[:, 8, 3] = efcs[:, 7, 3]
+    # efcs[:, 7, 3] = gem17
 
     # Bliss on Model
     LPT_DOX = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 2])
@@ -1180,21 +1180,25 @@ function combined_phaseDurations()
     TAX_PLB = DrugResponseModel.AllBliss_params(efcs[:, :, 4], efcs[:, :, 5])
 
     function easier_(efcs)
-        gi = zeros(2, 8)
-        gi[1, :] .= (4 ./ efcs[1, :] .+ 4 ./ efcs[2, :])
-        gi[2, :] .= (5 ./ efcs[3, :] .+ 5 ./ efcs[4, :] .+ 5 ./ efcs[5, :] .+ 5 ./ efcs[6, :])
+        gi = zeros(2, 8, 8)
+        gi[1, :, :] .= (4 ./ efcs[1, :, :] .+ 4 ./ efcs[2, :, :])
+        gi[2, :, :] .= (5 ./ efcs[3, :, :] .+ 5 ./ efcs[4, :, :] .+ 5 ./ efcs[5, :, :] .+ 5 ./ efcs[6, :, :])
         gi
     end
-    gim = zeros(2, 8, 10)
-    gim[:, :, 1] = easier_(LPT_DOX)
-    gim[:, :, 2] = easier_(LPT_GEM)
-    gim[:, :, 3] = easier_(LPT_TAX)
-    gim[:, :, 4] = easier_(LPT_PLB)
-    gim[:, :, 5] = easier_(DOX_GEM)
-    gim[:, :, 6] = easier_(DOX_TAX)
-    gim[:, :, 7] = easier_(DOX_PLB)
-    gim[:, :, 8] = easier_(GEM_TAX)
-    gim[:, :, 9] = easier_(GEM_PLB)
-    gim[:, :, 10] = easier_(TAX_PLB)
-    df = DataFrames.DataFrame(control_control=gim)
+    gim = zeros(2, 8, 8, 10)
+    gim[:, :, :, 1] = easier_(LPT_DOX)
+    gim[:, :, :, 2] = easier_(LPT_GEM)
+    gim[:, :, :, 3] = easier_(LPT_TAX)
+    gim[:, :, :, 4] = easier_(LPT_PLB)
+    gim[:, :, :, 5] = easier_(DOX_GEM)
+    gim[:, :, :, 6] = easier_(DOX_TAX)
+    gim[:, :, :, 7] = easier_(DOX_PLB)
+    gim[:, :, :, 8] = easier_(GEM_TAX)
+    gim[:, :, :, 9] = easier_(GEM_PLB)
+    gim[:, :, :, 10] = easier_(TAX_PLB)
+    dfG1 = DataFrames.DataFrame(palbo50_lpt25=gim[1, 4, 5, 4], palbo50_lpt50=gim[1, 5, 5, 4], palbo50_lpt100=gim[1, 6, 5, 4], palbo50_lpt250=gim[1, 7, 5, 4], palbo50_gem5=gim[1, 5, 5, 9], palbo50_gem10=gim[1, 6, 5, 9], palbo50_gem30=gim[1, 7, 5, 9], palbo50_gem100=gim[1, 8, 5, 9], gem10_lpt25 = gim[1, 4, 6, 2], gem10_lpt50 = gim[1, 5, 6, 2], gem10_lpt100 = gim[1, 6, 6, 2], gem10_lpt250 = gim[1, 7, 6, 2], gem10_palbo25=gim[1, 6, 4, 9], gem10_palbo50=gim[1, 6, 5, 9], gem10_palbo100=gim[1, 6, 6, 9], gem10_palbo250=gim[1, 6, 7, 9], lap100_palbo25=gim[1, 6, 4, 4], lap100_palbo50=gim[1, 6, 5, 4], lap100_palbo100=gim[1, 6, 6, 4], lap100_palbo250=gim[1, 6, 7, 4], lap100_gem5=gim[1, 6, 5, 2], lap100_gem10=gim[1, 6, 6, 2], lap100_gem30=gim[1, 6, 7, 2], lap100_gem100=gim[1, 6, 8, 2], pax2_lpt25=gim[1, 4, 4, 3], pax2_lpt50=gim[1, 5, 4, 3], pax2_lpt100=gim[1, 6, 4, 3], pax2_lpt250=gim[1, 7, 4, 3])
+    dfG2 = DataFrames.DataFrame(palbo50_lpt25=gim[2, 4, 5, 4], palbo50_lpt50=gim[2, 5, 5, 4], palbo50_lpt100=gim[2, 6, 5, 4], palbo50_lpt250=gim[2, 7, 5, 4], palbo50_gem5=gim[2, 5, 5, 9], palbo50_gem10=gim[2, 6, 5, 9], palbo50_gem30=gim[2, 7, 5, 9], palbo50_gem100=gim[2, 8, 5, 9], gem10_lpt25 = gim[2, 4, 6, 2], gem10_lpt50 = gim[2, 5, 6, 2], gem10_lpt100 = gim[2, 6, 6, 2], gem10_lpt250 = gim[2, 7, 6, 2], gem10_palbo25=gim[2, 6, 4, 9], gem10_palbo50=gim[2, 6, 5, 9], gem10_palbo100=gim[2, 6, 6, 9], gem10_palbo250=gim[2, 6, 7, 9], lap100_palbo25=gim[2, 6, 4, 4], lap100_palbo50=gim[2, 6, 5, 4], lap100_palbo100=gim[2, 6, 6, 4], lap100_palbo250=gim[2, 6, 7, 4], lap100_gem5=gim[2, 6, 5, 2], lap100_gem10=gim[2, 6, 6, 2], lap100_gem30=gim[2, 6, 7, 2], lap100_gem100=gim[2, 6, 8, 2], pax2_lpt25=gim[2, 4, 4, 3], pax2_lpt50=gim[2, 5, 4, 3], pax2_lpt100=gim[2, 6, 4, 3], pax2_lpt250=gim[2, 7, 4, 3])
+
+    XLSX.writetable("G1CombinationDurations.xlsx", dfG1)
+    XLSX.writetable("G2CombinationDurations.xlsx", dfG2)
 end
