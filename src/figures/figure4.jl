@@ -1156,3 +1156,45 @@ function output_combination()
 
     XLSX.writetable("TAX_PLB.xlsx", df10)
 end
+
+
+function combined_phaseDurations()
+    concs, popul1, g1s1, g2s1 = load(189, 1)
+    t = LinRange(0.0, 95.0, 189)
+    p = parameters()
+    efcs = getODEparams(p, concs)
+    gem17 = DrugResponseModel.find_gem17(p)
+    efcs[:, 8, 3] = efcs[:, 7, 3]
+    efcs[:, 7, 3] = gem17
+
+    # Bliss on Model
+    LPT_DOX = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 2])
+    LPT_GEM = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 3])
+    LPT_TAX = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 4])
+    LPT_PLB = DrugResponseModel.AllBliss_params(efcs[:, :, 1], efcs[:, :, 5])
+    DOX_GEM = DrugResponseModel.AllBliss_params(efcs[:, :, 2], efcs[:, :, 3])
+    DOX_TAX = DrugResponseModel.AllBliss_params(efcs[:, :, 2], efcs[:, :, 4])
+    DOX_PLB = DrugResponseModel.AllBliss_params(efcs[:, :, 2], efcs[:, :, 5])
+    GEM_TAX = DrugResponseModel.AllBliss_params(efcs[:, :, 3], efcs[:, :, 4])
+    GEM_PLB = DrugResponseModel.AllBliss_params(efcs[:, :, 3], efcs[:, :, 5])
+    TAX_PLB = DrugResponseModel.AllBliss_params(efcs[:, :, 4], efcs[:, :, 5])
+
+    function easier_(efcs)
+        gi = zeros(2, 8)
+        gi[1, :] .= (4 ./ efcs[1, :] .+ 4 ./ efcs[2, :])
+        gi[2, :] .= (5 ./ efcs[3, :] .+ 5 ./ efcs[4, :] .+ 5 ./ efcs[5, :] .+ 5 ./ efcs[6, :])
+        gi
+    end
+    gim = zeros(2, 8, 10)
+    gim[:, :, 1] = easier_(LPT_DOX)
+    gim[:, :, 2] = easier_(LPT_GEM)
+    gim[:, :, 3] = easier_(LPT_TAX)
+    gim[:, :, 4] = easier_(LPT_PLB)
+    gim[:, :, 5] = easier_(DOX_GEM)
+    gim[:, :, 6] = easier_(DOX_TAX)
+    gim[:, :, 7] = easier_(DOX_PLB)
+    gim[:, :, 8] = easier_(GEM_TAX)
+    gim[:, :, 9] = easier_(GEM_PLB)
+    gim[:, :, 10] = easier_(TAX_PLB)
+    df = DataFrames.DataFrame(control_control=gim)
+end
