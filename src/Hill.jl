@@ -7,6 +7,7 @@ DDE parameters, passes them to residual function and based off of these, optimiz
 and estimates hill parameters. """
 function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
 
+    # x = convert_singleParams(xx)
     res = 0.0
     for i = 3:8
         res += 60 * (maximum([0, (x[i] - x[i + 12])]))^2
@@ -20,6 +21,15 @@ function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
     return res
 end
 
+function convert_singleParams(p)
+
+    ps = zeros(20)
+    ps[1:2] .= p[1:2]
+    ps[3:8] .= p[3:8] .* p[9:14]
+    ps[9:14] .= p[3:8] .* (1.0 .- p[9:14])
+    ps[15:20] .= p[15:20] .* p[9:14]
+    ps
+end
 
 """ Generic setup for optimization. """
 function optimize_helper(f, low::Vector, high::Vector, maxstep::Int)
@@ -43,7 +53,7 @@ function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 300000)
 
     # [EC50, k, max_a1, max_a2, max_b1,  max_b2, max_b3, max_b4, max_g11, max_g12, max_g21, max_g22, max_g23, max_g24, min_a1, min_a2, min_b1,  min_b2, min_b3, min_b4]
     low = [minimum(conc); 1e-9 * ones(19)]
-    high = [maximum(conc); 10.0; 2.5 * ones(18)]
+    high = [maximum(conc); 10.0; 2.5 * ones(6); ones(6); 2.5 * ones(6)]
 
     return optimize_helper(f, low, high, maxstep)
 end
@@ -85,3 +95,5 @@ function getODEparams(p, conc)
     end
     return effects
 end
+
+
