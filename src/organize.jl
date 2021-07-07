@@ -23,6 +23,21 @@ meanGS1 = mean(GS1, dims = 4);
 meanGS2 = mean(GS2, dims = 4);
 meanGS2[:, :, 19] .= mean(cat(gt2[:, :, 19], gt2_2[:, :, 19], dims = 3), dims = 3)[:, :, 1]
 
+g1 = zeros(193, 5, 3)
+g2 = zeros(193, 5, 3)
+
+g1[:, 1, :] .= meanGS1[1, :, 1]
+g2[:, 1, :] .= meanGS1[2, :, 1]
+g1[:, 2:5, 1] .= meanGS1[1, :, 2:5] # lapatinib
+g2[:, 2:5, 1] .= meanGS1[2, :, 2:5]
+g1[:, 2:5, 2] .= meanGS1[1, :, 19:22] # gemcitabine
+g2[:, 2:5, 2] .= meanGS1[2, :, 19:22]
+g1[:, 2:5, 3] .= meanGS1[1, :, 7:10] # palbociclib
+g2[:, 2:5, 3] .= meanGS1[2, :, 7:10]
+
+concs = zeros(5, 3)
+concs[:, [1, 3]] .= [0.0, 25.0, 50.0, 100.0, 250.0]
+concs[:, 2] .= [0.0, 5.0, 10.0, 17.0, 30.0]
 #### only single drug treatments in the new expreiment
 Total = zeros(193, 5, 5) # time x concentrations x 5 drugs
 Total[:, 1, :] .= meanGS1[3, :, 1] # controls
@@ -31,7 +46,6 @@ Total[:, 2, 2] .= meanGS1[3, :, 6] # dox 20 nM
 Total[:, 2:5, 3] .= meanGS1[3, :, 19:22] # gemcitabines
 Total[:, 2, 4] .= meanGS1[3, :, 13] # pax 2 nM
 Total[:, 2:5, 5] .= meanGS1[3, :, 7:10] # palbos
-
 
 g = zeros(3, 193, 6, 9)
 g[:, :, 1, :] .= meanGS2[:, :, 1, 1]

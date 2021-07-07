@@ -17,6 +17,7 @@ using XLSX
 using StatsPlots
 using Roots
 using NumericalIntegration
+using CSV
 
 include("importData.jl")
 include("ODEmodel.jl")
