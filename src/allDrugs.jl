@@ -32,7 +32,7 @@ function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Fl
     lP = [minimum(concs); 0.01; 5e-3 * ones(12)]
     low = vcat(lP, lP, lP, lP, lP, 5e-3, 5e-3, 5e-3, 5e-3, 5e-3, 5e-3)
     hP = [maximum(concs); 10.0; 2.0 * ones(12)]
-    high = vcat(hP, hP, hP, hP, hP, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0)
+    high = vcat(hP, hP, hP, hP, hP, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5)
 
     return optimize_helper(f, low, high, maxiter)
 end
