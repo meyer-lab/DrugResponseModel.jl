@@ -10,7 +10,7 @@ function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
     # x = convert_singleParams(xx)
     res = 0.0
     for i = 3:8
-        res += 60 * (maximum([0, (x[i] - x[i + 12])]))^2
+        res += 160 * (maximum([0, (x[i] - x[i + 12])]))^2
     end
     params = getODEparams(x, conc)
     t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
@@ -21,15 +21,6 @@ function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
     return res
 end
 
-function convert_singleParams(p)
-
-    ps = zeros(20)
-    ps[1:2] .= p[1:2]
-    ps[3:8] .= p[3:8] .* p[9:14]
-    ps[9:14] .= p[3:8] .* (1.0 .- p[9:14])
-    ps[15:20] .= p[15:20] .* p[9:14]
-    ps
-end
 
 """ Generic setup for optimization. """
 function optimize_helper(f, low::Vector, high::Vector, maxstep::Int)
