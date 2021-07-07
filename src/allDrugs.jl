@@ -26,7 +26,7 @@ function Hill_p_eachDr(p)
 end
 
 
-function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 800000)
+function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 600000)
     f(x) = residHillAll(x, concs, g1, g2)
 
     lP = [minimum(concs); 0.01; 5e-3 * ones(12)]
