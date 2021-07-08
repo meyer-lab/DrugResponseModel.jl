@@ -39,8 +39,9 @@ function startV(p::AbstractVector{T})::AbstractVector{T} where {T <: Real}
 
     vals, vecs = eigen(A)
 
-    selectt = real.(vals) .> 0.0
-    selectt = selectt[im[select==0]]
+    a = real.(vals) .> 0.0
+    select = imag.(vals) .== 0.0
+    selectt = a .* select
     @assert sum(selectt) == 1
     vecs = vec(vecs[:, selectt])
     @assert all(isreal.(vals[selectt]))
