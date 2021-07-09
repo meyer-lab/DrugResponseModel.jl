@@ -47,10 +47,10 @@ function startV(p::AbstractVector{T})::AbstractVector{T} where {T <: Real}
     a = real.(vals) .> 0.0
     select = imag.(vals) .== 0.0
     selectt = a .* select
-    # @assert sum(selectt) == 1
+    @assert sum(selectt) == 1
     vecs = vec(vecs[:, selectt])
-    # @assert all(isreal.(vals[selectt]))
-    # @assert all(isreal.(vecs))
+    @assert all(isreal.(vals[selectt]))
+    @assert all(isreal.(vecs))
 
     return vecs / sum(vecs)
 end
