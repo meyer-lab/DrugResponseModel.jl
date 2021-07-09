@@ -5,11 +5,15 @@ function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array)
     # Solve for all drugs
     t = 1
     for j = 1:5
-        hill = hP[[t:(t + 13); 71:76]]
+        hill = hP[[t:(t + 17); 81:88]]
+        if j != 3
+            for i=3:10
+                res += 60 * (maximum([0, (hill[i] - hill[i + 16])]))^2
+            end
+        end
         res += residHill(hill, concentrations[:, j], g1[:, :, j], g2[:, :, j])
-        t += 14
+        t += 18
     end
-
     return res
 end
 
@@ -19,8 +23,8 @@ function Hill_p_eachDr(p)
     # each column: [EC50, steepness, max_g1,1_prog., max_g1,2_prog., max_g2,1_prog., max_g2,2_prog., max_g11_death, max_g12_death, max_g21_death, max_g22_death]
     j = 1
     for i = 1:5
-        HillP[:, i] .= p[j:(j + 13)]
-        j += 14
+        HillP[:, i] .= p[j:(j + 17)]
+        j += 18
     end
     HillP
 end
@@ -29,10 +33,10 @@ end
 function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 600000)
     f(x) = residHillAll(x, concs, g1, g2)
 
-    lP = [minimum(concs); 0.01; 5e-3 * ones(12)]
-    low = vcat(lP, lP, lP, lP, lP, 5e-3, 5e-3, 5e-3, 5e-3, 5e-3, 5e-3)
-    hP = [maximum(concs); 10.0; 2.0 * ones(12)]
-    high = vcat(hP, hP, hP, hP, hP, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5)
+    lP = [minimum(concs); 0.01; 5e-3 * ones(16)]
+    low = vcat(lP, lP, lP, lP, lP, 5e-3, 5e-3, 5e-3, 5e-3, 5e-3, 5e-3, 5e-3, 5e-3)
+    hP = [maximum(concs); 10.0; 2.5 * ones(16)]
+    high = vcat(hP, hP, hP, hP, hP, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5)
 
     return optimize_helper(f, low, high, maxiter)
 end
