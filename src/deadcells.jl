@@ -76,8 +76,8 @@ function output_deadcells()
         lw = 2,
         ylabel = "accumulated cell death #",
         xlabel = "time [hr]",
-        palette=:YlOrRd_8,
-        legend=:left,
+        palette = :YlOrRd_8,
+        legend = :left,
     )
 
     p3 = plot(
@@ -88,8 +88,8 @@ function output_deadcells()
         lw = 2,
         ylabel = "accumulated cell death #",
         xlabel = "time [hr]",
-        palette=:YlOrRd_8,
-        legend=:left,
+        palette = :YlOrRd_8,
+        legend = :left,
     )
 
     p = plot(p1, p3, layout = (1, 2), size = (700, 300))
