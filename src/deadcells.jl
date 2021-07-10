@@ -71,49 +71,28 @@ function output_deadcells()
     p1 = plot(
         t,
         intg[:, :, 1],
-        labels = ["0" "5" "10" "25" "50" "100" "250" "500"],
+        labels = ["control" "5nM" "10nM" "25nM" "50nM" "100nM" "250nM" "500nM"],
         title = "lapatinib",
         lw = 2,
         ylabel = "accumulated cell death #",
         xlabel = "time [hr]",
+        palette=:YlOrRd_8,
+        legend=:left,
     )
-    p2 = plot(
-        t,
-        intg[:, :, 2],
-        labels = ["0" "1" "10" "25" "50" "125" "250" "500"],
-        title = "doxorubicin",
-        lw = 2,
-        ylabel = "accumulated cell death #",
-        xlabel = "time [hr]",
-    )
+
     p3 = plot(
         t,
         intg[:, :, 3],
-        labels = ["0" "0.25" "1" "2.5" "5" "10" "30" "100"],
+        labels = ["control" "0.25nM" "1nM" "2.5nM" "5nM" "10nM" "30nM" "100nM"],
         title = "gemcitabine",
         lw = 2,
         ylabel = "accumulated cell death #",
         xlabel = "time [hr]",
+        palette=:YlOrRd_8,
+        legend=:left,
     )
-    p4 = plot(
-        t,
-        intg[:, :, 4],
-        labels = ["0" "0.1" "1" "2" "3" "5" "7.5" "15"],
-        title = "taxol",
-        lw = 2,
-        ylabel = "accumulated cell death #",
-        xlabel = "time [hr]",
-    )
-    p5 = plot(
-        t,
-        intg[:, :, 5],
-        labels = ["0" "5" "10" "25" "50" "100" "250" "500"],
-        title = "palbociclib",
-        lw = 2,
-        ylabel = "accumulated cell death #",
-        xlabel = "time [hr]",
-    )
-    p = plot(p0, p1, p2, p3, p4, p5, layout = (2, 3), size = (1000, 650))
+
+    p = plot(p1, p3, layout = (1, 2), size = (700, 300))
     ylims!((0.0, 1.3))
     savefig(p, "deadcells.svg")
     df1 = DataFrames.DataFrame(
@@ -166,9 +145,9 @@ function output_deadcells()
         plb250 = intg[:, 7, 5],
         plb500 = intg[:, 8, 5],
     )
-    XLSX.writetable("lapatinibDeadCells.xlsx", df1)
-    XLSX.writetable("doxorubicinDeadCells.xlsx", df2)
-    XLSX.writetable("gemcitabineDeadCells.xlsx", df3)
-    XLSX.writetable("taxolDeadCells.xlsx", df4)
-    XLSX.writetable("palbociclibDeadCells.xlsx", df5)
+    # XLSX.writetable("lapatinibDeadCells.xlsx", df1)
+    # XLSX.writetable("doxorubicinDeadCells.xlsx", df2)
+    # XLSX.writetable("gemcitabineDeadCells.xlsx", df3)
+    # XLSX.writetable("taxolDeadCells.xlsx", df4)
+    # XLSX.writetable("palbociclibDeadCells.xlsx", df5)
 end
