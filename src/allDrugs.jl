@@ -6,9 +6,6 @@ function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array)
     t = 1
     for j = 1:5
         hill = hP[[t:(t + 17); 91:98]]
-        for i=3:10
-            res += 20 * (maximum([0, (hill[i] - hill[i + 16])]))^2
-        end
         res += residHill(hill, concentrations[:, j], g1[:, :, j], g2[:, :, j])
         t += 18
     end
