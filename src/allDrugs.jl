@@ -1,4 +1,20 @@
 """ In this file we fit all the drugs att once. """
+# import Pkg; Pkg.instantiate()
+# Pkg.activate(".")
+# using DrugResponseModel
+# using Plots, LinearAlgebra, Statistics
+# Plots.scalefontsizes(0.7)
+
+# concs, _, g1s1, g2s1 = load(189, 1);
+# _, _, g1s2, g2s2 = load(189, 2);
+# _, _, g1s3, g2s3 = load(189, 3);
+
+# G1S = cat(g1s1, g1s2, g1s3, dims=4);
+# G2S = cat(g2s1, g2s2, g2s3, dims=4);
+
+# g1m = mean(G1S, dims=4)[:, :, :, 1];
+# g2m = mean(G2S, dims=4)[:, :, :, 1];
+
 function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array)
     res = 0.0
 
