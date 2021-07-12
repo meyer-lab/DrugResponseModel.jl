@@ -33,8 +33,8 @@ function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Fl
 
     lP = [minimum(concs); 0.01; 5e-9 * ones(16)]
     low = vcat(lP, lP, lP, lP, lP, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9)
-    hP = [maximum(concs); 10.0; 2.0 * ones(16)]
-    high = vcat(hP, hP, hP, hP, hP, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0)
+    hP = [maximum(concs); 10.0; 1.0 * ones(16)]
+    high = vcat(hP, hP, hP, hP, hP, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
 
     return optimize_helper(f, low, high, maxiter)
 end
