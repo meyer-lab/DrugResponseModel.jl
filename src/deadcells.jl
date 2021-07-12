@@ -1,19 +1,20 @@
 """ deadcells """
 
 function vTOgD(v::AbstractVector)
-    G11 = sum(view(v, 1:4))
-    G12 = sum(view(v, 5:8))
+    G11 = sum(view(v, 1:2))
+    G12 = sum(view(v, 3:4))
+    G13 = sum(view(v, 5:6))
+    G14 = sum(view(v, 7:8))
     G21 = sum(view(v, 9:13))
     G22 = sum(view(v, 14:18))
     G23 = sum(view(v, 19:23))
     G24 = sum(view(v, 24:28))
-    return G11, G12, G21, G22, G23, G24
+    return G11, G12, G13, G14, G21, G22, G23, G24
 end
-
 
 """ Predicts the model given a set of parametrs. """
 function predictD(p::AbstractVector, g_0::AbstractVector, t::Union{Real, LinRange}, g1data = nothing, g2data = nothing)
-    @assert length(p) == 12 # we have 2 G1 prog rates, 4 G2 prog rates, 2 G1 death and 4 G2 death rates.
+    @assert length(p) == 16 # we have 2 G1 prog rates, 4 G2 prog rates, 2 G1 death and 4 G2 death rates.
 
     if length(g_0) == length(p)
         v = startV(g_0)
@@ -31,34 +32,36 @@ function predictD(p::AbstractVector, g_0::AbstractVector, t::Union{Real, LinRang
 
     G11 = Vector{eltype(p)}(undef, length(t))
     G12 = Vector{eltype(p)}(undef, length(t))
+    G13 = Vector{eltype(p)}(undef, length(t))
+    G14 = Vector{eltype(p)}(undef, length(t))
     G21 = Vector{eltype(p)}(undef, length(t))
     G22 = Vector{eltype(p)}(undef, length(t))
     G23 = Vector{eltype(p)}(undef, length(t))
     G24 = Vector{eltype(p)}(undef, length(t))
 
     for ii = 1:length(t)
-        G11[ii], G12[ii], G21[ii], G22[ii], G23[ii], G24[ii] = vTOgD(v)
+        G11[ii], G12[ii], G13[ii], G14[ii], G21[ii], G22[ii], G23[ii], G24[ii] = vTOgD(v)
 
         mul!(u, A, v)
         copyto!(v, u)
     end
 
-    return G11, G12, G21, G22, G23, G24
+    return G11, G12, G13, G14, G21, G22, G23, G24
 end
 
 function output_deadcells()
     concs, popul1, g1s1, g2s1 = load(189, 1)
     ps = parameters()
     efcs = getODEparams(ps, concs)
-    g = zeros(189, 8, 5, 6) # total
+    g = zeros(189, 8, 5, 8) # total
     t = LinRange(0.0, 96.0, 189)
     d = zeros(189, 8, 5)
     for i = 1:5
         for j = 1:8
-            g[:, j, i, 1], g[:, j, i, 2], g[:, j, i, 3], g[:, j, i, 4], g[:, j, i, 5], g[:, j, i, 6] = predictD(efcs[:, j, i], efcs[:, 1, i], t)
+            g[:, j, i, 1], g[:, j, i, 2], g[:, j, i, 3], g[:, j, i, 4], g[:, j, i, 5], g[:, j, i, 6], g[:, j, i, 7], g[:, j, i, 8] = predictD(efcs[:, j, i], efcs[:, 1, i], t)
             d[:, j, i] =
-                efcs[7, j, i] .* g[:, j, i, 1] .+ efcs[8, j, i] .* g[:, j, i, 2] .+ efcs[9, j, i] .* g[:, j, i, 3] .+
-                efcs[10, j, i] .* g[:, j, i, 4] .+ efcs[11, j, i] .* g[:, j, i, 5] .+ efcs[12, j, i] .* g[:, j, i, 6]
+                efcs[9, j, i] .* g[:, j, i, 1] .+ efcs[10, j, i] .* g[:, j, i, 2] .+ efcs[11, j, i] .* g[:, j, i, 3] .+
+                efcs[12, j, i] .* g[:, j, i, 4] .+ efcs[13, j, i] .* g[:, j, i, 5] .+ efcs[14, j, i] .* g[:, j, i, 6] .+ efcs[15, j, i] .* g[:, j, i, 7] .+ efcs[16, j, i] .* g[:, j, i, 8]
         end
     end
     intg = zeros(189, 8, 5)
@@ -92,8 +95,8 @@ function output_deadcells()
         legend = :left,
     )
 
-    p = plot(p1, p3, layout = (1, 2), size = (700, 300))
-    ylims!((0.0, 1.3))
+    p = plot(p1, p3, layout = (1, 2), size = (750, 300))
+    ylims!((-0.05, 1.3))
     savefig(p, "deadcells.svg")
     df1 = DataFrames.DataFrame(
         controlLPT = intg[:, 1, 1],
