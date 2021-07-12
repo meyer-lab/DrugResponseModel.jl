@@ -8,6 +8,9 @@ and estimates hill parameters. """
 function residHill(x::Vector, conc::Vector, g1::Matrix, g2::Matrix)
 
     res = 0.0
+    for i = 3:10
+        res += 40 * (maximum([0, (x[i] - x[i + 16])]))^2
+    end
     params = getODEparams(x, conc)
     t = LinRange(0.0, 0.5 * size(g1, 1), size(g1, 1))
     # Solve each concentration separately
