@@ -17,6 +17,7 @@ using XLSX
 using StatsPlots
 using Roots
 using NumericalIntegration
+using CSV
 
 include("importData.jl")
 include("ODEmodel.jl")
@@ -31,6 +32,7 @@ include("figures/figureS2.jl")
 include("figures/figure3.jl")
 include("figures/figureS3.jl")
 include("figures/figure4.jl")
+include("figures/figure6.jl")
 include("figures/summary.jl")
 include("organize.jl")
 include("deadcells.jl")

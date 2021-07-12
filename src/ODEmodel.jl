@@ -4,7 +4,9 @@
 """
 
 const nG1 = 8
+const G1s = 2
 const nG2 = 20
+const G2s = 4
 const nSp = nG1 + nG2
 
 """ Make the transition matrix. """
