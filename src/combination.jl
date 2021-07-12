@@ -2,20 +2,46 @@
 
 ######---------------- Functions for Bliss combination ----------------########
 
+function residHillAll3(hP, concentrations::Matrix, g1::Array, g2::Array)
+    res = 0.0
+
+    # Solve for all drugs
+    t = 1
+    for j = 1:3
+        hill = hP[[t:(t + 17); 55:62]]
+        for i = 3:10
+            res += 20 * (maximum([0, (hill[i] - hill[i + 16])]))^2
+        res += residHill(hill, concentrations[:, j], g1[:, :, j], g2[:, :, j])
+        t += 18
+    end
+    return res
+end
+
+function optim_all3(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 800000)
+    f(x) = residHillAll3(x, concs, g1, g2)
+
+    lP = [minimum(concs); 0.01; 5e-9 * ones(16)]
+    low = vcat(lP, lP, lP, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9)
+    hP = [maximum(concs); 10.0; 2.0 * ones(16)]
+    high = vcat(hP, hP, hP, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0)
+
+    return optimize_helper(f, low, high, maxiter)
+end
+
 """ Unit function to calculate the bliss for 2 drugs at one specific concentration. """
 function Bliss_params_unit(pp1, pp2, control)
     # pp1 and pp2 are 1D arrays of size 8, including 8 parameters for a single concentration.
     p1 = copy(pp1)
     p2 = copy(pp2)
     # normalization
-    p1[1:6] .= 1.0 .- (pp1[1:6] ./ control[1:6, 1]) # g1 and g2 prog. rates
+    p1[1:8] .= 1.0 .- (pp1[1:8] ./ control[1:8, 1]) # g1 and g2 prog. rates
 
     # drug B
-    p2[1:6] .= 1.0 .- (pp2[1:6] ./ control[1:6, 2])
+    p2[1:8] .= 1.0 .- (pp2[1:8] ./ control[1:8, 2])
 
-    c = Array{eltype(pp1), 1}(undef, 12)
-    c[1:6] .= (1.0 .- (p1[1:6] .+ p2[1:6] .- p1[1:6] .* p2[1:6])) .* ((control[1:6, 1] .+ control[1:6, 2]) ./ 2)
-    c[7:12] .= pp1[7:12] .+ pp2[7:12]
+    c = Array{eltype(pp1), 1}(undef, 16)
+    c[1:8] .= (1.0 .- (p1[1:8] .+ p2[1:8] .- p1[1:8] .* p2[1:8])) .* ((control[1:8, 1] .+ control[1:8, 2]) ./ 2)
+    c[9:16] .= pp1[9:16] .+ pp2[9:16]
 
     c
 end
@@ -24,13 +50,13 @@ end
 function AllBliss_params(pp1, pp2; n = 8)
     # pp1 and pp2 are 2D arrays [12 x 8] each includes the parameters fo all concentrations of a drug. 
 
-    combined = Array{eltype(pp1), 3}(undef, 12, n, n)
+    combined = Array{eltype(pp1), 3}(undef, 16, n, n)
     for i = 1:n
         for j = 1:n
             combined[:, i, j] .= Bliss_params_unit(pp1[:, i], pp2[:, j], hcat(pp1[:, 1], pp2[:, 1]))
         end
     end
-    @assert all(combined[7:end, 1, 1] .== 0.0)
+    @assert all(combined[9:end, 1, 1] .== 0.0)
     @assert(all(combined .>= 0.0))
     combined
 end
