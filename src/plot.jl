@@ -72,5 +72,5 @@ function plotavg(G1, G2, g1m, g2m, i, leg, conc)
     plot!(time, G1[:, i], label = "model G1", color = "darkgreen")
     scatter!(time, g2m[:, i], color = "sienna", label = "data G2", markerstrokewidth = 0.0, markersize = 1.0, alpha = 0.25)
     plot!(time, G2[:, i], label = "model G2", color = "darkorange")
-    ylims!((0.0, 45))
+    # ylims!((0.0, ))
 end
