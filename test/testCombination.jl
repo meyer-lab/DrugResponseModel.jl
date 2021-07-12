@@ -1,9 +1,9 @@
 @testset "Combination tests where g1 prog. rate increased for one drug and decreases for the other drug and g2 prog. rates where in both drugs the rate is decreasing compared to control." begin
-    p1 = ones(12, 8)
-    p2 = ones(12, 8)
+    p1 = ones(16, 8)
+    p2 = ones(16, 8)
 
-    p1[7:12, 1] .= 0.0
-    p2[7:12, 1] .= 0.0
+    p1[9:16, 1] .= 0.0
+    p2[9:16, 1] .= 0.0
     # drugA
     p1[1, 1] = 0.6          # g1 prog. rate in control
     p1[1, 2:end] .= 0.8     # g1 prog. rate in all other concentrations
@@ -20,12 +20,12 @@
 end
 
 @testset "Combination tests from estimated parameters to converting to ODE parameters where for both drugs, rates are decreasing and one reaches to zero." begin
-    p1 = hcat(vcat(ones(6), zeros(6)), 0.5 * ones(12))
-    p2 = hcat(vcat(ones(6), zeros(6)), 1.5 * ones(12))
+    p1 = hcat(vcat(ones(8), zeros(8)), 0.5 * ones(16))
+    p2 = hcat(vcat(ones(8), zeros(8)), 1.5 * ones(16))
 
     cmb = DrugResponseModel.Bliss_params_unit(p1[:, 2], p2[:, 2], hcat(p1[:, 1], p2[:, 1]))
-    @assert(cmb[1:6] == 0.75 * ones(6))
-    @assert(cmb[7:12] == 2.0 * ones(6))
+    @assert(cmb[1:8] == 0.75 * ones(8))
+    @assert(cmb[9:16] == 2.0 * ones(8))
 end
 
 @testset "Test if the function that calculates bliss for cell numbers, works right." begin
