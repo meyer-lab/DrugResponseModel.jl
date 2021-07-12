@@ -1,4 +1,20 @@
 """ In this file we fit all the drugs att once. """
+# import Pkg; Pkg.instantiate()
+# Pkg.activate(".")
+# using DrugResponseModel
+# using Plots, LinearAlgebra, Statistics
+# Plots.scalefontsizes(0.7)
+
+# concs, _, g1s1, g2s1 = load(189, 1);
+# _, _, g1s2, g2s2 = load(189, 2);
+# _, _, g1s3, g2s3 = load(189, 3);
+
+# G1S = cat(g1s1, g1s2, g1s3, dims=4);
+# G2S = cat(g2s1, g2s2, g2s3, dims=4);
+
+# g1m = mean(G1S, dims=4)[:, :, :, 1];
+# g2m = mean(G2S, dims=4)[:, :, :, 1];
+
 function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array)
     res = 0.0
 
@@ -14,7 +30,7 @@ end
 
 """ Organize Hill parameters for each drug in a 2D array. """
 function Hill_p_eachDr(p)
-    HillP = Matrix{eltype(p)}(undef, 14, 5)
+    HillP = Matrix{eltype(p)}(undef, 18, 5)
     # each column: [EC50, steepness, max_g1,1_prog., max_g1,2_prog., max_g2,1_prog., max_g2,2_prog., max_g11_death, max_g12_death, max_g21_death, max_g22_death]
     j = 1
     for i = 1:5
@@ -23,7 +39,6 @@ function Hill_p_eachDr(p)
     end
     HillP
 end
-
 
 function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 800000)
     f(x) = residHillAll(x, concs, g1, g2)
@@ -41,18 +56,22 @@ function EC50_params(p, i)
     d = Hill_p_eachDr(p)
     # returns the following at EC50: [g1_prog., g2_prog, g1_death, g2_death, g1%]
     return append!([
-        p[71] + (d[3, i] - p[71]) / 2,
-        p[72] + (d[4, i] - p[72]) / 2,
-        p[73] + (d[5, i] - p[73]) / 2,
-        p[74] + (d[6, i] - p[74]) / 2,
-        p[75] + (d[7, i] - p[75]) / 2,
-        p[76] + (d[8, i] - p[76]) / 2,
-        d[9, i] / 2,
-        d[10, i] / 2,
+        p[91] + (d[3, i] - p[91]) / 2,
+        p[92] + (d[4, i] - p[92]) / 2,
+        p[93] + (d[5, i] - p[93]) / 2,
+        p[94] + (d[6, i] - p[94]) / 2,
+        p[95] + (d[7, i] - p[95]) / 2,
+        p[96] + (d[8, i] - p[96]) / 2,
+        p[97] + (d[9, i] - p[97]) / 2,
+        p[98] + (d[10, i] - p[98]) / 2,
         d[11, i] / 2,
         d[12, i] / 2,
         d[13, i] / 2,
         d[14, i] / 2,
+        d[15, i] / 2,
+        d[16, i] / 2,
+        d[17, i] / 2,
+        d[18, i] / 2,
     ])
 end
 

@@ -8,14 +8,14 @@ function Bliss_params_unit(pp1, pp2, control)
     p1 = copy(pp1)
     p2 = copy(pp2)
     # normalization
-    p1[1:6] .= 1.0 .- (pp1[1:6] ./ control[1:6, 1]) # g1 and g2 prog. rates
+    p1[1:8] .= 1.0 .- (pp1[1:8] ./ control[1:8, 1]) # g1 and g2 prog. rates
 
     # drug B
-    p2[1:6] .= 1.0 .- (pp2[1:6] ./ control[1:6, 2])
+    p2[1:8] .= 1.0 .- (pp2[1:8] ./ control[1:8, 2])
 
-    c = Array{eltype(pp1), 1}(undef, 12)
-    c[1:6] .= (1.0 .- (p1[1:6] .+ p2[1:6] .- p1[1:6] .* p2[1:6])) .* ((control[1:6, 1] .+ control[1:6, 2]) ./ 2)
-    c[7:12] .= pp1[7:12] .+ pp2[7:12]
+    c = Array{eltype(pp1), 1}(undef, 16)
+    c[1:8] .= (1.0 .- (p1[1:8] .+ p2[1:8] .- p1[1:8] .* p2[1:8])) .* ((control[1:8, 1] .+ control[1:8, 2]) ./ 2)
+    c[9:16] .= pp1[9:16] .+ pp2[9:16]
 
     c
 end
@@ -24,13 +24,13 @@ end
 function AllBliss_params(pp1, pp2; n = 8)
     # pp1 and pp2 are 2D arrays [12 x 8] each includes the parameters fo all concentrations of a drug. 
 
-    combined = Array{eltype(pp1), 3}(undef, 12, n, n)
+    combined = Array{eltype(pp1), 3}(undef, 16, n, n)
     for i = 1:n
         for j = 1:n
             combined[:, i, j] .= Bliss_params_unit(pp1[:, i], pp2[:, j], hcat(pp1[:, 1], pp2[:, 1]))
         end
     end
-    @assert all(combined[7:end, 1, 1] .== 0.0)
+    @assert all(combined[9:end, 1, 1] .== 0.0)
     @assert(all(combined .>= 0.0))
     combined
 end
