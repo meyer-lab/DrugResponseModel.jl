@@ -23,8 +23,8 @@ function optim_all3(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{F
 
     lP = [minimum(concs); 0.01; 5e-9 * ones(16)]
     low = vcat(lP, lP, lP, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9)
-    hP = [maximum(concs); 10.0; 2.0 * ones(16)]
-    high = vcat(hP, hP, hP, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0)
+    hP = [maximum(concs); 10.0; 3.0 * ones(16)]
+    high = vcat(hP, hP, hP, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0)
 
     return optimize_helper(f, low, high, maxiter)
 end
@@ -49,7 +49,7 @@ end
 
 """ Using the unit function to find all combinations of parameters. """
 function AllBliss_params(pp1, pp2; n = 8)
-    # pp1 and pp2 are 2D arrays [12 x 8] each includes the parameters fo all concentrations of a drug. 
+    # pp1 and pp2 are 2D arrays [16 x 8] each includes the parameters fo all concentrations of a drug. 
 
     combined = Array{eltype(pp1), 3}(undef, 16, n, n)
     for i = 1:n
