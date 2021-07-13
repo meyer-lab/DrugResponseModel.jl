@@ -16,7 +16,7 @@ function ODEjac(p::AbstractVector{T})::Matrix{T} where {T <: Real}
     A = zeros(nSp, nSp)
 
     A[diagind(A, 0)[1:Int(nG1 / 4)]] .= -(p[1] + p[9])
-    A[diagind(A, 0)[Int(nG1 / 4 + 1):Int( nG1 / 2)]] .= -(p[2] + p[10])
+    A[diagind(A, 0)[Int(nG1 / 4 + 1):Int(nG1 / 2)]] .= -(p[2] + p[10])
     A[diagind(A, 0)[Int(nG1 / 2 + 1):Int(3 * nG1 / 4)]] .= -(p[3] + p[11])
     A[diagind(A, 0)[Int(3 * nG1 / 4 + 1):nG1]] .= -(p[4] + p[12])
 
@@ -26,7 +26,7 @@ function ODEjac(p::AbstractVector{T})::Matrix{T} where {T <: Real}
     A[diagind(A, 0)[Int(nG1 + 3 * nG2 / 4 + 1):nSp]] .= -(p[8] + p[16])
 
     A[diagind(A, -1)[1:Int(nG1 / 4)]] .= p[1]
-    A[diagind(A, -1)[Int(nG1 / 4 + 1):Int( nG1 / 2)]] .= p[2]
+    A[diagind(A, -1)[Int(nG1 / 4 + 1):Int(nG1 / 2)]] .= p[2]
     A[diagind(A, -1)[Int(nG1 / 2 + 1):Int(3 * nG1 / 4)]] .= p[3]
     A[diagind(A, -1)[Int(3 * nG1 / 4 + 1):nG1]] .= p[4]
 
