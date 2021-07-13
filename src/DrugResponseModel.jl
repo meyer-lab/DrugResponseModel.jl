@@ -15,7 +15,6 @@ using Distributions
 using DataFrames
 using XLSX
 using StatsPlots
-using Roots
 using NumericalIntegration
 using CSV
 
