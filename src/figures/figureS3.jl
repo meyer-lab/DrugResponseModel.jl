@@ -2,9 +2,9 @@
 
 function plot_pG1(efcs, ymax, Phasename, ylabel, subPlabel, plus)
 
-    x = ["G11", "G12", "G21", "G22", "G23", "G24"]
-    y1 = efcs[1:6, 1]
-    y2 = efcs[1:6, 8]
+    x = ["G11", "G12", "G13", "G14", "G21", "G22", "G23", "G24"]
+    y1 = efcs[1:8, 1]
+    y2 = efcs[1:8, 2]
     scatter(
         x,
         y1,
@@ -32,7 +32,7 @@ function plot_pG1(efcs, ymax, Phasename, ylabel, subPlabel, plus)
         y2,
         color = "cyan4",
         xlabel = "sub-phase",
-        label = "Emax",
+        label = "E_EC50",
         markerstrokewidth = 0,
         markersize = 8,
         ylabel = ylabel,
@@ -65,6 +65,11 @@ function figureS3()
     g2m = mean(g2S, dims = 4) # mean G2
     ps = parameters()
     efcs = getODEparams(ps, concs)
+
+    # replace the second dimension of efcs with the ec50 effects
+    for i = 1:5
+        efcs[:, 2, i] = DrugResponseModel.EC50_params(ps, i)
+    end
 
     # ******* model simulations ********
     G1 = zeros(189, 8, 5)
@@ -109,15 +114,14 @@ function figureS3()
     p7 = DrugResponseModel.plot_fig1(concs[:, 1], G1refshort[:, :, 1], g1mshort[:, :, 1, 1], "Expon Model Fits - Lapatinib", "G1", "N", :YlOrBr_6)
     p8 = DrugResponseModel.plot_fig1(concs[:, 1], G2refshort[:, :, 1], g2mshort[:, :, 1, 1], "Expon Model Fits - Lapatinib", "S/G2", "O", :YlOrBr_6)
     p9 = DrugResponseModel.plot_fig1(concs[:, 3], G1refshort[:, :, 3], g1mshort[:, :, 3, 1], "Expon Model Fits - Gemcitabine", "G1", "P", :YlOrBr_6)
-    p10 =
-        DrugResponseModel.plot_fig1(concs[:, 3], G2refshort[:, :, 3], g2mshort[:, :, 3, 1], "Expon Model Fits - Gemcitabine", "S/G2", "Q", :YlOrBr_6)
+    p10 = DrugResponseModel.plot_fig1(concs[:, 3], G2refshort[:, :, 3], g2mshort[:, :, 3, 1], "Expon Model Fits - Gemcitabine", "S/G2", "Q", :YlOrBr_6)
 
-    p11 = DrugResponseModel.plot_pG1(efcs[1:6, :, 1], 2.25, "Lapatinib", "progression rates [1/hr]", "G", 0.35)
-    p12 = DrugResponseModel.plot_pG1(efcs[7:12, :, 1], 0.2, "Lapatinib", "death rates [1/hr]", "H", 0.06)
-    p13 = DrugResponseModel.plot_pG1(efcs[1:6, :, 3], 2.25, "Gemcitabine", "progression rates [1/hr]", "I", 0.35)
-    p14 = DrugResponseModel.plot_pG1(efcs[7:12, :, 3], 0.2, "Gemcitabine", "death rates [1/hr]", "J", 0.06)
-    p15 = DrugResponseModel.plot_pG1(efcs[1:6, :, 5], 2.25, "Paclitaxel", "progression rates [1/hr]", "K", 0.35)
-    p16 = DrugResponseModel.plot_pG1(efcs[7:12, :, 5], 0.2, "Paclitaxel", "death rates [1/hr]", "L", 0.06)
+    p11 = DrugResponseModel.plot_pG1(efcs[1:8, 1:2, 1], 2.25, "Lapatinib", "progression rates [1/hr]", "G", 0.35)
+    p12 = DrugResponseModel.plot_pG1(efcs[9:16, 1:2, 1], 0.2, "Lapatinib", "death rates [1/hr]", "H", 0.06)
+    p13 = DrugResponseModel.plot_pG1(efcs[1:8, 1:2, 3], 2.25, "Gemcitabine", "progression rates [1/hr]", "I", 0.35)
+    p14 = DrugResponseModel.plot_pG1(efcs[9:16, 1:2, 3], 0.2, "Gemcitabine", "death rates [1/hr]", "J", 0.06)
+    p15 = DrugResponseModel.plot_pG1(efcs[1:8, 1:2, 5], 2.25, "Paclitaxel", "progression rates [1/hr]", "K", 0.35)
+    p16 = DrugResponseModel.plot_pG1(efcs[9:16, 1:2, 5], 0.2, "Paclitaxel", "death rates [1/hr]", "L", 0.06)
     figureS3 = plot(p1, p2, p3, p4, p5, p6, p11, p12, p13, p14, p15, p16, p0, p0, p7, p8, p9, p10, size = (2400, 1050), layout = (3, 6))
     savefig(figureS3, "figureS3.svg")
 end

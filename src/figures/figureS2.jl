@@ -111,8 +111,8 @@ function output_durations()
     efcs = getODEparams(ps, concs)
 
     gi = zeros(2, 8, 5)
-    gi[1, :, :] .= (4 ./ efcs[1, :, :] .+ 4 ./ efcs[2, :, :])
-    gi[2, :, :] .= (5 ./ efcs[3, :, :] .+ 5 ./ efcs[4, :, :] .+ 5 ./ efcs[5, :, :] .+ 5 ./ efcs[6, :, :])
+    gi[1, :, :] .= (2 ./ efcs[1, :, :] .+ 2 ./ efcs[2, :, :] .+ 2 ./ efcs[3, :, :] .+ 2 ./ efcs[4, :, :])
+    gi[2, :, :] .= (5 ./ efcs[5, :, :] .+ 5 ./ efcs[6, :, :] .+ 5 ./ efcs[7, :, :] .+ 5 ./ efcs[8, :, :])
 
     df1 = DataFrames.DataFrame(
         lapG1 = gi[1, :, 1],
@@ -128,3 +128,7 @@ function output_durations()
     )
     XLSX.writetable("durations.xlsx", df1)
 end
+
+# d1 = DataFrames.DataFrame(controlG1=G1[:, 1, 1], lpt5_G1=G1[:, 2, 1], lpt10_G1=G1[:, 3, 1], lpt25_G1=G1[:, 4, 1], lpt50_G1=G1[:, 5, 1], lpt100_G1=G1[:, 6, 1], lpt250_G1=G1[:, 7, 1], lpt500_G1=G1[:, 8, 1], 
+#                           controlG2=G2[:, 1, 1], lpt5_G2=G2[:, 2, 1], lpt10_G2=G2[:, 3, 1], lpt25_G2=G2[:, 4, 1], lpt50_G2=G2[:, 5, 1], lpt100_G2=G2[:, 6, 1], lpt250_G2=G2[:, 7, 1], lpt500_G2=G2[:, 8, 1], 
+#                           control=G1[:, 1, 1].+G2[:, 1, 1], lpt5=G1[:, 2, 1].+G2[:, 2, 1], lpt10=G1[:, 3, 1].+G2[:, 3, 1], lpt25=G1[:, 4, 1].+G2[:, 4, 1], lpt50=G1[:, 5, 1].+G2[:, 5, 1], lpt100=G1[:, 6, 1].+G2[:, 6, 1], lpt250=G1[:, 7, 1].+G2[:, 7, 1], lpt500=G1[:, 8, 1].+G2[:, 8, 1])
