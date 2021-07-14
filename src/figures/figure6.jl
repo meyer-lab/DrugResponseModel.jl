@@ -8,10 +8,10 @@ function plot_hillCurves()
 
     # average parameters
     new_PS = zeros(4, 8, 5)
-    new_PS[1, :, :] .= mean(ps[1:2, :, :], dims = 1)[1, :, :]
-    new_PS[2, :, :] .= mean(ps[3:6, :, :], dims = 1)[1, :, :]
-    new_PS[3, :, :] .= mean(ps[7:8, :, :], dims = 1)[1, :, :]
-    new_PS[4, :, :] .= mean(ps[9:12, :, :], dims = 1)[1, :, :]
+    new_PS[1, :, :] .= mean(ps[1:4, :, :], dims = 1)[1, :, :]
+    new_PS[2, :, :] .= mean(ps[5:8, :, :], dims = 1)[1, :, :]
+    new_PS[3, :, :] .= mean(ps[9:12, :, :], dims = 1)[1, :, :]
+    new_PS[4, :, :] .= mean(ps[13:16, :, :], dims = 1)[1, :, :]
 
     p0 = plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
     p1 = plot(
