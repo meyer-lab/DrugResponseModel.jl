@@ -72,7 +72,6 @@ function output_deadcells()
             intg[:, j, i] = cumul_integrate(t, d[:, j, i])
         end
     end
-    p0 = plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
     p1 = plot(
         t,
         intg[:, :, 1],
@@ -83,7 +82,18 @@ function output_deadcells()
         xlabel = "time [hr]",
         palette = :YlOrRd_8,
         legend = :left,
+        titlefont = Plots.font("Helvetica", 14),
+        legendfont = Plots.font("Helvetica", 11),
+        guidefont = Plots.font("Helvetica", 14),
+        xtickfont = Plots.font("Helvetica", 14),
+        ytickfont = Plots.font("Helvetica", 14),
+        bottom_margin = 1.5cm,
+        fg_legend = :transparent,
+        top_margin = 1.5cm,
+        left_margin = 1.25cm,
+        right_margin = 1.25cm,
     )
+    ylims!((-0.05, 2.5))
 
     p3 = plot(
         t,
@@ -95,11 +105,19 @@ function output_deadcells()
         xlabel = "time [hr]",
         palette = :YlOrRd_8,
         legend = :left,
+        titlefont = Plots.font("Helvetica", 14),
+        legendfont = Plots.font("Helvetica", 11),
+        guidefont = Plots.font("Helvetica", 14),
+        xtickfont = Plots.font("Helvetica", 14),
+        ytickfont = Plots.font("Helvetica", 14),
+        bottom_margin = 1.5cm,
+        fg_legend = :transparent,
+        top_margin = 1.5cm,
+        left_margin = 1.25cm,
+        right_margin = 1.25cm,
     )
+    ylims!((-0.05, 2.5))
 
-    p = plot(p1, p3, layout = (1, 2), size = (750, 300))
-    ylims!((-0.05, 1.3))
-    savefig(p, "deadcells.svg")
     df1 = DataFrames.DataFrame(
         controlLPT = intg[:, 1, 1],
         lpt5 = intg[:, 2, 1],
@@ -155,4 +173,5 @@ function output_deadcells()
     # XLSX.writetable("gemcitabineDeadCells.xlsx", df3)
     # XLSX.writetable("taxolDeadCells.xlsx", df4)
     # XLSX.writetable("palbociclibDeadCells.xlsx", df5)
+    return p1, p3
 end
