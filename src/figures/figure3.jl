@@ -22,11 +22,11 @@ function SSE(G1, G2, g1m, g2m, subPlabel)
         bar_width = 0.45,
         lw = 0,
         framestyle = :box,
-        titlefont = Plots.font("Helvetica", 12),
-        legendfont = Plots.font("Helvetica", 9),
-        guidefont = Plots.font("Helvetica", 12),
-        xtickfont = Plots.font("Helvetica", 12),
-        ytickfont = Plots.font("Helvetica", 12),
+        titlefont = Plots.font("Helvetica", 14),
+        legendfont = Plots.font("Helvetica", 11),
+        guidefont = Plots.font("Helvetica", 14),
+        xtickfont = Plots.font("Helvetica", 14),
+        ytickfont = Plots.font("Helvetica", 14),
         bottom_margin = 1.25cm,
         fg_legend = :transparent,
         top_margin = 1.25cm,
@@ -48,11 +48,11 @@ function plot_fig1(concs, g1, g1data, tite, G, subPlabel, palet)
         fg_legend = :transparent,
         palette = palet,
         title = tite,
-        titlefont = Plots.font("Helvetica", 12),
-        legendfont = Plots.font("Helvetica", 9),
-        guidefont = Plots.font("Helvetica", 12),
-        xtickfont = Plots.font("Helvetica", 12),
-        ytickfont = Plots.font("Helvetica", 12),
+        titlefont = Plots.font("Helvetica", 14),
+        legendfont = Plots.font("Helvetica", 11),
+        guidefont = Plots.font("Helvetica", 14),
+        xtickfont = Plots.font("Helvetica", 14),
+        ytickfont = Plots.font("Helvetica", 14),
         xlabel = "time [hr]",
         xticks = 0:24.0:96.0,
         ylabel = "$G cell number",
@@ -78,13 +78,13 @@ function plot_pG1_mean(y1, y2, ymax, Phasename, ylabel, subPlabel, plus)
         xrotation = 30,
         label = "Control",
         markerstrokewidth = 0,
-        markersize = 8,
+        markersize = 10,
         ylabel = ylabel,
-        titlefont = Plots.font("Helvetica", 12),
-        legendfont = Plots.font("Helvetica", 9),
-        guidefont = Plots.font("Helvetica", 12),
-        xtickfont = Plots.font("Helvetica", 12),
-        ytickfont = Plots.font("Helvetica", 12),
+        titlefont = Plots.font("Helvetica", 14),
+        legendfont = Plots.font("Helvetica", 11),
+        guidefont = Plots.font("Helvetica", 14),
+        xtickfont = Plots.font("Helvetica", 14),
+        ytickfont = Plots.font("Helvetica", 14),
         bottom_margin = 1.5cm,
         fg_legend = :transparent,
         top_margin = 1.5cm,
@@ -99,13 +99,13 @@ function plot_pG1_mean(y1, y2, ymax, Phasename, ylabel, subPlabel, plus)
         xlabel = "drugs",
         label = "EC50",
         markerstrokewidth = 0,
-        markersize = 8,
+        markersize = 10,
         ylabel = ylabel,
-        titlefont = Plots.font("Helvetica", 12),
-        legendfont = Plots.font("Helvetica", 9),
-        guidefont = Plots.font("Helvetica", 12),
-        xtickfont = Plots.font("Helvetica", 12),
-        ytickfont = Plots.font("Helvetica", 12),
+        titlefont = Plots.font("Helvetica", 14),
+        legendfont = Plots.font("Helvetica", 11),
+        guidefont = Plots.font("Helvetica", 14),
+        xtickfont = Plots.font("Helvetica", 14),
+        ytickfont = Plots.font("Helvetica", 14),
         bottom_margin = 1.5cm,
         fg_legend = :transparent,
         top_margin = 1.5cm,
@@ -197,10 +197,13 @@ function figure3()
     p4 = plot_fig1(concs[:, 3], G2short[:, :, 3], g2mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "S/G2", "E", :PuBu_6)
     p5 = plot_pG1_mean(gi[1, 1, :]', gi[1, 2, :]', 50.0, "G1 ", "average phase duration [hr]", "F", 10.0)
     p6 = plot_pG1_mean(gi[2, 1, :]', gi[2, 2, :]', 50.0, "S/G2 ", "average phase duration [hr]", "G", 10.0)
-    p7 = plot_pG1_mean(sum(deathContG1, dims = 1), sum(deathEC50G1, dims = 1), 1.0, "G1", "death probability", "H", 0.06)
-    p8 = plot_pG1_mean(sum(deathContG2, dims = 1), sum(deathEC50G2, dims = 1), 1.0, "S/G2", "death probability", "I", 0.06)
+    p7 = plot_pG1_mean(sum(deathContG1, dims = 1), sum(deathEC50G1, dims = 1), 0.3, "G1", "death probability", "H", 0.06)
+    p8 = plot_pG1_mean(sum(deathContG2, dims = 1), sum(deathEC50G2, dims = 1), 0.3, "S/G2", "death probability", "I", 0.06)
     p9 = SSE(G1[:, :, :], G2[:, :, :], g1m, g2m, "J")
+    p10 = output_deadcells()[1]
+    p11 = output_deadcells()[2]
 
-    figure1 = plot(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, size = (2200, 700), layout = (2, 5))
+
+    figure1 = plot(p0, p9, p1, p2, p5, p6, p3, p4, p7, p8, p10, p11, size = (2000, 1300), layout = (3, 4))
     savefig(figure1, "figure3.svg")
 end
