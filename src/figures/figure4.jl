@@ -344,9 +344,9 @@ function combination_ofSingleT()
     concs[:, 2] .= [0.0, 5.0, 10.0, 17.0, 30.0]
     p = parameters3()
     pode = getODEparams(p, concs)
-    lap_gem_params = DrugResponseModel.AllBliss_params(pode[:, :, 1], pode[:, :, 2]; n=5) # lapatinib and gem
-    lap_palb_params = DrugResponseModel.AllBliss_params(pode[:, :, 1], pode[:, :, 3]; n=5) # lapatinib and palbo
-    gem_palb_params = DrugResponseModel.AllBliss_params(pode[:, :, 2], pode[:, :, 3]; n=5) # gem and palbo
+    lap_gem_params = DrugResponseModel.AllBliss_params(pode[:, :, 1], pode[:, :, 2]; n = 5) # lapatinib and gem
+    lap_palb_params = DrugResponseModel.AllBliss_params(pode[:, :, 1], pode[:, :, 3]; n = 5) # lapatinib and palbo
+    gem_palb_params = DrugResponseModel.AllBliss_params(pode[:, :, 2], pode[:, :, 3]; n = 5) # gem and palbo
 
     G1 = zeros(3, 193, 5, 5)
     G2 = zeros(3, 193, 5, 5)
@@ -361,7 +361,7 @@ function combination_ofSingleT()
     end
 
     function plts(t, G1, g1d, lbls, G)
-    plot(
+        plot(
             t,
             G1,
             labels = lbls,
@@ -379,45 +379,115 @@ function combination_ofSingleT()
             xlabel = "time [hr]",
             xticks = 0:24.0:96.0,
             palette = :PuRd_5,
-            lw = 3
+            lw = 3,
         )
-    plot!(t, g1d, labels = ["" "" "" "" ""], lw=3, palette = :PuRd_5, linestyle = :dot)
-    ylims!((0.0, 2.0))
+        plot!(t, g1d, labels = ["" "" "" "" ""], lw = 3, palette = :PuRd_5, linestyle = :dot)
+        ylims!((0.0, 2.0))
     end
 
-    df1 = DataFrames.DataFrame(palbo50=G1[2, :, 1, 3], palbo50_lpt25=G1[2, :, 2, 3], palbo50_lpt50=G1[2, :, 3, 3], palbo50_lpt100=G1[2, :, 4, 3], palbo50_lpt250=G1[2, :, 5, 3], 
-                                                       palbo50_gem5=G1[3, :, 2, 3], palbo50_gem10=G1[3, :, 3, 3], palbo50_gem17=G1[3, :, 4, 3], palbo50_gem30=G1[3, :, 5, 3],
-                                gem10=G1[3, :, 3, 1], gem10_palbo25=G1[3, :, 3, 2], gem10_palbo50=G1[3, :, 3, 3], gem10_palbo100=G1[3, :, 3, 4], gem10_palbo250=G1[3, :, 3, 5], 
-                                                       gem10_lap25=G1[1, :, 2, 3], gem10_lap50=G1[1, :, 3, 3], gem10_lap100=G1[1, :, 4, 3], gem10_lap250=G1[1, :, 5, 3],
-                                lap100=G1[2, :, 4, 1], lap100_palbo25=G1[2, :, 4, 2], lap100_palbo50=G1[2, :, 4, 3], lap100_palbo100=G1[2, :, 4, 4], lap100_palbo250=G1[2, :, 4, 5],
-                                                       lap100_gem5=G1[1, :, 4, 2], lap100_gem10=G1[1, :, 4, 3], lap100_gem17=G1[1, :, 4, 4], lap100_gem30=G1[1, :, 4, 5])
-    df2 = DataFrames.DataFrame(palbo50=G2[2, :, 1, 3], palbo50_lpt25=G2[2, :, 2, 3], palbo50_lpt50=G2[2, :, 3, 3], palbo50_lpt100=G2[2, :, 4, 3], palbo50_lpt250=G2[2, :, 5, 3], 
-    palbo50_gem5=G2[3, :, 2, 3], palbo50_gem10=G2[3, :, 3, 3], palbo50_gem17=G2[3, :, 4, 3], palbo50_gem30=G2[3, :, 5, 3],
-    gem10=G2[3, :, 3, 1], gem10_palbo25=G2[3, :, 3, 2], gem10_palbo50=G2[3, :, 3, 3], gem10_palbo100=G2[3, :, 3, 4], gem10_palbo250=G2[3, :, 3, 5], 
-    gem10_lap25=G2[1, :, 2, 3], gem10_lap50=G2[1, :, 3, 3], gem10_lap100=G2[1, :, 4, 3], gem10_lap250=G2[1, :, 5, 3],
-    lap100=G2[2, :, 4, 1], lap100_palbo25=G2[2, :, 4, 2], lap100_palbo50=G2[2, :, 4, 3], lap100_palbo100=G2[2, :, 4, 4], lap100_palbo250=G2[2, :, 4, 5],
-    lap100_gem5=G2[1, :, 4, 2], lap100_gem10=G2[1, :, 4, 3], lap100_gem17=G2[1, :, 4, 4], lap100_gem30=G2[1, :, 4, 5])
+    df1 = DataFrames.DataFrame(
+        palbo50 = G1[2, :, 1, 3],
+        palbo50_lpt25 = G1[2, :, 2, 3],
+        palbo50_lpt50 = G1[2, :, 3, 3],
+        palbo50_lpt100 = G1[2, :, 4, 3],
+        palbo50_lpt250 = G1[2, :, 5, 3],
+        palbo50_gem5 = G1[3, :, 2, 3],
+        palbo50_gem10 = G1[3, :, 3, 3],
+        palbo50_gem17 = G1[3, :, 4, 3],
+        palbo50_gem30 = G1[3, :, 5, 3],
+        gem10 = G1[3, :, 3, 1],
+        gem10_palbo25 = G1[3, :, 3, 2],
+        gem10_palbo50 = G1[3, :, 3, 3],
+        gem10_palbo100 = G1[3, :, 3, 4],
+        gem10_palbo250 = G1[3, :, 3, 5],
+        gem10_lap25 = G1[1, :, 2, 3],
+        gem10_lap50 = G1[1, :, 3, 3],
+        gem10_lap100 = G1[1, :, 4, 3],
+        gem10_lap250 = G1[1, :, 5, 3],
+        lap100 = G1[2, :, 4, 1],
+        lap100_palbo25 = G1[2, :, 4, 2],
+        lap100_palbo50 = G1[2, :, 4, 3],
+        lap100_palbo100 = G1[2, :, 4, 4],
+        lap100_palbo250 = G1[2, :, 4, 5],
+        lap100_gem5 = G1[1, :, 4, 2],
+        lap100_gem10 = G1[1, :, 4, 3],
+        lap100_gem17 = G1[1, :, 4, 4],
+        lap100_gem30 = G1[1, :, 4, 5],
+    )
+    df2 = DataFrames.DataFrame(
+        palbo50 = G2[2, :, 1, 3],
+        palbo50_lpt25 = G2[2, :, 2, 3],
+        palbo50_lpt50 = G2[2, :, 3, 3],
+        palbo50_lpt100 = G2[2, :, 4, 3],
+        palbo50_lpt250 = G2[2, :, 5, 3],
+        palbo50_gem5 = G2[3, :, 2, 3],
+        palbo50_gem10 = G2[3, :, 3, 3],
+        palbo50_gem17 = G2[3, :, 4, 3],
+        palbo50_gem30 = G2[3, :, 5, 3],
+        gem10 = G2[3, :, 3, 1],
+        gem10_palbo25 = G2[3, :, 3, 2],
+        gem10_palbo50 = G2[3, :, 3, 3],
+        gem10_palbo100 = G2[3, :, 3, 4],
+        gem10_palbo250 = G2[3, :, 3, 5],
+        gem10_lap25 = G2[1, :, 2, 3],
+        gem10_lap50 = G2[1, :, 3, 3],
+        gem10_lap100 = G2[1, :, 4, 3],
+        gem10_lap250 = G2[1, :, 5, 3],
+        lap100 = G2[2, :, 4, 1],
+        lap100_palbo25 = G2[2, :, 4, 2],
+        lap100_palbo50 = G2[2, :, 4, 3],
+        lap100_palbo100 = G2[2, :, 4, 4],
+        lap100_palbo250 = G2[2, :, 4, 5],
+        lap100_gem5 = G2[1, :, 4, 2],
+        lap100_gem10 = G2[1, :, 4, 3],
+        lap100_gem17 = G2[1, :, 4, 4],
+        lap100_gem30 = G2[1, :, 4, 5],
+    )
 
     XLSX.writetable("G1.xlsx", df1)
     XLSX.writetable("G2.xlsx", df2)
     p1 = plts(t, G1[2, :, :, 3], gc[1, :, 2:6, 1], ["palbo50" "palbo50+lap25" "palbo50+lap50" "palbo50+lap100" "palbo50+lap250"], "G1")
     p2 = plts(t, G2[2, :, :, 3], gc[2, :, 2:6, 1], ["palbo50" "palbo50+lap25" "palbo50+lap50" "palbo50+lap100" "palbo50+lap250"], "S/G2")
-    p3 = plts(t, G1[2, :, :, 3].+ G2[2, :, :, 3], gc[3, :, 2:6, 1], ["palbo50" "palbo50+lap25" "palbo50+lap50" "palbo50+lap100" "palbo50+lap250"], "Total")
+    p3 = plts(
+        t,
+        G1[2, :, :, 3] .+ G2[2, :, :, 3],
+        gc[3, :, 2:6, 1],
+        ["palbo50" "palbo50+lap25" "palbo50+lap50" "palbo50+lap100" "palbo50+lap250"],
+        "Total",
+    )
     p4 = plts(t, G1[3, :, :, 3], gc[1, :, 2:6, 2], ["palbo50" "palbo50+gem5" "palbo50+gem10" "palbo50+gem17" "palbo50+gem30"], "G1")
     p5 = plts(t, G2[3, :, :, 3], gc[2, :, 2:6, 2], ["palbo50" "palbo50+gem5" "palbo50+gem10" "palbo50+gem17" "palbo50+gem30"], "S/G2")
-    p6 = plts(t, G1[3, :, :, 3].+ G2[3, :, :, 3], gc[3, :, 2:6, 2], ["palbo50" "palbo50+gem5" "palbo50+gem10" "palbo50+gem17" "palbo50+gem30"], "Total")
+    p6 = plts(
+        t,
+        G1[3, :, :, 3] .+ G2[3, :, :, 3],
+        gc[3, :, 2:6, 2],
+        ["palbo50" "palbo50+gem5" "palbo50+gem10" "palbo50+gem17" "palbo50+gem30"],
+        "Total",
+    )
     p7 = plts(t, G1[3, :, 3, :], gc[1, :, 2:6, 3], ["gem10" "gem10+palbo25" "gem10+palbo50" "gem10+palbo100" "gem10+palbo250"], "G1")
     p8 = plts(t, G2[3, :, 3, :], gc[2, :, 2:6, 3], ["gem10" "gem10+palbo25" "gem10+palbo50" "gem10+palbo100" "gem10+palbo250"], "S/G2")
-    p9 = plts(t, G1[3, :, 3, :].+ G2[3, :, 3, :], gc[3, :, 2:6, 3], ["gem10" "gem10+palbo25" "gem10+palbo50" "gem10+palbo100" "gem10+palbo250"], "Total")
+    p9 = plts(
+        t,
+        G1[3, :, 3, :] .+ G2[3, :, 3, :],
+        gc[3, :, 2:6, 3],
+        ["gem10" "gem10+palbo25" "gem10+palbo50" "gem10+palbo100" "gem10+palbo250"],
+        "Total",
+    )
     p10 = plts(t, G1[1, :, :, 3], gc[1, :, 2:6, 4], ["gem10" "gem10+lap25" "gem10+lap50" "gem10+lap100" "gem10+lap250"], "G1")
     p11 = plts(t, G2[1, :, :, 3], gc[2, :, 2:6, 4], ["gem10" "gem10+lap25" "gem10+lap50" "gem10+lap100" "gem10+lap250"], "S/G2")
-    p12 = plts(t, G1[1, :, :, 3].+ G2[1, :, :, 3], gc[3, :, 2:6, 4], ["gem10" "gem10+lap25" "gem10+lap50" "gem10+lap100" "gem10+lap250"], "Total")
+    p12 = plts(t, G1[1, :, :, 3] .+ G2[1, :, :, 3], gc[3, :, 2:6, 4], ["gem10" "gem10+lap25" "gem10+lap50" "gem10+lap100" "gem10+lap250"], "Total")
     p13 = plts(t, G1[2, :, 4, :], gc[1, :, 2:6, 5], ["lap100" "lap100+palbo25" "lap100+palbo50" "lap100+palbo100" "lap100+palbo250"], "G1")
     p14 = plts(t, G2[2, :, 4, :], gc[2, :, 2:6, 5], ["lap100" "lap100+palbo25" "lap100+palbo50" "lap100+palbo100" "lap100+palbo250"], "S/G2")
-    p15 = plts(t, G1[2, :, 4, :].+ G2[2, :, 4, :], gc[3, :, 2:6, 5], ["lap100" "lap100+palbo25" "lap100+palbo50" "lap100+palbo100" "lap100+palbo250"], "Total")
+    p15 = plts(
+        t,
+        G1[2, :, 4, :] .+ G2[2, :, 4, :],
+        gc[3, :, 2:6, 5],
+        ["lap100" "lap100+palbo25" "lap100+palbo50" "lap100+palbo100" "lap100+palbo250"],
+        "Total",
+    )
     p16 = plts(t, G1[1, :, 4, :], gc[1, :, 2:6, 6], ["lap100" "lap100+gem5" "lap100+gem10" "lap100+gem17" "lap100+gem30"], "G1")
     p17 = plts(t, G2[1, :, 4, :], gc[2, :, 2:6, 6], ["lap100" "lap100+gem5" "lap100+gem10" "lap100+gem17" "lap100+gem30"], "S/G2")
-    p18 = plts(t, G1[1, :, 4, :].+ G2[1, :, 4, :], gc[3, :, 2:6, 6], ["lap100" "lap100+gem5" "lap100+gem10" "lap100+gem17" "lap100+gem30"], "Total")
+    p18 = plts(t, G1[1, :, 4, :] .+ G2[1, :, 4, :], gc[3, :, 2:6, 6], ["lap100" "lap100+gem5" "lap100+gem10" "lap100+gem17" "lap100+gem30"], "Total")
 
     # p=plot(p1, p4, p7, p10, p13, p16, p2, p5, p8, p11, p14, p17, p3, p6, p9, p12, p15, p18, size=(2500, 1000), layout=(3, 6))
     # savefig(p, "combinationPlot.svg")
@@ -1233,9 +1303,9 @@ function combined_phaseDurations2()
     concs[:, 2] .= [0.0, 5.0, 10.0, 17.0, 30.0]
     p = parameters3()
     pode = getODEparams(p, concs)
-    lap_gem_params = DrugResponseModel.AllBliss_params(pode[:, :, 1], pode[:, :, 2]; n=5) # lapatinib and gem
-    lap_palb_params = DrugResponseModel.AllBliss_params(pode[:, :, 1], pode[:, :, 3]; n=5) # lapatinib and palbo
-    gem_palb_params = DrugResponseModel.AllBliss_params(pode[:, :, 2], pode[:, :, 3]; n=5) # gem and palbo
+    lap_gem_params = DrugResponseModel.AllBliss_params(pode[:, :, 1], pode[:, :, 2]; n = 5) # lapatinib and gem
+    lap_palb_params = DrugResponseModel.AllBliss_params(pode[:, :, 1], pode[:, :, 3]; n = 5) # lapatinib and palbo
+    gem_palb_params = DrugResponseModel.AllBliss_params(pode[:, :, 2], pode[:, :, 3]; n = 5) # gem and palbo
 
     G1 = zeros(3, 193, 5, 5)
     G2 = zeros(3, 193, 5, 5)
