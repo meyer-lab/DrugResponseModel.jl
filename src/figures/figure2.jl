@@ -118,7 +118,7 @@ function plot_pG1_mean(y1, y2, ymax, Phasename, ylabel, subPlabel, plus)
 end
 
 
-function figure3()
+function figure2()
 
     concs, popul1, g1s1, g2s1 = load(189, 1)
     _, popul2, g1s2, g2s2 = load(189, 2)
@@ -205,5 +205,5 @@ function figure3()
 
 
     figure1 = plot(p0, p9, p1, p2, p5, p6, p3, p4, p7, p8, p10, p11, size = (2000, 1300), layout = (3, 4))
-    savefig(figure1, "figure3.svg")
+    savefig(figure1, "figure2.svg")
 end
