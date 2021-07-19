@@ -101,8 +101,8 @@ function figureS2()
     G2short[:, 2:6, :] .= G2[:, 4:8, :]
     G1refshort[:, 2:6, :] .= G1ref[:, 3:7, :]
     G2refshort[:, 2:6, :] .= G2ref[:, 3:7, :]
-    g1mshort[:, 2:6, :] .= g1m[:, 3:7, :]
-    g2mshort[:, 2:6, :] .= g2m[:, 3:7, :]
+    g1mshort[:, 2:6, :] .= g1m[:, 4:8, :]
+    g2mshort[:, 2:6, :] .= g2m[:, 4:8, :]
     p1 = DrugResponseModel.plot_fig1(concs[:, 2], G1short[:, :, 2], g1mshort[:, :, 2, 1], "Dynamical Model Fits - Doxorubicin", "G1", "A", :PuBu_6)
     p2 = DrugResponseModel.plot_fig1(concs[:, 2], G2short[:, :, 2], g2mshort[:, :, 2, 1], "Dynamical Model Fits - Doxorubicin", "S/G2", "B", :PuBu_6)
     p5 = DrugResponseModel.plot_fig1(concs[:, 4], G1short[:, :, 4], g1mshort[:, :, 4, 1], "Dynamical Model Fits - Paclitaxel", "G1", "C", :PuBu_6)
