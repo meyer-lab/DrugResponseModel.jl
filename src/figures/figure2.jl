@@ -146,9 +146,9 @@ function figure2()
 
     # params at EC50
     ec50 = zeros(16, 5)
-    for i = 1:5
-        ec50[:, i] = DrugResponseModel.EC50_params(ps, i)
-    end
+    conc_ec50 = zeros((1, 5))
+    conc_ec50[1, 1:5] = [57.3 11.2 8.95 2.4 30.1]
+        ec50 = getODEparams(ps, conc_ec50)[:, 1, :]
 
     # phase durations
     # @ control
@@ -195,10 +195,10 @@ function figure2()
     p2 = plot_fig1(concs[:, 1], G2short[:, :, 1], g2mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "S/G2", "C", :PuBu_6)
     p3 = plot_fig1(concs[:, 3], G1short[:, :, 3], g1mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "G1", "D", :PuBu_6)
     p4 = plot_fig1(concs[:, 3], G2short[:, :, 3], g2mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "S/G2", "E", :PuBu_6)
-    p5 = plot_pG1_mean(gi[1, 1, :]', gi[1, 2, :]', 50.0, "G1 ", "average phase duration [hr]", "F", 10.0)
-    p6 = plot_pG1_mean(gi[2, 1, :]', gi[2, 2, :]', 50.0, "S/G2 ", "average phase duration [hr]", "G", 10.0)
-    p7 = plot_pG1_mean(sum(deathContG1, dims = 1), sum(deathEC50G1, dims = 1), 0.3, "G1", "death probability", "H", 0.06)
-    p8 = plot_pG1_mean(sum(deathContG2, dims = 1), sum(deathEC50G2, dims = 1), 0.3, "S/G2", "death probability", "I", 0.06)
+    p5 = plot_pG1_mean(gi[1, 1, :]', gi[1, 2, :]', 60.0, "G1 ", "average phase duration [hr]", "F", 10.0)
+    p6 = plot_pG1_mean(gi[2, 1, :]', gi[2, 2, :]', 60.0, "S/G2 ", "average phase duration [hr]", "G", 10.0)
+    p7 = plot_pG1_mean(sum(deathContG1, dims = 1), sum(deathEC50G1, dims = 1), 0.2, "G1", "death probability", "H", 0.06)
+    p8 = plot_pG1_mean(sum(deathContG2, dims = 1), sum(deathEC50G2, dims = 1), 0.2, "S/G2", "death probability", "I", 0.06)
     p9 = SSE(G1[:, :, :], G2[:, :, :], g1m, g2m, "J")
     p10 = output_deadcells()[1]
     p11 = output_deadcells()[2]

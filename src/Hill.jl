@@ -89,3 +89,56 @@ function getODEparams(p, conc)
     end
     return effects
 end
+
+hill_func(p, conc) = p[4] .+ (p[3] - p[4]) ./ (1.0 .+ (p[1] ./ conc) .^ p[2])
+
+
+function costingss(pp, total, concs)
+    cost = 0
+    k = 1
+    for i = 1:5
+        cost += sum((hill_func(pp[k:k+3], concs[:, i]) .- total[:, i]) .^ 2)
+        k += 4
+    end
+    return cost
+end
+
+function find_cellnumber_ec50()
+    concs, popul1, g1s1, g2s1 = load(189, 1)
+    _, popul2, g1s2, g2s2 = load(189, 2)
+    _, popul3, g1s3, g2s3 = load(189, 3)
+
+    # find G1 std and mean ***** data ******
+    g1S = cat(g1s1, g1s2, g1s3, dims = 4)
+    g2S = cat(g2s1, g2s2, g2s3, dims = 4)
+    g1m = mean(g1S, dims = 4) # mean G1
+    g2m = mean(g2S, dims = 4) # mean G2
+
+    total = g1m[189, :, :, 1] + g2m[189, :, :, 1]
+
+    f(x) = costingss(x, total, concs)
+
+    low = [5.0, 0.01, 1e-9, 1e-9, 5.0, 0.01, 1e-9, 1e-9, 1.0, 0.01, 1e-9, 1e-9, 0.5, 0.01, 1e-9, 1e-9, 5.0, 0.01, 1e-9, 1e-9]
+    high = [500.0, 10.0, 3.0, 3.0, 500.0, 10.0, 3.0, 3.0, 200.0, 10.0, 3.0, 3.0, 100.0, 10.0, 3.0, 3.0, 500.0, 10.0, 3.0, 3.0,]
+    _, p = optimize_helper(f, low, high, 100000)
+
+    k = 1
+    num = zeros(8, 5)
+    for i = 1:5
+        num[:, i] = hill_func(p[k:k+3], concs[:, i])
+        k += 4
+    end
+    p1 = plot(concs[:, 1], num[:, 1], label="model", title="lapatinib")
+    plot!(concs[:, 1], total[:, 1], label="data")
+    p2 = plot(concs[:, 2], num[:, 2], label = "model", title="doxorubicin")
+    plot!(concs[:, 2], total[:, 2], label="data")
+    p3 = plot(concs[:, 3], num[:, 3], label = "model", title="gemcitabine")
+    plot!(concs[:, 3], total[:, 3], label="data")
+    p4 = plot(concs[:, 4], num[:, 4], label = "model", title="paclitaxel")
+    plot!(concs[:, 4], total[:, 4], label="data")
+    p5 = plot(concs[:, 5], num[:, 5], label = "model", title="palbociclib")
+    plot!(concs[:, 5], total[:, 5], label="data")
+    plt = plot(p1, p2, p3, p4, p5)
+    savefig(plt, "hils.svg")
+    optimized_params = [57.3004, 2.00363, 0.948318, 3.0, 11.2302, 2.01893, 0.258156, 3.0, 8.95294, 3.16891, 0.395267, 3.0, 2.46285, 4.53685, 0.274721, 3.0, 30.1616, 1.95144, 1.38786, 3.0]
+end

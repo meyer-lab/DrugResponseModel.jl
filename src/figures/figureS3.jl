@@ -155,7 +155,7 @@ function plotErlang()
     p4 = DrugResponseModel.plot_fig1(concs[:, 1], G2refshort[:, :, 1], g2mshort[:, :, 1, 1], "Expon Model Fits - Lapatinib", "S/G2", "C", :YlOrBr_6)
     p5 = DrugResponseModel.plot_fig1(concs[:, 3], G1refshort[:, :, 3], g1mshort[:, :, 3, 1], "Expon Model Fits - Gemcitabine", "G1", "D", :YlOrBr_6)
     p6 =DrugResponseModel.plot_fig1(concs[:, 3], G2refshort[:, :, 3], g2mshort[:, :, 3, 1], "Expon Model Fits - Gemcitabine", "S/G2", "E", :YlOrBr_6)
-    figs2 = plot(p0, p0, p3, p4, p5, p6, fig1, fig2, layout=(4, 2), size = (800, 1700))
+    figs2 = plot(p0, p0, p3, p4, p5, p6, fig1, fig2, layout=(4, 2), size = (900, 1400))
     savefig(figs2, "figureS3.svg")
 end
 
