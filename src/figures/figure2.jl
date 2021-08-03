@@ -148,7 +148,7 @@ function figure2()
     ec50 = zeros(16, 5)
     conc_ec50 = zeros((1, 5))
     conc_ec50[1, 1:5] = [57.3 11.2 8.95 2.4 30.1]
-        ec50 = getODEparams(ps, conc_ec50)[:, 1, :]
+    ec50 = getODEparams(ps, conc_ec50)[:, 1, :]
 
     # phase durations
     # @ control
