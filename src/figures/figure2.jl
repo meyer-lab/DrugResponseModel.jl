@@ -207,3 +207,71 @@ function figure2()
     figure1 = plot(p0, p9, p1, p2, p5, p6, p3, p4, p7, p8, p10, p11, size = (2000, 1300), layout = (3, 4))
     savefig(figure1, "figure2.svg")
 end
+
+function plt_sing(g1, g2)
+    time = LinRange(0.0, 95.0, 189)
+
+    p = plot(
+        time,
+        g1,
+        lw = 4,
+        color=4,
+        legend = :topleft,
+        label = "G1",
+        fg_legend = :transparent,
+        titlefont = Plots.font("Helvetica", 14),
+        legendfont = Plots.font("Helvetica", 11),
+        guidefont = Plots.font("Helvetica", 14),
+        xtickfont = Plots.font("Helvetica", 14),
+        ytickfont = Plots.font("Helvetica", 14),
+        xlabel = "time [hr]",
+        xticks = 0:24.0:96.0,
+        ylabel = "Cell number",
+        bottom_margin = 1.25cm,
+        top_margin = 1.25cm,
+        left_margin = 1.25cm,
+        right_margin = 1.25cm,
+    )
+    plot!(
+        time,
+        g2,
+        lw = 4,
+        legend = :topleft,
+        label = "S-G2",
+        color=3,
+        fg_legend = :transparent,
+        titlefont = Plots.font("Helvetica", 14),
+        legendfont = Plots.font("Helvetica", 11),
+        guidefont = Plots.font("Helvetica", 14),
+        xtickfont = Plots.font("Helvetica", 14),
+        ytickfont = Plots.font("Helvetica", 14),
+        xlabel = "time [hr]",
+        xticks = 0:24.0:96.0,
+        ylabel = "Cell number",
+        bottom_margin = 1.25cm,
+        top_margin = 1.25cm,
+        left_margin = 1.25cm,
+        right_margin = 1.25cm,
+    )
+    ylims!((0.0, 1.5))
+    p
+end
+function plot_them()
+    concs, popul1, g1s1, g2s1 = load(189, 1)
+    _, popul2, g1s2, g2s2 = load(189, 2)
+    _, popul3, g1s3, g2s3 = load(189, 3)
+
+    # find G1 std and mean ***** data ******
+    g1S = cat(g1s1, g1s2, g1s3, dims = 4)
+    g2S = cat(g2s1, g2s2, g2s3, dims = 4)
+    g1m = mean(g1S, dims = 4) # mean G1
+    g2m = mean(g2S, dims = 4) # mean G2
+
+    p1 = plt_sing(g1m[:, 1, 1], g2m[:, 1, 1])
+    p2 = plt_sing(g1m[:, 3, 1], g2m[:, 3, 1])
+    p3 = plt_sing(g1m[:, 4, 1], g2m[:, 4, 1])
+    p4 = plt_sing(g1m[:, 8, 1], g2m[:, 8, 1])
+
+    pp = plot(p1, p2, p3, p4, size=(800, 600))
+    savefig(pp, "fig.svg")
+end
