@@ -97,7 +97,7 @@ function costingss(pp, total, concs)
     cost = 0
     k = 1
     for i = 1:5
-        cost += sum((hill_func(pp[k:k+3], concs[:, i]) .- total[:, i]) .^ 2)
+        cost += sum((hill_func(pp[k:(k + 3)], concs[:, i]) .- total[:, i]) .^ 2)
         k += 4
     end
     return cost
@@ -119,26 +119,47 @@ function find_cellnumber_ec50()
     f(x) = costingss(x, total, concs)
 
     low = [5.0, 0.01, 1e-9, 1e-9, 5.0, 0.01, 1e-9, 1e-9, 1.0, 0.01, 1e-9, 1e-9, 0.5, 0.01, 1e-9, 1e-9, 5.0, 0.01, 1e-9, 1e-9]
-    high = [500.0, 10.0, 3.0, 3.0, 500.0, 10.0, 3.0, 3.0, 200.0, 10.0, 3.0, 3.0, 100.0, 10.0, 3.0, 3.0, 500.0, 10.0, 3.0, 3.0,]
+    high = [500.0, 10.0, 3.0, 3.0, 500.0, 10.0, 3.0, 3.0, 200.0, 10.0, 3.0, 3.0, 100.0, 10.0, 3.0, 3.0, 500.0, 10.0, 3.0, 3.0]
     _, p = optimize_helper(f, low, high, 100000)
 
     k = 1
     num = zeros(8, 5)
     for i = 1:5
-        num[:, i] = hill_func(p[k:k+3], concs[:, i])
+        num[:, i] = hill_func(p[k:(k + 3)], concs[:, i])
         k += 4
     end
-    p1 = plot(concs[:, 1], num[:, 1], label="model", title="lapatinib")
-    plot!(concs[:, 1], total[:, 1], label="data")
-    p2 = plot(concs[:, 2], num[:, 2], label = "model", title="doxorubicin")
-    plot!(concs[:, 2], total[:, 2], label="data")
-    p3 = plot(concs[:, 3], num[:, 3], label = "model", title="gemcitabine")
-    plot!(concs[:, 3], total[:, 3], label="data")
-    p4 = plot(concs[:, 4], num[:, 4], label = "model", title="paclitaxel")
-    plot!(concs[:, 4], total[:, 4], label="data")
-    p5 = plot(concs[:, 5], num[:, 5], label = "model", title="palbociclib")
-    plot!(concs[:, 5], total[:, 5], label="data")
+    p1 = plot(concs[:, 1], num[:, 1], label = "model", title = "lapatinib")
+    plot!(concs[:, 1], total[:, 1], label = "data")
+    p2 = plot(concs[:, 2], num[:, 2], label = "model", title = "doxorubicin")
+    plot!(concs[:, 2], total[:, 2], label = "data")
+    p3 = plot(concs[:, 3], num[:, 3], label = "model", title = "gemcitabine")
+    plot!(concs[:, 3], total[:, 3], label = "data")
+    p4 = plot(concs[:, 4], num[:, 4], label = "model", title = "paclitaxel")
+    plot!(concs[:, 4], total[:, 4], label = "data")
+    p5 = plot(concs[:, 5], num[:, 5], label = "model", title = "palbociclib")
+    plot!(concs[:, 5], total[:, 5], label = "data")
     plt = plot(p1, p2, p3, p4, p5)
     savefig(plt, "hils.svg")
-    optimized_params = [57.3004, 2.00363, 0.948318, 3.0, 11.2302, 2.01893, 0.258156, 3.0, 8.95294, 3.16891, 0.395267, 3.0, 2.46285, 4.53685, 0.274721, 3.0, 30.1616, 1.95144, 1.38786, 3.0]
+    optimized_params = [
+        57.3004,
+        2.00363,
+        0.948318,
+        3.0,
+        11.2302,
+        2.01893,
+        0.258156,
+        3.0,
+        8.95294,
+        3.16891,
+        0.395267,
+        3.0,
+        2.46285,
+        4.53685,
+        0.274721,
+        3.0,
+        30.1616,
+        1.95144,
+        1.38786,
+        3.0,
+    ]
 end
