@@ -66,11 +66,42 @@ function figureS2()
     ps = parameters()
     efcs = getODEparams(ps, concs)
 
+    ec50 = zeros(16, 5)
+    conc_ec50 = zeros((1, 5))
+    conc_ec50[1, 1:5] = [57.3 11.2 8.95 2.4 30.1]
+    ec50 = getODEparams(ps, conc_ec50)[:, 1, :]
+
     # replace the second dimension of efcs with the ec50 effects
-    for i = 1:5
-        efcs[:, 2, i] = DrugResponseModel.EC50_params(ps, i)
+    
+    efcs[:, 2, :] = ec50
+
+    duration_efcs = zeros(8, 2, 5)
+    death_efcs = zeros(8, 2, 5)
+
+    duration_efcs[1:4, :, :] .= 2 ./ efcs[1:4, 1:2, :]
+    duration_efcs[5:8, :, :] .= 5 ./ efcs[5:8, 1:2, :]
+
+    deathContG1 = zeros(4, 5)
+    deathEC50G1 = zeros(4, 5)
+    deathContG1[1, :] .= (efcs[9, 1, :]) ./ (efcs[9, 1, :] .+ efcs[1, 1, :])
+    deathEC50G1[1, :] .= (ec50[9, :]) ./ (ec50[9, :] .+ ec50[1, :])
+    for i = 2:4
+        deathContG1[i, :] .= (1 .- deathContG1[i - 1, :]) .* (efcs[i + 8, 1, :]) ./ (efcs[i + 8, 1, :] .+ efcs[i, 1, :])
+        deathEC50G1[i, :] .= (1 .- deathEC50G1[i - 1, :]) .* (ec50[i + 8, :]) ./ (ec50[i + 8, :] .+ ec50[i, :])
+    end
+    deathContG2 = zeros(4, 5)
+    deathEC50G2 = zeros(4, 5)
+    deathContG2[1, :] .= (efcs[13, 1, :]) ./ (efcs[13, 1, :] .+ efcs[5, 1, :])
+    deathEC50G2[1, :] .= (ec50[13, :]) ./ (ec50[13, :] .+ ec50[5, :])
+    for i = 14:16
+        deathContG2[i - 12, :] = (1 .- deathContG2[i - 13, :]) .* (efcs[i, 1, :]) ./ (efcs[i, 1, :] .+ efcs[i - 8, 1, :])
+        deathEC50G2[i - 12, :] = (1 .- deathEC50G2[i - 13, :]) .* (ec50[i, :]) ./ (ec50[i, :] .+ ec50[i - 8, :])
     end
 
+    death_efcs[1:4, 1, :] .= deathContG1
+    death_efcs[5:8, 1, :] .= deathContG2
+    death_efcs[1:4, 2, :] .= deathEC50G1
+    death_efcs[5:8, 2, :] .= deathEC50G2
     # ******* model simulations ********
     G1 = zeros(189, 8, 5)
     G2 = zeros(189, 8, 5)
@@ -109,12 +140,12 @@ function figureS2()
     p6 = DrugResponseModel.plot_fig1(concs[:, 4], G2short[:, :, 4], g2mshort[:, :, 4, 1], "Dynamical Model Fits - Paclitaxel", "S/G2", "D", :PuBu_6)
     p9 = DrugResponseModel.plot_fig1(concs[:, 5], G1short[:, :, 5], g1mshort[:, :, 5, 1], "Dynamical Model Fits - Palbociclib", "G1", "E", :PuBu_6)
     p10 = DrugResponseModel.plot_fig1(concs[:, 5], G2short[:, :, 5], g2mshort[:, :, 5, 1], "Dynamical Model Fits - Palbociclib", "S/G2", "F", :PuBu_6)
-    p3 = DrugResponseModel.plot_pG1(efcs[1:8, 1:2, 3], 2.25, "Gemcitabine", "progression rates [1/hr]", "I", 0.35)
-    p4 = DrugResponseModel.plot_pG1(efcs[9:16, 1:2, 3], 0.2, "Gemcitabine", "death rates [1/hr]", "J", 0.06)
-    p7 = DrugResponseModel.plot_pG1(efcs[1:8, 1:2, 5], 2.25, "Paclitaxel", "progression rates [1/hr]", "K", 0.35)
-    p8 = DrugResponseModel.plot_pG1(efcs[9:16, 1:2, 5], 0.2, "Paclitaxel", "death rates [1/hr]", "L", 0.06)
-    p11 = DrugResponseModel.plot_pG1(efcs[1:8, 1:2, 1], 2.25, "Lapatinib", "progression rates [1/hr]", "G", 0.35)
-    p12 = DrugResponseModel.plot_pG1(efcs[9:16, 1:2, 1], 0.2, "Lapatinib", "death rates [1/hr]", "H", 0.06)
+    p3 = DrugResponseModel.plot_pG1(duration_efcs[:, :, 3], 50, "Gemcitabine", "progression rates [1/hr]", "I", 0.35)
+    p4 = DrugResponseModel.plot_pG1(death_efcs[:, :, 3], 0.2, "Gemcitabine", "death rates [1/hr]", "J", 0.06)
+    p7 = DrugResponseModel.plot_pG1(duration_efcs[:, :, 5], 50, "Paclitaxel", "progression rates [1/hr]", "K", 0.35)
+    p8 = DrugResponseModel.plot_pG1(death_efcs[:, :, 5], 0.2, "Paclitaxel", "death rates [1/hr]", "L", 0.06)
+    p11 = DrugResponseModel.plot_pG1(duration_efcs[:, :, 1], 50, "Lapatinib", "progression rates [1/hr]", "G", 0.35)
+    p12 = DrugResponseModel.plot_pG1(death_efcs[:, :, 1], 0.2, "Lapatinib", "death rates [1/hr]", "H", 0.06)
     figureS2 = plot(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, size = (1700, 1100), layout = (3, 4))
     savefig(figureS2, "figureS2.svg")
 end
