@@ -215,7 +215,7 @@ function plt_sing(g1, g2)
         time,
         g1,
         lw = 4,
-        color=4,
+        color = 4,
         legend = :topleft,
         label = "G1",
         fg_legend = :transparent,
@@ -238,7 +238,7 @@ function plt_sing(g1, g2)
         lw = 4,
         legend = :topleft,
         label = "S-G2",
-        color=3,
+        color = 3,
         fg_legend = :transparent,
         titlefont = Plots.font("Helvetica", 14),
         legendfont = Plots.font("Helvetica", 11),
@@ -272,6 +272,6 @@ function plot_them()
     p3 = plt_sing(g1m[:, 4, 1], g2m[:, 4, 1])
     p4 = plt_sing(g1m[:, 8, 1], g2m[:, 8, 1])
 
-    pp = plot(p1, p2, p3, p4, size=(800, 600))
+    pp = plot(p1, p2, p3, p4, size = (800, 600))
     savefig(pp, "fig.svg")
 end

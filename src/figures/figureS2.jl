@@ -72,7 +72,7 @@ function figureS2()
     ec50 = getODEparams(ps, conc_ec50)[:, 1, :]
 
     # replace the second dimension of efcs with the ec50 effects
-    
+
     efcs[:, 2, :] = ec50
 
     duration_efcs = zeros(8, 2, 5)
