@@ -195,10 +195,10 @@ function figure2()
     p2 = plot_fig1(concs[:, 1], G2short[:, :, 1], g2mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "S/G2", "C", :PuBu_6)
     p3 = plot_fig1(concs[:, 3], G1short[:, :, 3], g1mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "G1", "D", :PuBu_6)
     p4 = plot_fig1(concs[:, 3], G2short[:, :, 3], g2mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "S/G2", "E", :PuBu_6)
-    p5 = plot_pG1_mean(gi[1, 1, :]', gi[1, 2, :]', 60.0, "G1 ", "average phase duration [hr]", "F", 10.0)
-    p6 = plot_pG1_mean(gi[2, 1, :]', gi[2, 2, :]', 60.0, "S/G2 ", "average phase duration [hr]", "G", 10.0)
-    p7 = plot_pG1_mean(sum(deathContG1, dims = 1), sum(deathEC50G1, dims = 1), 0.2, "G1", "death probability", "H", 0.06)
-    p8 = plot_pG1_mean(sum(deathContG2, dims = 1), sum(deathEC50G2, dims = 1), 0.2, "S/G2", "death probability", "I", 0.06)
+    p5 = plot_pG1_mean(gi[1, 1, :]', gi[1, 2, :]', 60.0, "G1 ", "Avg phase duration [hr]", "F", 10.0)
+    p6 = plot_pG1_mean(gi[2, 1, :]', gi[2, 2, :]', 60.0, "S/G2 ", "Avg phase duration [hr]", "G", 10.0)
+    p7 = plot_pG1_mean(sum(deathContG1, dims = 1), sum(deathEC50G1, dims = 1), 0.2, "G1", "Cell death probability", "H", 0.06)
+    p8 = plot_pG1_mean(sum(deathContG2, dims = 1), sum(deathEC50G2, dims = 1), 0.2, "S/G2", "Cell death probability", "I", 0.06)
     p9 = SSE(G1[:, :, :], G2[:, :, :], g1m, g2m, "J")
     p10 = output_deadcells()[1]
     p11 = output_deadcells()[2]
@@ -208,7 +208,7 @@ function figure2()
     savefig(figure1, "figure2.svg")
 end
 
-function plt_sing(g1, g2)
+function plt_sing(g1, g2, g1sim, g2sim)
     time = LinRange(0.0, 95.0, 189)
 
     p = plot(
@@ -253,6 +253,50 @@ function plt_sing(g1, g2)
         left_margin = 1.25cm,
         right_margin = 1.25cm,
     )
+    plot!(
+        time,
+        g1sim,
+        lw = 4,
+        legend = :topleft,
+        label = "G1 sim",
+        color=4,
+        alpha = 0.5,
+        fg_legend = :transparent,
+        titlefont = Plots.font("Helvetica", 14),
+        legendfont = Plots.font("Helvetica", 11),
+        guidefont = Plots.font("Helvetica", 14),
+        xtickfont = Plots.font("Helvetica", 14),
+        ytickfont = Plots.font("Helvetica", 14),
+        xlabel = "time [hr]",
+        xticks = 0:24.0:96.0,
+        ylabel = "Cell number",
+        bottom_margin = 1.25cm,
+        top_margin = 1.25cm,
+        left_margin = 1.25cm,
+        right_margin = 1.25cm,
+    )
+    plot!(
+        time,
+        g2sim,
+        lw = 4,
+        legend = :topleft,
+        label = "S-G2 sim",
+        color=3,
+        alpha = 0.5,
+        fg_legend = :transparent,
+        titlefont = Plots.font("Helvetica", 14),
+        legendfont = Plots.font("Helvetica", 11),
+        guidefont = Plots.font("Helvetica", 14),
+        xtickfont = Plots.font("Helvetica", 14),
+        ytickfont = Plots.font("Helvetica", 14),
+        xlabel = "time [hr]",
+        xticks = 0:24.0:96.0,
+        ylabel = "Cell number",
+        bottom_margin = 1.25cm,
+        top_margin = 1.25cm,
+        left_margin = 1.25cm,
+        right_margin = 1.25cm,
+    )
     ylims!((0.0, 1.5))
     p
 end
@@ -267,11 +311,18 @@ function plot_them()
     g1m = mean(g1S, dims = 4) # mean G1
     g2m = mean(g2S, dims = 4) # mean G2
 
-    p1 = plt_sing(g1m[:, 1, 1], g2m[:, 1, 1])
-    p2 = plt_sing(g1m[:, 3, 1], g2m[:, 3, 1])
-    p3 = plt_sing(g1m[:, 4, 1], g2m[:, 4, 1])
-    p4 = plt_sing(g1m[:, 8, 1], g2m[:, 8, 1])
+    g1sim = zeros(189, 2)
+    g2sim = zeros(189, 2)
+    ps = parameters()
+    tm = LinRange(0.0, 95.0, 189)
+    psODE = getODEparams(ps, concs)
 
-    pp = plot(p1, p2, p3, p4, size=(800, 600))
+    g1sim[:, 1] , g2sim[:, 1], _ = predict(psODE[:, 1, 1], psODE[:, 1, 1], tm)
+    g1sim[:, 2] , g2sim[:, 2], _ = predict(psODE[:, 8, 1], psODE[:, 1, 1], tm)
+
+    p1 = plt_sing(g1m[:, 1, 1], g2m[:, 1, 1], g1sim[:, 1], g2sim[:, 1])
+    p2 = plt_sing(g1m[:, 8, 1], g2m[:, 8, 1], g1sim[:, 2], g2sim[:, 2])
+
+    pp = plot(p1, p2, size=(800, 400))
     savefig(pp, "fig.svg")
 end
