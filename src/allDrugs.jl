@@ -155,6 +155,30 @@ function parameters()
     ]
 end
 
+""" Takes in the Hill params and the index corresponding to the drug of interest, outputs the 9 long params at EC50. """
+function EC50_params(p, i)
+    d = Hill_p_eachDr(p)
+    # returns the following at EC50: [g1_prog., g2_prog, g1_death, g2_death, g1%]
+    return append!([
+        p[91] + (d[3, i] - p[91]) / 2,
+        p[92] + (d[4, i] - p[92]) / 2,
+        p[93] + (d[5, i] - p[93]) / 2,
+        p[94] + (d[6, i] - p[94]) / 2,
+        p[95] + (d[7, i] - p[95]) / 2,
+        p[96] + (d[8, i] - p[96]) / 2,
+        p[97] + (d[9, i] - p[97]) / 2,
+        p[98] + (d[10, i] - p[98]) / 2,
+        d[11, i] / 2,
+        d[12, i] / 2,
+        d[13, i] / 2,
+        d[14, i] / 2,
+        d[15, i] / 2,
+        d[16, i] / 2,
+        d[17, i] / 2,
+        d[18, i] / 2,
+    ])
+end
+
 function parameters3()
     return ps = [
         47.5584,
