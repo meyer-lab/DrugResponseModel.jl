@@ -23,34 +23,34 @@ function plot_hillCurves()
     death = zeros(2, 8, 5)
 
     for i = 1:5
-        death[1, :, i] = sum(deathG1[:, :, i], dims=1)
-        death[2, :, i] = sum(deathG2[:, :, i], dims=1)
+        death[1, :, i] = sum(deathG1[:, :, i], dims = 1)
+        death[2, :, i] = sum(deathG2[:, :, i], dims = 1)
     end
 
     function plot_efs(concs, new_PS, drugname, ylabel, ec50, y)
 
         plot(
-        concs,
-        new_PS',
-        labels = ["G1" "G2"],
-        title = "$drugname effects",
-        xlabel = "Concentration[nM]",
-        lw = 3,
-        ylabel = ylabel,
-        titlefont = Plots.font("Helvetica", 15),
-        legendfont = Plots.font("Helvetica", 11),
-        guidefont = Plots.font("Helvetica", 15),
-        xtickfont = Plots.font("Helvetica", 15),
-        ytickfont = Plots.font("Helvetica", 15),
-        bottom_margin = 1.4cm,
-        fg_legend = :transparent,
-        top_margin = 1.4cm,
-        left_margin = 1.3cm,
-        right_margin = 1.3cm,
-        xrotation=30,
-    )
-    plot!([ec50], seriestype = :vline, alpha=0.6, label="EC50", lw=3)
-    ylims!((0.0, y))
+            concs,
+            new_PS',
+            labels = ["G1" "G2"],
+            title = "$drugname effects",
+            xlabel = "Concentration[nM]",
+            lw = 3,
+            ylabel = ylabel,
+            titlefont = Plots.font("Helvetica", 15),
+            legendfont = Plots.font("Helvetica", 11),
+            guidefont = Plots.font("Helvetica", 15),
+            xtickfont = Plots.font("Helvetica", 15),
+            ytickfont = Plots.font("Helvetica", 15),
+            bottom_margin = 1.4cm,
+            fg_legend = :transparent,
+            top_margin = 1.4cm,
+            left_margin = 1.3cm,
+            right_margin = 1.3cm,
+            xrotation = 30,
+        )
+        plot!([ec50], seriestype = :vline, alpha = 0.6, label = "EC50", lw = 3)
+        ylims!((0.0, y))
     end
 
     p0 = plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
