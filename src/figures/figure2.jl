@@ -259,7 +259,7 @@ function plt_sing(g1, g2, g1sim, g2sim)
         lw = 4,
         legend = :topleft,
         label = "G1 sim",
-        color=4,
+        color = 4,
         alpha = 0.5,
         fg_legend = :transparent,
         titlefont = Plots.font("Helvetica", 14),
@@ -281,7 +281,7 @@ function plt_sing(g1, g2, g1sim, g2sim)
         lw = 4,
         legend = :topleft,
         label = "S-G2 sim",
-        color=3,
+        color = 3,
         alpha = 0.5,
         fg_legend = :transparent,
         titlefont = Plots.font("Helvetica", 14),
@@ -317,12 +317,12 @@ function plot_them()
     tm = LinRange(0.0, 95.0, 189)
     psODE = getODEparams(ps, concs)
 
-    g1sim[:, 1] , g2sim[:, 1], _ = predict(psODE[:, 1, 1], psODE[:, 1, 1], tm)
-    g1sim[:, 2] , g2sim[:, 2], _ = predict(psODE[:, 8, 1], psODE[:, 1, 1], tm)
+    g1sim[:, 1], g2sim[:, 1], _ = predict(psODE[:, 1, 1], psODE[:, 1, 1], tm)
+    g1sim[:, 2], g2sim[:, 2], _ = predict(psODE[:, 8, 1], psODE[:, 1, 1], tm)
 
     p1 = plt_sing(g1m[:, 1, 1], g2m[:, 1, 1], g1sim[:, 1], g2sim[:, 1])
     p2 = plt_sing(g1m[:, 8, 1], g2m[:, 8, 1], g1sim[:, 2], g2sim[:, 2])
 
-    pp = plot(p1, p2, size=(800, 400))
+    pp = plot(p1, p2, size = (800, 400))
     savefig(pp, "fig.svg")
 end
