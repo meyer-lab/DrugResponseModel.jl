@@ -88,6 +88,7 @@ function gem_params()
     lap100_gem5G1 = g1s[:, 3], lap100_gem5SG2 = g2s[:, 3], lap100_gem5TOT = g1s[:, 3] .+ g2s[:, 3],
     lap100_gem10G1 = g1s[:, 4], lap100_gem10SG2 = g2s[:, 4], lap100_gem10TOT = g1s[:, 4] .+ g2s[:, 4])
     XLSX.writetable("lap+gem.xlsx", df)
+end
 ```
 
 # Plot
