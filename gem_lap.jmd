@@ -9,7 +9,7 @@ Simulation of lapatinib and gemcitabine
 import Pkg; Pkg.instantiate()
 Pkg.activate(".")
 using DrugResponseModel
-using Plots, LinearAlgebra, Statistics
+using Plots, LinearAlgebra, Statistics, DataFrames, XLSX
 Plots.scalefontsizes(0.7)
 
 concs, _, g1s1, g2s1 = load(189, 1);
