@@ -88,7 +88,7 @@ function gem_params()
     lap50_gem10G1 = g1s[:, 2], lap50_gem10SG2 = g2s[:, 2], lap50_gem10TOT = g1s[:, 2] .+ g2s[:, 2],
     lap100_gem5G1 = g1s[:, 3], lap100_gem5SG2 = g2s[:, 3], lap100_gem5TOT = g1s[:, 3] .+ g2s[:, 3],
     lap100_gem10G1 = g1s[:, 4], lap100_gem10SG2 = g2s[:, 4], lap100_gem10TOT = g1s[:, 4] .+ g2s[:, 4])
-    XLSX.writetable("lap+gem.xlsx", df)
+
     p1 = plot(tim, g1s[:, 1], label="G1 lap50 gem5")
     plot!(tim, g2s[:, 1], label="G2 lap50 gem5")
     p2 = plot(tim, g1s[:, 2], label="G1 lap50 gem10")
@@ -99,11 +99,13 @@ function gem_params()
     plot!(tim, g2s[:, 4], label="G2 lap100 gem10")
     plot(p1, p2, p3, p4)
 
+    return df
 end
 ```
 
 # Plot
 
 ```julia
-gem_params()
+df = gem_params()
+XLSX.writetable("lap+gem.xlsx", df)
 ```
