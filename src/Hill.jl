@@ -77,7 +77,7 @@ function getODEparams(p, conc)
         effects[7, :, i] = p[j + 6] .+ (p[k + 8] - p[j + 6]) .* xx # b3
         effects[8, :, i] = p[j + 7] .+ (p[k + 9] - p[j + 7]) .* xx # b4
         effects[9, :, i] = p[k + 10] .* xx   # g11
-        effects[10, :, i] = p[k + 11] .* xx   # g12
+        effects[10, :, i] = p[k + 11] .* xx  # g12
         effects[11, :, i] = p[k + 12] .* xx  # g21
         effects[12, :, i] = p[k + 13] .* xx # g22
         effects[13, :, i] = p[k + 14] .* xx # g23

@@ -52,8 +52,8 @@ function gem_params()
     tim = LinRange(0.0, 96.0, 189)
     g1sim = zeros(189, 2)
     g2sim = zeros(189, 2)
-    g1sim[:, 1], g2sim[:, 1], _ = predict(ode5nM[:, 2], ode5nM[:, 1], tim) # 5nM
-    g1sim[:, 2], g2sim[:, 2], _ = predict(ode10nM[:, 2], ode10nM[:, 1], tim) # 10nM
+    g1sim[:, 1], g2sim[:, 1], _ = predict(ode5nM[:, 2, 1], ode5nM[:, 1, 1], tim) # 5nM
+    g1sim[:, 2], g2sim[:, 2], _ = predict(ode10nM[:, 2, 1], ode10nM[:, 1, 1], tim) # 10nM
     plt = plot(tim, g1sim[:, 1], label="G1 sim 5nM")
     # plot!(tim, g1m[:, 5, 3], label="G1 data 5nM")
     plot!(tim, g2sim[:, 1], label="G2 sim 5nM")
@@ -72,10 +72,10 @@ function gem_params()
     concLap[3, 1] = 100.0
     laps = getODEparams(par, concLap)
 
-    lap50_gem5 = Bliss_params_unit(laps[:, 2], ode5nM[:, 2], vcat(laps[:, 1], ode5nM[:, 1]))
-    lap50_gem10 = Bliss_params_unit(laps[:, 2], ode5nM[:, 2], vcat(laps[:, 1], ode5nM[:, 1]))
-    lap100_gem5 = Bliss_params_unit(laps[:, 3], ode10nM[:, 2], vcat(laps[:, 1], ode10nM[:, 1]))
-    lap100_gem10 = Bliss_params_unit(laps[:, 3], ode10nM[:, 2], vcat(laps[:, 1], ode10nM[:, 1]))
+    lap50_gem5 = Bliss_params_unit(laps[:, 2], ode5nM[:, 2], hcat(laps[:, 1], ode5nM[:, 1]))
+    lap50_gem10 = Bliss_params_unit(laps[:, 2], ode10nM[:, 2], hcat(laps[:, 1], ode10nM[:, 1]))
+    lap100_gem5 = Bliss_params_unit(laps[:, 3], ode5nM[:, 2], hcat(laps[:, 1], ode5nM[:, 1]))
+    lap100_gem10 = Bliss_params_unit(laps[:, 3], ode10nM[:, 2], hcat(laps[:, 1], ode10nM[:, 1]))
 
     g1s = zeros(189, 4)
     g2s = zeros(189, 4)
