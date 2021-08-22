@@ -64,7 +64,8 @@ function gem_params()
     plot!(tim, g2sim[:, 2], label="G2 sim 10nM")
     # plot!(tim, g2m[:, 6, 3], label="G2 data 10nM")
 
-    savefig(plot(plt, plt2), "sim.svg")
+    ppps=plot(plt, plt2)
+    savefig(ppps, "sim.svg")
 
     par = [parameters()[1:18]; parameters()[91:98]] 
     concLap = zeros(3, 1)
@@ -88,6 +89,7 @@ function gem_params()
     lap100_gem5G1 = g1s[:, 3], lap100_gem5SG2 = g2s[:, 3], lap100_gem5TOT = g1s[:, 3] .+ g2s[:, 3],
     lap100_gem10G1 = g1s[:, 4], lap100_gem10SG2 = g2s[:, 4], lap100_gem10TOT = g1s[:, 4] .+ g2s[:, 4])
     XLSX.writetable("lap+gem.xlsx", df)
+    return ppps
 end
 ```
 
