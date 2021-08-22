@@ -107,7 +107,7 @@ end
 ```julia
 p1, p2 = gem_params()
 plot(p1)
-XLSX.writetable("lap+gem.xlsx", df)
+#XLSX.writetable("lap+gem.xlsx", df)
 ```
 
 ```julia
