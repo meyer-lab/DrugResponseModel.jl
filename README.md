@@ -4,7 +4,7 @@
 ![Test](https://github.com/meyer-lab/DrugResponseModel.jl/workflows/Test/badge.svg)
 
 
-`PhaseChain` is a Julia package for analyzing drug response in population cell number data with respect to cell cycle phase effects. The model is a system of linear first order differential equations where the parameters of the model reflect the quantified effects of drugs on different cell cycle phases; the rate of phase progression and the rate of cell death. With this model and the inferred parameters from fitting, we predicted the effects of drug combinations.
+`DrugResponseModel` is a Julia package for analyzing drug response in population cell number data with respect to cell cycle phase effects. The model is a system of linear first order differential equations where the parameters of the model reflect the quantified effects of drugs on different cell cycle phases; the rate of phase progression and the rate of cell death. With this model and the inferred parameters from fitting, we predicted the effects of drug combinations.
 
 - [Overview](#Overview)
 - [Documentation](#Documentation)
@@ -14,7 +14,7 @@
 
 # Overview
 
-`PhaseChain` is an open-source Julia package that implements a system of ordinary differential equations for cell counts in G1 and S/G2 phases of the cell cycle. The purpose of this model is to quantify the effects of the drugs on different cell cycle phases and provide predictions of drug combination based on these effects. The input data is in the form of cell counts in G1 and S/G2 cell cycle phases. The model is easily extendable to any number of cell cycle phases that we have cell numbers for. The model has been tested on data from treating AU565 breast cancer cell lines with lapatinib, gemcitabine, doxorubicin, palbociclib, and paclitaxel. 
+`DrugResponseModel` is an open-source Julia package that implements a system of ordinary differential equations for cell counts in G1 and S/G2 phases of the cell cycle. The purpose of this model is to quantify the effects of the drugs on different cell cycle phases and provide predictions of drug combination based on these effects. The input data is in the form of cell counts in G1 and S/G2 cell cycle phases. The model is easily extendable to any number of cell cycle phases that we have cell numbers for. The model has been tested on data from treating AU565 breast cancer cell lines with lapatinib, gemcitabine, doxorubicin, palbociclib, and paclitaxel. 
 We observed oscillation over time in the phase-specific cell numbers, so we looked into the single cell data. Because of the distribution of cell cycle phase lengths to use "linear chain trick" and created the mean field system of ODEs from the stochastic state transition process of cell division and phase transition. Please refer to the method section in the manuscript for more details.
 
 # Documentation
@@ -22,7 +22,7 @@ The `docs` folder includes a tutorial for getting started with the package. All 
 
 # System Requirements
 ## Hardware requirements
-`PhaseChain` package requires only a standard computer with enough RAM to support the in-memory operations.
+`DrugResponseModel` package requires only a standard computer with enough RAM to support the in-memory operations.
 
 ## Software requirements
 
@@ -32,7 +32,7 @@ This package is supported for *macOS* and *Linux*. The package has been tested o
 - Linux: Ubuntu 20.04
 
 ### Julia dependencies
-The following list shows the Julia packages used in `PhaseChain`.
+The following list shows the Julia packages used in `DrugResponseModel`.
 `BlackBoxOptim`
 `CSV`
 `Calculus`
