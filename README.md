@@ -58,7 +58,7 @@ git clone https://github.com/meyer-lab/DrugResponseModel.jl.git
 ```
 It takes a few seconds to clone the repository.
 
-# Demo and Instructions for Use
+# Getting started with the model
 
 The folder `src` includes all the functions for importing, fitting, and analyzing the data with the model. Functions in `importData.jl` are used for importing the data. The core of the model, jacobian matrix of the ODE system is in the `ODEmodel.jl`. Most plotting functions are in the `plot.jl` and optimization for only one data of drug treatment is in the `Hill.jl`, and for fitting all drugs at once, another fitting function considering some simplifying assumptions are located in the `allDrugs.jl`.
 The figures created for the manuscript are in the `src/figures` folder. The unittests are in the `test`.
