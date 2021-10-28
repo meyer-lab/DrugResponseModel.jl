@@ -2,32 +2,6 @@
 
 ######---------------- Functions for Bliss combination ----------------########
 
-function residHillAll3(hP, concentrations::Matrix, g1::Array, g2::Array)
-    res = 0.0
-
-    # Solve for all drugs
-    t = 1
-    for j = 1:3
-        hill = hP[[t:(t + 17); 55:62]]
-        for i = 3:10
-            res += 20 * (maximum([0, (hill[i] - hill[i + 16])]))^2
-        end
-        res += residHill(hill, concentrations[:, j], g1[:, :, j], g2[:, :, j])
-        t += 18
-    end
-    return res
-end
-
-function optim_all3(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 800000)
-    f(x) = residHillAll3(x, concs, g1, g2)
-
-    lP = [minimum(concs); 0.01; 5e-9 * ones(16)]
-    low = vcat(lP, lP, lP, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9)
-    hP = [maximum(concs); 10.0; 3.0 * ones(16)]
-    high = vcat(hP, hP, hP, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0)
-
-    return optimize_helper(f, low, high, maxiter)
-end
 
 """ Unit function to calculate the bliss for 2 drugs at one specific concentration. """
 function Bliss_params_unit(pp1, pp2, control)

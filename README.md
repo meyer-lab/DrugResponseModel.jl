@@ -15,9 +15,10 @@
 # Overview
 
 `PhaseChain` is an open-source Julia package that implements a system of ordinary differential equations for cell counts in G1 and S/G2 phases of the cell cycle. The purpose of this model is to quantify the effects of the drugs on different cell cycle phases and provide predictions of drug combination based on these effects. The input data is in the form of cell counts in G1 and S/G2 cell cycle phases. The model is easily extendable to any number of cell cycle phases that we have cell numbers for. The model has been tested on data from treating AU565 breast cancer cell lines with lapatinib, gemcitabine, doxorubicin, palbociclib, and paclitaxel. 
+We observed oscillation over time in the phase-specific cell numbers, so we looked into the single cell data. Because of the distribution of cell cycle phase lengths to use "linear chain trick" and created the mean field system of ODEs from the stochastic state transition process of cell division and phase transition. Please refer to the method section in the manuscript for more details.
 
 # Documentation
-The `docs` folder includes a few tutorials for getting started with the package. All the functions should have a docstring explaining the purpose of the function, as well as the inputs, outputs, and the type of the variables used.
+The `docs` folder includes a tutorial for getting started with the package. All the functions should have a docstring explaining the purpose of the function, as well as the inputs, outputs, and the type of the variables used.
 
 # System Requirements
 ## Hardware requirements
@@ -59,135 +60,42 @@ It takes a few seconds to clone the repository.
 
 # Demo and Instructions for Use
 
-The folder `src` includes all the functions for importing, fitting, and analyzing the data with the model. Functions in `importData.jl` are used for importing the data. The core of the model, jacobian matrix of the ODE system is in the `ODEmodel.jl`. 
+The folder `src` includes all the functions for importing, fitting, and analyzing the data with the model. Functions in `importData.jl` are used for importing the data. The core of the model, jacobian matrix of the ODE system is in the `ODEmodel.jl`. Most plotting functions are in the `plot.jl` and optimization for only one data of drug treatment is in the `Hill.jl`, and for fitting all drugs at once, another fitting function considering some simplifying assumptions are located in the `allDrugs.jl`.
+The figures created for the manuscript are in the `src/figures` folder. The unittests are in the `test`.
+
+
+#### Importing data and fitting
+
+The following shows how to import the data and fit into the model in terminal while inside the repository main folder, assuming you have Julia installed.
 
 ```
-make output/figure4.svg
+import Pkg; Pkg.instantiate()
+Pkg.activate(".")
+using DrugResponseModel
+
+# import one replicate of the data for all 5 drug treatments and the concentrations.
+concs, _, g1s1, g2s1 = DrugResponseModel.load(189, 1);
 ```
-
-To run the unit tests:
-
-```
-make test
-```
-
-To make the manuscript:
-
-```
-make output/manuscript.html 
-```
-
-#### Creating synthetic data and fitting the model
-
-The following shows how to create a 2-state synthetic lineage of cells with cell fate and cell lifetime observations, fit them to the model, and output the corresponding transition matrix, initial probability matrix, and the estimated parameters for the distribution of each state.
+`concs` is a [8 x 5] matrix, containing the 8 concentrations (including control) for the 5 drugs.
+The indexes corresponding to each drug are: 1. lapatinib, 2. doxorubicin, 3. gemcitabine, 4. paclitaxel, and 5. palbociclib.
+`g1s1` and `g2s1` are [189, 8, 5] matrices corresponding to G1 and S/G2 cell cycle phases, where they include cell numbers for 189 time points (96 hours) for the 8 concentrations of the 5 drugs.
+The dose-response behavior of all drugs are assumed to be Hill-shaped. cell death rates are assumed strictly increasing and the cell cycle progression rate is assumed to be strictly decreasing over the concentrations.
 
 ```
-import numpy as np
-from lineage.states.StateDistributionGamma import StateDistribution
-from lineage.LineageTree import LineageTree
+# finding the parameters for lapatinib treatment first replicate
+cost1, lapatinib_parameters = DrugResponseModel.optimize_hill(concs[:, 1], g1s1[:, :, 1], g2s1[:, :, 1])
 
-# pi: the initial probability vector
-pi = np.array([0.6, 0.4], dtype="float")
-# This means that the first cell in our lineage in generation 1
-# has a 60% change of being state 0 and a 40% chance of being state 1.
-# The values of this vector have to add up to 1 because of the
-# Law of Total Probability.
-
-# T: transition probability matrix
-T = np.array([[0.75, 0.25],
-              [0.25, 0.75]], dtype="float")
-
-# State 0 parameters "Resistant"
-bern_p0 = 0.99 # a cell fate parameter (Bernoulli distribution)
-gamma_a0 = 7 # the shape parameter of the gamma distribution, corresponding to the cell cycle duration
-gamma_scale0 = 7 # the scale parameter of the gamma distribution, corresponding to the cell cycle duration
-
-# State 1 parameters "Susceptible"
-bern_p1 = 0.88 # a cell fate parameter (Bernoulli distribution)
-gamma_a1 = 7 # the shape parameter of the gamma distribution, corresponding to the cell cycle duration
-gamma_scale1 = 1 # the scale parameter of the gamma distribution, corresponding to the cell cycle duration
-
-state_obj0 = StateDistribution(bern_p0, gamma_a0, gamma_scale0)
-state_obj1 = StateDistribution(bern_p1, gamma_a1, gamma_scale1)
-
-E = [state_obj0, state_obj1]
-
-# creating the synthetic lineage of 15 cells, given the state distributions, transition probability, and the initial probability vector.
-lineage = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=2**9 - 1)
+# finding the parameters for gemcitabine treatment first replicate
+cost2, gemcitabine_parameters = DrugResponseModel.optimize_hill(concs[:, 3], g1s1[:, :, 3], g2s1[:, :, 3])
 ```
 
-Now that we have created the lineages as Python objects, we use the following function to fit this data into the model.
+The parameters that are estimated here, are not directly inputted to the ODE system. They are Hill function parameters for each progression and death rate. The following converts these estimated parameters to the ones that correspond to the ODE system.
 
 ```
-from lineage.Analyze import Analyze
-
-X = [lineage] # population just contains one lineage
-tHMMobj, pred_states_by_lineage, LL = Analyze(X, 2) # find two states
-
-# Estimating the initial probability vector
-print(tHMMobj.estimate.pi)
-
-# Estimating the transition probability matrix
-print(tHMMobj.estimate.T)
-
-# The total log likelihood
-print(LL)
-
-for state in range(lineage.num_states):
-    print("State {}:".format(state))
-    print("       estimated state:", tHMMobj.estimate.E[state].params)
-    print("original parameters given for state:", E[state].params)
-    print("\n")
+param_lpt = DrugResponseModel.getODEparams(lapatinib_parameters, concs[:, 1])
+param_gem = DrugResponseModel.getODEparams(gemcitabine_parameters, concs[:, 3])
 ```
 
-#### Importing the experimental data and fitting the model
-
-```
-import numpy as np
-from lineage.LineageInputOutput import import_exp_data
-from lineage.states.StateDistributionGaPhs import StateDistribution
-from lineage.LineageTree import LineageTree
-from lineage.Analyze import run_Analyze_over
-
-desired_num_states = 2 # does not make a difference what number we choose for importing the data.
-E = [StateDistribution() for _ in range(desired_num_states)]
-
-# Importing only one of the replicates of control condition
-control1 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_A5_1_V5.xlsx")]
-
-output = run_Analyze_over([control1], 2, atonce=False)
-```
-To find the most likely number of states, we can calculate the BIC metrc for 1,2,3,... number of states and find out the likelihoods.
-The following calculates the BIC for 2 states, as we chose in the `run_Analyze_over` above.
-
-```
-BICs = np.array([oo[0].get_BIC(oo[2], 75, atonce=True)[0] for oo in output])
-```
-
-The output of fitting could be the transition matrix:
-```
-np.array([oo[0].estimate.T for oo in output])
-```
-
-initial probability matrix:
-```
-np.array([oo[0].estimate.pi for oo in output])
-```
-
-the assigned cell states lineage by lineage:
-```
-np.array([oo[1] for oo in output])
-```
-
-the distribution parameters for each state:
-```
-for state in range(2):
-    print("State {}:".format(state))
-    print("       estimated state:", output[0][0].estimate.E[state].params)
-    print("\n")
-```
-
-Depending on the number of cells and lineages being used for fitting, the run time for `Analyze` and other similar functions that run the fitting, could takes minutes to hours.
 
 # License
 This project is covered under the MIT License.
