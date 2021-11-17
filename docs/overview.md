@@ -24,57 +24,57 @@ The data is in the shape of [189 x 8 x 5] that 189 refers to the data points for
 1. Loading and plotting the experimental data
 ---------------------------------------------
 
-.. code:: julia
+```
+# load
+concs, popul1, g1s1, g2s1 = load(189, 1)
+_, popul2, g1s2, g2s2 = load(189, 2)
+_, popul3, g1s3, g2s3 = load(189, 3)
 
-    # load
-    concs, popul1, g1s1, g2s1 = load(189, 1)
-    _, popul2, g1s2, g2s2 = load(189, 2)
-    _, popul3, g1s3, g2s3 = load(189, 3)
+# find the average of the three replicates
+g1S = cat(g1s1, g1s2, g1s3, dims = 4)
+g2S = cat(g2s1, g2s2, g2s3, dims = 4)
+g1m = mean(g1S, dims = 4) # mean G1
+g2m = mean(g2S, dims = 4) # mean G2
 
-    # find the average of the three replicates
-    g1S = cat(g1s1, g1s2, g1s3, dims = 4)
-    g2S = cat(g2s1, g2s2, g2s3, dims = 4)
-    g1m = mean(g1S, dims = 4) # mean G1
-    g2m = mean(g2S, dims = 4) # mean G2
-
-    time = LinRange(0.0, 95.0, 189)
-    plot(time, g1m[:, :, 1], labels=["control" "5 nM" "10 nM" "25 nM" "50 nM" "100 nM" "250 nM" "500 nM"], title="lapatinib", ylabel="G1 cell numbers", xlabel="time [hr]")
-
+time = LinRange(0.0, 95.0, 189)
+plot(time, g1m[:, :, 1], labels=["control" "5 nM" "10 nM" "25 nM" "50 nM" "100 nM" "250 nM" "500 nM"], title="lapatinib", ylabel="G1 cell numbers", xlabel="time [hr]")
+```
 
 
 2. Run the fitting for one dataset, for example, lapatinib.
 -----------------------------------------------------------
 
-.. code:: julia
-    cost, p_hill = optimize_hill(concs[:, 1], g1m[:, :, 1], g2m[:, :, 1])
-    # converting the Hill parameters to ODE parameters
-    p_ode = getODEparams(p_hill, concs[:, 1])
-
+```
+cost, p_hill = optimize_hill(concs[:, 1], g1m[:, :, 1], g2m[:, :, 1])
+# converting the Hill parameters to ODE parameters
+p_ode = getODEparams(p_hill, concs[:, 1])
+```
 
 
 3. Run the fitting for all drugs at once
 ----------------------------------------
 
-.. code:: julia
-    cost2, pAll_hill = optim_all(concs, g1m, g2m)
-    pAll_ode = getODEparams(pAll_hill, concs)
-
+```
+cost2, pAll_hill = optim_all(concs, g1m, g2m)
+pAll_ode = getODEparams(pAll_hill, concs)
+```
 
 
 4. Calculate the combination parameters and the cell numbers
 ------------------------------------------------------------
 
-.. code:: julia
-    # lapatinib + gemcitabine: combination on model parameters
-    lap_gem_params = AllBliss_params(pAll_ode[:, :, 1], pAll_ode[:, :, 3])
-    G1 = zeros(189, 8, 8) # model prediction of cell numbers for all 8 concentrations of both.
-    G2 = zeros(189, 8, 8)
-    for i = 1:8
-        for j = 1:8
-            G1[:, i, j], G2[:, i, j], _ = predict(lap_gem_params[:, i, j], lap_gem_params[:, 1, 1], time)
-        end
+```
+# lapatinib + gemcitabine: combination on model parameters
+lap_gem_params = AllBliss_params(pAll_ode[:, :, 1], pAll_ode[:, :, 3])
+G1 = zeros(189, 8, 8) # model prediction of cell numbers for all 8 concentrations of both.
+G2 = zeros(189, 8, 8)
+for i = 1:8
+    for j = 1:8
+        G1[:, i, j], G2[:, i, j], _ = predict(lap_gem_params[:, i, j], lap_gem_params[:, 1, 1], time)
     end
-    total_combination_model = G1 + G2
+end
+total_combination_model = G1 + G2
 
-    # lapatinib + gemcitabine:
-    total_cellnum_baseline = DrugResponseModel.pair_cellnum_Bliss(g1m[:, :, 1] .+ g2m[:, :, 1], g1m[:, :, 3] .+ g2m[:, :, 3])
+# lapatinib + gemcitabine:
+total_cellnum_baseline = DrugResponseModel.pair_cellnum_Bliss(g1m[:, :, 1] .+ g2m[:, :, 1], g1m[:, :, 3] .+ g2m[:, :, 3])
+```
