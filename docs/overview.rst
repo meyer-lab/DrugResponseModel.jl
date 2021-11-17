@@ -41,13 +41,16 @@ The data is in the shape of [189 x 8 x 5] that 189 refers to the data points for
     plot(time, g1m[:, :, 1], labels=["control" "5 nM" "10 nM" "25 nM" "50 nM" "100 nM" "250 nM" "500 nM"], title="lapatinib", ylabel="G1 cell numbers", xlabel="time [hr]")
 
 
+
 2. Run the fitting for one dataset, for example, lapatinib.
-----------------------------------
+-----------------------------------------------------------
 
 .. code:: julia
     cost, p_hill = optimize_hill(concs[:, 1], g1m[:, :, 1], g2m[:, :, 1])
     # converting the Hill parameters to ODE parameters
     p_ode = getODEparams(p_hill, concs[:, 1])
+
+
 
 3. Run the fitting for all drugs at once
 ----------------------------------------
@@ -56,8 +59,10 @@ The data is in the shape of [189 x 8 x 5] that 189 refers to the data points for
     cost2, pAll_hill = optim_all(concs, g1m, g2m)
     pAll_ode = getODEparams(pAll_hill, concs)
 
+
+
 4. Calculate the combination parameters and the cell numbers
----------------------------------------------------------------------
+------------------------------------------------------------
 
 .. code:: julia
     # lapatinib + gemcitabine: combination on model parameters
