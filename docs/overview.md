@@ -21,7 +21,7 @@ The data is in the shape of [189 x 8 x 5] that 189 refers to the data points for
 `sensitivity.jl` includes functions regarding sensitivity of the parameters.
 
 
-1. Loading and plotting the experimental data
+## 1. Loading and plotting the experimental data
 ---------------------------------------------
 
 ```
@@ -37,11 +37,14 @@ g1m = mean(g1S, dims = 4) # mean G1
 g2m = mean(g2S, dims = 4) # mean G2
 
 time = LinRange(0.0, 95.0, 189)
-plot(time, g1m[:, :, 1], labels=["control" "5 nM" "10 nM" "25 nM" "50 nM" "100 nM" "250 nM" "500 nM"], title="lapatinib", ylabel="G1 cell numbers", xlabel="time [hr]")
+p1 = plot(time, g1m[:, :, 1], labels=["control" "5 nM" "10 nM" "25 nM" "50 nM" "100 nM" "250 nM" "500 nM"], title="lapatinib", ylabel="G1 cell numbers", xlabel="time [hr]")
+p2 = plot(time, g2m[:, :, 1], labels=["control" "5 nM" "10 nM" "25 nM" "50 nM" "100 nM" "250 nM" "500 nM"], title="lapatinib", ylabel="S/G2 cell numbers", xlabel="time [hr]")
+plot(p1, p2)
 ```
+![lapatinib time series plot](lapt.svg)
 
 
-2. Run the fitting for one dataset, for example, lapatinib.
+## 2. Run the fitting for one dataset, for example, lapatinib.
 -----------------------------------------------------------
 
 ```
@@ -51,7 +54,7 @@ p_ode = getODEparams(p_hill, concs[:, 1])
 ```
 
 
-3. Run the fitting for all drugs at once
+## 3. Run the fitting for all drugs at once
 ----------------------------------------
 
 ```
@@ -60,7 +63,7 @@ pAll_ode = getODEparams(pAll_hill, concs)
 ```
 
 
-4. Calculate the combination parameters and the cell numbers
+## 4. Calculate the combination parameters and the cell numbers
 ------------------------------------------------------------
 
 ```
