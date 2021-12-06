@@ -105,8 +105,6 @@ function trim_data(g, c)
 
     # find unique conditions
     uniq_c = unique(c)
-    # find the 12 control conditions
-    vehicle_indexes = findall(x -> x == "vehicle_0", c)
     # remove "control_0" and "vehicle_0" from the conditions
     filter!(e -> e != "vehicle_0", uniq_c)
     filter!(e -> e != "control_0", uniq_c)
@@ -128,8 +126,10 @@ function trim_data(g, c)
     return new_g, uniq_c
 end
 
+drugs = ["5FU", "AZD5438", "Panobinostat", "MG132", "BEZ235", "Everolimus", "JQ1", "Bortezomib", "MK1775", "Trametinib", "Cabozantinib"]
+
+""" Create a tensor form of the data """
 function form_tensor(new_g, uniq_c)
-    drugs = ["5FU", "AZD5438", "Panobinostat", "MG132", "BEZ235", "Everolimus", "JQ1", "Bortezomib", "MK1775", "Trametinib", "Cabozantinib"]
     new_ind = []
     for (ind, drug) in enumerate(drugs)
         tm2 = findall( y -> occursin(drug, y), uniq_c)
@@ -146,12 +146,43 @@ function form_tensor(new_g, uniq_c)
     return tensor, conditions
 end
 
+""" create one csv file for each drug. """
+function output_drugs(g, c)
+    uniq_c = unique(c)
+    vehicle_index = findall(x -> occursin("vehicle", x), c)
+    control_index = findall(x -> occursin("control", x), c)
+    # the index of drugs
+    new_ind = []
+    for (ind, drug) in enumerate(drugs)
+        tm2 = findall(y -> occursin(drug, y), uniq_c)
+        push!(new_ind, tm2)
+    end
+
+    # the indexes 
+    inds = []
+    for item in uniq_c
+        tm = findall(x -> x == item, c)
+        push!(inds, tm)
+    end
+
+    for i in 1:length(uniq_c)
+        new_g[1, :, :, i] = g[1, :, inds[i]]' # G1
+        new_g[2, :, :, i] = g[2, :, inds[i]]' # SG2
+    end
+
+    for indx, drug in enumerate(drugs)
+        df = [DataFrames.DataFrame(g[1, :, new_ind[indx]]) for 1:length(inds)]
+        rename!(df, uniq_c[new_ind[indx]])
+    end
+end
+
 """ Easy way of loading the data, either in the form of a tensor, or each drug, separately. """
-function load_data(tensor=true; drug_name=false; average=true)
+function load_data(tensor=true, drug_name=false, average=true)
     g, c = import_data()
     newg, newc = trim_data(g, c)
     if tensor
         return form_tensor(new_g, newc)
+        # TODO
     elseif drug_name
         return
     end
