@@ -56,137 +56,105 @@ end
 
 """ This function imports the new round of data and filters. """
 function import_data()
-    # 96 conditions(not separating replicates) with 191 data points,
-    # and 1158 conditions(not separating conditions) with 192 data points.
-    # 18336 / 191 = 96
-    # 222336 / 193 = 1152
-    # so we have a total of 1254 conditions
     basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data")
+    data = CSV.read(joinpath(basePath, "AU565_round2and3_model_subset_level2.csv"), DataFrame)
 
-    d = zeros(193, 1248, 2) # time points x conditions x G1% and total
-
-    dataname = "AU565_round2and3_model_subset_level2.csv"
-    data = readdlm(joinpath(basePath, dataname), ',')
-
-    conditions = Vector{String}()
-
-    for i = 1:96 # first set that have 191 data points
-        d[1:191, i, 1] = data[(191 *(i-1)) + 2 : (191 * i) + 1, 9]
-        d[1:191, i, 2] = data[(191 *(i-1)) + 2 : (191 * i) + 1, 8]
-        push!(conditions, data[(191 *(i-1)) + 2, 5])
+    # add a new column of "_" to stick to the end of "treatment" column so we can reshape without loosing columns with the same name
+    new_col = similar(data[:, 5])
+    for i=1:length(new_col)
+        new_col[i] = "_"
     end
-    for i=96:1247 # the rest that have 193 data points
-        d[:, i+1, 1] = data[(193 *(i-1)) + 3 : (193 * i) + 2, 9]
-        d[:, i+1, 2] = data[(193 *(i-1)) + 3 : (193 * i) + 2, 8]
-        push!(conditions, data[(193 *(i-1)) + 3, 5])
-    end
+    data_ = hcat(data, new_col)
+
+    # transform so the columns are drug conditions
+    tmp_norm = transform(data_, [:treatment, :x1, :field, :well] => ByRow(string) => :treat)
+    norm_T0 = unstack(tmp_norm, :elapsed_minutes, :treat, :cell_count_norm_T0, allowduplicates=true)
+    select!(norm_T0, Not(:elapsed_minutes))
+
+    # remove the time 0:120 to make all conditions the same length and syncronize
+    norm_T0 = norm_T0[Not(190:end), :]
+
+    G1_prop = unstack(tmp_norm, :elapsed_minutes, :treat, :G1_proportion, allowduplicates=true)
+    G1_prop = G1_prop[Not(190:end), :]
+    select!(G1_prop, Not(:elapsed_minutes)) # delete the time column
+
+    norm_t = Matrix{Float64}(norm_T0)
+    g_prop = Matrix{Float64}(G1_prop)
 
     # filter
-    for i = 1:size(d, 2)
-        d[:, i, 1] = savitzky_golay_filter(d[:, i, 1], 41, 3)
-        d[:, i, 2] = savitzky_golay_filter(d[:, i, 2], 41, 3)
+    for i = 1:size(norm_t, 2)
+        norm_t[:, i] = savitzky_golay_filter(norm_t[:, i], 41, 3)
+        g_prop[:, i] = savitzky_golay_filter(g_prop[:, i], 41, 3)
     end
+
     # separate G1 and SG2 cell#
-    gs = zeros(2, size(d, 1), size(d, 2)) # G1# , G2# x time x condition
-    population = init_cells * d[:, :, 2]
-    gs[1, :, :] = population .* d[:, :, 1] # G1
+    gs = zeros(2, size(norm_t, 1), size(norm_t, 2)) # G1# , G2# x time x condition
+    population = init_cells * norm_t
+    gs[1, :, :] = population .* g_prop # G1
     gs[2, :, :] = population - gs[1, :, :] # G2
 
-    return gs, conditions
+    condition = similar(names(norm_T0))
+    for (index, item) in enumerate(names(norm_T0))
+        condition[index] = rsplit(item, "_", limit=2)[1]
+    end
+    return gs, condition
 end
 
-function reorganize(gs, conditions)
-    new_condition = []; c = 0;
-    control = []; id_c = []
-    FU = []; f = 0; id_f = []
-    pano = []; p = 0; id_p = []
-    AZD = []; a = 0; id_az = []
-    BEZ = []; bz = 0; id_bz = []
-    Bort = []; b = 0; id_b = []
-    MG = []; m = 0; id_mg= []
-    Ever = []; e = 0; id_e = []
-    MK = []; mk = 0; id_mk = []
-    JQ1 = []; j = 0; id_j = []
-    Tram = []; t = 0; id_t = []
-    Cabo = []; cb = 0; id_cb = []
-    for (key, val) in enumerate(conditions)
-        if occursin("vehicle", val)
-            append!(control, gs[:, key])
-            push!(id_c, key)
-            c += 1
-        elseif occursin("control", val)
-            append!(control, gs[:, key])
-            push!(id_c, key)
-            c += 1
-        elseif occursin("5FU", val)
-            append!(FU, gs[:, key])
-            push!(id_f, key)
-            f += 1
-        elseif occursin("Panobinostat", val)
-            append!(pano, gs[:, key])
-            push!(id_p, key)
-            p += 1
-        elseif occursin("AZD", val)
-            append!(AZD, gs[:, key])
-            push!(id_az, key)
-            a += 1
-        elseif occursin("BEZ", val)
-            append!(BEZ, gs[:, key])
-            push!(id_bz, key)
-            bz += 1
-        elseif occursin("Bort", val)
-            append!(Bort, gs[:, key])
-            push!(id_b, key)
-            b += 1
-        elseif occursin("MG", val)
-            append!(MG, gs[:, key])
-            push!(id_mg, key)
-            m += 1
-        elseif occursin("Ever", val)
-            append!(Ever, gs[:, key])
-            push!(id_e, key)
-            e += 1
-        elseif occursin("MK", val)
-            append!(MK, gs[:, key])
-            push!(id_mk, key)
-            mk += 1
-        elseif occursin("JQ", val)
-            append!(JQ1, gs[:, key])
-            push!(id_j, key)
-            j += 1
-        elseif occursin("Tram", val)
-            append!(Tram, gs[:, key])
-            push!(id_t, key)
-            t += 1
-        elseif occursin("Cabo", val)
-            append!(Cabo, gs[:, key])
-            push!(id_cb, key)
-            cb += 1
-        end
+""" Extract 4 replicates of each condition. """
+function trim_data(g, c)
+
+    # find unique conditions
+    uniq_c = unique(c)
+    # find the 12 control conditions
+    vehicle_indexes = findall(x -> x == "vehicle_0", c)
+    # remove "control_0" and "vehicle_0" from the conditions
+    filter!(e -> e != "vehicle_0", uniq_c)
+    filter!(e -> e != "control_0", uniq_c)
+    # append the index of 4 replicates of the same condition
+    inds = []
+    for item in uniq_c
+        tm = findall(x -> x == item, c)
+        push!(inds, tm[1:4])
     end
 
-    new_c = similar(conditions)
-    new_cond = vcat(id_c, id_f, id_p, id_az, id_bz, id_b, id_mg, id_e, id_mk, id_j, id_t, id_cb)
-    for i=1:length(conditions)
-        new_c[i] = conditions[new_cond[i]]
+    # create a new G with a bit more organized conditions based on unique 
+    new_g = zeros(2, 4, 189, length(inds)) # G1/G2 x 4 replicates x 189 data points x 87 conditions
+    for i in 1:length(uniq_c)
+        new_g[1, :, :, i] = g[1, :, inds[i]]' # G1
+        new_g[2, :, :, i] = g[2, :, inds[i]]' # SG2
     end
-    control = reshape(control, 193, c); FU = reshape(FU, 193, f); pano = reshape(pano, 193, p); AZD = reshape(AZD, 193, a)
-    BEZ = reshape(BEZ, 193, bz); Bort = reshape(Bort, 193, b); MG = reshape(MG, 193, m); Ever = reshape(Ever, 193, e)
-    MK = reshape(MK, 193, mk); JQ1 = reshape(JQ1, 193, j); Tram = reshape(Tram, 193, t); Cabo = reshape(Cabo, 193, cb)
-    new_gs = hcat(control, FU, pano, AZD, BEZ, Bort, MG, Ever, MK, JQ1, Tram, Cabo)
-    @assert(size(gs) == size(new_gs))
-    return new_gs, new_c
+    @assert size(new_g, 4) == size(uniq_c)[1] == size(inds)[1]
+
+    return new_g, uniq_c
 end
 
-function reorganize_data()
-    gs, conditions = import_data()
-    new_g1, _ = reorganize(gs[1, :, :], conditions)
-    new_g2, new_cond = reorganize(gs[2, :, :], conditions)
-    gss = zeros(2, 193, 1248)
-    gss[1, :, :] = new_g1
-    gss[2, :, :] = new_g2
+function form_tensor(new_g, uniq_c)
+    drugs = ["5FU", "AZD5438", "Panobinostat", "MG132", "BEZ235", "Everolimus", "JQ1", "Bortezomib", "MK1775", "Trametinib", "Cabozantinib"]
+    new_ind = []
+    for (ind, drug) in enumerate(drugs)
+        tm2 = findall( y -> occursin(drug, y), uniq_c)
+        push!(new_ind, tm2[1:7])
+    end
 
-    return gss, new_cond
+    tensor = zeros(2, 4, 189, 7, 11)
+    conditions = []
+    for i = 1:11
+        tensor[1, :, :, :, i] = new_g[1, :, :, new_ind[i]]
+        tensor[2, :, :, :, i] = new_g[2, :, :, new_ind[i]]
+        push!(conditions, uniq_c[new_ind[i]])
+    end
+    return tensor, conditions
+end
+
+""" Easy way of loading the data, either in the form of a tensor, or each drug, separately. """
+function load_data(tensor=true; drug_name=false; average=true)
+    g, c = import_data()
+    newg, newc = trim_data(g, c)
+    if tensor
+        return form_tensor(new_g, newc)
+    elseif drug_name
+        return
+    end
 end
 
 function setup_data(drug_name::String)
