@@ -116,7 +116,7 @@ function trim_data(g, c)
     end
 
     # create a new G with a bit more organized conditions based on unique 
-    new_g = zeros(2, 4, 189, length(inds)) # G1/G2 x 4 replicates x 189 data points x 87 conditions
+    new_g = zeros(2, 4, 189, length(inds)) # G1/G2 x 4 replicates x 189 data points x conditions
     for i in 1:length(uniq_c)
         new_g[1, :, :, i] = g[1, :, inds[i]]' # G1
         new_g[2, :, :, i] = g[2, :, inds[i]]' # SG2
@@ -126,7 +126,7 @@ function trim_data(g, c)
     return new_g, uniq_c
 end
 
-drugs = ["5FU", "AZD5438", "Panobinostat", "MG132", "BEZ235", "Everolimus", "JQ1", "Bortezomib", "MK1775", "Trametinib", "Cabozantinib"]
+drugs = ["BEZ235", "Trametinib", "5FU", "AZD5438", "Panobinostat", "MG132", "Everolimus", "JQ1", "Bortezomib", "MK1775", "Cabozantinib"]
 
 """ Create a tensor form of the data """
 function form_tensor(new_g, uniq_c)
@@ -149,30 +149,67 @@ end
 """ create one csv file for each drug. """
 function output_drugs(g, c)
     uniq_c = unique(c)
+    filter!(x->x!="vehicle_0", uniq_c)
+    filter!(x->x!="control_0", uniq_c)
     vehicle_index = findall(x -> occursin("vehicle", x), c)
     control_index = findall(x -> occursin("control", x), c)
-    # the index of drugs
-    new_ind = []
-    for (ind, drug) in enumerate(drugs)
-        tm2 = findall(y -> occursin(drug, y), uniq_c)
-        push!(new_ind, tm2)
-    end
 
-    # the indexes 
     inds = []
     for item in uniq_c
         tm = findall(x -> x == item, c)
         push!(inds, tm)
     end
 
+    # create a new G with a bit more organized conditions based on unique
+    new_g = zeros(2, 189, 12, length(uniq_c))
     for i in 1:length(uniq_c)
-        new_g[1, :, :, i] = g[1, :, inds[i]]' # G1
-        new_g[2, :, :, i] = g[2, :, inds[i]]' # SG2
+        new_g[:, :, 1:length(inds[i]), i] .= g[:, :, inds[i]] # G1
     end
 
-    for indx, drug in enumerate(drugs)
-        df = [DataFrames.DataFrame(g[1, :, new_ind[indx]]) for 1:length(inds)]
-        rename!(df, uniq_c[new_ind[indx]])
+    # conditions
+    new_ind = []
+    for (ind, drug) in enumerate(drugs)
+        tm2 = findall( y -> occursin(drug, y), uniq_c)
+        push!(new_ind, tm2)
+    end
+
+    # the index of drugs
+    for (i, drug) in enumerate(drugs)
+        g1 = new_g[1, :, :, new_ind[i]]
+        g2 = new_g[2, :, :, new_ind[i]]
+        df_G1 = [DataFrames.DataFrame(g1[:, j, :], :auto) for j=1:size(g1)[2]]
+        df_G2 = [DataFrames.DataFrame(g2[:, j, :], :auto) for j=1:size(g2)[2]]
+        for (ids, df) in enumerate(df_G1)
+            rename!(df, uniq_c[new_ind[i]])
+            rename!(df_G2[ids], uniq_c[new_ind[i]])
+        end
+        if (drug == "BEZ235") | (drug == "Trametinib")
+            XLSX.writetable("$(drug)_G1.xlsx", overwrite=true, rep1=(collect(DataFrames.eachcol(df_G1[1])), DataFrames.names(df_G1[1])), 
+                                                               rep2=(collect(DataFrames.eachcol(df_G1[2])), DataFrames.names(df_G1[2])),
+                                                               rep3=(collect(DataFrames.eachcol(df_G1[3])), DataFrames.names(df_G1[3])),
+                                                               rep4=(collect(DataFrames.eachcol(df_G1[4])), DataFrames.names(df_G1[4])),
+                                                               rep5=(collect(DataFrames.eachcol(df_G1[5])), DataFrames.names(df_G1[5])),
+                                                               rep6=(collect(DataFrames.eachcol(df_G1[6])), DataFrames.names(df_G1[6])),
+                                                               rep7=(collect(DataFrames.eachcol(df_G1[7])), DataFrames.names(df_G1[7])),
+                                                               rep8=(collect(DataFrames.eachcol(df_G1[8])), DataFrames.names(df_G1[8])))
+            XLSX.writetable("$(drug)_G2.xlsx", overwrite=true, rep1=(collect(DataFrames.eachcol(df_G2[1])), DataFrames.names(df_G2[1])), 
+                                                               rep2=(collect(DataFrames.eachcol(df_G2[2])), DataFrames.names(df_G2[2])),
+                                                               rep3=(collect(DataFrames.eachcol(df_G2[3])), DataFrames.names(df_G2[3])),
+                                                               rep4=(collect(DataFrames.eachcol(df_G2[4])), DataFrames.names(df_G2[4])),
+                                                               rep5=(collect(DataFrames.eachcol(df_G2[5])), DataFrames.names(df_G2[5])), 
+                                                               rep6=(collect(DataFrames.eachcol(df_G2[6])), DataFrames.names(df_G2[6])),
+                                                               rep7=(collect(DataFrames.eachcol(df_G2[7])), DataFrames.names(df_G2[7])),
+                                                               rep8=(collect(DataFrames.eachcol(df_G2[8])), DataFrames.names(df_G2[8])))
+        else
+            XLSX.writetable("$(drug)_G1.xlsx", overwrite=true, rep1=(collect(DataFrames.eachcol(df_G1[1])), DataFrames.names(df_G1[1])), 
+                                                               rep2=(collect(DataFrames.eachcol(df_G1[2])), DataFrames.names(df_G1[2])),
+                                                               rep3=(collect(DataFrames.eachcol(df_G1[3])), DataFrames.names(df_G1[3])),
+                                                               rep4=(collect(DataFrames.eachcol(df_G1[4])), DataFrames.names(df_G1[4])))
+            XLSX.writetable("$(drug)_G2.xlsx", overwrite=true, rep1=(collect(DataFrames.eachcol(df_G2[1])), DataFrames.names(df_G2[1])), 
+                                                               rep2=(collect(DataFrames.eachcol(df_G2[2])), DataFrames.names(df_G2[2])),
+                                                               rep3=(collect(DataFrames.eachcol(df_G2[3])), DataFrames.names(df_G2[3])),
+                                                               rep4=(collect(DataFrames.eachcol(df_G2[4])), DataFrames.names(df_G2[4])))
+        end
     end
 end
 
