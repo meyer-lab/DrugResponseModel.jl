@@ -123,25 +123,32 @@ function trim_data(g, c)
     end
     @assert size(new_g, 4) == size(uniq_c)[1] == size(inds)[1]
 
-    return new_g, uniq_c
+    return new_g
 end
 
 drugs = ["BEZ235", "Trametinib", "5FU", "AZD5438", "Panobinostat", "MG132", "Everolimus", "JQ1", "Bortezomib", "MK1775", "Cabozantinib"]
 
 """ Create a tensor form of the data """
-function form_tensor(new_g, uniq_c)
+function form_tensor(new_g, c)
+    uniq_c = unique(c)
+    filter!(e -> e != "vehicle_0", uniq_c)
+    filter!(e -> e != "control_0", uniq_c)
     new_ind = []
     for (ind, drug) in enumerate(drugs)
         tm2 = findall( y -> occursin(drug, y), uniq_c)
         push!(new_ind, tm2[1:7])
     end
 
-    tensor = zeros(2, 4, 189, 7, 11)
+    tensor = zeros(2, 4, 189, 8, 11)
+    vehicle_indx = findall( y -> occursin("vehicle", y), c)
+    for i=1:4
+        tensor[:, :, :, 1, :] .= new_g[:, :, :, vehicle_indx[i]]
+    end
     conditions = []
     for i = 1:11
-        tensor[1, :, :, :, i] = new_g[1, :, :, new_ind[i]]
-        tensor[2, :, :, :, i] = new_g[2, :, :, new_ind[i]]
-        push!(conditions, uniq_c[new_ind[i]])
+        tensor[1, :, :, 2:8, i] = new_g[1, :, :, new_ind[i]]
+        tensor[2, :, :, 2:8, i] = new_g[2, :, :, new_ind[i]]
+        push!(conditions, pushfirst!(uniq_c[new_ind[i]], "Vehicle"))
     end
     return tensor, conditions
 end
