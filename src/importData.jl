@@ -1,8 +1,9 @@
 """
-        Imports data works for the ODE model
+Imports data for the ODE model
 """
 
 const init_cells = 1.0
+basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data")
 
 function get_data(path_g2::String, path_total::String; max = 189)
     # Import data all the trials for each drug
@@ -28,7 +29,6 @@ function get_data(path_g2::String, path_total::String; max = 189)
 end
 
 function import_combination(filename::String)
-    basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data")
     path_g2 = string("/", basePath, "/", filename, "_CYCLE.csv")
     path_total = string("/", basePath, "/", filename, "_CELL.csv")
     perc = readdlm(path_g2, ','; skipstart = 1)
@@ -54,7 +54,85 @@ function import_combination(filename::String)
     return gs[:, :, 2:25], gs[:, :, 27:50], perc, total
 end
 
-""" This function imports the new round of data and filters. """
+function setup_data(drug_name::String)
+
+    dfname = string(drug_name, ".csv")
+    dfname2 = string(drug_name, "_pop.csv")
+
+    if occursin("Lapatinib", drug_name)
+        idx = 1
+    elseif occursin("Doxorubicin", drug_name)
+        idx = 2
+    elseif occursin("Gemcitabine", drug_name)
+        idx = 3
+    elseif occursin("Paclitaxel", drug_name)
+        idx = 4
+    elseif occursin("Palbociclib", drug_name)
+        idx = 1
+    end
+
+    #----------- import concentrations
+    concentration = readdlm(joinpath(basePath, "concentrations.csv"), ','; skipstart = 1)
+    conc_l = [Float64(concentration[idx, col]) for col = 2:9]
+    conc_l[1] = 0.0
+
+    #------------ import cell data
+    gs = get_data(joinpath(basePath, dfname), joinpath(basePath, dfname2))
+
+    return conc_l, gs[2, :, :], gs[1, :, :]
+end
+
+function load(max, repi)
+    g1s = zeros(max, 8, 5)
+    g2s = zeros(max, 8, 5)
+    concentrations = zeros(8, 5)
+    drugs = ["Lapatinib", "Doxorubicin", "Gemcitabine", "Paclitaxel", "Palbociclib"]
+
+    for i = 1:5
+        concentrations[:, i], g2s[:, :, i], g1s[:, :, i] = setup_data(string(drugs[i], repi))
+    end
+
+    return concentrations, g1s + g2s, g1s, g2s
+end
+
+function savitzky_golay_filter(y::AbstractVector, window_size::Integer, polynomial_order::Integer)
+    # input validity checks
+    @assert isodd(window_size) "Window size must be an odd integer, i.e. fitting 2m + 1 points around the current value."
+    @assert polynomial_order < window_size "Polynomial order must be less than the window size."
+
+    # window size is 2m + 1 points
+    m = (window_size - 1) ÷ 2
+
+    # build the Vandermonde design matrix A. Each row corresponds to a point in the fitting window -m:m
+    # and each columns correspond to powers in the range 0:polynomial_order
+    fitting_points = (-m):m
+    A = Matrix{Float64}(undef, window_size, polynomial_order + 1)
+    for i = 1:window_size, j = 1:(polynomial_order + 1)
+        A[i, j] = fitting_points[i]^(j - 1)
+    end
+
+    # for interpolation we'll want the full pseudo-inverse so we can calculate all the fit values at the edges
+    # Ap = y
+    C = pinv(A)
+
+    # the filter coefficients are the rows of `C`
+    filter_coeffs = C[1, :] * factorial(0)
+
+    # convolve with the filter coefficients with a couple extra steps:
+    # 1. because of convolution will reverse coefficients we flip before
+    # 2. c = conv(a,b) will return a vector of length(c) = length(a) + length(b) - 1 so we chop off the first and last m points
+    smoothed = conv(reverse(filter_coeffs), y)[(m + 1):(end - m)]
+
+    # for interpolation edge handling calculate the full fits
+    # if we are just smoothing then we can use the design and coefficient matrix as is
+    AC = A * C
+    smoothed[1:m] = (AC * y[1:window_size])[1:m]
+    smoothed[(end - m + 1):end] = (AC * y[(end - window_size + 1):end])[(end - m + 1):end]
+
+    return smoothed
+end
+
+""" This function imports the _new round_ of data and filters. """
 function import_data()
     basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data")
     data = CSV.read(joinpath(basePath, "AU565_round2and3_model_subset_level2.csv"), DataFrame)
@@ -133,6 +211,7 @@ function form_tensor(new_g, c)
     uniq_c = unique(c)
     filter!(e -> e != "vehicle_0", uniq_c)
     filter!(e -> e != "control_0", uniq_c)
+    # filter Bortezomib high concentrations, because not the trend of interest
     new_ind = []
     for (ind, drug) in enumerate(drugs)
         tm2 = findall( y -> occursin(drug, y), uniq_c)
@@ -218,95 +297,4 @@ function output_drugs(g, c)
                                                                rep4=(collect(DataFrames.eachcol(df_G2[4])), DataFrames.names(df_G2[4])))
         end
     end
-end
-
-""" Easy way of loading the data, either in the form of a tensor, or each drug, separately. """
-function load_data(tensor=true, drug_name=false, average=true)
-    g, c = import_data()
-    newg, newc = trim_data(g, c)
-    if tensor
-        return form_tensor(new_g, newc)
-        # TODO
-    elseif drug_name
-        return
-    end
-end
-
-function setup_data(drug_name::String)
-    basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data")
-
-    dfname = string(drug_name, ".csv")
-    dfname2 = string(drug_name, "_pop.csv")
-
-    if occursin("Lapatinib", drug_name)
-        idx = 1
-    elseif occursin("Doxorubicin", drug_name)
-        idx = 2
-    elseif occursin("Gemcitabine", drug_name)
-        idx = 3
-    elseif occursin("Paclitaxel", drug_name)
-        idx = 4
-    elseif occursin("Palbociclib", drug_name)
-        idx = 1
-    end
-
-    #----------- import concentrations
-    concentration = readdlm(joinpath(basePath, "concentrations.csv"), ','; skipstart = 1)
-    conc_l = [Float64(concentration[idx, col]) for col = 2:9]
-    conc_l[1] = 0.0
-
-    #------------ import cell data
-    gs = get_data(joinpath(basePath, dfname), joinpath(basePath, dfname2))
-
-    return conc_l, gs[2, :, :], gs[1, :, :]
-end
-
-function load(max, repi)
-    g1s = zeros(max, 8, 5)
-    g2s = zeros(max, 8, 5)
-    concentrations = zeros(8, 5)
-    drugs = ["Lapatinib", "Doxorubicin", "Gemcitabine", "Paclitaxel", "Palbociclib"]
-
-    for i = 1:5
-        concentrations[:, i], g2s[:, :, i], g1s[:, :, i] = setup_data(string(drugs[i], repi))
-    end
-
-    return concentrations, g1s + g2s, g1s, g2s
-end
-
-function savitzky_golay_filter(y::AbstractVector, window_size::Integer, polynomial_order::Integer)
-    # input validity checks
-    @assert isodd(window_size) "Window size must be an odd integer, i.e. fitting 2m + 1 points around the current value."
-    @assert polynomial_order < window_size "Polynomial order must be less than the window size."
-
-    # window size is 2m + 1 points
-    m = (window_size - 1) ÷ 2
-
-    # build the Vandermonde design matrix A. Each row corresponds to a point in the fitting window -m:m
-    # and each columns correspond to powers in the range 0:polynomial_order
-    fitting_points = (-m):m
-    A = Matrix{Float64}(undef, window_size, polynomial_order + 1)
-    for i = 1:window_size, j = 1:(polynomial_order + 1)
-        A[i, j] = fitting_points[i]^(j - 1)
-    end
-
-    # for interpolation we'll want the full pseudo-inverse so we can calculate all the fit values at the edges
-    # Ap = y
-    C = pinv(A)
-
-    # the filter coefficients are the rows of `C`
-    filter_coeffs = C[1, :] * factorial(0)
-
-    # convolve with the filter coefficients with a couple extra steps:
-    # 1. because of convolution will reverse coefficients we flip before
-    # 2. c = conv(a,b) will return a vector of length(c) = length(a) + length(b) - 1 so we chop off the first and last m points
-    smoothed = conv(reverse(filter_coeffs), y)[(m + 1):(end - m)]
-
-    # for interpolation edge handling calculate the full fits
-    # if we are just smoothing then we can use the design and coefficient matrix as is
-    AC = A * C
-    smoothed[1:m] = (AC * y[1:window_size])[1:m]
-    smoothed[(end - m + 1):end] = (AC * y[(end - window_size + 1):end])[(end - m + 1):end]
-
-    return smoothed
 end
