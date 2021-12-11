@@ -4,7 +4,7 @@ function Eachdrug(tensr, condition, g1g2)
     t = LinRange(0.0, 95, 189)
     dfs = [DataFrame(x=t, y=tensr[:, i], conc=condition[i]) for i = 1:8]
     DF = vcat(dfs...)
-    return Gadfly.plot(DF, x="x", y="y", color="conc", Geom.line, Guide.xlabel("time [hr]"), Guide.ylabel("$g1g2 Cell #"))
+    return Gadfly.plot(DF, x="x", y="y", color="conc", Geom.line, Guide.xlabel("time [hr]"), Guide.ylabel("$g1g2 Cell #"), Coord.Cartesian(ymin=-0.05,ymax=2.0))
 end
 
 function figure1()
@@ -48,7 +48,7 @@ function figure1()
     p22 = Eachdrug(tens[2, 1, :, :, 11], conditions[11], "S/G2")
 
     pl = plotGrid((6, 4), [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21, p22, nothing, nothing];)
-    return draw(SVG("figure0.svg", 18inch, 20inch), pl)
+    return draw(SVG("figure1.svg", 18inch, 20inch), pl)
 end
 
 function figure2()
@@ -70,5 +70,5 @@ function figure2()
     p11 = Eachdrug(tens[1, 1, :, :, 11] .+ tens[2, 1, :, :, 11], conditions[11], "total")
 
     pl = plotGrid((3, 4), [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, nothing];)
-    return draw(SVG("figure1.svg", 18inch, 14inch), pl)
+    return draw(SVG("figure2.svg", 18inch, 14inch), pl)
 end
