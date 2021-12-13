@@ -29,6 +29,7 @@ include("replicates.jl")
 include("sensitivity.jl")
 include("figures/common.jl")
 include("figures/figure1.jl")
+include("figures/figure2.jl")
 include("organize.jl")
 include("deadcells.jl")
 
