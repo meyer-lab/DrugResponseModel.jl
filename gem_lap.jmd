@@ -1,0 +1,125 @@
+---
+weave_options:
+  error: false
+  echo: false
+---
+
+Simulation of lapatinib and gemcitabine
+```julia
+import Pkg; Pkg.instantiate()
+Pkg.activate(".")
+using DrugResponseModel
+using Plots, LinearAlgebra, Statistics, DataFrames, XLSX
+Plots.scalefontsizes(0.7)
+
+concs, _, g1s1, g2s1 = load(189, 1);
+_, _, g1s2, g2s2 = load(189, 2);
+_, _, g1s3, g2s3 = load(189, 3);
+
+G1S = cat(g1s1, g1s2, g1s3, dims=4);
+G2S = cat(g2s1, g2s2, g2s3, dims=4);
+g1m = mean(G1S, dims=4)[:, :, :, 1];
+g2m = mean(G2S, dims=4)[:, :, :, 1];
+```
+
+```julia
+function gem_params()
+    nM5 = [8.0, 1.8, 1.3, 1.3, 1.3, 1.3, 0.66, 0.66, 0.66, 0.66, 1e-9, 0.02, 1e-9, 1e-9, 1e-9, 1e-9, 0.015, 1e-9, 1.99713,
+    0.10733,
+    1.99997,
+    0.988148,
+    1.74038,
+    1.99998,
+    0.20115,
+    1.84866]
+
+    nM10 = [8.0, 1.8, 1.3, 1.3, 1.3, 1.3, 0.5, 0.5, 0.5, 0.5, 1e-9, 0.04, 1e-9, 1e-9, 1e-9, 1e-9, 0.1, 1e-9, 1.99713,
+    0.10733,
+    1.99997,
+    0.988148,
+    1.74038,
+    1.99998,
+    0.20115,
+    1.84866]
+
+    concs = zeros(2, 1)
+    concs[2, 1] = 5.0
+    concs2 = zeros(2, 1)
+    concs2[2, 1] = 10.0
+    ode5nM = getODEparams(nM5, concs)
+    ode10nM = getODEparams(nM10, concs2)
+
+    tim = LinRange(0.0, 96.0, 189)
+    g1sim = zeros(189, 2)
+    g2sim = zeros(189, 2)
+    g1sim[:, 1], g2sim[:, 1], _ = predict(ode5nM[:, 2, 1], ode5nM[:, 1, 1], tim) # 5nM
+    g1sim[:, 2], g2sim[:, 2], _ = predict(ode10nM[:, 2, 1], ode10nM[:, 1, 1], tim) # 10nM
+    plt = plot(tim, g1sim[:, 1], label="G1 sim 5nM")
+    # plot!(tim, g1m[:, 5, 3], label="G1 data 5nM")
+    plot!(tim, g2sim[:, 1], label="G2 sim 5nM")
+    ylims!((0.0, 3.5))
+    # plot!(tim, g2m[:, 5, 3], label="G2 data 5nM")
+
+    plt2 = plot(tim, g1sim[:, 2], label="G1 sim 10nM")
+    # plot!(tim, g1m[:, 6, 3], label="G1 data 10nM")
+    plot!(tim, g2sim[:, 2], label="G2 sim 10nM")
+    ylims!((0.0, 3.5))
+    # plot!(tim, g2m[:, 6, 3], label="G2 data 10nM")
+
+    ppps=plot(plt, plt2)
+
+    par = [parameters()[1:18]; parameters()[91:98]] 
+    concLap = zeros(3, 1)
+    concLap[2, 1] = 50.0
+    concLap[3, 1] = 100.0
+    laps = getODEparams(par, concLap)
+
+    lap50_gem5 = Bliss_params_unit(laps[:, 2], ode5nM[:, 2], hcat(laps[:, 1], ode5nM[:, 1]))
+    lap50_gem10 = Bliss_params_unit(laps[:, 2], ode10nM[:, 2], hcat(laps[:, 1], ode10nM[:, 1]))
+    lap100_gem5 = Bliss_params_unit(laps[:, 3], ode5nM[:, 2], hcat(laps[:, 1], ode5nM[:, 1]))
+    lap100_gem10 = Bliss_params_unit(laps[:, 3], ode10nM[:, 2], hcat(laps[:, 1], ode10nM[:, 1]))
+
+    g1s = zeros(189, 4)
+    g2s = zeros(189, 4)
+    g1s[:, 1], g2s[:, 1], _ = predict(lap50_gem5, laps[:, 1], tim)
+    g1s[:, 2], g2s[:, 2], _ = predict(lap50_gem10, laps[:, 1], tim)
+    g1s[:, 3], g2s[:, 3], _ = predict(lap100_gem5, laps[:, 1], tim)
+    g1s[:, 4], g2s[:, 4], _ = predict(lap100_gem10, laps[:, 1], tim)
+    df = DataFrames.DataFrame(lap50_gem5G1 = g1s[:, 1], lap50_gem5SG2 = g2s[:, 1], lap50_gem5TOT = g1s[:, 1] .+ g2s[:, 1], 
+    lap50_gem10G1 = g1s[:, 2], lap50_gem10SG2 = g2s[:, 2], lap50_gem10TOT = g1s[:, 2] .+ g2s[:, 2],
+    lap100_gem5G1 = g1s[:, 3], lap100_gem5SG2 = g2s[:, 3], lap100_gem5TOT = g1s[:, 3] .+ g2s[:, 3],
+    lap100_gem10G1 = g1s[:, 4], lap100_gem10SG2 = g2s[:, 4], lap100_gem10TOT = g1s[:, 4] .+ g2s[:, 4])
+
+    p1 = plot(tim, g1s[:, 1], label="G1 lap50 gem5")
+    plot!(tim, g2s[:, 1], label="G2 lap50 gem5")
+    plot!(tim, g1s[:, 1] + g2s[:, 1], label="total lap50 gem 5")
+    ylims!((0.0, 3.5))
+    p2 = plot(tim, g1s[:, 2], label="G1 lap50 gem10")
+    plot!(tim, g2s[:, 2], label="G2 lap50 gem10")
+    plot!(tim, g1s[:, 2] + g2s[:, 2], label="total lap50 gem10")
+    ylims!((0.0, 3.5))
+    p3 = plot(tim, g1s[:, 3], label="G1 lap100 gem5")
+    plot!(tim, g2s[:, 3], label="G2 lap100 gem5")
+    plot!(tim, g1s[:, 3] + g2s[:, 3], label="total lap100 gem5")
+    ylims!((0.0, 3.5))
+    p4 = plot(tim, g1s[:, 4], label="G1 lap100 gem10")
+    plot!(tim, g2s[:, 4], label="G2 lap100 gem10")
+    plot!(tim, g1s[:, 4] .+ g2s[:, 4], label="total lap100 gem10")
+    ylims!((0.0, 3.5))
+    p_out = plot(p1, p2, p3, p4)
+
+    return ppps, p_out
+end
+```
+
+# Plot
+
+```julia
+p1, p2 = gem_params()
+plot(p1)
+#XLSX.writetable("lap+gem.xlsx", df)
+```
+
+```julia
+plot(p2)
+```
