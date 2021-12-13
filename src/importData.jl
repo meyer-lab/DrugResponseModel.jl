@@ -1,8 +1,9 @@
 """
-        Imports data works for the ODE model
+Imports data for the ODE model
 """
 
 const init_cells = 1.0
+basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data")
 
 function get_data(path_g2::String, path_total::String; max = 189)
     # Import data all the trials for each drug
@@ -28,7 +29,6 @@ function get_data(path_g2::String, path_total::String; max = 189)
 end
 
 function import_combination(filename::String)
-    basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data")
     path_g2 = string("/", basePath, "/", filename, "_CYCLE.csv")
     path_total = string("/", basePath, "/", filename, "_CELL.csv")
     perc = readdlm(path_g2, ','; skipstart = 1)
@@ -55,7 +55,6 @@ function import_combination(filename::String)
 end
 
 function setup_data(drug_name::String)
-    basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data")
 
     dfname = string(drug_name, ".csv")
     dfname2 = string(drug_name, "_pop.csv")
@@ -131,4 +130,154 @@ function savitzky_golay_filter(y::AbstractVector, window_size::Integer, polynomi
     smoothed[(end - m + 1):end] = (AC * y[(end - window_size + 1):end])[(end - m + 1):end]
 
     return smoothed
+end
+
+""" This function imports the _new round_ of data and filters. """
+function import_data()
+    basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data")
+    data = CSV.read(joinpath(basePath, "AU565_round2and3_model_subset_level2.csv"), DataFrame)
+
+    # add a new column of "_" to stick to the end of "treatment" column so we can reshape without loosing columns with the same name
+    new_col = similar(data[:, 5])
+    for i=1:length(new_col)
+        new_col[i] = "_"
+    end
+    data_ = hcat(data, new_col)
+
+    # transform so the columns are drug conditions
+    tmp_norm = transform(data_, [:treatment, :x1, :field, :well] => ByRow(string) => :treat)
+    norm_T0 = unstack(tmp_norm, :elapsed_minutes, :treat, :cell_count_norm_T0, allowduplicates=true)
+    select!(norm_T0, Not(:elapsed_minutes))
+
+    # remove the time 0:120 to make all conditions the same length and syncronize
+    norm_T0 = norm_T0[Not(190:end), :]
+
+    G1_prop = unstack(tmp_norm, :elapsed_minutes, :treat, :G1_proportion, allowduplicates=true)
+    G1_prop = G1_prop[Not(190:end), :]
+    select!(G1_prop, Not(:elapsed_minutes)) # delete the time column
+
+    norm_t = Matrix{Float64}(norm_T0)
+    g_prop = Matrix{Float64}(G1_prop)
+
+    # filter
+    for i = 1:size(norm_t, 2)
+        norm_t[:, i] = savitzky_golay_filter(norm_t[:, i], 41, 3)
+        g_prop[:, i] = savitzky_golay_filter(g_prop[:, i], 41, 3)
+    end
+
+    # separate G1 and SG2 cell#
+    gs = zeros(2, size(norm_t, 1), size(norm_t, 2)) # G1# , G2# x time x condition
+    population = init_cells * norm_t
+    gs[1, :, :] = population .* g_prop # G1
+    gs[2, :, :] = population - gs[1, :, :] # G2
+
+    condition = similar(names(norm_T0))
+    for (index, item) in enumerate(names(norm_T0))
+        condition[index] = rsplit(item, "_", limit=2)[1]
+    end
+    return gs, condition
+end
+
+""" Extract 4 replicates of each condition. """
+function trim_data(g, c)
+
+    # find unique conditions
+    uniq_c = unique(c)
+    # remove "control_0" and "vehicle_0" from the conditions
+    filter!(e -> e != "vehicle_0", uniq_c)
+    filter!(e -> e != "control_0", uniq_c)
+    # append the index of 4 replicates of the same condition
+    inds = []
+    for item in uniq_c
+        tm = findall(x -> x == item, c)
+        push!(inds, tm[1:4])
+    end
+
+    # create a new G with a bit more organized conditions based on unique 
+    new_g = zeros(2, 4, 189, length(inds)) # G1/G2 x 4 replicates x 189 data points x conditions
+    for i in 1:length(uniq_c)
+        new_g[1, :, :, i] = g[1, :, inds[i]]' # G1
+        new_g[2, :, :, i] = g[2, :, inds[i]]' # SG2
+    end
+    @assert size(new_g, 4) == size(uniq_c)[1] == size(inds)[1]
+
+    return new_g
+end
+
+drugs = ["BEZ235", "Trametinib", "5FU", "AZD5438", "Panobinostat", "MG132", "Everolimus", "JQ1", "Bortezomib", "MK1775", "Cabozantinib"]
+
+""" Create a tensor form of the data """
+function form_tensor(new_g, c)
+    uniq_c = unique(c)
+    filter!(e -> e != "vehicle_0", uniq_c)
+    filter!(e -> e != "control_0", uniq_c)
+    # filter Bortezomib high concentrations, because not the trend of interest
+    new_ind = []
+    for (ind, drug) in enumerate(drugs)
+        tm2 = findall( y -> occursin(drug, y), uniq_c)
+        push!(new_ind, tm2[1:7])
+    end
+
+    tensor = zeros(2, 4, 189, 8, 11)
+    vehicle_indx = findall( y -> occursin("vehicle", y), c)
+    for i=1:4
+        tensor[:, :, :, 1, :] .= new_g[:, :, :, vehicle_indx[i]]
+    end
+    conditions = []
+    for i = 1:11
+        tensor[1, :, :, 2:8, i] = new_g[1, :, :, new_ind[i]]
+        tensor[2, :, :, 2:8, i] = new_g[2, :, :, new_ind[i]]
+        push!(conditions, pushfirst!(uniq_c[new_ind[i]], "Vehicle"))
+    end
+    return tensor, conditions
+end
+
+""" create one csv file for each drug. """
+function output_drugs(g, c, drugname)
+    uniq_c = unique(c)
+    filter!(x->x!="vehicle_0", uniq_c)
+    filter!(x->x!="control_0", uniq_c)
+
+    inds = []
+    for item in uniq_c
+        tm = findall(x -> x == item, c)
+        push!(inds, tm)
+    end
+
+    # create a new G with a bit more organized conditions based on unique
+    new_g = zeros(2, 189, 8, length(uniq_c)) # control
+    for i in 1:length(uniq_c)
+        new_g[:, :, 1:length(inds[i]), i] .= g[:, :, inds[i]] # G1
+    end
+
+    # conditions
+    new_ind = []
+    for (ind, drug) in enumerate(drugs)
+        tm2 = findall( y -> occursin(drug, y), uniq_c)
+        push!(new_ind, tm2)
+    end
+
+    i = findall(y -> y==drugname, drugs)[1]
+    gg1 = new_g[1, :, :, new_ind[i]]
+    g1 = zeros(size(gg1)[1], size(gg1)[2], size(gg1)[3]+1)
+    g1[:, :, 2:1+size(gg1)[3]] .= gg1
+    g1[:, :, 1] = g[1, :, findall(y -> occursin("vehicle", y), c)[1:8]]
+    gg2 = new_g[2, :, :, new_ind[i]]
+    g2 = zeros(size(gg2)[1], size(gg2)[2], size(gg2)[3]+1)
+    g2[:, :, 2:1+size(gg2)[3]] .= gg2
+    g2[:, :, 1] = g[2, :, findall(y -> occursin("vehicle", y), c)[1:8]]
+
+    return g1, g2
+end
+
+function load_newData(drugname)
+    # import concentrations
+    columns, _ = XLSX.readtable(string("/", basePath, "/conditions.xlsx"), "Sheet1")
+    concentrations = hcat(columns...)' # [8 x 11] includes control, for 11 drugs
+    # find index of the drug
+    i = findall(y -> y==drugname, drugs)[1]
+    data = zeros(2, 189, 8)
+    g, c = import_data()
+    G1, SG2 = output_drugs(g, c, drugname)
+    return G1, SG2, concentrations[:, i]
 end
