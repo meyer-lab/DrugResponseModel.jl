@@ -12,12 +12,12 @@ function figure1()
     g, c = DrugResponseModel.import_data()
     newg = DrugResponseModel.trim_data(g, c)
     tensor, conditions = DrugResponseModel.form_tensor(newg, c)
-    tens = mean(tensor, dims=2)
+    tens = mean(tensor, dims=2)[:, 1, :, :, :]
 
     pp = []
     for i = 1:11
-        push!(pp, Eachdrug(tens[1, 1, :, :, i], conditions[i], "G1"))
-        push!(pp, Eachdrug(tens[2, 1, :, :, i], conditions[i], "S/G2"))
+        push!(pp, Eachdrug(tens[1, :, :, i], conditions[i], "G1"))
+        push!(pp, Eachdrug(tens[2, :, :, i], conditions[i], "S/G2"))
     end
 
     pl = plotGrid((6, 4), [pp..., nothing, nothing];)

@@ -37,13 +37,13 @@ end
 
 
 """ Hill optimization function. """
-function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 300000)
+function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 100000)
 
     f(x) = residHill(x, conc, g1, g2)
 
     # [EC50, k, max_a1, max_a2, max_b1,  max_b2, max_b3, max_b4, max_g11, max_g12, max_g21, max_g22, max_g23, max_g24, min_a1, min_a2, min_b1,  min_b2, min_b3, min_b4]
     low = [minimum(conc); 1e-9 * ones(25)]
-    high = [maximum(conc); 10.0; 2.5 * ones(24)]
+    high = [2*maximum(conc); 10.0; 10.0 * ones(24)]
 
     return optimize_helper(f, low, high, maxstep)
 end
