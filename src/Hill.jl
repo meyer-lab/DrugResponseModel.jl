@@ -37,7 +37,7 @@ end
 
 
 """ Hill optimization function. """
-function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 300000)
+function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 100000)
 
     f(x) = residHill(x, conc, g1, g2)
 
