@@ -145,7 +145,7 @@ function import_data()
     data_ = hcat(data, new_col)
 
     # transform so the columns are drug conditions
-    tmp_norm = transform(data_, [:treatment, :x1, :field, :well] => ByRow(string) => :treat)
+    tmp_norm = DataFrames.transform(data_, [:treatment, :x1, :field, :well] => ByRow(string) => :treat)
     norm_T0 = unstack(tmp_norm, :elapsed_minutes, :treat, :cell_count_norm_T0, allowduplicates=true)
     select!(norm_T0, Not(:elapsed_minutes))
 
