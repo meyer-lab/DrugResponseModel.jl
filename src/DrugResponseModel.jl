@@ -17,7 +17,6 @@ using XLSX
 using StatsPlots
 using NumericalIntegration
 using CSV
-using Clustering
 using MultivariateStats
 
 include("importData.jl")

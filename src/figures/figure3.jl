@@ -1,53 +1,47 @@
 """ Cluster drugs based on their inferred ODE effects. """
 drugs = ["BEZ235", "Trametinib", "5FU", "AZD5438", "Panobinostat", "MG132", "Everolimus", "JQ1", "Bortezomib", "MK1775", "Cabozantinib"]
-
-function kmeans_()
-    ps = DrugResponseModel.out_ODEparams()[:, :, 5]
-    results = []
-    for i = 2:6
-        push!(results, kmeans(ps', i))
-    end
-    return results, ps
-end
-
-function clusterings(res)
-    cls = []
-    for i=1:11
-        add_on = "c_"
-        class = string(res.assignments[i])
-        push!(cls, add_on * class)
-    end
-    df = DataFrame(x=drugs, y=res.assignments, class=cls)
-    p = Gadfly.plot(df, x="x", y="y", Geom.point, color="class", Guide.xlabel("drugs"), Guide.ylabel("clusters"))
-    return p
-end
+params = ["α_1", "α_2", "α_3", "α_4", "β_1", "β_2", "β_3", "β_4", "γ_11", "γ_12", "γ_13", "γ_14", "γ_21", "γ_22", "γ_23", "γ_24"]
 
 function pca_()
-    ps2 = DrugResponseModel.out_ODEparams()[:, :, 5]
-    M = fit(PCA, ps2'; pratio=1, maxoutdim=4)
-    ps_transformed = MultivariateStats.transform(M, ps2')
-    print(principalvars(M) ./ tvar(M) * 100)
-return ps_transformed
+    scores = []
+    loadings = []
+    for i=1:8
+        ps = DrugResponseModel.out_ODEparams()[:, :, i]' # 16 x 11
+        # mean-center each feature
+        for i = 1:11
+            ps[:, i] = ps[:, i] .- mean(ps[:, i])
+            ps[:, i] = ps[:, i] ./ std(ps[:, i])
+        end
+        M = fit(PCA, ps; pratio=1, maxoutdim=4)
+        push!(scores, MultivariateStats.transform(M, ps))
+        push!(loadings, MultivariateStats.projection(M)')
+    end
+    return scores, loadings
 end
 
-function pca_plot()
+function scores_or_loadings_plot(i, Cls)
 
-    ps_tr = pca_()
-    df = DataFrame(x=ps_tr[1, :], y=ps_tr[2, :], class=drugs)
-    p = Gadfly.plot(df, x="x", y="y", Geom.point, label="class", Geom.label, Guide.xlabel("PC1"), Guide.ylabel("PC2"))
-    return p
+    all_pt = pca_()[i]
+    df = [DataFrame(x=ps_tr[1, :], y=ps_tr[2, :], class=Cls) for ps_tr in all_pt]
+    plots = []
+    for i=1:8
+        push!(plots, Gadfly.plot(df[i], x="x", y="y", Geom.point, label="class", Geom.label, Guide.xlabel("PC1"), Guide.ylabel("PC2"), Coord.Cartesian(xmin=-4.0, xmax=4.0, ymin=-3.0,ymax=3.0)))
+    end
+    return plots
 end
 
 function figure3()
     setGadflyTheme()
 
-    res, ps = kmeans_()
-    plts = []
-    for i=1:5
-        push!(plts, clusterings(res[i]))
-    end
-    push!(plts, pca_plot())
+    ppp = scores_or_loadings_plot(1, drugs)
+    pl = plotGrid((2, 4), [ppp...];)
+    return draw(SVG("figure3a.svg", 16inch, 8inch), pl)
+end
 
-    pl = plotGrid((2, 3), [plts...];)
-    return draw(SVG("figure3.svg", 12inch, 8inch), pl)
+function figure31()
+    setGadflyTheme()
+
+    ppp = scores_or_loadings_plot(2, params)
+    pl = plotGrid((2, 4), [ppp...];)
+    return draw(SVG("figure3b.svg", 12inch, 4inch), pl)
 end
