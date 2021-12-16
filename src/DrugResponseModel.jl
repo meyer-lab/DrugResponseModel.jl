@@ -17,6 +17,7 @@ using XLSX
 using StatsPlots
 using NumericalIntegration
 using CSV
+using MultivariateStats
 
 include("importData.jl")
 include("ODEmodel.jl")
@@ -30,6 +31,8 @@ include("sensitivity.jl")
 include("figures/common.jl")
 include("figures/figure1.jl")
 include("figures/figure2.jl")
+include("figures/figure3.jl")
+include("figures/figure4.jl")
 include("organize.jl")
 include("deadcells.jl")
 
