@@ -7,7 +7,7 @@ function plt_1(i, j, eff_name)
     cs = convert(Array{Float64,1}, conc)
     dfs = [DataFrame(x=cs, y=pp[i, Int(j+k-1), :], label=string(eff_name*"$k")) for k = 1:4]
     DF = vcat(dfs...)
-    return Gadfly.plot(DF, x="x", y="y", color="label", Geom.line, Guide.xlabel("concentrations [nM]"), Guide.ylabel(eff_name), Coord.Cartesian(ymin=0.0,ymax=10.0))
+    return Gadfly.plot(DF, x="x", y="y", color="label", Geom.line, Guide.title(drugs[i]), Guide.xlabel("concentrations [nM]"), Guide.ylabel(eff_name), Coord.Cartesian(ymin=0.0,ymax=10.0))
 end
 
 function figure4()

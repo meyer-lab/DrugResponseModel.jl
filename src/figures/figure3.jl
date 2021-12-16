@@ -25,7 +25,7 @@ function scores_or_loadings_plot(i, Cls)
     df = [DataFrame(x=ps_tr[1, :], y=ps_tr[2, :], class=Cls) for ps_tr in all_pt]
     plots = []
     for i=1:8
-        push!(plots, Gadfly.plot(df[i], x="x", y="y", Geom.point, label="class", Geom.label, Guide.xlabel("PC1"), Guide.ylabel("PC2"), Coord.Cartesian(xmin=-4.0, xmax=4.0, ymin=-3.0,ymax=3.0)))
+        push!(plots, Gadfly.plot(df[i], x="x", y="y", Geom.point, label="class", Geom.label, Guide.title("concentration $i"), Guide.xlabel("PC1"), Guide.ylabel("PC2")))
     end
     return plots
 end
