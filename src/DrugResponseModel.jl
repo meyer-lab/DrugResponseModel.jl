@@ -36,6 +36,7 @@ include("figures/figure4.jl")
 include("figures/figure5.jl")
 include("figures/figure6.jl")
 include("figures/figure7.jl")
+include("figures/figure8.jl")
 include("organize.jl")
 include("deadcells.jl")
 
