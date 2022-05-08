@@ -15,14 +15,14 @@
 # g1m = mean(G1S, dims=4)[:, :, :, 1];
 # g2m = mean(G2S, dims=4)[:, :, :, 1];
 
-function residHillAll(hP, concentrations::Matrix, g1::Array, g2::Array)
+function residHillAll(hP, concentrations, g1::Array, g2::Array)
     res = 0.0
 
     # Solve for all drugs
     t = 1
-    for j = 1:5
-        hill = hP[[t:(t + 17); 91:98]]
-        res += residHill(hill, concentrations[:, j], g1[:, :, j], g2[:, :, j])
+    for j = 1:6
+        hill = hP[[t:(t + 17); 109:116]]
+        res += residHill(hill, concentrations[j], g1[:, :, j], g2[:, :, j])
         t += 18
     end
     return res
@@ -30,23 +30,23 @@ end
 
 """ Organize Hill parameters for each drug in a 2D array. """
 function Hill_p_eachDr(p)
-    HillP = Matrix{eltype(p)}(undef, 18, 5)
+    HillP = Matrix{eltype(p)}(undef, 18, 6)
     # each column: [EC50, steepness, max_g1,1_prog., max_g1,2_prog., max_g2,1_prog., max_g2,2_prog., max_g11_death, max_g12_death, max_g21_death, max_g22_death]
     j = 1
-    for i = 1:5
+    for i = 1:6
         HillP[:, i] .= p[j:(j + 17)]
         j += 18
     end
     HillP
 end
 
-function optim_all(concs::Array{Float64, 2}, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 800000)
+function optim_all(concs, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 800000)
     f(x) = residHillAll(x, concs, g1, g2)
 
-    lP = [minimum(concs); 0.01; 5e-9 * ones(16)]
-    low = vcat(lP, lP, lP, lP, lP, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9)
-    hP = [maximum(concs); 10.0; 2.0 * ones(16)]
-    high = vcat(hP, hP, hP, hP, hP, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0)
+    lP = [0.01; 5e-9 * ones(16)]
+    low = vcat(minimum(concs[1]), lP, minimum(concs[2]), lP, minimum(concs[3]), lP, minimum(concs[4]), lP, minimum(concs[5]), lP, minimum(concs[6]), lP, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9)
+    hP = [10.0; 5.0 * ones(16)]
+    high = vcat(maximum(concs[1]), hP, maximum(concs[2]), hP, maximum(concs[3]), hP, maximum(concs[4]), hP, maximum(concs[5]), hP, maximum(concs[6]), hP, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0)
 
     return optimize_helper(f, low, high, maxiter)
 end

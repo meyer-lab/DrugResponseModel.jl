@@ -1,7 +1,6 @@
 """ Plotting the model and data, fitted separately. """
 global drugs = ["BEZ235", "Trametinib", "5FU", "AZD5438", "Panobinostat", "MG132", "Everolimus", "JQ1", "Bortezomib", "MK1775", "Cabozantinib"]
 
-t = LinRange(0.0, 95, 189)
 
 """ Takes the above parameters and returns the inferred ODE params. The output is used in figure3. """
 function out_ODEparams()
@@ -26,6 +25,7 @@ function out_ODEparams()
 end
 
 function Eachdrug_sim(G_sim, G_data, condition, g1g2, drug_name)
+    t = LinRange(0.0, 95, size(G_sim)[1])
     df = [DataFrame(x=t, y=G_sim[:, i], y2=G_data[:, i], conc=condition[i]) for i = 1:8]
     DF = vcat(df...)
     p = Gadfly.plot(DF, layer(x="x", y="y", Geom.line, color="conc"), 
