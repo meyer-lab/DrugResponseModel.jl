@@ -133,12 +133,18 @@ function savitzky_golay_filter(y::AbstractVector, window_size::Integer, polynomi
 end
 
 """ This function imports the _new round_ of data and filters. """
-function import_data()
-    basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data")
-    data = CSV.read(joinpath(basePath, "AU565_round2and3_model_subset_level2.csv"), DataFrame)
+function import_data(hc=false)
+    if hc == false
+        basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data")
+        data = CSV.read(joinpath(basePath, "AU565_round2and3_model_subset_level2.csv"), DataFrame)
+    else
+        basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data", "HC")
+        data = CSV.read(joinpath(basePath, hc), DataFrame)
+        data.treatment = replace.(data.treatment, Ref("Untreated" => "Untreated_0"))
+    end
 
     # add a new column of "_" to stick to the end of "treatment" column so we can reshape without loosing columns with the same name
-    new_col = similar(data[:, 5])
+    new_col = similar(data.treatment)
     for i=1:length(new_col)
         new_col[i] = "_"
     end
@@ -150,12 +156,22 @@ function import_data()
     select!(norm_T0, Not(:elapsed_minutes))
 
     # remove the time 0:120 to make all conditions the same length and syncronize
-    norm_T0 = norm_T0[Not(190:end), :]
+    if hc == false
+        norm_T0 = norm_T0[Not(190:end), :]
+    else
+        norm_T0 = norm_T0[Not(183:end), :]
+    end
 
+    @assert(sum(collect(any(ismissing, c) for c in eachcol(norm_T0))) == 0)
     G1_prop = unstack(tmp_norm, :elapsed_minutes, :treat, :G1_proportion, allowduplicates=true)
-    G1_prop = G1_prop[Not(190:end), :]
+    if hc == false
+        G1_prop = G1_prop[Not(190:end), :]
+    else
+        G1_prop = G1_prop[Not(183:end), :]
+    end
     select!(G1_prop, Not(:elapsed_minutes)) # delete the time column
 
+    @assert(sum(collect(any(ismissing, c) for c in eachcol(G1_prop))) == 0)
     norm_t = Matrix{Float64}(norm_T0)
     g_prop = Matrix{Float64}(G1_prop)
 
@@ -175,7 +191,11 @@ function import_data()
     for (index, item) in enumerate(names(norm_T0))
         condition[index] = rsplit(item, "_", limit=2)[1]
     end
-    return gs, condition
+    if hc == false
+        return gs, condition
+    else
+        return gs, condition, unique(data.Drug1)
+    end
 end
 
 """ Extract 4 replicates of each condition. """
@@ -187,14 +207,20 @@ function trim_data(g, c)
     filter!(e -> e != "vehicle_0", uniq_c)
     filter!(e -> e != "control_0", uniq_c)
     # append the index of 4 replicates of the same condition
+    inds_lengths = []
+    for item in uniq_c
+        tm = findall(x -> x == item, c)
+        push!(inds_lengths, length(tm))
+    end
+
+    l = minimum(inds_lengths) # the GCD of the number of replicates, since not all conditions have 4 replicates...
     inds = []
     for item in uniq_c
         tm = findall(x -> x == item, c)
-        push!(inds, tm[1:4])
+        push!(inds, tm[1:l])
     end
-
     # create a new G with a bit more organized conditions based on unique 
-    new_g = zeros(2, 4, 189, length(inds)) # G1/G2 x 4 replicates x 189 data points x conditions
+    new_g = zeros(2, l, size(g)[2], length(inds)) # G1/G2 x 4 replicates x 189 data points x conditions
     for i in 1:length(uniq_c)
         new_g[1, :, :, i] = g[1, :, inds[i]]' # G1
         new_g[2, :, :, i] = g[2, :, inds[i]]' # SG2
@@ -230,6 +256,65 @@ function form_tensor(new_g, c)
         push!(conditions, pushfirst!(uniq_c[new_ind[i]], "Vehicle"))
     end
     return tensor, conditions
+end
+
+""" Form tensor for the HCC1143 dataset. """
+function hcc_tensor(new_g, cc, ndrugs)
+    uniq_c = unique(cc)
+    filter!(e -> e != "Untreated", ndrugs)
+    new_ind = []
+    for (ind, drug) in enumerate(ndrugs)
+        tm2 = findall( y -> occursin(drug, y), uniq_c)
+        push!(new_ind, tm2[1:7])
+    end
+
+    tensor = zeros(2, size(new_g)[2], size(new_g)[3], 8, 3)
+    vehicle_indx = findall( y -> occursin("Untreated", y), uniq_c)
+
+    tensor[:, :, :, 1, :] .= new_g[:, :, :, vehicle_indx]
+    conditions = []
+    for i = 1:3
+        tensor[1, :, :, 2:8, i] = new_g[1, :, :, new_ind[i]]
+        tensor[2, :, :, 2:8, i] = new_g[2, :, :, new_ind[i]]
+        push!(conditions, pushfirst!(uniq_c[new_ind[i]], "Untreated_0"))
+    end
+    return tensor, conditions
+end
+
+""" This function puts together the data from all drug treatments of HCC1143. """
+function hcc_all()
+    g1, c1, d1 = DrugResponseModel.import_data("HC00701_level_2.csv")
+    newg1 = DrugResponseModel.trim_data(g1, c1)
+    ten1, cond1 = DrugResponseModel.hcc_tensor(newg1, c1, d1)
+    t1 = mean(ten1, dims=2)
+
+    g2, c2, d2 = DrugResponseModel.import_data("HC00801_level_2.csv")
+    newg2 = DrugResponseModel.trim_data(g2, c2)
+    ten2, cond2 = DrugResponseModel.hcc_tensor(newg2, c2, d2)
+    t2 = mean(ten2, dims=2)
+
+    conds = append!(cond1, cond2)
+    names = []
+    concs = []
+    for cc in conds
+        c = []
+        for item in cc
+            push!(c, parse(Float64, rsplit(item, "_")[2]))
+        end
+        push!(names, rsplit(item, "_")[1])
+        push!(concs, c)
+    end
+    
+    # g3, c3, d3 = import_data("HC00901_level_2.csv")
+    # newg3 = trim_data(g3, c3)
+    # ten3, cond3 = hcc_tensor(newg3, c3, d3)
+
+    # g4, c4, d4 = import_data("HC01001_level_2.csv")
+    # newg4 = trim_data(g4, c4)
+    # ten4, cond4 = hcc_tensor(newg4, c4, d4)
+
+    # return cat(ten3, ten4, dims=4), cond3, cond4
+    return cat(t1, t2, dims=5)[:, 1, :, :, :], names, concs
 end
 
 """ create one csv file for each drug. """
