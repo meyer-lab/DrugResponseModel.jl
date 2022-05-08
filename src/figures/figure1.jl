@@ -1,10 +1,14 @@
 """ plot the new data. """
 
-function Eachdrug(tensr, condition, g1g2)
-    t = LinRange(0.0, 95, 189)
+function Eachdrug(tensr, condition, g1g2, titles=false)
+    t = LinRange(0.0, 95, size(tensr)[1])
     dfs = [DataFrame(x=t, y=tensr[:, i], conc=condition[i]) for i = 1:8]
     DF = vcat(dfs...)
-    return Gadfly.plot(DF, x="x", y="y", color="conc", Geom.line, Guide.xlabel("time [hr]"), Guide.ylabel("$g1g2 Cell #"), Coord.Cartesian(ymin=-0.05,ymax=2.0))
+    if titles == false
+        return Gadfly.plot(DF, x="x", y="y", color="conc", Geom.line, Guide.xlabel("time [hr]"), Guide.ylabel("$g1g2 Cell #"), Coord.Cartesian(ymin=-0.05,ymax=2.0))
+    else
+        return Gadfly.plot(DF, x="x", y="y", color="conc", Geom.line, Guide.xlabel("time [hr]"), Guide.ylabel("$g1g2 Cell #"), Guide.title(titles), Coord.Cartesian(ymin=-0.05,ymax=2.0))        
+    end
 end
 
 function figure1()
@@ -15,7 +19,7 @@ function figure1()
     tens = mean(tensor, dims=2)[:, 1, :, :, :]
 
     pp = []
-    for i = 1:11
+    for i = 1:size(tens)[4]
         push!(pp, Eachdrug(tens[1, :, :, i], conditions[i], "G1"))
         push!(pp, Eachdrug(tens[2, :, :, i], conditions[i], "S/G2"))
     end
