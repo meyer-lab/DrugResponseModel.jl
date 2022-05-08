@@ -301,7 +301,7 @@ function hcc_all()
         for item in cc
             push!(c, parse(Float64, rsplit(item, "_")[2]))
         end
-        push!(names, rsplit(item, "_")[1])
+        push!(names, rsplit(cc[2], "_")[1])
         push!(concs, c)
     end
     
