@@ -1,0 +1,219 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 4.3
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2020 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+ 
+
+# Make data base, printed on Mon May  9 12:10:48 2022
+
+# Variables
+
+# environment
+LC_ALL = C
+# environment
+VSCODE_CWD = /home/farnazm
+# default
+MAKE_COMMAND := make
+# environment
+VSCODE_HANDLES_SIGPIPE = true
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# default
+.VARIABLES := 
+# environment
+PWD = /home/farnazm/DrugResponseModel.jl
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+VSCODE_LOG_STACK = false
+# automatic
+%F = $(notdir $%)
+# environment
+LANG = C
+# default
+.LOADED := 
+# default
+.INCLUDE_DIRS = /usr/local/include /usr/include /usr/include
+# makefile
+MAKEFLAGS = pqrR
+# makefile
+CURDIR := /home/farnazm/DrugResponseModel.jl
+# environment
+VSCODE_PIPE_LOGGING = true
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+MFLAGS = -pqrR
+# default
+.SHELLFLAGS := -c
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# makefile (from 'makefile', line 1)
+MAKEFILE_LIST := makefile
+# automatic
+@F = $(notdir $@)
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+XDG_SESSION_TYPE = tty
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# automatic
+*F = $(notdir $*)
+# environment
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1012/bus
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en","availableLanguages":{}}
+# default
+MAKE_HOST := x86_64-pc-linux-gnu
+# makefile
+SHELL = /bin/sh
+# default
+MAKECMDGOALS := all
+# environment
+SHLVL = 0
+# environment
+MAKELEVEL := 0
+# default
+MAKE = $(MAKE_COMMAND)
+# environment
+PATH = /home/farnazm/.vscode-server/bin/57fd6d0195bb9b9d1b49f6da5db789060795de47/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/snap/bin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+# default
+MAKEFILES := 
+# environment
+MOTD_SHOWN = pam
+# automatic
+^F = $(notdir $^)
+# environment
+SSH_CLIENT = 76.91.25.147 59040 22
+# environment
+VSCODE_LOG_NATIVE = false
+# automatic
+?F = $(notdir $?)
+# automatic
++F = $(notdir $+)
+# 'override' directive
+GNUMAKEFLAGS := 
+# environment
+BROWSER = /home/farnazm/.vscode-server/bin/57fd6d0195bb9b9d1b49f6da5db789060795de47/bin/helpers/browser.sh
+# environment
+LOGNAME = farnazm
+# makefile
+.DEFAULT_GOAL := all
+# environment
+USER = farnazm
+# default
+MAKE_VERSION := 4.3
+# environment
+VSCODE_EXTHOST_WILL_SEND_SOCKET = true
+# environment
+VSCODE_AGENT_FOLDER = /home/farnazm/.vscode-server
+# environment
+_ = /home/farnazm/.vscode-server/bin/57fd6d0195bb9b9d1b49f6da5db789060795de47/node
+# environment
+XDG_RUNTIME_DIR = /run/user/1012
+# environment
+LC_CTYPE = en_US.UTF-8
+# environment
+VSCODE_IPC_HOOK_CLI = /run/user/1012/vscode-ipc-d29db362-103f-4e44-a676-041c7b9cc559.sock
+# environment
+XDG_SESSION_CLASS = user
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+HOME = /home/farnazm
+# environment
+XDG_SESSION_ID = 428
+# default
+.RECIPEPREFIX := 
+# automatic
+<F = $(notdir $<)
+# default
+SUFFIXES := 
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs archives jobserver output-sync check-symlink load
+# environment
+SSH_CONNECTION = 76.91.25.147 59040 164.67.191.131 22
+# variable set hash-table stats:
+# Load=67/1024=7%, Rehash=0, Collisions=2/97=2%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# . (device 27, inode 163237976): 22 files, no impossibilities.
+
+# 22 files, no impossibilities in 1 directories.
+
+# Implicit Rules
+
+%.pdf: %.jmd
+#  recipe to execute (from 'makefile', line 5):
+	julia -e 'using Pkg; Pkg.add("IJulia"); Pkg.add("Weave"); Pkg.precompile()'
+	julia -e 'using Pkg; Pkg.activate("."); Pkg.instantiate(); ENV["GKSwstype"]="100"; using Weave; weave("$<", doctype = "md2pdf")'
+	rm $*.log $*.out $*.tex $*.aux
+
+figure%.svg:
+#  recipe to execute (from 'makefile', line 10):
+	julia -e 'using Pkg; Pkg.activate("."); Pkg.instantiate(); using DrugResponseModel; DrugResponseModel.figure$*()'
+
+# 2 implicit rules, 0 (0.0%) terminal.
+# Files
+
+clean:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'makefile', line 13):
+	rm -rf *.pdf
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+all:
+#  Command line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+makefile:
+#  Implicit rule search has been done.
+#  Last modified 2022-05-07 13:11:55.41689061
+#  File has been updated.
+#  Successfully updated.
+
+# files hash-table stats:
+# Load=5/1024=0%, Rehash=0, Collisions=0/16=0%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 31 / storage = 279 B / avg = 9 B
+# current buf: size = 8162 B / used = 279 B / count = 31 / avg = 9 B
+
+# strcache performance: lookups = 38 / hit rate = 18%
+# hash-table stats:
+# Load=31/8192=0%, Rehash=0, Collisions=0/38=0%
+# Finished Make data base on Mon May  9 12:10:48 2022
+
+ 

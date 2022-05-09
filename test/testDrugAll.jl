@@ -1,6 +1,6 @@
 @testset "Fit All drug at once tests" begin
     concs, populations, g1s, g2s = load(189, 1)
-    p = ones(98)
+    p = ones(116)
     effects = DrugResponseModel.getODEparams(p, concs)
 
     # test the local optimization function
