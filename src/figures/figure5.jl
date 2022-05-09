@@ -2,7 +2,7 @@
 function figure5()
     setGadflyTheme()
 
-    tens, names, _, conds = DrugResponseModel.hcc_all()
+    tens, names, _, conds, _, _ = DrugResponseModel.hcc_all()
 
     pp = []
     for i = 1:size(tens)[4]

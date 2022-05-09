@@ -1,6 +1,6 @@
 """ Figure 8: the quantified effects of drugs for HCC cell line when fitting at once. """
 function plt_2(i, j, eff_name)
-    tensor, names, concs, conds = DrugResponseModel.hcc_all()
+    tensor, names, concs, conds, _, _ = DrugResponseModel.hcc_all()
     cs = zeros(8, length(concs))
     for i=1:length(concs)
         cs[:, i] = concs[i]
