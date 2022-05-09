@@ -5,9 +5,8 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
- 
 
-# Make data base, printed on Mon May  9 12:10:48 2022
+# Make data base, printed on Mon May  9 12:21:36 2022
 
 # Variables
 
@@ -126,7 +125,7 @@ XDG_RUNTIME_DIR = /run/user/1012
 # environment
 LC_CTYPE = en_US.UTF-8
 # environment
-VSCODE_IPC_HOOK_CLI = /run/user/1012/vscode-ipc-d29db362-103f-4e44-a676-041c7b9cc559.sock
+VSCODE_IPC_HOOK_CLI = /run/user/1012/vscode-ipc-eb4bed0c-70aa-4fde-8ccc-2615a3b75c6a.sock
 # environment
 XDG_SESSION_CLASS = user
 # environment
@@ -214,6 +213,6 @@ makefile:
 # strcache performance: lookups = 38 / hit rate = 18%
 # hash-table stats:
 # Load=31/8192=0%, Rehash=0, Collisions=0/38=0%
-# Finished Make data base on Mon May  9 12:10:48 2022
+# Finished Make data base on Mon May  9 12:21:36 2022
 
  
