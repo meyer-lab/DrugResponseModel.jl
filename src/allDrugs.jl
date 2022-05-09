@@ -20,7 +20,7 @@ function residHillAll(hP, concentrations, g1::Array, g2::Array)
 
     # Solve for all drugs
     t = 1
-    l = length(hp)
+    l = length(hP)
     for j = 1:size(g1)[3]
         hill = hP[[t:(t + 17); l-7:l]]
         res += residHill(hill, concentrations[j], g1[:, :, j], g2[:, :, j])
