@@ -1,5 +1,0 @@
-make --dry-run --always-make --keep-going --print-directory
-make: Entering directory '/home/farnazm/DrugResponseModel.jl'
-make: Nothing to be done for 'all'.
-make: Leaving directory '/home/farnazm/DrugResponseModel.jl'
- 
