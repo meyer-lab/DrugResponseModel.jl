@@ -5,8 +5,9 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
+ 
 
-# Make data base, printed on Mon May  9 12:21:36 2022
+# Make data base, printed on Wed May 11 08:51:04 2022
 
 # Variables
 
@@ -87,7 +88,7 @@ MAKELEVEL := 0
 # default
 MAKE = $(MAKE_COMMAND)
 # environment
-PATH = /home/farnazm/.vscode-server/bin/57fd6d0195bb9b9d1b49f6da5db789060795de47/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/snap/bin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+PATH = /home/farnazm/.vscode-server/bin/da15b6fd3ef856477bf6f4fb29ba1b7af717770d/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/snap/bin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
 # default
 MAKEFILES := 
 # environment
@@ -95,7 +96,7 @@ MOTD_SHOWN = pam
 # automatic
 ^F = $(notdir $^)
 # environment
-SSH_CLIENT = 76.91.25.147 59040 22
+SSH_CLIENT = 76.91.25.147 59546 22
 # environment
 VSCODE_LOG_NATIVE = false
 # automatic
@@ -105,7 +106,7 @@ VSCODE_LOG_NATIVE = false
 # 'override' directive
 GNUMAKEFLAGS := 
 # environment
-BROWSER = /home/farnazm/.vscode-server/bin/57fd6d0195bb9b9d1b49f6da5db789060795de47/bin/helpers/browser.sh
+BROWSER = /home/farnazm/.vscode-server/bin/da15b6fd3ef856477bf6f4fb29ba1b7af717770d/bin/helpers/browser.sh
 # environment
 LOGNAME = farnazm
 # makefile
@@ -119,13 +120,13 @@ VSCODE_EXTHOST_WILL_SEND_SOCKET = true
 # environment
 VSCODE_AGENT_FOLDER = /home/farnazm/.vscode-server
 # environment
-_ = /home/farnazm/.vscode-server/bin/57fd6d0195bb9b9d1b49f6da5db789060795de47/node
+_ = /home/farnazm/.vscode-server/bin/da15b6fd3ef856477bf6f4fb29ba1b7af717770d/node
 # environment
 XDG_RUNTIME_DIR = /run/user/1012
 # environment
 LC_CTYPE = en_US.UTF-8
 # environment
-VSCODE_IPC_HOOK_CLI = /run/user/1012/vscode-ipc-eb4bed0c-70aa-4fde-8ccc-2615a3b75c6a.sock
+VSCODE_IPC_HOOK_CLI = /run/user/1012/vscode-ipc-2d579c9d-78a1-4d48-a26c-f9eb1f83ac20.sock
 # environment
 XDG_SESSION_CLASS = user
 # environment
@@ -133,7 +134,7 @@ VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
 HOME = /home/farnazm
 # environment
-XDG_SESSION_ID = 428
+XDG_SESSION_ID = 909
 # default
 .RECIPEPREFIX := 
 # automatic
@@ -143,7 +144,7 @@ SUFFIXES :=
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs archives jobserver output-sync check-symlink load
 # environment
-SSH_CONNECTION = 76.91.25.147 59040 164.67.191.131 22
+SSH_CONNECTION = 76.91.25.147 59546 164.67.191.131 22
 # variable set hash-table stats:
 # Load=67/1024=7%, Rehash=0, Collisions=2/97=2%
 
@@ -153,9 +154,9 @@ SSH_CONNECTION = 76.91.25.147 59040 164.67.191.131 22
 
 # Directories
 
-# . (device 27, inode 163237976): 22 files, no impossibilities.
+# . (device 27, inode 163237976): 23 files, no impossibilities.
 
-# 22 files, no impossibilities in 1 directories.
+# 23 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -207,12 +208,12 @@ makefile:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 31 / storage = 279 B / avg = 9 B
-# current buf: size = 8162 B / used = 279 B / count = 31 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 32 / storage = 291 B / avg = 9 B
+# current buf: size = 8162 B / used = 291 B / count = 32 / avg = 9 B
 
-# strcache performance: lookups = 38 / hit rate = 18%
+# strcache performance: lookups = 39 / hit rate = 17%
 # hash-table stats:
-# Load=31/8192=0%, Rehash=0, Collisions=0/38=0%
-# Finished Make data base on Mon May  9 12:21:36 2022
+# Load=32/8192=0%, Rehash=0, Collisions=0/39=0%
+# Finished Make data base on Wed May 11 08:51:04 2022
 
  

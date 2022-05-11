@@ -68,7 +68,8 @@ function predict(p::AbstractVector, g_0::AbstractVector, t::Union{Real, LinRange
     @assert length(p) == 16 # we have 2 G1 prog rates, 4 G2 prog rates, 2 G1 death and 4 G2 death rates.
 
     if length(g_0) == length(p)
-        v = startV(g_0)
+        # v = startV(g_0)
+        v = vcat([0.3/8 for i=1:8], [0.7/20 for i=1:20])
     else
         @assert length(g_0) == nSp
         v = copy(g_0)
