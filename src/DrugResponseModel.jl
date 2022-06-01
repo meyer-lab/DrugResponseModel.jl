@@ -1,7 +1,7 @@
 
 module DrugResponseModel
 
-ENV["GKSwstype"] = "100"
+ENV["GKSwstype"]="nul"
 
 using DelimitedFiles
 using Plots
@@ -14,7 +14,7 @@ using JLD
 using Distributions
 using DataFrames
 using XLSX
-using StatsPlots
+# using StatsPlots
 using NumericalIntegration
 using CSV
 using MultivariateStats

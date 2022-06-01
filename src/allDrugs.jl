@@ -44,10 +44,10 @@ end
 function optim_all(concs, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 800000)
     f(x) = residHillAll(x, concs, g1, g2)
 
-    lP = [0.01; 5e-9 * ones(16)]
-    low = vcat(minimum(concs[1]), lP, minimum(concs[2]), lP, minimum(concs[3]), lP, minimum(concs[4]), lP, minimum(concs[5]), lP, minimum(concs[6]), lP, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9, 5e-9)
-    hP = [10.0; 5.0 * ones(16)]
-    high = vcat(maximum(concs[1]), hP, maximum(concs[2]), hP, maximum(concs[3]), hP, maximum(concs[4]), hP, maximum(concs[5]), hP, maximum(concs[6]), hP, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0)
+    lP = [0.01; 1e-9 * ones(16)]
+    low = vcat(minimum(concs[1]), lP, minimum(concs[2]), lP, minimum(concs[3]), lP, minimum(concs[4]), lP, minimum(concs[5]), lP, minimum(concs[6]), lP, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9)
+    hP = [10.0; 4.0 * ones(16)]
+    high = vcat(maximum(concs[1]), hP, maximum(concs[2]), hP, maximum(concs[3]), hP, maximum(concs[4]), hP, maximum(concs[5]), hP, maximum(concs[6]), hP, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0)
 
     return optimize_helper(f, low, high, maxiter)
 end
