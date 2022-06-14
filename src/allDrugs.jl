@@ -41,13 +41,13 @@ function Hill_p_eachDr(p)
     HillP
 end
 
-function optim_all(concs, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 800000)
+function optim_all(concs, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 1000000)
     f(x) = residHillAll(x, concs, g1, g2)
 
     lP = [0.01; 1e-9 * ones(16)]
     low = vcat(minimum(concs[1]), lP, minimum(concs[2]), lP, minimum(concs[3]), lP, minimum(concs[4]), lP, minimum(concs[5]), lP, minimum(concs[6]), lP, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9, 1e-9)
-    hP = [10.0; 4.0 * ones(16)]
-    high = vcat(maximum(concs[1]), hP, maximum(concs[2]), hP, maximum(concs[3]), hP, maximum(concs[4]), hP, maximum(concs[5]), hP, maximum(concs[6]), hP, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0)
+    hP = [50.0; 4.0 * ones(16)]
+    high = vcat(maximum(concs[1]), hP, maximum(concs[2]), hP, maximum(concs[3]), hP, maximum(concs[4]), hP, maximum(concs[5]), hP, maximum(concs[6]), hP, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0)
 
     return optimize_helper(f, low, high, maxiter)
 end

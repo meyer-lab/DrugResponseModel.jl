@@ -289,12 +289,12 @@ end
 
 """ This function puts together the data from all drug treatments of HCC1143. """
 function hcc_all()
-    g1, c1, d1 = DrugResponseModel.import_data("HC011301_level_2.csv")
+    g1, c1, d1 = DrugResponseModel.import_data("HC01301_level_2.csv")
     newg1 = DrugResponseModel.trim_data(g1, c1)
     ten1, cond1, cl1 = DrugResponseModel.hcc_tensor(g1, newg1, c1, d1)
     t1 = mean(ten1, dims=2)
 
-    g2, c2, d2 = DrugResponseModel.import_data("HC011401_level_2.csv")
+    g2, c2, d2 = DrugResponseModel.import_data("HC01401_level_2.csv")
     newg2 = DrugResponseModel.trim_data(g2, c2)
     ten2, cond2, cl2 = DrugResponseModel.hcc_tensor(g2, newg2, c2, d2)
     t2 = mean(ten2, dims=2)
