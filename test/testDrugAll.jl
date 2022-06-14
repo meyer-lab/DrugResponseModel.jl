@@ -1,8 +1,6 @@
 @testset "Fit All drug at once tests" begin
-    concs, populations, g1s, g2s = load(189, 1)
-    p = ones(98)
-    effects = DrugResponseModel.getODEparams(p, concs)
+    tensor, names, concs, conds, _, _ = DrugResponseModel.hcc_all()
 
     # test the local optimization function
-    params = DrugResponseModel.optim_all(concs, g1s, g2s, maxiter = 2)
+    DrugResponseModel.optim_all(concs, tensor[1, :, :, :], tensor[2, :, :, :], maxiter = 2)
 end
