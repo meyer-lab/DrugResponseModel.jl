@@ -43,6 +43,7 @@ function figure81()
     conc_ec50 = zeros((1, 6))
     conc_ec50[1, 1:6] = [params[18*k+1] for k = 0:5]
     ec50 = getODEparams(params, conc_ec50)[:, 1, :]
+    print(conc_ec50)
 
     # phase durations
     # @ control
@@ -80,19 +81,19 @@ function figure81()
 
     p = [Gadfly.plot(dfs1, layer(x="x", y="y", Geom.point, Theme(default_color=colorant"black")), 
     layer(x="x", y="y2", Geom.point, Theme(default_color=colorant"red")),
-    Guide.xlabel("drugs"), Guide.manual_color_key("", ["G1_control", "G1_ec50"], ["black", "red"]), Coord.Cartesian(ymin=0.0,ymax=90.0), Guide.ylabel("phase duration [hr]"), Guide.title("G1 drug effects")),
+    Guide.xlabel("drugs"), Guide.manual_color_key("", ["G1_control", "G1_ec50"], ["black", "red"]), Coord.Cartesian(ymin=0.0,ymax=60.0), Guide.ylabel("phase duration [hr]"), Guide.title("G1 drug effects")),
     
     Gadfly.plot(dfs2, layer(x="x", y="y", Geom.point, Theme(default_color=colorant"black")), 
     layer(x="x", y="y2", Geom.point, Theme(default_color=colorant"red")),
-    Guide.xlabel("drugs"), Guide.title("SG2 drug effects"), Guide.ylabel("phase duration [hr]"), Coord.Cartesian(ymin=0.0,ymax=90.0), Guide.manual_color_key("", ["SG2_control", "SG2_ec50"], ["black", "red"])),
+    Guide.xlabel("drugs"), Guide.title("SG2 drug effects"), Guide.ylabel("phase duration [hr]"), Coord.Cartesian(ymin=0.0,ymax=60.0), Guide.manual_color_key("", ["SG2_control", "SG2_ec50"], ["black", "red"])),
     
     Gadfly.plot(dfs3, layer(x="x", y="y", Geom.point, Theme(default_color=colorant"black")), 
     layer(x="x", y="y2", Geom.point, Theme(default_color=colorant"red")),
-    Guide.xlabel("drugs"), Guide.manual_color_key("", ["G1_control", "G1_ec50"], ["black", "red"]), Coord.Cartesian(ymin=-0.05,ymax=0.25), Guide.ylabel("cell death probability"), Guide.title("G1 drug effects")),
+    Guide.xlabel("drugs"), Guide.manual_color_key("", ["G1_control", "G1_ec50"], ["black", "red"]), Coord.Cartesian(ymin=-0.05,ymax=0.2), Guide.ylabel("cell death probability"), Guide.title("G1 drug effects")),
     
     Gadfly.plot(dfs4, layer(x="x", y="y", Geom.point, Theme(default_color=colorant"black")), 
     layer(x="x", y="y2", Geom.point, Theme(default_color=colorant"red")),
-    Guide.xlabel("drugs"), Guide.title("SG2 drug effects"), Guide.ylabel("cell death probability"), Coord.Cartesian(ymin=-0.05,ymax=0.25), Guide.manual_color_key("", ["SG2_control", "SG2_ec50"], ["black", "red"]))]
+    Guide.xlabel("drugs"), Guide.title("SG2 drug effects"), Guide.ylabel("cell death probability"), Coord.Cartesian(ymin=-0.05,ymax=0.2), Guide.manual_color_key("", ["SG2_control", "SG2_ec50"], ["black", "red"]))]
     
     pl1 = plotGrid((2, 2), [p...];)
     return draw(SVG("figure81.svg", 8inch, 8inch), pl1)

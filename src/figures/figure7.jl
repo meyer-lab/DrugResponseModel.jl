@@ -39,7 +39,7 @@ function plot_fig1(concs, g1, g1data, tite, G, subPlabel, palet, time)
         palette = palet,
         title = tite,
         titlefont = Plots.font("Helvetica", 14),
-        legendfont = Plots.font("Helvetica", 11),
+        legendfont = Plots.font("Helvetica", 18),
         guidefont = Plots.font("Helvetica", 14),
         xtickfont = Plots.font("Helvetica", 14),
         ytickfont = Plots.font("Helvetica", 14),
@@ -108,7 +108,7 @@ function plot_pG1_mean(y1, y2, ymax, Phasename, ylabel, subPlabel, plus)
 end
 
 
-function plot_dead_acc(concs, conditions, drugs, efcs)
+function plot_dead_acc(concs, drugs, efcs)
 
     g = zeros(182, 8, 6, 8) # total
     t = LinRange(0.0, 96.0, 182)
@@ -136,15 +136,15 @@ function plot_dead_acc(concs, conditions, drugs, efcs)
         p1 = Plots.plot(
             t,
             intt[:, :, i],
-            labels =  ["$(conditions[i][1]) nM" "$(conditions[i][2]) nM" "$(conditions[i][3]) nM" "$(conditions[i][3]) nM" "$(conditions[i][4]) nM" "$(conditions[i][5]) nM" "$(conditions[i][6]) nM" "$(conditions[i][7]) nM" "$(conditions[i][8]) nM"],
+            labels =  ["control" "$(concs[i][4]) nM" "$(concs[i][5]) nM" "$(concs[i][6]) nM" "$(concs[i][7]) nM" "$(concs[i][8]) nM"],
             title = drugs[i],
             lw = 2,
-            ylabel = "accumulated cell death #",
+            ylabel = "Accumulated cell death #",
             xlabel = "time [hr]",
             palette = :YlOrRd_6,
             legend = :left,
             titlefont = Plots.font("Helvetica", 14),
-            legendfont = Plots.font("Helvetica", 11),
+            legendfont = Plots.font("Helvetica", 18),
             guidefont = Plots.font("Helvetica", 14),
             xtickfont = Plots.font("Helvetica", 14),
             ytickfont = Plots.font("Helvetica", 14),
@@ -230,18 +230,18 @@ function figure70()
 
     p0 = Plots.plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
     p1 = plot_fig1(concs[1], Gshort[:, :, 1, 1], gmshort[:, :, 1, 1], "Dynamical Model Fits - BEZ235", "G1", "A", :PuBu_6, t)
-    p2 = plot_fig1(concs[1], Gshort[:, :, 1, 2], gmshort[:, :, 1, 2], "Dynamical Model Fits - BEZ235", "S/G2", "B", :PuBu_6, t)
+    p2 = plot_fig1(concs[1], Gshort[:, :, 1, 2], gmshort[:, :, 1, 2], "Dynamical Model Fits - BEZ235", "S-G2", "B", :PuBu_6, t)
     p3 = plot_fig1(concs[2], Gshort[:, :, 2, 1], gmshort[:, :, 2, 1], "Dynamical Model Fits - Doxorubicin", "G1", "C", :PuBu_6, t)
-    p4 = plot_fig1(concs[2], Gshort[:, :, 2, 2], gmshort[:, :, 2, 2], "Dynamical Model Fits - Doxorubicin", "S/G2", "D", :PuBu_6, t)
+    p4 = plot_fig1(concs[2], Gshort[:, :, 2, 2], gmshort[:, :, 2, 2], "Dynamical Model Fits - Doxorubicin", "S-G2", "D", :PuBu_6, t)
     p5 = plot_fig1(concs[3], Gshort[:, :, 3, 1], gmshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "G1", "E", :PuBu_6, t)
-    p6 = plot_fig1(concs[3], Gshort[:, :, 3, 2], gmshort[:, :, 3, 2], "Dynamical Model Fits - Gemcitabine", "S/G2", "F", :PuBu_6, t)
+    p6 = plot_fig1(concs[3], Gshort[:, :, 3, 2], gmshort[:, :, 3, 2], "Dynamical Model Fits - Gemcitabine", "S-G2", "F", :PuBu_6, t)
     p7 = plot_fig1(concs[4], Gshort[:, :, 4, 1], gmshort[:, :, 4, 1], "Dynamical Model Fits - Paclitaxel", "G1", "G", :PuBu_6, t)
-    p8 = plot_fig1(concs[4], Gshort[:, :, 4, 2], gmshort[:, :, 4, 2], "Dynamical Model Fits - Paclitaxel", "S/G2", "H", :PuBu_6, t)
+    p8 = plot_fig1(concs[4], Gshort[:, :, 4, 2], gmshort[:, :, 4, 2], "Dynamical Model Fits - Paclitaxel", "S-G2", "H", :PuBu_6, t)
     p9 = plot_fig1(concs[5], Gshort[:, :, 5, 1], gmshort[:, :, 5, 1], "Dynamical Model Fits - Palbociclib", "G1", "I", :PuBu_6, t)
-    p10 = plot_fig1(concs[5], Gshort[:, :, 5, 2], gmshort[:, :, 5, 2], "Dynamical Model Fits - Palbociclib", "S/G2", "J", :PuBu_6, t)
+    p10 = plot_fig1(concs[5], Gshort[:, :, 5, 2], gmshort[:, :, 5, 2], "Dynamical Model Fits - Palbociclib", "S-G2", "J", :PuBu_6, t)
     p11 = plot_fig1(concs[6], Gshort[:, :, 6, 1], gmshort[:, :, 6, 1], "Dynamical Model Fits - Trametinib", "G1", "K", :PuBu_6, t)
-    p12 = plot_fig1(concs[6], Gshort[:, :, 6, 2], gmshort[:, :, 6, 2], "Dynamical Model Fits - Trametinib", "S/G2", "L", :PuBu_6, t)
-    p = plot_dead_acc(concs, conds, names, efcs)
+    p12 = plot_fig1(concs[6], Gshort[:, :, 6, 2], gmshort[:, :, 6, 2], "Dynamical Model Fits - Trametinib", "S-G2", "L", :PuBu_6, t)
+    p = plot_dead_acc(concs, names, efcs)
 
     figure1 = Plots.plot(p1, p2, p[1], p3, p4, p[2], p5, p6, p[3], p7, p8, p[4], p9, p10, p[5], p11, p12, p[6], size = (1500, 3000), layout = (6, 3))
     Plots.savefig(figure1, "figure70.svg")
