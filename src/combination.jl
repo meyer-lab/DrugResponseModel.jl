@@ -22,9 +22,10 @@ function Bliss_params_unit(pp1, pp2, control)
 end
 
 """ Using the unit function to find all combinations of parameters. """
-function AllBliss_params(pp1, pp2; n = 8)
+function AllBliss_params(pp1, pp2)
     # pp1 and pp2 are 2D arrays [16 x 8] each includes the parameters fo all concentrations of a drug. 
 
+    n = length(pp1[1, :])
     combined = Array{eltype(pp1), 3}(undef, 16, n, n)
     for i = 1:n
         for j = 1:n
@@ -66,21 +67,25 @@ end
 
 """ In this function, we apply the Bliss synergy to the cell numbers. 
 This is to compare the traditional way of representing the combination effect, compare to the way we do in our model."""
-function blissCellNum(gs; n = 8)
-    num = zeros(n, 5)
+function blissCellNum(gs)
+    nconc = length(gs[:, 1])
+    ndrugs = length(gs[1, :])
 
-    for i = 1:5
+    num = zeros(nconc, ndrugs)
+
+    for i = 1:ndrugs
         # num is a 8 x 5 matrix, holding scaled cell numbers for 5 drugs, in 8 concentrations, for a specific time point.
         num[:, i] = 1.0 .- (gs[:, i] ./ gs[1, i])
     end
 
-    combined = zeros(n, n, 10)
+    ncombs = binomial(ndrugs, 2)
+    combined = zeros(nconc, nconc, ncombs)
     x = 1
-    for i = 1:4
-        for k = (i + 1):5
+    for i = 1:ndrugs - 1
+        for k = (i + 1):ndrugs
             # the base case for either of combinations is the average of drugA and drugB to scale the cell numbers back.
             # columns are drugA and rows are drug 2, and the third dimension shows which pair of drugs were combined.
-            for j = 1:n
+            for j = 1:nconc
                 combined[:, j, x] = -(num[:, i] .+ num[j, k] .- (num[:, i] .* num[j, k]) .- 1.0) .* (gs[1, i] + gs[1, k]) / 2
             end
             x += 1
@@ -91,7 +96,7 @@ function blissCellNum(gs; n = 8)
     return combined
 end
 
-""" only to find the combination of one concentration of drug 1, and once concentration of drug 2, over time. """
+""" only to find the combination of one concentration of drug 1, and one concentration of drug 2, over time. """
 function pair_cellnum_Bliss(total1, total2)
     # note that each of the two inputs, should be hcat with control: total1: [control; condition_i]
     normedtotal1 = 1.0 .- (total1[:, 2] ./ total1[:, 1]) # normalize to control
