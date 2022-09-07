@@ -36,10 +36,9 @@ function SSE(G1, G2, g1m, g2m, subPlabel)
     annotate!(-1, 555.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
 end
 
-function plot_fig1(concs, g1, g1data, tite, G, subPlabel, palet)
-    time = LinRange(0.0, 95.0, 189)
+function plot_fig1(concs, g1, g1data, tite, G, subPlabel, palet, time)
 
-    p = plot(
+    p = Plots.plot(
         time,
         g1,
         lw = 2,
@@ -61,7 +60,7 @@ function plot_fig1(concs, g1, g1data, tite, G, subPlabel, palet)
         left_margin = 1.25cm,
         right_margin = 1.25cm,
     )
-    plot!(time, g1data, lw = 2, linestyle = :dot, label = ["" "" "" "" "" "" ""])
+    Plots.plot!(time, g1data, lw = 2, linestyle = :dot, label = ["" "" "" "" "" "" ""])
     annotate!(-1.0, 2.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
     ylims!((0.0, 2.5))
     p
@@ -191,10 +190,10 @@ function figure2()
     g2mshort[:, 2:6, :] .= g2m[:, 4:8, :]
 
     p0 = plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
-    p1 = plot_fig1(concs[:, 1], G1short[:, :, 1], g1mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "G1", "B", :PuBu_6)
-    p2 = plot_fig1(concs[:, 1], G2short[:, :, 1], g2mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "S/G2", "C", :PuBu_6)
-    p3 = plot_fig1(concs[:, 3], G1short[:, :, 3], g1mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "G1", "D", :PuBu_6)
-    p4 = plot_fig1(concs[:, 3], G2short[:, :, 3], g2mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "S/G2", "E", :PuBu_6)
+    p1 = plot_fig1(concs[:, 1], G1short[:, :, 1], g1mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "G1", "B", :PuBu_6, t)
+    p2 = plot_fig1(concs[:, 1], G2short[:, :, 1], g2mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "S/G2", "C", :PuBu_6, t)
+    p3 = plot_fig1(concs[:, 3], G1short[:, :, 3], g1mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "G1", "D", :PuBu_6, t)
+    p4 = plot_fig1(concs[:, 3], G2short[:, :, 3], g2mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "S/G2", "E", :PuBu_6, t)
     p5 = plot_pG1_mean(gi[1, 1, :]', gi[1, 2, :]', 60.0, "G1 ", "Avg phase duration [hr]", "F", 10.0)
     p6 = plot_pG1_mean(gi[2, 1, :]', gi[2, 2, :]', 60.0, "S/G2 ", "Avg phase duration [hr]", "G", 10.0)
     p7 = plot_pG1_mean(sum(deathContG1, dims = 1), sum(deathEC50G1, dims = 1), 0.2, "G1", "Cell death probability", "H", 0.06)

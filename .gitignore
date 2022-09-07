@@ -3,6 +3,10 @@
 *.jl.mem
 deps/deps.jl
 .ipynb_checkpoints
+.ipynb
 __pycache__/
 .vscode/settings.json
 *.pdf
+venv
+*.svg
+**.DS_Store

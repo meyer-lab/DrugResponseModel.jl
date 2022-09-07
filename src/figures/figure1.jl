@@ -28,7 +28,7 @@ function figure1()
     return draw(SVG("figure1.svg", 18inch, 20inch), pl)
 end
 
-function figure2()
+function figure12()
     setGadflyTheme()
     g, c = DrugResponseModel.import_data()
     newg = DrugResponseModel.trim_data(g, c)

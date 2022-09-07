@@ -1,7 +1,7 @@
 
 module DrugResponseModel
 
-ENV["GKSwstype"] = "100"
+ENV["GKSwstype"]="nul"
 
 using DelimitedFiles
 using Plots
@@ -14,7 +14,7 @@ using JLD
 using Distributions
 using DataFrames
 using XLSX
-using StatsPlots
+# using StatsPlots
 using NumericalIntegration
 using CSV
 using MultivariateStats
@@ -33,6 +33,12 @@ include("figures/figure1.jl")
 include("figures/figure2.jl")
 include("figures/figure3.jl")
 include("figures/figure4.jl")
+include("figures/figure5.jl")
+include("figures/figure6.jl")
+include("figures/figure7.jl")
+include("figures/figure8.jl")
+include("figures/figure9.jl")
+include("figures/figure10.jl")
 include("organize.jl")
 include("deadcells.jl")
 

@@ -177,8 +177,8 @@ function import_data(hc=false)
 
     # filter
     for i = 1:size(norm_t, 2)
-        norm_t[:, i] = savitzky_golay_filter(norm_t[:, i], 41, 3)
-        g_prop[:, i] = savitzky_golay_filter(g_prop[:, i], 41, 3)
+        norm_t[:, i] = savitzky_golay_filter(norm_t[:, i], 61, 3)
+        g_prop[:, i] = savitzky_golay_filter(g_prop[:, i], 61, 3)
     end
 
     # separate G1 and SG2 cell#
@@ -259,7 +259,7 @@ function form_tensor(new_g, c)
 end
 
 """ Form tensor for the HCC1143 dataset. """
-function hcc_tensor(new_g, cc, ndrugs)
+function hcc_tensor(gs, new_g, cc, ndrugs)
     uniq_c = unique(cc)
     filter!(e -> e != "Untreated", ndrugs)
     new_ind = []
@@ -269,28 +269,34 @@ function hcc_tensor(new_g, cc, ndrugs)
     end
 
     tensor = zeros(2, size(new_g)[2], size(new_g)[3], 8, 3)
-    vehicle_indx = findall( y -> occursin("Untreated", y), uniq_c)
+    vehicle_indx = findall( y -> occursin("Untreated", y), cc)
 
-    tensor[:, :, :, 1, :] .= new_g[:, :, :, vehicle_indx]
+    control = mean(gs[:, :, vehicle_indx], dims=3)[:, :, 1]
+    b = zeros(2, size(new_g)[2], size(new_g)[3])
+    for i=1:size(new_g)[2]
+        b[:, i, :] = control
+    end
+
+    tensor[:, :, :, 1, :] .= b
     conditions = []
     for i = 1:3
         tensor[1, :, :, 2:8, i] = new_g[1, :, :, new_ind[i]]
         tensor[2, :, :, 2:8, i] = new_g[2, :, :, new_ind[i]]
         push!(conditions, pushfirst!(uniq_c[new_ind[i]], "Untreated_0"))
     end
-    return tensor, conditions
+    return tensor, conditions, gs[:, :, vehicle_indx]
 end
 
 """ This function puts together the data from all drug treatments of HCC1143. """
 function hcc_all()
-    g1, c1, d1 = DrugResponseModel.import_data("HC00701_level_2.csv")
+    g1, c1, d1 = DrugResponseModel.import_data("HC01301_level_2.csv")
     newg1 = DrugResponseModel.trim_data(g1, c1)
-    ten1, cond1 = DrugResponseModel.hcc_tensor(newg1, c1, d1)
+    ten1, cond1, cl1 = DrugResponseModel.hcc_tensor(g1, newg1, c1, d1)
     t1 = mean(ten1, dims=2)
 
-    g2, c2, d2 = DrugResponseModel.import_data("HC00801_level_2.csv")
+    g2, c2, d2 = DrugResponseModel.import_data("HC01401_level_2.csv")
     newg2 = DrugResponseModel.trim_data(g2, c2)
-    ten2, cond2 = DrugResponseModel.hcc_tensor(newg2, c2, d2)
+    ten2, cond2, cl2 = DrugResponseModel.hcc_tensor(g2, newg2, c2, d2)
     t2 = mean(ten2, dims=2)
 
     conds = append!(cond1, cond2)
@@ -307,14 +313,14 @@ function hcc_all()
     
     # g3, c3, d3 = import_data("HC00901_level_2.csv")
     # newg3 = trim_data(g3, c3)
-    # ten3, cond3 = hcc_tensor(newg3, c3, d3)
+    # ten3, cond3 = hcc_tensor(g3, newg3, c3, d3)
 
     # g4, c4, d4 = import_data("HC01001_level_2.csv")
     # newg4 = trim_data(g4, c4)
-    # ten4, cond4 = hcc_tensor(newg4, c4, d4)
+    # ten4, cond4 = hcc_tensor(g4, newg4, c4, d4)
 
     # return cat(ten3, ten4, dims=4), cond3, cond4
-    return cat(t1, t2, dims=5)[:, 1, :, :, :], names, concs
+    return cat(t1, t2, dims=5)[:, 1, :, :, :], names, concs, conds, cl1, cl2
 end
 
 """ create one csv file for each drug. """

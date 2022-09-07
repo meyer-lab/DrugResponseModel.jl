@@ -14,7 +14,7 @@ function figure4()
     setGadflyTheme()
     plts = []
     for i=1:6
-        push!(plts, plt_1(i, 5, "α"))
+        push!(plts, plt_1(i, 1, "α"))
         push!(plts, plt_1(i, 5, "β"))
         push!(plts, plt_1(i, 9, "γ_1"))
         push!(plts, plt_1(i, 12, "γ_2"))
