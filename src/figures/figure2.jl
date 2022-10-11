@@ -1,5 +1,5 @@
 """ Plotting the model and data, fitted separately. """
-global drugs = ["BEZ235", "Trametinib", "5FU", "AZD5438", "Panobinostat", "MG132", "Everolimus", "JQ1", "Bortezomib", "MK1775", "Cabozantinib"]
+drugs = ["BEZ235", "Trametinib", "5FU", "AZD5438", "Panobinostat", "MG132", "Everolimus", "JQ1", "Bortezomib", "MK1775", "Cabozantinib"]
 
 
 """ Takes the above parameters and returns the inferred ODE params. The output is used in figure3. """
@@ -16,12 +16,12 @@ function out_ODEparams()
     p10 = [1468.105, 2.062, 0.00213, 0.121, 0.109, 0.6952, 0.515, 0.262, 0.01049, 0.127, 0.0198, 9.414e-5, 0.00139, 0.0292, 5.94, 2.732, 0.00852, 0.000142, 0.58902, 0.0473, 0.176, 3.393, 8.863, 2.21, 1.5485, 0.366];
     p11 = [3307.225, 2.825, 4.261, 0.1908, 0.0002, 6.151, 0.6462, 0.00569, 0.311, 0.0768, 0.0199, 2.106e-5, 0.0030, 0.00519, 0.0907, 0.00159, 0.000354, 0.0095, 9.792, 0.0706, 0.13645, 9.82027, 8.371, 0.828, 0.2809, 7.846];
     parameters = hcat(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11)
-    pp1 = zeros(11, 16, 8, 1) # 16 params, 8 concentrations, 11 drugs: the value is the effect at concentration 5th
+    pp1 = zeros(11, 16, 8) # 16 params, 8 concentrations, 11 drugs: the value is the effect at concentration 5th
     for (i, drug) in enumerate(drugs)
-        _, _, conc = DrugResponseModel.load_newData(drug)
-        pp1[i, :, :, 1] = DrugResponseModel.getODEparams(parameters[:, i], conc)
+        conc = DrugResponseModel.concentration(drug)
+        pp1[i, :, :] = DrugResponseModel.getODEparams(parameters[:, i], conc)
     end
-    return pp1[:, :, :, 1]
+    return pp1[:, :, :]
 end
 
 function Eachdrug_sim(G_sim, G_data, condition, g1g2, drug_name)
@@ -41,11 +41,12 @@ function figure2()
     newg = DrugResponseModel.trim_data(g, c)
     tensor, conditions = DrugResponseModel.form_tensor(newg, c)
     tens = mean(tensor, dims=2)[:, 1, :, :, :]
+    t = LinRange(0.0, 95, size(tens)[2])
     pp = []
     pODE = out_ODEparams()
     for (i, drug) in enumerate(drugs)
-        _, _, conc = DrugResponseModel.load_newData(drug)
-        Gs = zeros(189, 8, 2)
+        conc = DrugResponseModel.concentration(drug)
+        Gs = zeros(size(tens)[2], 8, 2)
         for j=1:8
             Gs[:, j, 1], Gs[:, j, 2], _ = DrugResponseModel.predict(pODE[i, :, j], pODE[i, :, 1], t)
         end

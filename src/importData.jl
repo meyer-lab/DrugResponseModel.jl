@@ -206,6 +206,7 @@ function trim_data(g, c)
     # remove "control_0" and "vehicle_0" from the conditions
     filter!(e -> e != "vehicle_0", uniq_c)
     filter!(e -> e != "control_0", uniq_c)
+    # filter!(e -> e != "Untreated_0", uniq_c)
     # append the index of 4 replicates of the same condition
     inds_lengths = []
     for item in uniq_c
@@ -268,6 +269,7 @@ function hcc_tensor(gs, new_g, cc, ndrugs)
         push!(new_ind, tm2[1:7])
     end
 
+    print(new_ind)
     tensor = zeros(2, size(new_g)[2], size(new_g)[3], 8, 3)
     vehicle_indx = findall( y -> occursin("Untreated", y), cc)
 
@@ -285,6 +287,34 @@ function hcc_tensor(gs, new_g, cc, ndrugs)
         push!(conditions, pushfirst!(uniq_c[new_ind[i]], "Untreated_0"))
     end
     return tensor, conditions, gs[:, :, vehicle_indx]
+end
+
+""" This function imports all 11 drugs of the new round of AU565 experiments, with average of replicates. """
+function au565_all()
+    a, b = DrugResponseModel.import_data()
+    newg = DrugResponseModel.trim_data(a, b)
+    tens, conds = DrugResponseModel.form_tensor(newg, b)
+
+    names = []
+    cons = []
+    for cc in conds
+        c = []
+        for item in cc[2:end]
+            push!(c, parse(Float64, rsplit(item, "_")[2]))
+        end
+        push!(names, rsplit(cc[2], "_")[1])
+        push!(cons, c)
+    end
+    concs = []
+    for item in cons
+        item = vcat([0.0], item)
+        item = convert(Array{Float64, 1}, item)
+        push!(concs, item)
+    end
+
+    tensor = mean(tens, dims=2)[:, 1, :, :, :]
+
+    return tensor, names, concs, conds
 end
 
 """ This function puts together the data from all drug treatments of HCC1143. """
@@ -320,7 +350,8 @@ function hcc_all()
     # ten4, cond4 = hcc_tensor(g4, newg4, c4, d4)
 
     # return cat(ten3, ten4, dims=4), cond3, cond4
-    return cat(t1, t2, dims=5)[:, 1, :, :, :], names, concs, conds, cl1, cl2
+    ten = cat(t1, t2, dims=5)[:, 1, :, :, :]
+    return ten[:, :, :, [4, 5, 2, 3]], names[[4, 5, 2, 3]], concs[[4, 5, 2, 3]], conds[[4, 5, 2, 3]]
 end
 
 """ create one csv file for each drug. """
@@ -361,14 +392,238 @@ function output_drugs(g, c, drugname)
     return g1, g2
 end
 
-function load_newData(drugname)
+function concentration(drugname)
     # import concentrations
-    columns, _ = XLSX.readtable(string("/", basePath, "/conditions.xlsx"), "Sheet1")
-    concentrations = hcat(columns...)' # [8 x 11] includes control, for 11 drugs
+    xlx = XLSX.readxlsx(string("/", basePath, "/conditions.xlsx"))
+    conds = xlx["Sheet1"][:]
+    concentrations = conds[2:end, 2:end]
     # find index of the drug
+    drugs = conds[2:end, 1]
     i = findall(y -> y==drugname, drugs)[1]
-    data = zeros(2, 189, 8)
-    g, c = import_data()
-    G1, SG2 = output_drugs(g, c, drugname)
-    return G1, SG2, concentrations[:, i]
+    return concentrations[i, :]
+end
+
+
+function import_mt1(mt, dr)
+    basePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data", dr)
+    data = CSV.read(joinpath(basePath, mt), DataFrame)
+    data.treatment = replace.(data.treatment, Ref("Untreated" => "Untreated_0"))
+
+    # add a new column of "_" to stick to the end of "treatment" column so we can reshape without loosing columns with the same name
+    new_col = similar(data.treatment)
+    for i=1:length(new_col)
+        new_col[i] = "_"
+    end
+    data_ = hcat(data, new_col)
+
+    # transform so the columns are drug conditions
+    tmp_norm = DataFrames.transform(data_, [:treatment, :x1, :field, :well] => ByRow(string) => :treat)
+    norm_T0 = unstack(tmp_norm, :elapsed_minutes, :treat, :cell_count_norm_T0, allowduplicates=true)
+    select!(norm_T0, Not(:elapsed_minutes))
+    norm_T0 = DataFrames.transform(norm_T0, names(norm_T0) .=> Impute.locf, renamecols=false)
+    # norm_T0 = dropmissing(norm_T0)
+
+    if sum(collect(any(ismissing, c) for c in eachcol(norm_T0))) != 0
+        print(mt, sum(collect(any(ismissing, c) for c in eachcol(norm_T0))))
+    end
+    @assert(sum(collect(any(ismissing, c) for c in eachcol(norm_T0))) == 0)
+    G1_prop = unstack(tmp_norm, :elapsed_minutes, :treat, :G1_proportion, allowduplicates=true)
+    select!(G1_prop, Not(:elapsed_minutes)) # delete the time column
+    G1_prop = DataFrames.transform(G1_prop, names(G1_prop) .=> Impute.locf, renamecols=false)
+
+    # G1_prop = dropmissing(G1_prop)
+    @assert(sum(collect(any(ismissing, c) for c in eachcol(G1_prop))) == 0)
+    norm_t = Matrix{Float64}(norm_T0)
+    g_prop = Matrix{Float64}(G1_prop)
+
+    # filter
+    for i = 1:size(norm_t, 2)
+        norm_t[:, i] = savitzky_golay_filter(norm_t[:, i], 61, 3)
+        g_prop[:, i] = savitzky_golay_filter(g_prop[:, i], 61, 3)
+    end
+
+    # separate G1 and SG2 cell#
+    gs = zeros(2, size(norm_t, 1), size(norm_t, 2)) # G1# , G2# x time x condition
+    population = init_cells * norm_t
+    gs[1, :, :] = population .* g_prop # G1
+    gs[2, :, :] = population - gs[1, :, :] # G2
+
+    condition = similar(names(norm_T0))
+    for (index, item) in enumerate(names(norm_T0))
+        condition[index] = rsplit(item, "_", limit=2)[1]
+    end
+    return gs, condition, unique(data.Drug1)
+end
+
+
+""" Form tensor for the 21MT1 dataset. """
+function mt_tensor(gs, new_g, cc, ndrugs)
+    uniq_c = unique(cc)
+    filter!(e -> e != "Untreated", ndrugs)
+    new_ind = []
+    for (ind, drug) in enumerate(ndrugs)
+        tm2 = findall( y -> occursin(drug, y), uniq_c)
+        push!(new_ind, tm2[1:7])
+    end
+
+    tensor = zeros(2, size(new_g)[2], size(new_g)[3], 8, length(new_ind))
+    vehicle_indx = findall( y -> occursin("Untreated", y), cc)
+
+    control = mean(gs[:, :, vehicle_indx], dims=3)[:, :, 1]
+    b = zeros(2, size(new_g)[2], size(new_g)[3])
+    for i=1:size(new_g)[2]
+        b[:, i, :] = control
+    end
+
+    tensor[:, :, :, 1, :] .= b
+    conditions = []
+    for i = 1:length(new_ind)
+        tensor[1, :, :, 2:8, i] = new_g[1, :, :, new_ind[i]]
+        tensor[2, :, :, 2:8, i] = new_g[2, :, :, new_ind[i]]
+        push!(conditions, pushfirst!(uniq_c[new_ind[i]], "Untreated_0"))
+    end
+    return tensor, conditions, gs[:, :, vehicle_indx]
+end
+
+
+""" This function puts together the data from all drug treatments of 21MT1 data. """
+function mt1_all()
+    g1, c1, d1 = DrugResponseModel.import_mt1("2101001_CtcK_level_2.csv", "21MT1")
+    newg1 = DrugResponseModel.trim_data(g1, c1)
+    ten1, cond1, cl1 = DrugResponseModel.mt_tensor(g1, newg1, c1, d1)
+    t1 = mean(ten1, dims=2)
+
+    g2, c2, d2 = DrugResponseModel.import_mt1("2101201_CtcK_level_2.csv", "21MT1")
+    newg2 = DrugResponseModel.trim_data(g2, c2)
+    ten2, cond2, cl2 = DrugResponseModel.mt_tensor(g2, newg2, c2, d2)
+    t2 = mean(ten2, dims=2)
+
+    # g3, c3, d3 = DrugResponseModel.import_mt1("2101301_CtcK_level_2.csv", "21MT1")
+    # newg3 = DrugResponseModel.trim_data(g3, c3)
+    # ten3, cond3, cl3 = DrugResponseModel.mt_tensor(g3, newg3, c3, d3)
+    # t3 = mean(ten3, dims=2)
+
+    g4, c4, d4 = DrugResponseModel.import_mt1("2101401_CtcK_level_2.csv", "21MT1")
+    newg4 = DrugResponseModel.trim_data(g4, c4)
+    ten4, cond4, cl4 = DrugResponseModel.mt_tensor(g4, newg4, c4, d4)
+    t4 = mean(ten4, dims=2)
+
+    g5, c5, d5 = DrugResponseModel.import_mt1("2101501_CtcK_level_2.csv", "21MT1")
+    newg5 = DrugResponseModel.trim_data(g5, c5)
+    ten5, cond5, cl5 = DrugResponseModel.mt_tensor(g5, newg5, c5, d5)
+    t5 = mean(ten5, dims=2)
+
+    g6, c6, d6 = DrugResponseModel.import_mt1("2101601_CtcK_level_2.csv", "21MT1")
+    newg6 = DrugResponseModel.trim_data(g6, c6)
+    ten6, cond6, cl6 = DrugResponseModel.mt_tensor(g6, newg6, c6, d6)
+    t6 = mean(ten6, dims=2)
+
+    g7, c7, d7 = DrugResponseModel.import_mt1("2101701_CtcK_level_2.csv", "21MT1")
+    newg7 = DrugResponseModel.trim_data(g7, c7)
+    ten7, cond7, cl7 = DrugResponseModel.mt_tensor(g7, newg7, c7, d7)
+    t7 = mean(ten7, dims=2)
+
+    g8, c8, d8 = DrugResponseModel.import_mt1("2101801_CtcK_level_2.csv", "21MT1")
+    newg8 = DrugResponseModel.trim_data(g8, c8)
+    ten8, cond8, cl8 = DrugResponseModel.mt_tensor(g8, newg8, c8, d8)
+    t8 = mean(ten8, dims=2)
+
+    conds = append!(cond1, cond2, cond4, cond5, cond6, cond7, cond8)
+    nams = []
+    concs = []
+    for cc in conds
+        c = []
+        for item in cc
+            push!(c, parse(Float64, rsplit(item, "_")[2]))
+        end
+        push!(nams, rsplit(cc[2], "_")[1])
+        push!(concs, c)
+    end
+    
+    ten =  cat(t1, t2, t4, t5, t6, t7, t8, dims=5)[:, 1, :, :, :]
+    tensor = zeros(2, 193, 8, 6)
+    tensor[:, :, 1, :] .= mean(ten[:, :, 1, :], dims=4)[:, :, 1] # untreated
+    tensor[:, :, :, 1] = mean(ten[:, :, :, [1, 3, 5, 11, 17]], dims=4) # taxol
+    tensor[:, :, :, 2] = mean(ten[:, :, :, [2, 4, 6, 12, 18]], dims=4) # palbo
+    tensor[:, :, :, 3] = mean(ten[:, :, :, [7, 13, 19]], dims=4) # trametinib
+    tensor[:, :, :, 4] = mean(ten[:, :, :, [8, 14]], dims=4) # bez
+    tensor[:, :, :, 5] = mean(ten[:, :, :, [9, 15]], dims=4) # dox
+    tensor[:, :, :, 6] = mean(ten[:, :, :, [10, 16]], dims=4) # gem
+
+    css = [concs[1], concs[2], concs[7], concs[8], concs[9], concs[10]]
+    conditions = [conds[1], conds[2], conds[7], conds[8], conds[9], conds[10]]
+    names = [nams[1], nams[2], nams[7], nams[8], nams[9], nams[10]]
+
+    return tensor[:, :, :, [1, 2, 5, 6]], names[[1, 2, 5, 6]], css[[1, 2, 5, 6]], conditions[[1, 2, 5, 6]]
+end
+
+""" This function puts together the data from all drug treatments of MDAMB157 data. """
+function mda_all()
+    g1, c1, d1 = DrugResponseModel.import_mt1("MD00101_CtcK_level_2.csv", "MDAMB")
+    newg1 = DrugResponseModel.trim_data(g1, c1)
+    ten1, cond1, cl1 = DrugResponseModel.mt_tensor(g1, newg1, c1, d1)
+    t1 = mean(ten1, dims=2)
+
+    g2, c2, d2 = DrugResponseModel.import_mt1("MD00201_CtcK_level_2.csv", "MDAMB")
+    newg2 = DrugResponseModel.trim_data(g2, c2)
+    ten2, cond2, cl2 = DrugResponseModel.mt_tensor(g2, newg2, c2, d2)
+    t2 = mean(ten2, dims=2)
+
+    g3, c3, d3 = DrugResponseModel.import_mt1("MD00301_CtcK_level_2.csv", "MDAMB")
+    newg3 = DrugResponseModel.trim_data(g3, c3)
+    ten3, cond3, cl3 = DrugResponseModel.mt_tensor(g3, newg3, c3, d3)
+    t3 = mean(ten3, dims=2)
+
+    g4, c4, d4 = DrugResponseModel.import_mt1("MD00401_CtcK_level_2.csv", "MDAMB")
+    newg4 = DrugResponseModel.trim_data(g4, c4)
+    ten4, cond4, cl4 = DrugResponseModel.mt_tensor(g4, newg4, c4, d4)
+    t4 = mean(ten4, dims=2)
+
+    g5, c5, d5 = DrugResponseModel.import_mt1("MD00501_CtcK_level_2.csv", "MDAMB")
+    newg5 = DrugResponseModel.trim_data(g5, c5)
+    ten5, cond5, cl5 = DrugResponseModel.mt_tensor(g5, newg5, c5, d5)
+    t5 = mean(ten5, dims=2)
+
+    g6, c6, d6 = DrugResponseModel.import_mt1("MD00601_CtcK_level_2.csv", "MDAMB")
+    newg6 = DrugResponseModel.trim_data(g6, c6)
+    ten6, cond6, cl6 = DrugResponseModel.mt_tensor(g6, newg6, c6, d6)
+    t6 = mean(ten6, dims=2)
+
+    g7, c7, d7 = DrugResponseModel.import_mt1("MD00701_CtcK_level_2.csv", "MDAMB")
+    newg7 = DrugResponseModel.trim_data(g7, c7)
+    ten7, cond7, cl7 = DrugResponseModel.mt_tensor(g7, newg7, c7, d7)
+    t7 = mean(ten7, dims=2)
+
+    g8, c8, d8 = DrugResponseModel.import_mt1("MD00801_CtcK_level_2.csv", "MDAMB")
+    newg8 = DrugResponseModel.trim_data(g8, c8)
+    ten8, cond8, cl8 = DrugResponseModel.mt_tensor(g8, newg8, c8, d8)
+    t8 = mean(ten8, dims=2)
+
+    conds = append!(cond1, cond2, cond3, cond4, cond5, cond6, cond7, cond8)
+    nams = []
+    concs = []
+    for cc in conds
+        c = []
+        for item in cc
+            push!(c, parse(Float64, rsplit(item, "_")[2]))
+        end
+        push!(nams, rsplit(cc[2], "_")[1])
+        push!(concs, c)
+    end
+    
+    ten =  cat(t1, t2, t3, t4, t5, t6, t7, t8, dims=5)[:, 1, :, :, :]
+    tensor = zeros(2, 193, 8, 6)
+    tensor[:, :, 1, :] .= mean(ten[:, :, 1, :], dims=4)[:, :, 1] # untreated
+    tensor[:, :, :, 1] = mean(ten[:, :, :, [7, 13, 19]], dims=4) # taxol
+    tensor[:, :, :, 2] = mean(ten[:, :, :, [2, 8, 14, 20]], dims=4) # palbo
+    tensor[:, :, :, 3] = mean(ten[:, :, :, [3, 9, 15, 21]], dims=4) # trametinib
+    tensor[:, :, :, 4] = mean(ten[:, :, :, [4, 10, 16]], dims=4) # bez
+    tensor[:, :, :, 5] = mean(ten[:, :, :, [5, 11, 17]], dims=4) # dox
+    tensor[:, :, :, 6] = mean(ten[:, :, :, [1, 6, 12, 18]], dims=4) # gem
+
+    css = [concs[7], concs[2], concs[3], concs[4], concs[5], concs[1]]
+    conditions = [conds[7], conds[2], conds[3], conds[4], conds[5], conds[1]]
+    names = [nams[7], nams[2], nams[3], nams[4], nams[5], nams[1]]
+
+    return tensor, names, css, conditions
 end

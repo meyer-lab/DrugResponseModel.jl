@@ -75,7 +75,7 @@ function output_deadcells()
             intg[:, j, i] = cumul_integrate(t, d[:, j, i])
         end
     end
-    p1 = plot(
+    p1 = Plots.plot(
         t,
         intg[:, :, 1],
         labels = ["control" "25nM" "50nM" "100nM" "250nM" "500nM"],
@@ -98,7 +98,7 @@ function output_deadcells()
     )
     ylims!((-0.05, 2.5))
 
-    p3 = plot(
+    p3 = Plots.plot(
         t,
         intg[:, :, 3],
         labels = ["control" "2.5nM" "5nM" "10nM" "30nM" "100nM"],

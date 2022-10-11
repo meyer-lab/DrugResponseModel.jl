@@ -14,10 +14,11 @@ using JLD
 using Distributions
 using DataFrames
 using XLSX
-# using StatsPlots
+using StatsPlots
 using NumericalIntegration
 using CSV
 using MultivariateStats
+using Impute
 
 include("importData.jl")
 include("ODEmodel.jl")

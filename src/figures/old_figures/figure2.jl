@@ -11,7 +11,7 @@ function SSE(G1, G2, g1m, g2m, subPlabel)
     ctg = repeat(["w/o LCT", "w/ LCT"], inner = 5)
     nam = repeat(["Lapatinib", "Doxorubicin", "Gemcitabine", "Paclitaxel", "Palbociclib"], outer = 2)
 
-    groupedbar(
+    StatsPlots.groupedbar(
         nam,
         SSEs,
         group = ctg,
@@ -33,7 +33,7 @@ function SSE(G1, G2, g1m, g2m, subPlabel)
         left_margin = 1.85cm,
         right_margin = 1.25cm,
     )
-    annotate!(-1, 555.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
+    annotate!(-1, 555.0, Plots.text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
 end
 
 function plot_fig1(concs, g1, g1data, tite, G, subPlabel, palet, time)
@@ -61,7 +61,7 @@ function plot_fig1(concs, g1, g1data, tite, G, subPlabel, palet, time)
         right_margin = 1.25cm,
     )
     Plots.plot!(time, g1data, lw = 2, linestyle = :dot, label = ["" "" "" "" "" "" ""])
-    annotate!(-1.0, 2.0, text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
+    annotate!(-1.0, 2.0, Plots.text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
     ylims!((0.0, 2.5))
     p
 end
@@ -112,7 +112,7 @@ function plot_pG1_mean(y1, y2, ymax, Phasename, ylabel, subPlabel, plus)
         right_margin = 1.25cm,
         title = "$Phasename effects",
     )
-    annotate!(-0.5, (ymax + plus), text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
+    annotate!(-0.5, (ymax + plus), Plots.text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
     ylims!((-0.1, ymax))
 end
 
@@ -189,7 +189,7 @@ function figure2()
     g1mshort[:, 2:6, :] .= g1m[:, 4:8, :]
     g2mshort[:, 2:6, :] .= g2m[:, 4:8, :]
 
-    p0 = plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
+    p0 = Plots.plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
     p1 = plot_fig1(concs[:, 1], G1short[:, :, 1], g1mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "G1", "B", :PuBu_6, t)
     p2 = plot_fig1(concs[:, 1], G2short[:, :, 1], g2mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "S/G2", "C", :PuBu_6, t)
     p3 = plot_fig1(concs[:, 3], G1short[:, :, 3], g1mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "G1", "D", :PuBu_6, t)
@@ -203,14 +203,14 @@ function figure2()
     p11 = output_deadcells()[2]
 
 
-    figure1 = plot(p0, p9, p1, p2, p5, p6, p3, p4, p7, p8, p10, p11, size = (2000, 1300), layout = (3, 4))
+    figure1 = Plots.plot(p0, p9, p1, p2, p5, p6, p3, p4, p7, p8, p10, p11, size = (2000, 1300), layout = (3, 4))
     savefig(figure1, "figure2.svg")
 end
 
 function plt_sing(g1, g2, g1sim, g2sim)
     time = LinRange(0.0, 95.0, 189)
 
-    p = plot(
+    p = Plots.plot(
         time,
         g1,
         lw = 4,
@@ -231,7 +231,7 @@ function plt_sing(g1, g2, g1sim, g2sim)
         left_margin = 1.25cm,
         right_margin = 1.25cm,
     )
-    plot!(
+    Plots.plot!(
         time,
         g2,
         lw = 4,
@@ -252,7 +252,7 @@ function plt_sing(g1, g2, g1sim, g2sim)
         left_margin = 1.25cm,
         right_margin = 1.25cm,
     )
-    plot!(
+    Plots.plot!(
         time,
         g1sim,
         lw = 4,
@@ -274,7 +274,7 @@ function plt_sing(g1, g2, g1sim, g2sim)
         left_margin = 1.25cm,
         right_margin = 1.25cm,
     )
-    plot!(
+    Plots.plot!(
         time,
         g2sim,
         lw = 4,
@@ -322,6 +322,6 @@ function plot_them()
     p1 = plt_sing(g1m[:, 1, 1], g2m[:, 1, 1], g1sim[:, 1], g2sim[:, 1])
     p2 = plt_sing(g1m[:, 8, 1], g2m[:, 8, 1], g1sim[:, 2], g2sim[:, 2])
 
-    pp = plot(p1, p2, size = (800, 400))
+    pp = Plots.plot(p1, p2, size = (800, 400))
     savefig(pp, "fig.svg")
 end

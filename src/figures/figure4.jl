@@ -3,7 +3,7 @@ drugs = ["BEZ235", "Trametinib", "5FU", "AZD5438", "Panobinostat", "MG132", "Eve
 
 function plt_1(i, j, eff_name)
     pp = DrugResponseModel.out_ODEparams() # 11 drugs x 16 parameters x 8 concentrations
-    _, _, conc = DrugResponseModel.load_newData(drugs[i])
+    conc = DrugResponseModel.concentration(drugs[i])
     cs = convert(Array{Float64,1}, conc)
     dfs = [DataFrame(x=cs, y=pp[i, Int(j+k-1), :], label=string(eff_name*"$k")) for k = 1:4]
     DF = vcat(dfs...)

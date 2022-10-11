@@ -30,6 +30,7 @@ function optimize_helper(f, low::Vector, high::Vector, maxstep::Int)
         TraceMode = :verbose,
         TraceInterval = 100,
         MaxSteps = maxstep,
+        Method = :adaptive_de_rand_1_bin_radiuslimited
     )
 
     return best_fitness(results_ode), best_candidate(results_ode)
@@ -43,7 +44,7 @@ function optimize_hill(conc::Vector, g1::Matrix, g2::Matrix; maxstep = 200000)
 
     # [EC50, k, max_a1, max_a2, max_b1,  max_b2, max_b3, max_b4, max_g11, max_g12, max_g21, max_g22, max_g23, max_g24, min_a1, min_a2, min_b1,  min_b2, min_b3, min_b4]
     low = [minimum(conc); 1e-9 * ones(25)]
-    high = [2*maximum(conc); 5.0; 5.0 * ones(24)]
+    high = [2*maximum(conc); 50.0; 4.0 * ones(24)]
 
     return optimize_helper(f, low, high, maxstep)
 end
