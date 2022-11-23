@@ -351,7 +351,7 @@ function hcc_all()
 
     # return cat(ten3, ten4, dims=4), cond3, cond4
     ten = cat(t1, t2, dims=5)[:, 1, :, :, :]
-    return ten[:, :, :, [4, 5, 2, 3]], names[[4, 5, 2, 3]], concs[[4, 5, 2, 3]], conds[[4, 5, 2, 3]]
+    return ten, names, concs, conds
 end
 
 """ create one csv file for each drug. """
@@ -554,7 +554,7 @@ function mt1_all()
     conditions = [conds[1], conds[2], conds[7], conds[8], conds[9], conds[10]]
     names = [nams[1], nams[2], nams[7], nams[8], nams[9], nams[10]]
 
-    return tensor[:, :, :, [1, 2, 5, 6]], names[[1, 2, 5, 6]], css[[1, 2, 5, 6]], conditions[[1, 2, 5, 6]]
+    return tensor, names, css, conditions
 end
 
 """ This function puts together the data from all drug treatments of MDAMB157 data. """

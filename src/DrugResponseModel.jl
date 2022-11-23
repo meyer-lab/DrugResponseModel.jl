@@ -40,6 +40,7 @@ include("figures/figure7.jl")
 include("figures/figure8.jl")
 include("figures/figure9.jl")
 include("figures/figure10.jl")
+include("figures/figureS1.jl")
 include("organize.jl")
 include("deadcells.jl")
 
