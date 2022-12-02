@@ -96,7 +96,7 @@ function output_deadcells()
         left_margin = 1.25cm,
         right_margin = 1.25cm,
     )
-    ylims!((-0.05, 2.5))
+    ylims!((-0.05, 2.0))
 
     p3 = Plots.plot(
         t,
@@ -119,7 +119,7 @@ function output_deadcells()
         left_margin = 1.25cm,
         right_margin = 1.25cm,
     )
-    ylims!((-0.05, 2.5))
+    ylims!((-0.05, 2.0))
 
     # df1 = DataFrames.DataFrame(
     #     controlLPT = intg[:, 1, 1],
