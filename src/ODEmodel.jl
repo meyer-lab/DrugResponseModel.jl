@@ -11,7 +11,11 @@ const nSp = nG1 + nG2
 function ODEjac(p::AbstractVector{T})::Matrix{T} where {T <: Real}
     # with 2 G1 and 4 G2 we have p = [a1, a2, b1, b2, b3, b4, g11, g12, g21, g22, g23, g24] # 12 params
     #                        index = [1,  2,  3,  4,  5,  6,  7,   8,   9,   10,  11,  12 ]
+    nG1 = 8
+    nG2 = 20
+    nSp = nG1 + nG2
     A = zeros(nSp, nSp)
+    
 
     A[diagind(A, 0)[1:Int(nG1 / 4)]] .= -(p[1] + p[9])
     A[diagind(A, 0)[Int(nG1 / 4 + 1):Int(nG1 / 2)]] .= -(p[2] + p[10])
@@ -69,7 +73,7 @@ function predict(p::AbstractVector, g_0::AbstractVector, t::Union{Real, LinRange
 
     if length(g_0) == length(p)
         # v = startV(g_0)
-        v = vcat([0.3/8 for i=1:8], [0.7/20 for i=1:20])
+        v = vcat([0.75/8 for i=1:8], [0.25/20 for i=1:20])
     else
         @assert length(g_0) == nSp
         v = copy(g_0)

@@ -37,18 +37,6 @@ function AllBliss_params(pp1, pp2)
     combined
 end
 
-""" This function calculates cell number for parameter sets that are the result of Bliss on prog. rates. """
-function BlissModelComb(bliss_comb, pCtr)
-    bliss_comb_cellnum = Matrix{eltype(bliss_comb)}(undef, 8, 8)
-
-    for i = 1:8 # param1 is changing
-        for j = 1:8 # param2 is changing
-            g1, g2, _ = predict(bliss_comb[:, i, j], pCtr, 96.0)
-            bliss_comb_cellnum[i, j] = g1 + g2
-        end
-    end
-    return bliss_comb_cellnum
-end
 
 """ This function plots the heatmap of combined cell numbers given any two drugs. """
 function Heatmap(concs, data, i1, i2, d1name, d2name, title; clim_min = 0.0, clim_max = 60.0)
@@ -107,12 +95,12 @@ end
 
 function output_Bliss_cellnum()
 
-    # data import (OLD EXPERIMENT)
+    # data import (OLD AU565 EXPERIMENT)
     conc, _, g1s1, g2s1 = load(189, 1)
     _, _, g1s2, g2s2 = load(189, 2)
     _, _, g1s3, g2s3 = load(189, 3)
     p = parameters()
-    gem17 = find_gem17(p)
+    gem17 = DrugResponseModel.find_gem17(p)
     efc = getODEparams(p, conc)
     t = LinRange(0.0, 95.0, 189)
 
@@ -123,11 +111,9 @@ function output_Bliss_cellnum()
     g1m[:, 7, 3], g2m[:, 7, 3], _ = predict(gem17, efc[:, 1, 3], t)
     Total1 = g1m .+ g2m
 
-    bliss = blissCellNum(Total1[end, :, :]; n = 8)
-    df1 =
-        DataFrames.DataFrame(plb50_lpt25 = bliss[4, 5, 4], plb50_lpt50 = bliss[5, 5, 4], plb50_lpt100 = bliss[6, 5, 4], plb50_lpt250 = bliss[7, 5, 4])
-    df2 =
-        DataFrames.DataFrame(gem10_lpt25 = bliss[4, 6, 2], gem10_lpt50 = bliss[5, 6, 2], gem10_lpt100 = bliss[6, 6, 2], gem10_lpt250 = bliss[7, 6, 2])
+    bliss = blissCellNum(Total1[end, :, :])
+    df1 = DataFrames.DataFrame(plb50_lpt25 = bliss[4, 5, 4], plb50_lpt50 = bliss[5, 5, 4], plb50_lpt100 = bliss[6, 5, 4], plb50_lpt250 = bliss[7, 5, 4])
+    df2 = DataFrames.DataFrame(gem10_lpt25 = bliss[4, 6, 2], gem10_lpt50 = bliss[5, 6, 2], gem10_lpt100 = bliss[6, 6, 2], gem10_lpt250 = bliss[7, 6, 2])
     df3 = DataFrames.DataFrame(dox20_gem5 = bliss[4, 5, 5], dox20_gem10 = bliss[4, 6, 5], dox20_gem17 = bliss[4, 7, 5], dox20_gem30 = bliss[4, 8, 5])
     df4 = DataFrames.DataFrame(plb50_gem5 = bliss[5, 5, 9], plb50_gem10 = bliss[6, 5, 9], plb50_gem17 = bliss[7, 5, 9], plb50_gem30 = bliss[8, 5, 9])
     df5 = DataFrames.DataFrame(
@@ -169,7 +155,7 @@ function output_Bliss_cellnum()
     Total[:, 2:5, 3] .= meanGS1[3, :, 19:22] # gemcitabines
     Total[:, 2, 4] .= meanGS1[3, :, 13] # pax 2 nM
     Total[:, 2:5, 5] .= meanGS1[3, :, 7:10] # palbos
-    bliss = blissCellNum(Total[end, :, :]; n = 5)
+    bliss = blissCellNum(Total[end, :, :])
     df1 = DataFrames.DataFrame(
         plb50_lpt25 = bliss[2, 3, 4],
         plb50_lpt50 = bliss[3, 3, 4],

@@ -44,7 +44,7 @@ end
     Total[:, 2:5, 5] .= gt1[3, :, 7:10] # palbos
     cellnum = zeros(30, 5, 5, 10) # the first one changes with rows, which is the drug that comes first (e.g., in lapatinib (rows-first) dox (columns-second))
     for i = 1:30
-        cellnum[i, :, :, :] .= DrugResponseModel.blissCellNum(Total[i, :, :]; n = 5)
+        cellnum[i, :, :, :] .= DrugResponseModel.blissCellNum(Total[i, :, :])
     end
     @assert(all(cellnum[:, 3, 1, 1] ≈ Total[1:30, 3, 1])) # control + lap50 ≈ lap50
     @assert(all(cellnum[:, 1, 1, 2] ≈ Total[1:30, 1, 3])) # control + control ≈ control
