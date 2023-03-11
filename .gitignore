@@ -6,8 +6,6 @@ deps/deps.jl
 .ipynb
 __pycache__/
 .vscode/settings.json
-*.pdf
 venv
 *.svg
 **.DS_Store
-plots
