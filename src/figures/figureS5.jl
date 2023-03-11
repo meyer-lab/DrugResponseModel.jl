@@ -193,8 +193,9 @@ where __cellLineName__ could be one of [hcc_all, mt1_all, mda_all]
 2. imporing the estimated parameters according to the cell line, one of [ps_hcc, ps_mt1, ps_mda] above.
 3. DrugResponseModel.figure70(tensor, names, concs, conds, ps)"""
 
-function figure70(tensor, names, concs, conds, ps)
+function figure501(tensor, names, concs, conds, ps)
     ENV["GKSwstype"]="nul"
+    cellLine = "MDA-MB-157"
     cs = zeros(8, length(concs))
     for i=1:length(concs)
         cs[:, i] = concs[i]
