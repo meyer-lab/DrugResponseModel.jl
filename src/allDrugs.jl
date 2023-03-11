@@ -2,8 +2,6 @@
 # import Pkg; Pkg.instantiate()
 # Pkg.activate(".")
 # using DrugResponseModel
-# using Plots, LinearAlgebra, Statistics
-# Plots.scalefontsizes(0.7)
 
 # concs, _, g1s1, g2s1 = load(189, 1);
 # _, _, g1s2, g2s2 = load(189, 2);
@@ -31,16 +29,18 @@ end
 
 """ Organize Hill parameters for each drug in a 2D array. """
 function Hill_p_eachDr(p)
-    HillP = Matrix{eltype(p)}(undef, 18, 6)
+    kk = (length(p) - 8 ) / 18 # number of drugs
+    HillP = Matrix{eltype(p)}(undef, 18, kk)
     # each column: [EC50, steepness, max_g1,1_prog., max_g1,2_prog., max_g2,1_prog., max_g2,2_prog., max_g11_death, max_g12_death, max_g21_death, max_g22_death]
     j = 1
-    for i = 1:6
+    for i = 1:kk
         HillP[:, i] .= p[j:(j + 17)]
         j += 18
     end
     HillP
 end
 
+"""Att this setting, it is assuming we are fitting 6 drugs at once. To change that, add or remove the set of minimum(concs[1]), lP in low and high. """
 function optim_all(concs, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter = 1000000)
     f(x) = residHillAll(x, concs, g1, g2)
 
@@ -180,6 +180,7 @@ function EC50_params(p, i)
     ])
 end
 
+# In the first round of AU565, only fitting lapatinib, gemcitabine, and palbo together. 
 function parameters3()
     return ps = [
         47.5584,

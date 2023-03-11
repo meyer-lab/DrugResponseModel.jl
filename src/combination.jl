@@ -107,12 +107,12 @@ end
 
 function output_Bliss_cellnum()
 
-    # data import (OLD EXPERIMENT)
+    # data import (OLD AU565 EXPERIMENT)
     conc, _, g1s1, g2s1 = load(189, 1)
     _, _, g1s2, g2s2 = load(189, 2)
     _, _, g1s3, g2s3 = load(189, 3)
     p = parameters()
-    gem17 = find_gem17(p)
+    gem17 = DrugResponseModel.find_gem17(p)
     efc = getODEparams(p, conc)
     t = LinRange(0.0, 95.0, 189)
 

@@ -1,6 +1,6 @@
 """ test - plot fitting  drugs SEPARATELY to see if it works well or not. """
 
-function figure06()
+function figure_AU565()
     setGadflyTheme()
 
 
@@ -34,11 +34,11 @@ function figure06()
 
     end
     pl = plotGrid((6, 4), [pp...];)
-    return draw(SVG("figure06.svg", 20inch, 30inch), pl)
+    return draw(SVG("AU565_11drugs_separate_fits.svg", 20inch, 30inch), pl)
 end
 
 
-function figure6()
+function figure_HCC()
     setGadflyTheme()
 
     tensor, drugnames, concs, conds = DrugResponseModel.hcc_all()
@@ -66,7 +66,7 @@ function figure6()
 
     end
     pl = plotGrid((3, 4), [pp...];)
-    return draw(SVG("figure6.svg", 20inch, 16inch), pl)
+    return draw(SVG("HCC1143_6drugs_separate_fits.svg", 20inch, 16inch), pl)
 end
 
 
@@ -81,7 +81,7 @@ function Eachdrug_sim_mt1(G_sim, G_data, condition, g1g2, drug_name)
     return p
 end
 
-function figure61()
+function figure_21MT1()
     setGadflyTheme()
 
     tensor, names, concs, conds = DrugResponseModel.mt1_all()
@@ -130,140 +130,10 @@ function figure61()
     ii += 1
     end
     pl = plotGrid((4, 2), [pp...];)
-    return draw(SVG("figure66.svg", 10inch, 20inch), pl)
+    return draw(SVG("21MT1_4drugs_separate_fits.svg", 10inch, 20inch), pl)
 end
 
-function figure600()
-
-    tensor, names, concs, conds, _, _ = DrugResponseModel.mt1_all()
-
-    taxol_means1 = mean(tensor[1, :, :, [1, 3, 5, 9, 13]], dims=3)
-    taxol_std1 = std(tensor[1, :, :, [1, 3, 5, 9, 13]], dims=3)
-
-    taxol_means2 = mean(tensor[2, :, :, [1, 3, 5, 9, 13]], dims=3)
-    taxol_std2 = std(tensor[2, :, :, [1, 3, 5, 9, 13]], dims=3)
-
-    palbo_means1 = mean(tensor[1, :, :, [2, 4, 6, 10, 14]], dims=3)
-    palbo_std1 = std(tensor[1, :, :, [2, 4, 6, 10, 14]], dims=3)
-
-    palbo_means2 = mean(tensor[2, :, :, [2, 4, 6, 10, 14]], dims=3)
-    palbo_std2 = std(tensor[2, :, :, [2, 4, 6, 10, 14]], dims=3)
-
-    dox_means1 = mean(tensor[1, :, :, [8, 12]], dims=3)
-    dox_std1 = std(tensor[1, :, :, [8, 12]], dims=3)
-
-    dox_means2 = mean(tensor[2, :, :, [8, 12]], dims=3)
-    dox_std2 = std(tensor[2, :, :, [8, 12]], dims=3)
-
-    plt = []
-    for i = 1:8
-        push!(plt, Gadfly.plot(x=LinRange(0, 96, 193), y=taxol_means1[:, i, 1], ymin=taxol_means1[:, i, 1]-taxol_std1[:, i, 1], ymax = taxol_means1[:, i, 1] + taxol_std1[:, i, 1], Guide.title(" Taxol G1 $concs[1][i]"), Geom.line, Geom.ribbon))
-    end
-
-    for i = 1:8
-        push!(plt, Gadfly.plot(x=LinRange(0, 96, 193), y=taxol_means2[:, i, 1], ymin=taxol_means2[:, i, 1]-taxol_std2[:, i, 1], ymax = taxol_means2[:, i, 1] + taxol_std2[:, i, 1], Guide.title(" Taxol SG2 $concs[1][i]"), Geom.line, Geom.ribbon))
-    end
-
-    for i = 1:8
-        push!(plt, Gadfly.plot(x=LinRange(0, 96, 193), y=palbo_means1[:, i, 1], ymin=palbo_means1[:, i, 1]-palbo_std1[:, i, 1], ymax = palbo_means1[:, i, 1] + palbo_std1[:, i, 1], Guide.title(" Palbo G1 $concs[2][i]"), Geom.line, Geom.ribbon))
-    end
-
-    for i = 1:8
-        push!(plt, Gadfly.plot(x=LinRange(0, 96, 193), y=palbo_means2[:, i, 1], ymin=palbo_means2[:, i, 1]-palbo_std2[:, i, 1], ymax = palbo_means2[:, i, 1] + palbo_std2[:, i, 1], Guide.title(" Palbo SG2 $concs[2][i]"), Geom.line, Geom.ribbon))
-    end
-
-    pl = plotGrid((4, 8), [plt...];)
-    return draw(SVG("figure600.svg", 20inch, 10inch), pl)
-end
-
-function figure700()
-    tensor, names, concs, conds, _, _ = DrugResponseModel.mda_all()
-
-    gem_means1 = mean(tensor[1, :, :, [1, 9, 15]], dims=3)
-    gem_means2 = mean(tensor[2, :, :, [1, 9, 15]], dims=3)
-    gem_std1 = std(tensor[1, :, :, [1, 9, 15]], dims=3)
-    gem_std2 = std(tensor[2, :, :, [1, 9, 15]], dims=3)
-
-    palbo_means1 = mean(tensor[1, :, :, [2, 5, 11, 17]], dims=3)
-    palbo_means2 = mean(tensor[2, :, :, [2, 5, 11, 17]], dims=3)
-    palbo_std1 = std(tensor[1, :, :, [2, 5, 11, 17]], dims=3)
-    palbo_std2 = std(tensor[2, :, :, [2, 5, 11, 17]], dims=3)
-
-    tram_means1 = mean(tensor[1, :, :, [3, 6, 12, 18]], dims=3)
-    tram_means2 = mean(tensor[2, :, :, [3, 6, 12, 18]], dims=3)
-    tram_std1 = std(tensor[1, :, :, [3, 6, 12, 18]], dims=3)
-    tram_std2 = std(tensor[2, :, :, [3, 6, 12, 18]], dims=3)
-
-    taxol_means1 = mean(tensor[1, :, :, [4, 10, 16]], dims=3)
-    taxol_means2 = mean(tensor[2, :, :, [4, 10, 16]], dims=3)
-    taxol_std1 = std(tensor[1, :, :, [4, 10, 16]], dims=3)
-    taxol_std2 = std(tensor[2, :, :, [4, 10, 16]], dims=3)
-
-    bez_means1 = mean(tensor[1, :, :, [7, 13]], dims=3)
-    bez_means2 = mean(tensor[2, :, :, [7, 13]], dims=3)
-    bez_std1 = std(tensor[1, :, :, [7, 13]], dims=3)
-    bez_std2 = std(tensor[2, :, :, [7, 13]], dims=3)
-
-    dox_means1 = mean(tensor[1, :, :, [8, 14]], dims=3)
-    dox_means2 = mean(tensor[2, :, :, [8, 14]], dims=3)
-    dox_std1 = std(tensor[1, :, :, [8, 14]], dims=3)
-    dox_std2 = std(tensor[2, :, :, [8, 14]], dims=3)
-
-    plt = []
-    for i = 1:8
-        push!(plt, Gadfly.plot(x=LinRange(0, 96, 193), y=taxol_means1[:, i, 1], ymin=taxol_means1[:, i, 1]-taxol_std1[:, i, 1], ymax = taxol_means1[:, i, 1] + taxol_std1[:, i, 1], Guide.title(" Taxol G1 $concs[4][i]"), Geom.line, Geom.ribbon))
-    end
-
-    for i = 1:8
-        push!(plt, Gadfly.plot(x=LinRange(0, 96, 193), y=taxol_means2[:, i, 1], ymin=taxol_means2[:, i, 1]-taxol_std2[:, i, 1], ymax = taxol_means2[:, i, 1] + taxol_std2[:, i, 1], Guide.title(" Taxol SG2 $concs[4][i]"), Geom.line, Geom.ribbon))
-    end
-
-    for i = 1:8
-        push!(plt, Gadfly.plot(x=LinRange(0, 96, 193), y=palbo_means1[:, i, 1], ymin=palbo_means1[:, i, 1]-palbo_std1[:, i, 1], ymax = palbo_means1[:, i, 1] + palbo_std1[:, i, 1], Guide.title(" Palbo G1 $concs[2][i]"), Geom.line, Geom.ribbon))
-    end
-
-    for i = 1:8
-        push!(plt, Gadfly.plot(x=LinRange(0, 96, 193), y=palbo_means2[:, i, 1], ymin=palbo_means2[:, i, 1]-palbo_std2[:, i, 1], ymax = palbo_means2[:, i, 1] + palbo_std2[:, i, 1], Guide.title(" Palbo SG2 $concs[2][i]"), Geom.line, Geom.ribbon))
-    end
-
-    for i = 1:8
-        push!(plt, Gadfly.plot(x=LinRange(0, 96, 193), y=tram_means1[:, i, 1], ymin=tram_means1[:, i, 1]-tram_std1[:, i, 1], ymax = tram_means1[:, i, 1] + tram_std1[:, i, 1], Guide.title(" Tram G1 $concs[3][i]"), Geom.line, Geom.ribbon))
-    end
-
-    for i = 1:8
-        push!(plt, Gadfly.plot(x=LinRange(0, 96, 193), y=tram_means2[:, i, 1], ymin=tram_means2[:, i, 1]-tram_std2[:, i, 1], ymax = tram_means2[:, i, 1] + tram_std2[:, i, 1], Guide.title(" Tram SG2 $concs[3][i]"), Geom.line, Geom.ribbon))
-    end
-
-    for i = 1:8
-        push!(plt, Gadfly.plot(x=LinRange(0, 96, 193), y=bez_means1[:, i, 1], ymin=bez_means1[:, i, 1]-bez_std1[:, i, 1], ymax = bez_means1[:, i, 1] + bez_std1[:, i, 1], Guide.title(" Tram G1 $concs[7][i]"), Geom.line, Geom.ribbon))
-    end
-
-    for i = 1:8
-        push!(plt, Gadfly.plot(x=LinRange(0, 96, 193), y=bez_means2[:, i, 1], ymin=bez_means2[:, i, 1]-bez_std2[:, i, 1], ymax = bez_means2[:, i, 1] + bez_std2[:, i, 1], Guide.title(" Tram SG2 $concs[7][i]"), Geom.line, Geom.ribbon))
-    end
-
-    for i = 1:8
-        push!(plt, Gadfly.plot(x=LinRange(0, 96, 193), y=dox_means1[:, i, 1], ymin=dox_means1[:, i, 1]-dox_std1[:, i, 1], ymax = dox_means1[:, i, 1] + dox_std1[:, i, 1], Guide.title(" Tram G1 $concs[8][i]"), Geom.line, Geom.ribbon))
-    end
-
-    for i = 1:8
-        push!(plt, Gadfly.plot(x=LinRange(0, 96, 193), y=dox_means2[:, i, 1], ymin=dox_means2[:, i, 1]-dox_std2[:, i, 1], ymax = dox_means2[:, i, 1] + dox_std2[:, i, 1], Guide.title(" Tram SG2 $concs[8][i]"), Geom.line, Geom.ribbon))
-    end
-
-    for i = 1:8
-        push!(plt, Gadfly.plot(x=LinRange(0, 96, 193), y=gem_means1[:, i, 1], ymin=gem_means1[:, i, 1]-gem_std1[:, i, 1], ymax = gem_means1[:, i, 1] + gem_std1[:, i, 1], Guide.title(" Tram G1 $concs[1][i]"), Geom.line, Geom.ribbon))
-    end
-
-    for i = 1:8
-        push!(plt, Gadfly.plot(x=LinRange(0, 96, 193), y=gem_means2[:, i, 1], ymin=gem_means2[:, i, 1]-gem_std2[:, i, 1], ymax = gem_means2[:, i, 1] + gem_std2[:, i, 1], Guide.title(" Tram SG2 $concs[1][i]"), Geom.line, Geom.ribbon))
-    end
-
-    pl = plotGrid((8, 12), [plt...];)
-    return draw(SVG("figure700.svg", 30inch, 20inch), pl)
-
-end
-
-function figure701()
+function figure_MDAMB157()
     setGadflyTheme()
 
     tensor, names, concs, conds, _, _ = DrugResponseModel.mda_all()
@@ -320,6 +190,6 @@ function figure701()
     ii += 1
     end
     pl = plotGrid((6, 2), [pp...];)
-    return draw(SVG("figure701.svg", 10inch, 26inch), pl)
+    return draw(SVG("MDAMB157_6Drugs_separate_fits.svg", 10inch, 26inch), pl)
 
 end

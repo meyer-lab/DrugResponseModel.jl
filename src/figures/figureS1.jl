@@ -1,93 +1,139 @@
-""" Supplementary figures for paper, new cell lines. """
+""" Supplementary figure 1 for paper. """
 
-function plot_fig1_data(concs, g1data, tite, G, subPlabel, palet, time)
-    p = Plots.plot(
+"""This is to plot the replicates of AU565 cells treated with first round of drugs, including Lapatinib, Doxorubicin, Gemcitabine, Paclitaxel, and Palbociclib."""
+function figure100()
+    time = LinRange(0.0, 95.0, 189)
+
+    concs, _, g1s1, g2s1 = load(189, 1);
+    _, _, g1s2, g2s2 = load(189, 2);
+    _, _, g1s3, g2s3 = load(189, 3);
+
+    drs = ["Lapatinib", "Doxorubicin", "Gemcitabine", "Paclitaxel", "Palbociclib"]
+    css = [["control" "25nM" "50nM" "100nM" "250nM" "500nM"],
+    ["control" "20nM" "50nM" "125nM" "250nM" "500nM"],
+    ["control" "2.5nM" "5nM" "10nM" "30nM" "100nM"],
+    ["control" "2nM" "3nM" "5nM" "7.5nM" "15nM"],
+    ["control" "25nM" "50nM" "100nM" "250nM" "500nM"]]
+
+    total_ps = []
+    for i = 1:5
+    p1 = Plots.plot(
         time,
-        g1data,
-        lw = 5,
+        g1s1[:, [1, 4, 5, 6, 7, 8], i],
+        title = string("rep1 ", drs[i]),
+        titlefontsize = 8,
+        markersize = 1.0,
+        markerstrokewidth = 0.0,
         legend = :topleft,
-        label = ["control" "$(concs[2]) nM" "$(concs[3]) nM" "$(concs[4]) nM" "$(concs[5]) nM" "$(concs[6]) nM" "$(concs[7]) nM" "$(concs[8]) nM"],
-        fg_legend = :transparent,
-        palette = palet,
-        title = tite,
-        titlefont = Plots.font("Helvetica", 14),
-        legendfont = Plots.font("Helvetica", 11),
-        guidefont = Plots.font("Helvetica", 14),
-        xtickfont = Plots.font("Helvetica", 14),
-        ytickfont = Plots.font("Helvetica", 14),
-        xlabel = "Time [hr]",
-        xticks = 0:24.0:96.0,
-        ylabel = "Normalized Cell Counts",
-        bottom_margin = 1.25cm,
-        top_margin = 1.25cm,
-        left_margin = 1.25cm,
-        right_margin = 1.25cm,
+        label = css[i],
+        xlabel = "time [hr]",
+        ylabel = "G1 cell proportions",
+        xguidefontsize = 8,
+        yguidefontsize = 8,
+        legendfontsize = 8,
+        lw = 3, 
+        palette = :PuRd_6,
     )
-    annotate!(-0.5, 1.5, Plots.text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
-    ylims!((0.0, 4))
-    p
-end
+    ylims!((0, 2))
 
-function plot_fig1_percG1(concs, g1data, tite, G, subPlabel, palet, time)
-    p = Plots.plot(
+    p2 = Plots.plot(
         time,
-        g1data,
-        lw = 5,
+        g2s1[:, [1, 4, 5, 6, 7, 8], i],
+        title = string("rep1 ", drs[i]),
+        titlefontsize = 8,
+        markersize = 1.0,
+        markerstrokewidth = 0.0,
         legend = :topleft,
-        label = ["control" "$(concs[4]) nM" "$(concs[5]) nM" "$(concs[6]) nM" "$(concs[7]) nM" "$(concs[8]) nM"],
-        fg_legend = :transparent,
-        palette = palet,
-        title = tite,
-        titlefont = Plots.font("Helvetica", 14),
-        legendfont = Plots.font("Helvetica", 11),
-        guidefont = Plots.font("Helvetica", 14),
-        xtickfont = Plots.font("Helvetica", 14),
-        ytickfont = Plots.font("Helvetica", 14),
-        xlabel = "Time [hr]",
-        xticks = 0:24.0:96.0,
-        ylabel = "G1 Percentage",
-        bottom_margin = 1.25cm,
-        top_margin = 1.25cm,
-        left_margin = 1.25cm,
-        right_margin = 1.25cm,
+        label = css[i],
+        xlabel = "time [hr]",
+        ylabel = "SG2 cell proportions",
+        xguidefontsize = 8,
+        yguidefontsize = 8,
+        legendfontsize = 8,
+        lw = 3, 
+        palette = :PuBu_6,
     )
-    annotate!(-0.5, 1.5, Plots.text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
-    ylims!((0.0, 1.0))
-    p
-end
+    ylims!((0, 2))
 
-""" To plot the fits and accumulated cell death for each cell line, we do the following:
-1. tensor, names, concs, conds = DrugResponseModel.__cellLineName__()
-where __cellLineName__ could be one of [hcc_all, mt1_all, mda_all]
-2. imporing the estimated parameters according to the cell line, one of [ps_hcc, ps_mt1, ps_mda] above.
-3. DrugResponseModel.figure70(tensor, names, concs, conds, ps)"""
+    p3 = Plots.plot(
+        time,
+        g1s2[:, [1, 4, 5, 6, 7, 8], i],
+        title = string("rep2 ", drs[i]),
+        titlefontsize = 8,
+        markersize = 1.0,
+        markerstrokewidth = 0.0,
+        legend = :topleft,
+        label = css[i],
+        xlabel = "time [hr]",
+        ylabel = "G1 cell proportions",
+        xguidefontsize = 8,
+        yguidefontsize = 8,
+        legendfontsize = 8,
+        lw = 3, 
+        palette = :PuRd_6,
+    )
+    ylims!((0, 2))
 
-function figureS1()
-    ENV["GKSwstype"]="nul"
-    tensor, names, concs, conds = DrugResponseModel.mda_all()
-    t = LinRange(0.0, 96, size(tensor)[2])
+    p4 = Plots.plot(
+        time,
+        g2s2[:, [1, 4, 5, 6, 7, 8], i],
+        title = string("rep2 ", drs[i]),
+        titlefontsize = 8,
+        markersize = 1.0,
+        markerstrokewidth = 0.0,
+        legend = :topleft,
+        label = css[i],
+        xlabel = "time [hr]",
+        ylabel = "SG2 cell proportions",
+        xguidefontsize = 8,
+        yguidefontsize = 8,
+        legendfontsize = 8,
+        lw = 3, 
+        palette = :PuBu_6,
+    )
+    ylims!((0, 2))
 
-    gmshort = zeros(size(tensor)[2], 6, 6, 2) # datapoints x concs x drugs x g1/g2
-    for i=1:2
-        gmshort[:, 1, :, i] .= tensor[i, :, 1, :]
-        gmshort[:, 2:, :, i] .= tensor[i, 4:, :, :]
+    p5 = Plots.plot(
+        time,
+        g1s3[:, [1, 4, 5, 6, 7, 8], i],
+        title = string("rep3 ", drs[i]),
+        titlefontsize = 8,
+        markersize = 1.0,
+        markerstrokewidth = 0.0,
+        legend = :topleft,
+        label = css[i],
+        xlabel = "time [hr]",
+        ylabel = "G1 cell proportions",
+        xguidefontsize = 8,
+        yguidefontsize = 8,
+        legendfontsize = 8,
+        lw = 3, 
+        palette = :PuRd_6,
+    )
+    ylims!((0, 2))
+
+    p6 = Plots.plot(
+        time,
+        g2s3[:, [1, 4, 5, 6, 7, 8], i],
+        title = string("rep3 ", drs[i]),
+        titlefontsize = 8,
+        markersize = 1.0,
+        markerstrokewidth = 0.0,
+        legend = :topleft,
+        label = css[i],
+        xlabel = "time [hr]",
+        ylabel = "SG2 cell proportions",
+        xguidefontsize = 8,
+        yguidefontsize = 8,
+        legendfontsize = 8,
+        lw = 3, 
+        palette = :PuBu_6,
+    )
+    ylims!((0, 2))
+    pp1 = [p1, p2, p3, p4, p5, p6]
+    push!(total_ps, pp1)
     end
-
-
-    p1 = plot_fig1_data(concs[1], gmshort[:, :, 1, 1] .+ gmshort[:, :, 1, 2], string("MDA-MB-157 treated with ", names[1]), "", "A", :PuBu_8, t)
-    p2 = plot_fig1_data(concs[2], gmshort[:, :, 2, 1] .+ gmshort[:, :, 2, 2], string("MDA-MB-157 treated with ", names[2]), "", "", :PuBu_8, t)
-    p3 = plot_fig1_data(concs[3], gmshort[:, :, 3, 1] .+ gmshort[:, :, 3, 2], string("MDA-MB-157 treated with ", names[3]), "", "", :PuBu_8, t)
-    p4 = plot_fig1_data(concs[4], gmshort[:, :, 4, 1] .+ gmshort[:, :, 4, 2], string("MDA-MB-157 treated with ", names[4]), "", "", :PuBu_8, t)
-    p5 = plot_fig1_data(concs[5], gmshort[:, :, 5, 1] .+ gmshort[:, :, 5, 2], string("MDA-MB-157 treated with ", names[5]), "", "", :PuBu_8, t)
-    p6 = plot_fig1_data(concs[6], gmshort[:, :, 6, 1] .+ gmshort[:, :, 6, 2], string("MDA-MB-157 treated with ", names[6]), "", "", :PuBu_8, t)
-
-    p7 = plot_fig1_percG1(concs[1], gmshort[:, :, 1, 1] ./ (gmshort[:, :, 1, 1] .+ gmshort[:, :, 1, 2]), string("MDA-MB-157 treated with ", names[1]), "", "B", :PuBu_8, t)
-    p8 = plot_fig1_percG1(concs[2], gmshort[:, :, 2, 1] ./ (gmshort[:, :, 2, 1] .+ gmshort[:, :, 2, 2]), string("MDA-MB-157 treated with ", names[2]), "", "", :PuBu_8, t)
-    p9 = plot_fig1_percG1(concs[3], gmshort[:, :, 3, 1] ./ (gmshort[:, :, 3, 1] .+ gmshort[:, :, 3, 2]), string("MDA-MB-157 treated with ", names[3]), "", "", :PuBu_8, t)
-    p10 = plot_fig1_percG1(concs[4], gmshort[:, :, 4, 1] ./ (gmshort[:, :, 4, 1] .+ gmshort[:, :, 4, 2]), string("MDA-MB-157 treated with ", names[4]), "", "", :PuBu_8, t)
-    p11 = plot_fig1_percG1(concs[5], gmshort[:, :, 5, 1] ./ (gmshort[:, :, 5, 1] .+ gmshort[:, :, 5, 2]), string("MDA-MB-157 treated with ", names[5]), "", "", :PuBu_8, t)
-    p12 = plot_fig1_percG1(concs[6], gmshort[:, :, 5, 1] ./ (gmshort[:, :, 6, 1] .+ gmshort[:, :, 6, 2]), string("MDA-MB-157 treated with ", names[6]), "", "", :PuBu_8, t)
-
-    figure1 = Plots.plot(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, size = (2600, 800), layout = (2, 6))
-    Plots.savefig(figure1, "figureS1_MDAMB157.svg")
+    s = vcat(total_ps...)
+    pp = Plots.plot(s..., size = (2400, 1800), layout = (5, 6))
+    savefig(pp, "SupplementaryFigure1.svg")
 end

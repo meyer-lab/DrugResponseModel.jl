@@ -1,4 +1,5 @@
 """ To find the sensitivity of the model to a parameter. """
+
 function sensitivity(params::Vector, paramRange::Vector, conc::Vector, i::Int, g1::Matrix, g2::Matrix)
     result = zeros(length(paramRange))
     for j = 1:length(paramRange)

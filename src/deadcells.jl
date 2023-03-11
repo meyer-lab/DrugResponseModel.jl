@@ -1,4 +1,4 @@
-""" deadcells """
+"""Calculate deadcells in each subphase."""
 
 function vTOgD(v::AbstractVector)
     G11 = sum(view(v, 1:2))
@@ -121,60 +121,5 @@ function output_deadcells()
     )
     ylims!((-0.05, 2.0))
 
-    # df1 = DataFrames.DataFrame(
-    #     controlLPT = intg[:, 1, 1],
-    #     lpt5 = intg[:, 2, 1],
-    #     lpt10 = intg[:, 3, 1],
-    #     lpt25 = intg[:, 4, 1],
-    #     lpt50 = intg[:, 5, 1],
-    #     lpt100 = intg[:, 6, 1],
-    #     lpt250 = intg[:, 7, 1],
-    #     lpt500 = intg[:, 8, 1],
-    # )
-    # df2 = DataFrames.DataFrame(
-    #     controlDOX = intg[:, 1, 2],
-    #     dox1 = intg[:, 2, 2],
-    #     dox10 = intg[:, 3, 2],
-    #     dox25 = intg[:, 4, 2],
-    #     dox50 = intg[:, 5, 2],
-    #     dox125 = intg[:, 6, 2],
-    #     dox250 = intg[:, 7, 2],
-    #     dox500 = intg[:, 8, 2],
-    # )
-    # df3 = DataFrames.DataFrame(
-    #     controlGEM = intg[:, 1, 3],
-    #     gem025 = intg[:, 2, 3],
-    #     gem1 = intg[:, 3, 3],
-    #     gem2_5 = intg[:, 4, 3],
-    #     gem5 = intg[:, 5, 3],
-    #     gem10 = intg[:, 6, 3],
-    #     gem30 = intg[:, 7, 3],
-    #     gem100 = intg[:, 8, 3],
-    # )
-    # df4 = DataFrames.DataFrame(
-    #     controlTAX = intg[:, 1, 4],
-    #     tax0_1 = intg[:, 2, 4],
-    #     tax1 = intg[:, 3, 4],
-    #     tax2 = intg[:, 4, 4],
-    #     tax3 = intg[:, 5, 4],
-    #     tax5 = intg[:, 6, 4],
-    #     tax7_5 = intg[:, 7, 4],
-    #     tax15 = intg[:, 8, 4],
-    # )
-    # df5 = DataFrames.DataFrame(
-    #     controlPLB = intg[:, 1, 5],
-    #     plb5 = intg[:, 2, 5],
-    #     plb10 = intg[:, 3, 5],
-    #     plb25 = intg[:, 4, 5],
-    #     plb50 = intg[:, 5, 5],
-    #     plb100 = intg[:, 6, 5],
-    #     plb250 = intg[:, 7, 5],
-    #     plb500 = intg[:, 8, 5],
-    # )
-    # XLSX.writetable("lapatinibDeadCells.xlsx", df1)
-    # XLSX.writetable("doxorubicinDeadCells.xlsx", df2)
-    # XLSX.writetable("gemcitabineDeadCells.xlsx", df3)
-    # XLSX.writetable("taxolDeadCells.xlsx", df4)
-    # XLSX.writetable("palbociclibDeadCells.xlsx", df5)
     return p1, p3
 end

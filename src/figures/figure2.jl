@@ -1,59 +1,212 @@
-""" Plotting the model and data, fitted separately. """
-drugs = ["BEZ235", "Trametinib", "5FU", "AZD5438", "Panobinostat", "MG132", "Everolimus", "JQ1", "Bortezomib", "MK1775", "Cabozantinib"]
+""" Figure 2 of the paper including model cartoon, Sum of Squared Errors, time series simulations, and parameters."""
 
-
-""" Takes the above parameters and returns the inferred ODE params. The output is used in figure3. """
-function out_ODEparams()
-    p1 = [4.559, 1.534, 6.577953772895624e-6, 0.060, 0.0876, 0.0002, 9.9002, 0.389, 9.959, 0.573, 0.0045, 3.11e-5, 8.92e-5, 0.0336, 0.500, 4.599678610545463e-5, 0.0006, 0.080, 0.056, 0.375, 0.281, 0.313, 9.914, 0.223, 9.958, 9.993];
-    p2 = [16.341, 2.0267, 0.0697, 0.037, 4.732, 7.917, 0.333, 0.562, 9.88, 9.554, 0.0033, 6.14e-5, 0.002, 0.035, 0.0041, 0.00058, 0.00026, 0.00073, 9.661, 0.0411, 6.869, 9.483, 1.438, 0.250, 9.995, 9.580];
-    p3 = [45.303, 1.228, 4.586, 0.082, 0.0309, 0.354, 4.793, 0.0916, 4.898, 0.486, 0.00022, 3.3071e-5, 1.821e-5, 4.13e-5, 3.126e-5, 7.669e-5, 0.0003, 1.25e-5, 9.1008, 0.0644, 0.8656, 0.272, 9.0082, 3.243, 5.628, 0.2105];
-    p4 = [465.346, 2.833, 0.088, 0.00032, 0.0044, 0.0012, 0.339, 0.1199, 1.0501, 0.528, 0.0018, 0.0102, 0.00017, 0.00031, 0.00034, 0.00024, 0.0091, 0.0865, 0.0494, 1.557, 4.212, 0.7538, 7.355, 2.842, 6.619, 0.283];
-    p5 = [4.9001, 3.907, 7.241, 3.13, 0.053, 0.138, 0.050, 9.502, 6.293, 0.357, 0.0053, 0.000525, 4.81e-5, 2.249, 0.0023, 0.137, 0.0044, 2.99e-5, 8.0712, 3.319, 0.046, 8.142, 0.712, 9.906, 7.0182, 0.368];
-    p6 = [20.424, 7.59, 4.155e-5, 9.445, 0.0267, 1.0941e-5, 6.056, 7.66, 0.537, 9.998, 0.0654, 0.000151, 1.22e-6, 0.165, 0.0138, 1.123, 8.911e-8, 2.645e-5, 9.99, 9.752, 0.0357, 1.931, 9.974, 9.993, 0.219, 9.999];
-    p7 = [0.0049, 0.108, 9.655, 0.206, 0.0076, 0.292, 9.255, 1.156, 0.327, 9.827, 0.000265, 0.004, 1.181e-6, 3.801e-5, 0.0093, 0.00047, 0.0016, 3.12e-5, 9.958, 0.0497, 0.165, 0.536, 9.289, 1.1475, 0.2946, 9.909];
-    p8 = [298.17, 1.043, 0.00029, 0.019, 7.128, 0.683, 1.36, 0.449, 0.00125, 7.388, 0.0266, 0.000679, 0.542, 0.0016, 0.00049, 0.00354, 0.09281, 0.00769, 7.4303, 0.0408, 7.322, 4.69, 9.589, 0.2284, 9.976, 7.9261];
-    p9 = [0.361, 0.439, 0.114, 0.564, 0.0026, 0.049, 3.676, 0.401, 0.787, 9.586, 3.334e-6, 0.000269, 0.127, 0.000439, 9.812, 9.916, 4.574e-5, 0.000555, 0.042429, 2.3973, 9.9912, 0.214, 4.454, 0.399, 0.6626, 9.602];
-    p10 = [1468.105, 2.062, 0.00213, 0.121, 0.109, 0.6952, 0.515, 0.262, 0.01049, 0.127, 0.0198, 9.414e-5, 0.00139, 0.0292, 5.94, 2.732, 0.00852, 0.000142, 0.58902, 0.0473, 0.176, 3.393, 8.863, 2.21, 1.5485, 0.366];
-    p11 = [3307.225, 2.825, 4.261, 0.1908, 0.0002, 6.151, 0.6462, 0.00569, 0.311, 0.0768, 0.0199, 2.106e-5, 0.0030, 0.00519, 0.0907, 0.00159, 0.000354, 0.0095, 9.792, 0.0706, 0.13645, 9.82027, 8.371, 0.828, 0.2809, 7.846];
-    parameters = hcat(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11)
-    pp1 = zeros(11, 16, 8) # 16 params, 8 concentrations, 11 drugs: the value is the effect at concentration 5th
-    for (i, drug) in enumerate(drugs)
-        conc = DrugResponseModel.concentration(drug)
-        pp1[i, :, :] = DrugResponseModel.getODEparams(parameters[:, i], conc)
+# remember: to load the simple ODE params do: JLD.load("G1_simpleODE.jld")["data"]
+function SSE(G1, G2, g1m, g2m, subPlabel)
+    SSEs = zeros(5, 2)
+    G1ref = JLD.load("data/G1ref.jld")["G1ref"]
+    G2ref = JLD.load("data/G2ref.jld")["G2ref"]
+    for i = 1:5
+        SSEs[i, 1] = norm(G1ref[:, :, i] - g1m[:, :, i]) + norm(G2ref[:, :, i] - g2m[:, :, 1])
+        SSEs[i, 2] = norm(G1[:, :, i] - g1m[:, :, i]) + norm(G2[:, :, i] - g2m[:, :, 1])
     end
-    return pp1[:, :, :]
+    ctg = repeat(["w/o LCT", "w/ LCT"], inner = 5)
+    nam = repeat(["Lapatinib", "Doxorubicin", "Gemcitabine", "Paclitaxel", "Palbociclib"], outer = 2)
+
+    StatsPlots.groupedbar(
+        nam,
+        SSEs,
+        group = ctg,
+        xrotation = 30,
+        xlabel = "drugs",
+        ylabel = "SSE",
+        title = "Sum of Squared Errors",
+        bar_width = 0.45,
+        lw = 0,
+        framestyle = :box,
+        titlefont = Plots.font("Helvetica", 14),
+        legendfont = Plots.font("Helvetica", 11),
+        guidefont = Plots.font("Helvetica", 14),
+        xtickfont = Plots.font("Helvetica", 14),
+        ytickfont = Plots.font("Helvetica", 14),
+        bottom_margin = 1.25cm,
+        fg_legend = :transparent,
+        top_margin = 1.25cm,
+        left_margin = 1.85cm,
+        right_margin = 1.25cm,
+    )
+    annotate!(-1, 555.0, Plots.text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
 end
 
-function Eachdrug_sim(G_sim, G_data, condition, g1g2, drug_name)
-    t = LinRange(0.0, 95, size(G_sim)[1])
-    df = [DataFrame(x=t, y=G_sim[:, i], y2=G_data[:, i], conc=condition[i]) for i = 1:8]
-    DF = vcat(df...)
-    p = Gadfly.plot(DF, layer(x="x", y="y", Geom.line, color="conc"), 
-                        layer(x="x", y="y2", Geom.line, color="conc", Theme(line_style=[:dash])),
-                        Guide.xlabel("time [hr]"), Guide.ylabel("$g1g2 Cell #"), Coord.Cartesian(ymin=-0.05,ymax=2.0), Guide.title(drug_name))
-    return p
+"""Helper function"""
+function plot_fig1(concs, g1, g1data, tite, G, subPlabel, palet, time)
+
+    p = Plots.plot(
+        time,
+        g1,
+        lw = 2,
+        legend = :topleft,
+        label = ["control" "$(concs[4]) nM" "$(concs[5]) nM" "$(concs[6]) nM" "$(concs[7]) nM" "$(concs[8]) nM"],
+        fg_legend = :transparent,
+        palette = palet,
+        title = tite,
+        titlefont = Plots.font("Helvetica", 14),
+        legendfont = Plots.font("Helvetica", 11),
+        guidefont = Plots.font("Helvetica", 14),
+        xtickfont = Plots.font("Helvetica", 14),
+        ytickfont = Plots.font("Helvetica", 14),
+        xlabel = "time [hr]",
+        xticks = 0:24.0:96.0,
+        ylabel = "$G cell number",
+        bottom_margin = 1.25cm,
+        top_margin = 1.25cm,
+        left_margin = 1.25cm,
+        right_margin = 1.25cm,
+    )
+    Plots.plot!(time, g1data, lw = 2, linestyle = :dot, label = ["" "" "" "" "" "" ""])
+    annotate!(-1.0, 2.0, Plots.text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
+    ylims!((0.0, 2.5))
+    p
 end
+
+"""Helper function to plot accumulated cell death, or average phase duration."""
+function plot_pG1_mean(y1, y2, ymax, Phasename, ylabel, subPlabel, plus)
+
+    x = ["Lapatinib", "Doxorubicin", "Gemcitabine", "Paclitaxel", "Palbociclib"]
+    conts = scatter(
+        x,
+        y1',
+        color = "red",
+        xlabel = "drugs",
+        xrotation = 30,
+        label = "Control",
+        markerstrokewidth = 0,
+        markersize = 10,
+        ylabel = ylabel,
+        titlefont = Plots.font("Helvetica", 14),
+        legendfont = Plots.font("Helvetica", 11),
+        guidefont = Plots.font("Helvetica", 14),
+        xtickfont = Plots.font("Helvetica", 14),
+        ytickfont = Plots.font("Helvetica", 14),
+        bottom_margin = 1.5cm,
+        fg_legend = :transparent,
+        top_margin = 1.5cm,
+        left_margin = 1.25cm,
+        right_margin = 1.25cm,
+        title = "$Phasename effects",
+    )
+    scatter!(
+        x,
+        y2',
+        color = "cyan4",
+        xlabel = "drugs",
+        label = "EC50",
+        markerstrokewidth = 0,
+        markersize = 10,
+        ylabel = ylabel,
+        titlefont = Plots.font("Helvetica", 14),
+        legendfont = Plots.font("Helvetica", 11),
+        guidefont = Plots.font("Helvetica", 14),
+        xtickfont = Plots.font("Helvetica", 14),
+        ytickfont = Plots.font("Helvetica", 14),
+        bottom_margin = 1.5cm,
+        fg_legend = :transparent,
+        top_margin = 1.5cm,
+        left_margin = 1.25cm,
+        right_margin = 1.25cm,
+        title = "$Phasename effects",
+    )
+    annotate!(-0.5, (ymax + plus), Plots.text(subPlabel, :black, :left, Plots.font("Helvetica Bold", 15)))
+    ylims!((-0.1, ymax))
+end
+
 
 function figure2()
-    setGadflyTheme()
 
-    g, c = DrugResponseModel.import_data()
-    newg = DrugResponseModel.trim_data(g, c)
-    tensor, conditions = DrugResponseModel.form_tensor(newg, c)
-    tens = mean(tensor, dims=2)[:, 1, :, :, :]
-    t = LinRange(0.0, 95, size(tens)[2])
-    pp = []
-    pODE = out_ODEparams()
-    for (i, drug) in enumerate(drugs)
-        conc = DrugResponseModel.concentration(drug)
-        Gs = zeros(size(tens)[2], 8, 2)
-        for j=1:8
-            Gs[:, j, 1], Gs[:, j, 2], _ = DrugResponseModel.predict(pODE[i, :, j], pODE[i, :, 1], t)
+    concs, popul1, g1s1, g2s1 = load(189, 1)
+    _, popul2, g1s2, g2s2 = load(189, 2)
+    _, popul3, g1s3, g2s3 = load(189, 3)
+
+    # find G1 std and mean ***** data ******
+    g1S = cat(g1s1, g1s2, g1s3, dims = 4)
+    g2S = cat(g2s1, g2s2, g2s3, dims = 4)
+    g1m = mean(g1S, dims = 4) # mean G1
+    g2m = mean(g2S, dims = 4) # mean G2
+
+    # This is a 98-long vector containing parameters of the first 5 drugs AU565 treatment.
+    ps = parameters()
+    efcs = getODEparams(ps, concs)
+
+    # ******* model simulations ********
+    G1 = zeros(189, 8, 5)
+    G2 = zeros(189, 8, 5)
+
+    t = LinRange(0.0, 95.0, 189)
+    for k = 1:5 # drug number
+        for i = 1:8 # concentration number
+            G1[:, i, k], G2[:, i, k], _ = predict(efcs[:, i, k], efcs[:, 1, k], t)
         end
-        push!(pp, Eachdrug_sim(Gs[:, :, 1], tens[1, :, :, i], conditions[i], "G1", drug))
-        push!(pp, Eachdrug_sim(Gs[:, :, 2], tens[2, :, :, i], conditions[i], "S/G2", drug))
     end
 
-    pl = plotGrid((6, 4), [pp..., nothing, nothing];)
-    return draw(SVG("figure2.svg", 22inch, 18inch), pl)
+    # params at EC50
+    ec50 = zeros(16, 5)
+    conc_ec50 = zeros((1, 5))
+    conc_ec50[1, 1:5] = [57.3 11.2 8.95 2.4 30.1]
+    ec50 = getODEparams(ps, conc_ec50)[:, 1, :]
+
+    # phase durations
+    # @ control
+    gi = zeros(2, 2, 5)
+    gi[1, 1, :] .= (2 ./ efcs[1, 1, :] .+ 2 ./ efcs[2, 1, :] .+ 2 ./ efcs[3, 1, :] .+ 2 ./ efcs[4, 1, :])
+    gi[2, 1, :] .= (5 ./ efcs[5, 1, :] .+ 5 ./ efcs[6, 1, :] .+ 5 ./ efcs[7, 1, :] .+ 5 ./ efcs[8, 1, :])
+
+    # @ ec50
+    gi[1, 2, :] .= (2 ./ ec50[1, :] .+ 2 ./ ec50[2, :] .+ 2 ./ ec50[3, :] .+ 2 ./ ec50[4, :])
+    gi[2, 2, :] .= (5 ./ ec50[5, :] .+ 5 ./ ec50[6, :] .+ 5 ./ ec50[7, :] .+ 5 ./ ec50[8, :])
+    # cell deaths
+    deathContG1 = zeros(4, 5)
+    deathEC50G1 = zeros(4, 5)
+    deathContG1[1, :] .= (efcs[9, 1, :]) ./ (efcs[9, 1, :] .+ efcs[1, 1, :])
+    deathEC50G1[1, :] .= (ec50[9, :]) ./ (ec50[9, :] .+ ec50[1, :])
+    for i = 2:4
+        deathContG1[i, :] .= (1 .- deathContG1[i - 1, :]) .* (efcs[i + 8, 1, :]) ./ (efcs[i + 8, 1, :] .+ efcs[i, 1, :])
+        deathEC50G1[i, :] .= (1 .- deathEC50G1[i - 1, :]) .* (ec50[i + 8, :]) ./ (ec50[i + 8, :] .+ ec50[i, :])
+    end
+    deathContG2 = zeros(4, 5)
+    deathEC50G2 = zeros(4, 5)
+    deathContG2[1, :] .= (efcs[13, 1, :]) ./ (efcs[13, 1, :] .+ efcs[5, 1, :])
+    deathEC50G2[1, :] .= (ec50[13, :]) ./ (ec50[13, :] .+ ec50[5, :])
+    for i = 14:16
+        deathContG2[i - 12, :] = (1 .- deathContG2[i - 13, :]) .* (efcs[i, 1, :]) ./ (efcs[i, 1, :] .+ efcs[i - 8, 1, :])
+        deathEC50G2[i - 12, :] = (1 .- deathEC50G2[i - 13, :]) .* (ec50[i, :]) ./ (ec50[i, :] .+ ec50[i - 8, :])
+    end
+
+    G1short = zeros(189, 6, 5)
+    G2short = zeros(189, 6, 5)
+    g1mshort = zeros(189, 6, 5)
+    g2mshort = zeros(189, 6, 5)
+    G1short[:, 1, :] .= G1[:, 1, :]
+    G2short[:, 1, :] .= G2[:, 1, :]
+    g1mshort[:, 1, :] .= g1m[:, 1, :]
+    g2mshort[:, 1, :] .= g2m[:, 1, :]
+    G1short[:, 2:6, :] .= G1[:, 4:8, :]
+    G2short[:, 2:6, :] .= G2[:, 4:8, :]
+    g1mshort[:, 2:6, :] .= g1m[:, 4:8, :]
+    g2mshort[:, 2:6, :] .= g2m[:, 4:8, :]
+
+    p0 = Plots.plot(legend = false, grid = false, foreground_color_subplot = :white, top_margin = 1.5cm)
+    p1 = plot_fig1(concs[:, 1], G1short[:, :, 1], g1mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "G1", "B", :PuBu_6, t)
+    p2 = plot_fig1(concs[:, 1], G2short[:, :, 1], g2mshort[:, :, 1, 1], "Dynamical Model Fits - Lapatinib", "S/G2", "C", :PuBu_6, t)
+    p3 = plot_fig1(concs[:, 3], G1short[:, :, 3], g1mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "G1", "D", :PuBu_6, t)
+    p4 = plot_fig1(concs[:, 3], G2short[:, :, 3], g2mshort[:, :, 3, 1], "Dynamical Model Fits - Gemcitabine", "S/G2", "E", :PuBu_6, t)
+    p5 = plot_pG1_mean(gi[1, 1, :]', gi[1, 2, :]', 60.0, "G1 ", "Avg phase duration [hr]", "F", 10.0)
+    p6 = plot_pG1_mean(gi[2, 1, :]', gi[2, 2, :]', 60.0, "S/G2 ", "Avg phase duration [hr]", "G", 10.0)
+    p7 = plot_pG1_mean(sum(deathContG1, dims = 1), sum(deathEC50G1, dims = 1), 0.2, "G1", "Cell death probability", "H", 0.06)
+    p8 = plot_pG1_mean(sum(deathContG2, dims = 1), sum(deathEC50G2, dims = 1), 0.2, "S/G2", "Cell death probability", "I", 0.06)
+    p9 = SSE(G1[:, :, :], G2[:, :, :], g1m, g2m, "J")
+    p10 = output_deadcells()[1]
+    p11 = output_deadcells()[2]
+
+
+    figure1 = Plots.plot(p0, p9, p1, p2, p5, p6, p3, p4, p7, p8, p10, p11, size = (2000, 1300), layout = (3, 4))
+    savefig(figure1, "figure2_paper.svg")
 end
