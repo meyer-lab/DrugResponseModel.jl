@@ -123,7 +123,7 @@ function output_Bliss_cellnum()
     g1m[:, 7, 3], g2m[:, 7, 3], _ = predict(gem17, efc[:, 1, 3], t)
     Total1 = g1m .+ g2m
 
-    bliss = blissCellNum(Total1[end, :, :]; n = 8)
+    bliss = blissCellNum(Total1[end, :, :])
     df1 =
         DataFrames.DataFrame(plb50_lpt25 = bliss[4, 5, 4], plb50_lpt50 = bliss[5, 5, 4], plb50_lpt100 = bliss[6, 5, 4], plb50_lpt250 = bliss[7, 5, 4])
     df2 =
@@ -169,7 +169,7 @@ function output_Bliss_cellnum()
     Total[:, 2:5, 3] .= meanGS1[3, :, 19:22] # gemcitabines
     Total[:, 2, 4] .= meanGS1[3, :, 13] # pax 2 nM
     Total[:, 2:5, 5] .= meanGS1[3, :, 7:10] # palbos
-    bliss = blissCellNum(Total[end, :, :]; n = 5)
+    bliss = blissCellNum(Total[end, :, :])
     df1 = DataFrames.DataFrame(
         plb50_lpt25 = bliss[2, 3, 4],
         plb50_lpt50 = bliss[3, 3, 4],
