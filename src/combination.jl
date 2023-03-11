@@ -37,18 +37,6 @@ function AllBliss_params(pp1, pp2)
     combined
 end
 
-""" This function calculates cell number for parameter sets that are the result of Bliss on prog. rates. """
-function BlissModelComb(bliss_comb, pCtr)
-    bliss_comb_cellnum = Matrix{eltype(bliss_comb)}(undef, 8, 8)
-
-    for i = 1:8 # param1 is changing
-        for j = 1:8 # param2 is changing
-            g1, g2, _ = predict(bliss_comb[:, i, j], pCtr, 96.0)
-            bliss_comb_cellnum[i, j] = g1 + g2
-        end
-    end
-    return bliss_comb_cellnum
-end
 
 """ This function plots the heatmap of combined cell numbers given any two drugs. """
 function Heatmap(concs, data, i1, i2, d1name, d2name, title; clim_min = 0.0, clim_max = 60.0)
@@ -124,10 +112,8 @@ function output_Bliss_cellnum()
     Total1 = g1m .+ g2m
 
     bliss = blissCellNum(Total1[end, :, :])
-    df1 =
-        DataFrames.DataFrame(plb50_lpt25 = bliss[4, 5, 4], plb50_lpt50 = bliss[5, 5, 4], plb50_lpt100 = bliss[6, 5, 4], plb50_lpt250 = bliss[7, 5, 4])
-    df2 =
-        DataFrames.DataFrame(gem10_lpt25 = bliss[4, 6, 2], gem10_lpt50 = bliss[5, 6, 2], gem10_lpt100 = bliss[6, 6, 2], gem10_lpt250 = bliss[7, 6, 2])
+    df1 = DataFrames.DataFrame(plb50_lpt25 = bliss[4, 5, 4], plb50_lpt50 = bliss[5, 5, 4], plb50_lpt100 = bliss[6, 5, 4], plb50_lpt250 = bliss[7, 5, 4])
+    df2 = DataFrames.DataFrame(gem10_lpt25 = bliss[4, 6, 2], gem10_lpt50 = bliss[5, 6, 2], gem10_lpt100 = bliss[6, 6, 2], gem10_lpt250 = bliss[7, 6, 2])
     df3 = DataFrames.DataFrame(dox20_gem5 = bliss[4, 5, 5], dox20_gem10 = bliss[4, 6, 5], dox20_gem17 = bliss[4, 7, 5], dox20_gem30 = bliss[4, 8, 5])
     df4 = DataFrames.DataFrame(plb50_gem5 = bliss[5, 5, 9], plb50_gem10 = bliss[6, 5, 9], plb50_gem17 = bliss[7, 5, 9], plb50_gem30 = bliss[8, 5, 9])
     df5 = DataFrames.DataFrame(

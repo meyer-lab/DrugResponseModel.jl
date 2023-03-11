@@ -51,7 +51,6 @@ export setup_data,
     Bliss_params_unit,
     predict,
     optim_all,
-    BlissModelComb,
     Heatmap,
     parameters
 
