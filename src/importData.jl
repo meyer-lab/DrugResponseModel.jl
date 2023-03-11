@@ -29,8 +29,9 @@ function get_data(path_g2::String, path_total::String; max = 189)
 end
 
 function import_combination(filename::String)
-    path_g2 = string("/", basePath, "/", filename, "_CYCLE.csv")
-    path_total = string("/", basePath, "/", filename, "_CELL.csv")
+    asePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data", "AU565_combination")
+    path_g2 = string("/", asePath, "/", filename, "_CYCLE.csv")
+    path_total = string("/", asePath, "/", filename, "_CELL.csv")
     perc = readdlm(path_g2, ','; skipstart = 1)
     total = readdlm(path_total, ','; skipstart = 1)
 
@@ -72,12 +73,13 @@ function setup_data(drug_name::String)
     end
 
     #----------- import concentrations
-    concentration = readdlm(joinpath(basePath, "concentrations.csv"), ','; skipstart = 1)
+    BasePath = joinpath(dirname(pathof(DrugResponseModel)), "..", "data", "AU565_round1")
+    concentration = readdlm(joinpath(BasePath, "concentrations.csv"), ','; skipstart = 1)
     conc_l = [Float64(concentration[idx, col]) for col = 2:9]
     conc_l[1] = 0.0
 
     #------------ import cell data
-    gs = get_data(joinpath(basePath, dfname), joinpath(basePath, dfname2))
+    gs = get_data(joinpath(BasePath, dfname), joinpath(BasePath, dfname2))
 
     return conc_l, gs[2, :, :], gs[1, :, :]
 end
