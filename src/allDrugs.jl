@@ -29,7 +29,7 @@ end
 
 """ Organize Hill parameters for each drug in a 2D array. """
 function Hill_p_eachDr(p)
-    kk = (length(p) - 8 ) / 18 # number of drugs
+    kk = Int((length(p) - 8 ) / 18) # number of drugs
     HillP = Matrix{eltype(p)}(undef, 18, kk)
     # each column: [EC50, steepness, max_g1,1_prog., max_g1,2_prog., max_g2,1_prog., max_g2,2_prog., max_g11_death, max_g12_death, max_g21_death, max_g22_death]
     j = 1
