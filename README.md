@@ -2,7 +2,6 @@
 
 ![Build](https://github.com/meyer-lab/DrugResponseModel.jl/workflows/Build/badge.svg)
 ![Test](https://github.com/meyer-lab/DrugResponseModel.jl/workflows/Test/badge.svg)
-[![DOI](https://zenodo.org/badge/186165308.svg)](https://zenodo.org/badge/latestdoi/186165308)
 
 
 `DrugResponseModel` is a Julia package for analyzing drug response in population cell number data with respect to cell cycle phase effects. The model is a system of linear first order differential equations where the parameters of the model reflect the quantified effects of drugs on different cell cycle phases; the rate of phase progression and the rate of cell death. With this model and the inferred parameters from fitting, we predicted the effects of drug combinations.
