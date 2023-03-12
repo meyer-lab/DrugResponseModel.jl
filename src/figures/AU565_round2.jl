@@ -66,7 +66,7 @@ function Eachdrug_sim(G_sim, G_data, condition, g1g2, drug_name)
     return p
 end
 
-function figure2()
+function figure2a()
     setGadflyTheme()
 
     g, c = DrugResponseModel.import_data()

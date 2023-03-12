@@ -40,7 +40,6 @@ include("figures/figureS3.jl")
 include("figures/figureS4.jl")
 include("figures/figureS5.jl")
 include("figures/figureS8.jl")
-include("figures/figureNOTUSED.jl")
 
 
 export setup_data,
