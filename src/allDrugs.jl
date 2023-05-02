@@ -52,7 +52,7 @@ function optim_all(concs, g1::Array{Float64, 3}, g2::Array{Float64, 3}; maxiter 
     return optimize_helper(f, low, high, maxiter)
 end
 
-
+# This is a 98-long vector containing parameters of the first 5 drugs AU565 treatment.
 function parameters()
     return ps = [
         34.6303,
